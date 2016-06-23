@@ -1,4 +1,4 @@
 # RTricks
 R Tricks
 
-This is a test. Something very slow.
+This is a test. Simplified
