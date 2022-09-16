@@ -1,4 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # RTricks
-R Tricks
 
-This is a test. Simplified updated today.
+An open source text in R for Environmental Science

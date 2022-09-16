@@ -1,0 +1,13 @@
+name: Mauna_Loa_CO2_Records
+title: Mauna_Loa_CO2_Records
+username:
+account: marclos
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7671259
+bundleId: 6529551
+url: https://marclos.shinyapps.io/Mauna_Loa_CO2_Records/
+when: 1668784162.76585
+lastSyncTime: 1668784162.76587
+asMultiple: FALSE
+asStatic: FALSE
