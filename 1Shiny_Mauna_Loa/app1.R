@@ -39,8 +39,9 @@ ui <- fluidPage(
         ),
        # Show a plot of the generated distribution
         mainPanel(
-           plotOutput("CO2Plot"),
-           tableOutput("lmTable")
+           plotOutput("CO2Plot")
+           #,
+           #tableOutput("lmTable")
            )
           
         )
@@ -49,24 +50,17 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-# subset dataframe based on input$YearMax from ui.R
- maunaloa.sub <- reactive(subset(maunaloa, subset=(year <= input$YearMax))
-    )
+  # subset datafram based on input$YearMax from ui.R
 
-    maunaloa.lm <- reactive(  
-      lm(average~year, data=maunaloa.sub())
-    )
+maunaloa <- reactive(subset(maunaloa, subset=(year <= input$YearMax)))
+
+ #   maunaloa.lm <- reactive(lm(average~year, data=maunaloa))
+ #   
+ #   year.seq = reactive(seq(min(maunaloa$year), input$YearMax+1))
     
-    year.seq = reactive(
-      seq(min(maunaloa.sub()$year), input$YearMax+1)
-      )
-    
-    newdata.df <- reactive(data.frame(year=year.seq())
-      )
+ #   newdata.df <- reactive(data.frame(year=year.seq))
       
-    predict.df <- reactive(predict(maunaloa.lm(), newdata.df(), 
-                          interval="confidence", se.fit=TRUE)
-      )
+ #   predict.df <- reactive(predict(maunaloa.lm, newdata.df, interval="confidence", se.fit=TRUE))
     
   # draw the histogram with the specified number of bins
     
@@ -74,30 +68,10 @@ server <- function(input, output) {
 
       par(las=1)
       if(input$YearMax < 1970){
-        plot(maunaloa.sub()$decimal.date, maunaloa.sub()$average, 
-             type="p", ylab="ppm", xlab="Year", 
-             main="Carbon Dioxide Concentrations Changes, \n Mauna Loa, HI")
-        lines(year.seq(), predict.df()$fit[,1], col="red", lwd=2.0)
-      } else {
-        plot(maunaloa.sub()$decimal.date, maunaloa.sub()$average, type="l", ylab="ppm", xlab="Year", 
-        main="Carbon Dioxide Concentrations Changes, \n Mauna Loa, HI")
-        lines(year.seq(), predict.df()$fit[,1], col="red", lwd=2.4)
-      }
-      if(input$CI=="TRUE"){
-        lines(year.seq(), predict.df()$fit[,2], col="orange", lwd=2.0)
-        lines(year.seq(), predict.df()$fit[,3], col="orange", lwd=2.0)
+        plot(average ~ decimal.date, data=maunaloa)
+        
       }
     })
-    
-    
-    output$lmTable <- renderTable({
-      if(input$lm=="TRUE"){
-      #if(is.null(input$file1$datapath)){return()}
-      #maunaloa <- subset(maunaloa, subset=(year <= input$YearMax))
-      #maunaloa.lm = lm(average~year, data=maunaloa)
-      xtable(maunaloa.lm())}
-        }) 
-}
 
 # Run the application 
 shinyApp(ui = ui, server = server)
