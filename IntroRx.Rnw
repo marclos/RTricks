@@ -1,75 +1,4 @@
-<<<<<<< HEAD
-\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
-=======
-\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{color}
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-% maxwidth is the original width if it is less than linewidth
-% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
-
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-<<<<<<< HEAD
-=======
-\makeatletter
-\@ifundefined{AddToHook}{}{\AddToHook{package/xcolor/after}{\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}}}
-\makeatother
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-\let\hlipl\hlkwb
-
-\usepackage{framed}
-\makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
-
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-<<<<<<< HEAD
-=======
-\makeatletter
-\@ifundefined{AddToHook}{}{\AddToHook{package/xcolor/after}{
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-}}
-\makeatother
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
-
-\usepackage{alltt}
+\documentclass{tufte-handout}
 
 %\geometry{showframe}% for debugging purposes -- displays the margins
 
@@ -105,7 +34,7 @@
 \newcommand{\docpkg}[1]{\texttt{#1}}% package name
 \newcommand{\doccls}[1]{\texttt{#1}}% document class name
 \newcommand{\docclsopt}[1]{\texttt{#1}}% document class option name
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
 \begin{document}
 
 \maketitle% this prints the handout title, author, and date
@@ -118,7 +47,10 @@ This handout provides an brief introduction to the syntax of R and some applicat
 %\printclassoptions
 
 % Setting up the margins, etc for R
-
+<<echo = FALSE, results = "hide">>=
+options(width=60)
+# rm(list = ls())
+@
 
 \section{Session Outcomes}
 \begin{enumerate}
@@ -180,28 +112,14 @@ Power & $\wedge$ & 3 $\wedge$ 5  \\
 
 In addition, for more complex operations, R uses functions, which have a different syntax, \eg \texttt{log()}, \texttt{exp()}, \texttt{sin()}, etc. The syntax for these functions is fairly straightforward. For example, to calculate the base 10 logarithm of 3.5, we can type:\sidenote{as below, each time you see a ``>'', I am referring to the R prompt and you want to type the text after the prompt.}
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{log10}\hlstd{(}\hlnum{3.5}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] 0.544068
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+log10(3.5)
+@
 
 Or to calculate the natural log, type
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{log}\hlstd{(}\hlnum{3.5}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] 1.252763
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+log(3.5)
+@
 
 R allows the user to make complex equations and even solving complex calculations. For example, the if you want to solve the following equation:
 
@@ -211,16 +129,9 @@ V = V_{max}\frac{S}{K_s + S}
 
 And $V_{max}$ = 3, $S$ = 1.0 and $K_s = 0.3$, then you can type
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlnum{3.0} \hlopt{*} \hlstd{(}\hlnum{1.0} \hlopt{/} \hlstd{(}\hlnum{0.3} \hlopt{+} \hlnum{1.0}\hlstd{))}
-\end{alltt}
-\begin{verbatim}
-## [1] 2.307692
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+3.0 * (1.0 / (0.3 + 1.0))
+@
 
 However, typing these formulas can be time consuming and subject to typos, (\eg it is easy to forget to put the parentheses in the right place) so we'll see how we can streamline the process to make R uses more efficient. 
 
@@ -235,69 +146,37 @@ Typing a long string of numbers each time you want to due something is a waste o
 
 When creating an object, we need to name the object and define the object type. Usually, this can be done in a single step. But we'll try to break it down so you can follow along. First, let's say we want to make an object that has 10 numbers in it. The most basic type of object is a vector, which can store a string of numbers or characters. Let's call the vector something recognizable, \texttt{myvector}. To put numbers into a vector, we need to concatenate or combine them, thus we need R to do something with the numbers, in other words, we need a "verb". In this case the verb concatenate or combine is abbreviated as \texttt{c()}. Remember with each function, there are parentheses. Now what we put ten numbers into the parentheses to be concatenated. We'll put a series of numbers from 1 to 10. 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{myvector} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{6}\hlstd{,} \hlnum{7}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{9}\hlstd{,} \hlnum{10}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+myvector <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) 
+@
 
 In this case, each number to be combined is separated by a comma. Spaces between the commas does not affect the object at all. Notice when you create the vector, R does not return any response. At first, this might seem disconcerting. But soon, you will be excited by the silence. In general, no news is good news in R, i.e. when there is no response, R did something and there was no error. Now it might not be what you wanted, but it did something. So, now let's see if R did what we wanted. 
 
 Now, we can view the vector by typing the name of the vector as below:\sidenote{The numbers in the square brackets are referencing the "index" number of the first observation in the row. It will make more sense when we create longer vectors.}  
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{myvector}
-\end{alltt}
-\begin{verbatim}
-##  [1]  1  2  3  4  5  6  7  8  9 10
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+myvector
+@
 
 \subsection{Interrogating Objects}
 
 We now use a function to interrogate the vector. For example, how long is the vector?
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{length}\hlstd{(myvector)}
-\end{alltt}
-\begin{verbatim}
-## [1] 10
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>= 
+length(myvector)
+@ 
 
 What is the sum of the values in the vector?
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{sum}\hlstd{(myvector)}
-\end{alltt}
-\begin{verbatim}
-## [1] 55
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+sum(myvector)
+@
 
 What is the mean of the vector?
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{mean}\hlstd{(myvector)}
-\end{alltt}
-\begin{verbatim}
-## [1] 5.5
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+mean(myvector)
+@
 
 Congratulations, you have now made an object. This object is a vector, which we  named "myvector".\footnote{By the way, R is case sensitive, so "myvector" or "myVector" or "Myvector" refer to two different objects, two of which don't exists. Failing to keep track of what is upper and lower case can lead to high levels of frustration. I suggest you start with keeping everything lower case to avoid confusion. However, I will violate this suggestion immediately, for reasons that I will explain below.} Another thing to notice is that we have created a vector of numbers, would have also created a vector of characters (and words) and logical or binary responses, \ie TRUE and FALSE.
 
@@ -328,44 +207,24 @@ Several researchers have been investigating the effects of ambient temperatures 
 
 There were 3 treatments and 5 replicates, for a total of 15 observations. Since vectors can be either numeric or character, we'll use characters to represent the three treatments: Heated, Control, and Procedure Control. The procedure control had heaters installed but not turned on. This tests whether there was an effect of the heaters just being present. We will coerce the data into a vector called Treatment.
 For vectors, we will put the treatments names in quotes. Also to avoid having to type each treatment 5 times, will use the repeat function.
+<<echo = FALSE>>=
+options(width=60)
+@
 
+<<>>=
+rep("Control", 5)
+rep("Treatment", 5)
+rep("Procedure Control", 5)
+@
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{rep}\hlstd{(}\hlstr{"Control"}\hlstd{,} \hlnum{5}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] "Control" "Control" "Control" "Control" "Control"
-\end{verbatim}
-\begin{alltt}
-\hlkwd{rep}\hlstd{(}\hlstr{"Treatment"}\hlstd{,} \hlnum{5}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] "Treatment" "Treatment" "Treatment" "Treatment"
-## [5] "Treatment"
-\end{verbatim}
-\begin{alltt}
-\hlkwd{rep}\hlstd{(}\hlstr{"Procedure Control"}\hlstd{,} \hlnum{5}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] "Procedure Control" "Procedure Control"
-## [3] "Procedure Control" "Procedure Control"
-## [5] "Procedure Control"
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-
+<<echo = FALSE>>=
+options(width=60)
+@
 Okay, we have dumped the each of the treatments onto the screen, but we haven't created any objects. Next, create a vector of the 15 observations, but using the c() function, which combines or more accurately concatenates the values. 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{treatment} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlstr{"Control"}\hlstd{,} \hlnum{5}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlstr{"Treatment"}\hlstd{,} \hlnum{5}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlstr{"Procedure Control"}\hlstd{,} \hlnum{5}\hlstd{))}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+treatment <- c(rep("Control", 5), rep("Treatment", 5), rep("Procedure Control", 5))
+@
 
 There are a few things to notice. First, look at all the parentheses. Keeping track of these is really important, for every opening parentheses there is a closing one. And they have to be in the right place, based on the syntax of the function. As you can see, this can get rather complicated and mistakes will be made. In other words, try to pay attention to these characters, and if you get errors, look for mistakes with parenthesis as first strategy to fix errors. Second, notice all the commas. Just as important to the syntax of these commands as parenthesis, commas need to be in the right place. If they are not, you will get errors. Remember, no news is good news in R; when you get some text in return that you haven't asked for, there is an error somewhere, and always check for commas and parenthesis firsts. Finally, failing to match opening and closing quotations marks are also a common error. 
 
@@ -373,40 +232,28 @@ Generate 3 different error messages by leaving out a closing parenthesis or quot
 
 On of the most common objects is a data frame, which appears to be like a spreadsheet. We'll create a data frame by combining two vectors. First, let's create the vector of response values, which are flower date, as reported in Julian dates.\footnote[][-1.1cm]{Julian dates are the day number since the first day of the year, thus January 1st is Julian date 1 and Julian date 31 is January 31st.}
 
-
+<<echo = FALSE>>=
+options(width=110)
+@
 
 \begin{fullwidth}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{flowering_date} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{93}\hlstd{,} \hlnum{94}\hlstd{,} \hlnum{89}\hlstd{,} \hlnum{87}\hlstd{,} \hlnum{88}\hlstd{,} \hlnum{84}\hlstd{,} \hlnum{79}\hlstd{,} \hlnum{85}\hlstd{,} \hlnum{81}\hlstd{,} \hlnum{82}\hlstd{,} \hlnum{90}\hlstd{,} \hlnum{79}\hlstd{,} \hlnum{75}\hlstd{,} \hlnum{88}\hlstd{,} \hlnum{90}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+flowering_date <- c(93, 94, 89, 87, 88, 84, 79, 85, 81, 82, 90, 79, 75, 88, 90) 
+@
 \end{fullwidth}
 
-
+<<echo = FALSE>>=
+options(width=60)
+@
 
 The vector name is a bit long, but it describes exactly what are in the data. It seems worth having names that are meaningful and that can remembered. But there is a trade off, you have to spell it correctly, so you may prefer shorter names. 
 
 Let's check to see if both vectors have the same length. If they are not, they will not be able to be combined into a data frame. Notice that each of the vectors have lower case letters. We could have capitalized the first letter, but as you will see below, I reserve that for data frame variable names. It is a matter of preference.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{length}\hlstd{(treatment)}
-\end{alltt}
-\begin{verbatim}
-## [1] 15
-\end{verbatim}
-\begin{alltt}
-\hlkwd{length}\hlstd{(flowering_date)}
-\end{alltt}
-\begin{verbatim}
-## [1] 15
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+length(treatment)
+length(flowering_date)
+@
 
 \subsection{The Dataframe: A structure ready for analysis}
 
@@ -421,45 +268,23 @@ data.frame(Variable_Name1 = vector1, Variable_Names2 = vector2)
 
 In this example, we tell R the variable we are going to create (with a name--best when there are no spaces) and then make that equal to the vector of interest. In the example above, we create two variable names, each with a different vector.  So, let's try it with our created vectors:
 
+<<echo = FALSE, results = 'hide' >>=
+options(width=90)
+@
 
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{data.frame}\hlstd{(}\hlkwc{Treatment} \hlstd{= treatment,} \hlkwc{Flowering_date} \hlstd{= flowering_date)}
-\end{alltt}
-\begin{verbatim}
-##            Treatment Flowering_date
-## 1            Control             93
-## 2            Control             94
-## 3            Control             89
-## 4            Control             87
-## 5            Control             88
-## 6          Treatment             84
-## 7          Treatment             79
-## 8          Treatment             85
-## 9          Treatment             81
-## 10         Treatment             82
-## 11 Procedure Control             90
-## 12 Procedure Control             79
-## 13 Procedure Control             75
-## 14 Procedure Control             88
-## 15 Procedure Control             90
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+data.frame(Treatment = treatment, Flowering_date = flowering_date)
+@
 
 Great, that works, but we haven't created a data frame, we have only dumped the results on the the screen. So, let's create a data frame, called Flowering
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{Flowering} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{Treatment} \hlstd{= treatment,} \hlkwc{Flowering_date} \hlstd{= flowering_date)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+Flowering <- data.frame(Treatment = treatment, Flowering_date = flowering_date)
+@
 
-
+<<echo = FALSE, results = 'hide' >>=
+options(width=60)
+@
 
 If this worked, then you get no response--just the prompt telling you R is ready for more info. To view all objects you have created, type \texttt{ls()}.\footnote{The ``l'' in the R GUI font is ambiguous because it is indistinguishable from the number 1. The \texttt{ls()} is composed of the letter \texttt{l} (not the number one) and the letter \texttt{s}.} Yes, for those of you old enough to remember how to use mainframe computers, this is the list command, which lists files in a directory. In this case, R lists that objects created and available in the workspace. If you quit and decide to save the work space, it is these files that will remain in R after you quit, otherwise they are erased and must be recreated if you want to use them again.  
 
@@ -478,84 +303,38 @@ V = V_{max}\frac{S}{K_s + S}
 
 The Michaelis-Menten Equation describes the behavior of enzymatic reactions, where $V_{max}$ is the rate of reaction, $K_s$ is an estimated enzymatic substrate binding parameter. For now, we set $V_{max}$ = 3.0 and $K_s$ = 0.5. Remember that in algebra there is missing multiplication symbol in front of the first parenthesis. Using S as 1.0 $\mu M$, we can substitute the values in the equation to obtain
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlnum{3}\hlopt{*}\hlnum{1.0}\hlopt{/}\hlstd{(}\hlnum{0.05}\hlopt{+}\hlnum{1}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] 2.857143
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+3*1.0/(0.05+1)
+@
 
 Cool, we just use R as a calculator.\sidenote{Yawn} Okay, now let's put in symbols for the numbers. This is the first step in computer coding: Allow symbols to stand for values, just like algebra.  
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{Vmax} \hlkwb{<-} \hlnum{3}
-\hlstd{Ks} \hlkwb{<-} \hlnum{0.05}
-\hlstd{S} \hlkwb{<-} \hlnum{1.0}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+Vmax <- 3
+Ks <- 0.05
+S <- 1.0
+@
 
 Okay, we just created three vectors, each one with a length of one. Let's confirm this.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{ls}\hlstd{()}
-\end{alltt}
-\begin{verbatim}
-## [1] "Flowering"      "flowering_date" "Ks"            
-## [4] "myvector"       "S"              "treatment"     
-## [7] "Vmax"
-\end{verbatim}
-\begin{alltt}
-\hlstd{Vmax}
-\end{alltt}
-\begin{verbatim}
-## [1] 3
-\end{verbatim}
-\begin{alltt}
-\hlstd{Ks}
-\end{alltt}
-\begin{verbatim}
-## [1] 0.05
-\end{verbatim}
-\begin{alltt}
-\hlstd{S}
-\end{alltt}
-\begin{verbatim}
-## [1] 1
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+ls()
+Vmax
+Ks
+S
+@
 
 So, let's plug these numbers into R and see what happens, by type the formula
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{Vmax}\hlopt{*}\hlstd{(S}\hlopt{/}\hlstd{(Ks} \hlopt{+} \hlstd{S))}
-\end{alltt}
-\begin{verbatim}
-## [1] 2.857143
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+Vmax*(S/(Ks + S))
+@
 
 R returns the value of V. However, rarely are we just interested in the value of V given a concentration of S. Instead research is often interested in calculating a range of substrate concentrations. So, for this, we'll determine V from the following values of S: 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0. So, we can make a vector named S and use the \texttt{c()} function to get these numbers into the vector:\sidenote{Isn't there a better way?  Try \texttt{seq(0,1,0.1)}; You might try \texttt{args(seq.int)} and \texttt{help(seq)} to appreciate the arguments in the function.}
  
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{S} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0.1}\hlstd{,} \hlnum{0.2}\hlstd{,} \hlnum{0.3}\hlstd{,} \hlnum{0.4}\hlstd{,} \hlnum{0.5}\hlstd{,} \hlnum{0.6}\hlstd{,} \hlnum{0.7}\hlstd{,} \hlnum{0.8}\hlstd{,} \hlnum{0.9}\hlstd{,} \hlnum{1.0}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+S <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+@
 
 Notice I used a capital S. Type \texttt{s} to see the contents of the object that does not exists, reinforcing that R is case sensitive.  
 
@@ -567,23 +346,10 @@ Error: object 's' not found
 
 In this case, I used upper and lower case to follow the intent of the subscripts and superscripts. Writing these out in the text of a document is standard scientific writing, but in computer code, we don't have the flexibility of putting all these formatted characters into the text. So, instead, I have used a combinations of cases to help me remember what the variables signify. 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{S}
-\end{alltt}
-\begin{verbatim}
-##  [1] 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
-\end{verbatim}
-\begin{alltt}
-\hlstd{Vmax}\hlopt{*}\hlstd{(S}\hlopt{/}\hlstd{(Ks} \hlopt{+} \hlstd{S))}
-\end{alltt}
-\begin{verbatim}
-##  [1] 0.000000 2.000000 2.400000 2.571429 2.666667 2.727273
-##  [7] 2.769231 2.800000 2.823529 2.842105 2.857143
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+S
+Vmax*(S/(Ks + S))
+@
 
 Again, pat yourself on the back, you have just used R to do algebra, but we are building on these skills and before you know it you will have a pyramid--oh that was the Egyptians not the Greeks. Take a bathroom break and we'll forge ahead.
 
@@ -602,66 +368,30 @@ First, we will be creating an object, so we need to name it something. For our p
 
 NOTE: The plus signs signify  that the function's syntax has been opened and not closed -- R is expecting a closing curly bracket ``\}'' to end the function -- and return to the ``>'' prompt. Think of the plus signs as R saying, `yes, what else?'
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{mm} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{Vmax}\hlstd{,} \hlkwc{Ks}\hlstd{,} \hlkwc{S}\hlstd{) \{}
-\hlstd{V} \hlkwb{<-} \hlstd{Vmax} \hlopt{*} \hlstd{( S} \hlopt{/} \hlstd{(Ks} \hlopt{+} \hlstd{S) )}
-\hlkwd{return}\hlstd{(V)}
-\hlstd{\}}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+mm <- function(Vmax, Ks, S) {
+V <- Vmax * ( S / (Ks + S) )
+return(V)
+}
+@
 
 Okay, let's see what we created
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{mm}
-\end{alltt}
-\begin{verbatim}
-## function(Vmax, Ks, S) {
-## V <- Vmax * ( S / (Ks + S) )
-## return(V)
-## }
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+mm
+@
 
 Great, you have just created your own function.\sidenote{Getting the syntax for functions is tricky because if makes a difference if you make it a single line or multiple lines. I have given you the text for multiple lines and expect you to put in a carriage return and to get the R prompt ``+'', which signifies that R needs more arguments to complete the function. If, however, you put this all on one line, then you'll need to separate separate commands with a ``;''. In this case return function because it is a completely new command.} Let's see if it works!
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{S} \hlcom{# Here's our sequence of S's}
-\end{alltt}
-\begin{verbatim}
-##  [1] 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
-\end{verbatim}
-\begin{alltt}
-\hlkwd{mm}\hlstd{(}\hlnum{3.0}\hlstd{,} \hlnum{1.0}\hlstd{,} \hlnum{0.3}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] 0.6923077
-\end{verbatim}
-\begin{alltt}
-\hlkwd{mm}\hlstd{(}\hlnum{3.0}\hlstd{,} \hlnum{1.0}\hlstd{, S)}
-\end{alltt}
-\begin{verbatim}
-##  [1] 0.0000000 0.2727273 0.5000000 0.6923077 0.8571429
-##  [6] 1.0000000 1.1250000 1.2352941 1.3333333 1.4210526
-## [11] 1.5000000
-\end{verbatim}
-\begin{alltt}
-\hlkwd{mm}\hlstd{(Vmax, Ks, S)}
-\end{alltt}
-\begin{verbatim}
-##  [1] 0.000000 2.000000 2.400000 2.571429 2.666667 2.727273
-##  [7] 2.769231 2.800000 2.823529 2.842105 2.857143
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+S # Here's our sequence of S's
+
+mm(3.0, 1.0, 0.3)
+
+mm(3.0, 1.0, S)
+
+mm(Vmax, Ks, S)
+@
 
 So, what are these outputs?  Each one is a V, based on the parameters given to our function. In this case, you should see the similar results based on the parameters used. 
 
@@ -676,7 +406,18 @@ I modified that data to make it easier for us to import into R. The modified dat
 %{http://pages.pomona.edu/~mwl04747/Mauna_Loa.csv}. 
 
 % Hidden R code chunk --- reading in the data
+<<echo = FALSE, results = 'hide'>>=
+address <- "ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt"
+download.file(address, "maunaloa", quiet = F, mode = "w", cacheOK = T)
 
+maunaloa <- read.table("maunaloa", skip=70)
+names(maunaloa) <- c("year", "month", "decimal.date", "average", "interpolated", "trend", "days")
+maunaloa$average[maunaloa$average==-99.99] <- NA
+maunaloa <- data.frame(year=maunaloa$year, month=maunaloa$month, decimal.date=maunaloa$decimal.date, average=maunaloa$average)
+head(maunaloa)
+str(maunaloa)
+write.csv(maunaloa, file = "C:\\Users\\mwl04747\\Box\\1. Teaching\\Statistics\\RTricks\\01_Overview_of_R\\maunaloa.csv", eol = "\n", row.names = F)
+@
 
 Follow the link above and save the file, in a convenient location, \eg your desktop. Then you will import the data into a data frame. This is like a spreadsheet because it not only has the data but also some information about each variable and variable names. Open the file in a text editor, such as notepad or some other text editor for Macs.\sidenote{I don't know Macs well enough to recommend how to do this, but I know there are some resources for Mac users using R. Someday, I will try to collate them, but for now, I recommend RStudio for Mac and PC users, but we don't have time to cover it today.} Notice each value is separated a commas, hence this file as a csv extension (\ie comma separated values). 
 
@@ -714,25 +455,14 @@ read.csv(filename)
 
 Wow, did you see that--that was the file\ldots scrolling by.\sidenote{I am just showing the last 10 observations because it was 4 pages of data, but hopefully you see the bottom portion in the R console. If you didn't see data scroll by, then something went wrong. This reads all the data in your file and prints it out on the screen.} 
 
+<< echo = FALSE, results = 'hide' >>=
+filename="C:\\Users\\mwl04747\\Box\\1. Teaching\\Statistics\\RTricks\\01_Overview_of_R\\maunaloa.csv"
+# filename <- file.choose()
+@
 
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{verbatim}
-##     year month decimal.date average
-## 681 2016     3     2016.208  405.06
-## 682 2016     4     2016.292  407.60
-## 683 2016     5     2016.375  407.90
-## 684 2016     6     2016.458  406.99
-## 685 2016     7     2016.542  404.59
-## 686 2016     8     2016.625  402.45
-## 687 2016     9     2016.708  401.23
-## 688 2016    10     2016.792  401.79
-## 689 2016    11     2016.875  403.72
-## 690 2016    12     2016.958  404.64
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<echo = FALSE>>=
+read.csv(filename)[c(681:690),]
+@
 
 Okay, now we know what the file name and path look like from the eyes of R. We could paste the whole mess into the \texttt{read.csv()} function. Okay, let's keep moving. Although R was able to see the file, we still don't have an object we can actually do something with. Instead, we merely printed it to the screen. However, you have not created an object yet. To do this you need to assign it a name. So, what do we need to make an object?  Yes, the name of the object and the use of the assignment symbol. Let's create an object names filename instead that has the whole path and file name in it. Start with the name you want to use before the \texttt{read.csv()} function like this:
 
@@ -740,18 +470,16 @@ Okay, now we know what the file name and path look like from the eyes of R. We c
 maunaloa <- read.csv(filename)
 \end{verbatim}
 
-
+<<echo=FALSE>>=
+maunaloa <- read.csv(filename)
+@
 
 Okay, you know have created a data frame. To confirm this, type \texttt{str(maunaloa)} and you should see some strange text that describes the data frame. This function allow you to peer into the data frame structure. You you see it is a data frame and it has several variables and each one has certain characteristics and R even shows you some of the observations. This is a good thing to get into the habitat of check, for you want to ensure the data have been imported in a way that you expect.
 
 Remember, a data frame is a list of vectors. To access the data inside the data frame, you can use the following command
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{maunaloa}\hlopt{$}\hlstd{average}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<echo = TRUE, results = 'hide' >>=
+maunaloa$average
+@
 to dump the average CO$_2$ concentrations readings onto your screen as a vector. You should see some ~627 observations, depending on how recent the data have been uploaded. So, the dollar symbol is used to drill into the data frame vectors.  And when you look at the \texttt{str()} function again, you will see these dollar signs again.
 
 \bigskip
@@ -763,144 +491,61 @@ One of the first things you should do with your data is determine some of the ce
 
 Let's start with the easy stuff. We want to get the mean of the monthly average CO$_2$ concentrations. That means we need to get the values, named "average" from the data frame. This is analogous to selection a column or row of numbers in Excel to find the mean and you can usually find it by just looking at your spreadsheet to find the data of interest. In R you have to think a bit about what you want. Using the \texttt{str} command is good start, but we could also just look at the top of the observations to see which variables are of interest. To this we use the function \texttt{head()}, which is short for header, which shows the variable names and the first six observations.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{head}\hlstd{(maunaloa)}
-\end{alltt}
-\begin{verbatim}
-##   year month decimal.date average
-## 1 1959     7     1959.537  316.54
-## 2 1959     8     1959.622  314.80
-## 3 1959     9     1959.707  313.84
-## 4 1959    10     1959.789  313.33
-## 5 1959    11     1959.874  314.81
-## 6 1959    12     1959.956  315.58
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>= 
+head(maunaloa)
+@
 
 Okay, so we want ``average.'' But typing average by itself doesn't show us anything except an error. Let's try \texttt{str} again. Notice the dollar symbols.  These symbols are use to signify a list of values inside the data frame. To access this list, we type
 
 %\sidenote{I hid results, on my document, but you should have seen a screen full of numbers zoom buy!}
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{maunaloa}\hlopt{$}\hlstd{average}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<echo = TRUE, results = 'hide' >>=
+maunaloa$average
+@
 
 So, now we can get the number of observations, \ie the length of the vector, by typing
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{length}\hlstd{(maunaloa}\hlopt{$}\hlstd{average)}
-\end{alltt}
-\begin{verbatim}
-<<<<<<< HEAD
-## [1] 760
-=======
-## [1] 758
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+length(maunaloa$average)
+@
 
 Okay, let's calculate the mean. In this case, it requires caution. Notice there are NAs in the data. NA is the R symbol for missing data and R requires the user to be fairly intentional about how to deal with missing data.\sidenote{Missing data usually mean the dataset is biased. In contrast to many software packages, R forces you to acknowledge the implications of missing data, which can be annoying, like a parent reminding you to clean your room or brush your teeth or take a shower once in the while. But the trade is worth it: you have dealt explicitly with missing data.}
 
 Typing \texttt{mean(maunaloa\$average)} gives an a ambiguous result, \texttt{NA}. Try it. R is basically saying that the mean can not be calculated because of missing values, thus the mean is also missing. So, can we not calculate the mean when data are missing?  No, we just have to tell R what to do with missing data.  In this case, we tell R to remove them, with the argument \texttt{na.rm="True"}, where True can be abbreviated to T. na.rm="True" roughly translates to 'please remove all the NAs.' 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{mean}\hlstd{(maunaloa}\hlopt{$}\hlstd{average,} \hlkwc{na.rm}\hlstd{=T)}
-\end{alltt}
-\begin{verbatim}
-<<<<<<< HEAD
-## [1] 358.4629
-=======
-## [1] 358.3114
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+mean(maunaloa$average, na.rm=T) 
+@ 
  
 
-<<<<<<< HEAD
-Okay as of \today, the average is 358.463\sidenote{How many significant figures should you report? Have I reported this correctly?  Look up the rule of rounding on the internet to confirm your response.} It will change next month when new is added to the data set to the NOAA dataset.  Now let's calculate the median and standard deviation.\sidenote{How could you remind yourself what the \texttt{na.rm} argument is doing?}
-=======
-Okay as of \today, the average is 358.311\sidenote{How many significant figures should you report? Have I reported this correctly?  Look up the rule of rounding on the internet to confirm your response.} It will change next month when new is added to the data set to the NOAA dataset.  Now let's calculate the median and standard deviation.\sidenote{How could you remind yourself what the \texttt{na.rm} argument is doing?}
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
+Okay as of \today, the average is \Sexpr{round(mean(maunaloa$average, na.rm=T),3)}\sidenote{How many significant figures should you report? Have I reported this correctly?  Look up the rule of rounding on the internet to confirm your response.} It will change next month when new is added to the data set to the NOAA dataset.  Now let's calculate the median and standard deviation.\sidenote{How could you remind yourself what the \texttt{na.rm} argument is doing?}
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{median}\hlstd{(maunaloa}\hlopt{$}\hlstd{average,} \hlkwc{na.rm}\hlstd{=T)}
-\end{alltt}
-\begin{verbatim}
-<<<<<<< HEAD
-## [1] 354.96
-=======
-## [1] 354.91
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-\end{verbatim}
-\begin{alltt}
-\hlkwd{sd}\hlstd{(maunaloa}\hlopt{$}\hlstd{average,} \hlkwc{na.rm}\hlstd{=T)}
-\end{alltt}
-\begin{verbatim}
-<<<<<<< HEAD
-## [1] 30.2029
-=======
-## [1] 30.09813
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+median(maunaloa$average, na.rm=T)
+sd(maunaloa$average, na.rm=T)
+@
 
 If you would like a summary of each of the variables, the function is pretty easy to remember--but the output is not exceptionally pleasing. 
 
+<< echo = FALSE >>=
+options(width=70)
+@
 
+<<>>=
+summary(maunaloa)
+@
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{summary}\hlstd{(maunaloa)}
-\end{alltt}
-\begin{verbatim}
-##       year          month         decimal.date     average     
-##  Min.   :1959   Min.   : 1.000   Min.   :1960   Min.   :313.3  
-##  1st Qu.:1975   1st Qu.: 4.000   1st Qu.:1975   1st Qu.:331.3  
-<<<<<<< HEAD
-##  Median :1991   Median : 7.000   Median :1991   Median :355.0  
-##  Mean   :1991   Mean   : 6.511   Mean   :1991   Mean   :358.5  
-##  3rd Qu.:2006   3rd Qu.: 9.250   3rd Qu.:2007   3rd Qu.:382.7  
-=======
-##  Median :1991   Median : 7.000   Median :1991   Median :354.9  
-##  Mean   :1991   Mean   : 6.503   Mean   :1991   Mean   :358.3  
-##  3rd Qu.:2006   3rd Qu.: 9.000   3rd Qu.:2007   3rd Qu.:382.6  
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-##  Max.   :2022   Max.   :12.000   Max.   :2023   Max.   :421.0
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-
+<<echo = FALSE >>=
+options(width=60)
+@
 
 Nevertheless, the output gives you a really good idea regarding the central tendencies of the entire data set.  Granted typing code might seem like a major step backwards in the computer world, but after a few weeks you will appreciate not having the search through arcane menus to find which button to push--even worse, in these push-button software systems, it often hard to figure out what they are doing. In the case of R, you have a really good idea of what it did, but were much more engaged in the process.
 
 When the mean and median diverge, it means that the distribution is skewed in some way. Let's see what the distribution looks like by creating a histogram.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{hist}\hlstd{(maunaloa}\hlopt{$}\hlstd{average)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-44-1} 
-\end{knitrout}
+<<echo = TRUE, results = 'hide'>>=
+hist(maunaloa$average)
+@
 
 The one you have made probably does not look that pretty, but with some more advanced coding, this is what it might look like. 
 
@@ -912,42 +557,29 @@ The one you have made probably does not look that pretty, but with some more adv
 % \setkeys{Gin}{width=0.75\textwidth} % LaTeX code to read the graphic file in at 75% of its original size
 
 % R code chunk that produces a graphic
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-45-1} 
-\end{knitrout}
+<<echo = FALSE, fig = TRUE>>=
+with(maunaloa, {
+hist(average,  ylab="Frequency", xlab="ppm", xlim=c(300, 420),
+main="Histogram of Monthly Average Carbon Dioxide Concentration,\n Mauna Loa, HI")
+})
+box("figure") # Adds box around figure
+@
 \end{center}
 \end{marginfigure}
 
 We might also want to learn about the range of measures:
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{min}\hlstd{(maunaloa}\hlopt{$}\hlstd{average)}
-\hlkwd{max}\hlstd{(maunaloa}\hlopt{$}\hlstd{average)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<echo = TRUE, results = 'hide'>>=
+min(maunaloa$average)
+max(maunaloa$average)
+@
 
 Why do we get errors?  Let's try ignoring missing data:
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{min}\hlstd{(maunaloa}\hlopt{$}\hlstd{average,} \hlkwc{na.rm}\hlstd{=T)}
-\end{alltt}
-\begin{verbatim}
-## [1] 313.33
-\end{verbatim}
-\begin{alltt}
-\hlkwd{max}\hlstd{(maunaloa}\hlopt{$}\hlstd{average,} \hlkwc{na.rm}\hlstd{=T)}
-\end{alltt}
-\begin{verbatim}
-## [1] 420.99
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+min(maunaloa$average, na.rm=T)
+max(maunaloa$average, na.rm=T)
+@
 
 \noindent These are now a biased measures, just like the mean, median, and standard deviations we calculated before. Can you figure out why?
 
@@ -974,13 +606,9 @@ The order is usually changed, where the intercept is first, followed by the slop
 
 The function to build a linear model is \texttt{lm()}. This function is extremely powerful and can be easily implemented, but this is a good time to see what the help menus look like in R. 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{help}\hlstd{(lm)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<echo = TRUE, eval = FALSE, results= 'verbatim' >>=
+help(lm)
+@
 
 I am not showing it here, but you should see a long complex looking help page window pop up. All help files in R are structured the same way, so in spite of the uninterpretable text, written by and for computer programmers, the structure will become familiar. Beginning with the description, the help screen describes the function, how to use it, and give some examples. Admittedly, I rarely understand much of the text, but I find the examples to be very useful! In fact, I suggest you paste the example into R and see what happens, I find this one of the best ways to learn R. Use an example that I know works, then change it to make it do what I want it to do.
 
@@ -988,31 +616,15 @@ Using the linear model, we can analyze several types of data, when the response 
 
 Returning the the snow melt data, we will determine if there is a treatment affect on flowering dates due to the treatments (heated, control, and procedure control) First, we create a linear model. Because we want to do an analysis of variance, we use the \texttt{aov()} function, which create an object that can easily be interpreted as an ANOVA table. We could also use the \texttt{lm()} function, which you might try as well to see the difference. 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{Flowering.aov} \hlkwb{<-} \hlkwd{aov}\hlstd{(Flowering_date} \hlopt{~} \hlstd{Treatment,} \hlkwc{data}\hlstd{=Flowering)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+Flowering.aov <- aov(Flowering_date ~ Treatment, data=Flowering)
+@
 
 By creating the linear model, the \texttt{aov()} function create an object that can then be interrogated to see the results.\sidenote[][-.5cm]{There is a tilde ($\sim$) between Flowering\_date and Treatment, which can be read as ``a function of''.} Using a \texttt{summary()} function, R returns
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{summary}\hlstd{(Flowering.aov)}
-\end{alltt}
-\begin{verbatim}
-##             Df Sum Sq Mean Sq F value Pr(>F)  
-## Treatment    2  170.8   85.40   4.022  0.046 *
-## Residuals   12  254.8   21.23                 
-## ---
-## Signif. codes:  
-## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>= 
+summary(Flowering.aov)
+@
 
 The output shows the sum of squares, the mean sum of squares, the F value and the p-value. We'll spend some time reviewing these so you can interpret these data correctly each time.
 
@@ -1028,107 +640,48 @@ Translating this in R will take some additional tricks besides just getting the 
 
 First, let's create a plot of data using \texttt{plot()}, whose format is \texttt{plot(x, y)} or \texttt{plot(y ~ x)}. We will use the later for now, 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{plot}\hlstd{(average} \hlopt{~} \hlstd{year,} \hlkwc{data}\hlstd{=maunaloa)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-51-1} 
-\end{knitrout}
+<<>>=
+plot(average ~ year, data=maunaloa)
+@
 
 
 \begin{figure}
 \label{fig:maunaloa}
 \caption{Carbon dioxide concentrations sampled for each month at Mauna Loa, Hawaii.}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-52-1} 
-\end{knitrout}
+<<echo = FALSE, fig = TRUE >>=
+par(las=1)
+plot(maunaloa$year, maunaloa$average, ylab="ppm", xlab="Year", pch=20, 
+main="Yearly Carbon Dioxide Concentrations , \n Mauna Loa, HI" )
+@
 \end{figure}
 
 
 Finally, there is one important difference between the linear model that we used in the \texttt{aov()} function. This time we use the \texttt{lm()} function that arrange the results more in-line with a regression model.
 This syntax is still pretty straight forward,  
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{lm}\hlstd{(average} \hlopt{~} \hlstd{year,} \hlkwc{data}\hlstd{=maunaloa)}
-\end{alltt}
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = average ~ year, data = maunaloa)
-## 
-## Coefficients:
-## (Intercept)         year  
-<<<<<<< HEAD
-##   -2892.837        1.633
-=======
-##   -2889.767        1.632
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+lm(average ~ year, data=maunaloa)
+@
 
-From this model, we learn that the change in $CO_2$ is 1.63 ppm $year^{-1}$.\sidenote{When I first made this handout the rate of increase was 1.441. Why do you think this rate has changed?} Figure~\ref{fig:maunaloa} shows the increasing concentrations, but also the seasonal variation. Statisticians have more advanced methods to analyze these data then what we have done, but for our purposes the implications are the same.  Greenhouse gas emissions are increasing and the estimated rates suggest an increasing rate.
+From this model, we learn that the change in $CO_2$ is \Sexpr{round(coef(lm(average ~ year, data=maunaloa))[2], 2)} ppm $year^{-1}$.\sidenote{When I first made this handout the rate of increase was 1.441. Why do you think this rate has changed?} Figure~\ref{fig:maunaloa} shows the increasing concentrations, but also the seasonal variation. Statisticians have more advanced methods to analyze these data then what we have done, but for our purposes the implications are the same.  Greenhouse gas emissions are increasing and the estimated rates suggest an increasing rate.
 
 % Additional LaTeX code to add caption to figure
 \begin{figure*}
 \label{fig:maunaloa}
 \caption{Carbon dioxide concentrations at Mauna Loa, Hawaii. NOTE: This graphic is different from what you made. See if you can make yours look more like this, using these functions: \texttt{coef()} and \texttt{abline()}.}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-54-1} 
-\end{knitrout}
+<<echo = FALSE, fig = TRUE >>=
+par(las=1)
+plot(maunaloa$decimal.date, maunaloa$average, type="l", ylab="ppm", xlab="Year", 
+main="Carbon Dioxide Concentrations Changes, \n Mauna Loa, HI" )
+abline(coef(lm(average~year, data=maunaloa)), col="red", lwd=2)
+@
 \end{figure*}
 
 Now let's ask if this value is significant, by putting the linear model into a ANOVA-like table. There are a number of functions that do this and we have seen the \texttt{anova()} function above. For linear regression, however, the \texttt{summary()} function gives a more complete output.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{summary}\hlstd{(}\hlkwd{lm}\hlstd{(average} \hlopt{~} \hlstd{year,} \hlkwc{data}\hlstd{=maunaloa))}
-\end{alltt}
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = average ~ year, data = maunaloa)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-<<<<<<< HEAD
-## -8.3683 -3.3390 -0.8886  2.6962 11.6627 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(>|t|)    
-## (Intercept) -2.893e+03  1.726e+01  -167.6   <2e-16 ***
-## year         1.633e+00  8.671e-03   188.4   <2e-16 ***
-=======
-## -8.3420 -3.3146 -0.8853  2.6741 11.6317 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(>|t|)    
-## (Intercept) -2.890e+03  1.730e+01  -167.0   <2e-16 ***
-## year         1.632e+00  8.693e-03   187.7   <2e-16 ***
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-## ---
-## Signif. codes:  
-## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-<<<<<<< HEAD
-## Residual standard error: 4.371 on 758 degrees of freedom
-## Multiple R-squared:  0.9791,	Adjusted R-squared:  0.9791 
-## F-statistic: 3.548e+04 on 1 and 758 DF,  p-value: < 2.2e-16
-=======
-## Residual standard error: 4.365 on 756 degrees of freedom
-## Multiple R-squared:  0.979,	Adjusted R-squared:  0.979 
-## F-statistic: 3.523e+04 on 1 and 756 DF,  p-value: < 2.2e-16
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+summary(lm(average ~ year, data=maunaloa))
+@
 
 Here we find the that the slope and intercept are highly significant, we have some information on the residuals, and $R^2$ estimates, etc.
 
@@ -1141,13 +694,9 @@ With every statistical test done, researchers validate their model in some way o
 
 In R four plots are created by default.  To see them all at the same time, we need to change the graphical parameters so the graphics window expects four panels, in this case a 2 rows and two columns. 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{))}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+par(mfrow=c(2,2))
+@
 
 Try not to get bogged down in the code at this point. But it is a useful thing to remember.
 
@@ -1157,19 +706,11 @@ Try not to get bogged down in the code at this point. But it is a useful thing t
 \caption{Default diagnostic plots for a linear model in R.}
 %\setkeys{Gin}{width=0.75\textwidth} % LaTeX code to read the graphic file in at 75% of its original size
 % R code chunk that produces a graphic
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{))}
-\hlkwd{plot}\hlstd{(}\hlkwd{lm}\hlstd{(average} \hlopt{~} \hlstd{year,} \hlkwc{data}\hlstd{=maunaloa))}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-57-1} 
-\begin{kframe}\begin{alltt}
-\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{1}\hlstd{))}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<echo = TRUE, fig = TRUE>>=
+par(mfrow=c(2,2))
+plot(lm(average ~ year, data=maunaloa))
+par(mfrow=c(1,1))
+@
 \end{figure}
 
 To determine the validity of linear model assumptions (\eg normality or heterogeneity of variance), you have probably used statistical tests; in contrast statisticians almost exclusively look at diagnostic plots. Why?  When assumptions are violated the tests to determine violations do not perform well. So, let's see how to look at these assumptions graphically with these diagnostic plots. Linear models should have diagnostic plots that do not have any obvious structure or pattern. In this case, Figure~\ref{fig:diagnostics} should show a great deal remaining structure in the residuals. Although for today, we are not going to try to interpret these figures, but you should notice there is a ton of unaccounted structure, \ie variance, in the model. This is due, in part, to a violation of independence; these data are serially correlated and the model does not account for that and is inappropriate because of this. It also appears that a straight-line model does not fit well and a curvilinear should be investigated. 
@@ -1209,66 +750,51 @@ Based on Table~\ref{tab:PhytoplanktonParameters}, let's crate a scatter plot for
 
 First, let's make sure create the objects to be used in the plot, \ie the x axis (substrate concentration, S) and each of the response variables, the V for each phytoplankton (Macro
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{S} \hlkwb{<-} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{2}\hlstd{,} \hlnum{0.002}\hlstd{)}
-\hlstd{V_cyano}   \hlkwb{<-} \hlkwd{mm}\hlstd{(}\hlnum{0.3}\hlstd{,} \hlnum{1.5}\hlstd{, S)}
-\hlstd{V_diatoms} \hlkwb{<-} \hlkwd{mm}\hlstd{(}\hlnum{0.2}\hlstd{,} \hlnum{2.5}\hlstd{, S)}
-\hlstd{V_green}   \hlkwb{<-} \hlkwd{mm}\hlstd{(}\hlnum{0.1}\hlstd{,} \hlnum{0.004}\hlstd{, S)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+S <- seq(0,2, 0.002)
+V_cyano   <- mm(0.3, 1.5, S)
+V_diatoms <- mm(0.2, 2.5, S)
+V_green   <- mm(0.1, 0.004, S)
+@
 
 Check to make sure the cyano vector (which are the Vs, but we'll call them cyano, since we'll eventually have three different Vs). So, now we want to graph these, with the plot function.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{plot}\hlstd{(}\hlkwc{x}\hlstd{=S,} \hlkwc{y}\hlstd{=V_cyano)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-59-1} 
-\end{knitrout}
+<<>>=
+plot(x=S, y=V_cyano)
+@
 
 That was easy. However, we still have not created of Tufte figure. First let's improve the figure with better clarity and appropriate types of design. Since the substrate concentrations are more or less continuous and we can assume that points between existing points will lie on a line, lets covert the figure to a line graph, with \texttt{type="l"}.\sidenote{NOTE: This is the letter 'l' for line, not the number 1!} And since we might be able to make a few changes as one.  So, let's add labels to the x and y axes, with \texttt{xlab=" "} and \texttt{ylab=" "} and putting something in between the quotations marks.  Let's try what we have so far,
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{plot}\hlstd{(}\hlkwc{x}\hlstd{=S,} \hlkwc{y}\hlstd{=V_cyano,} \hlkwc{xlab}\hlstd{=}\hlstr{"Substrate Concentration"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Uptake Rate"}\hlstd{,} \hlkwc{type}\hlstd{=}\hlstr{"l"}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-60-1} 
-\end{knitrout}
+<<>>=
+plot(x=S, y=V_cyano, xlab="Substrate Concentration", ylab="Uptake Rate", type="l")
+@
 
 Good, Okay, we have created a figure that has much of the information needed. Now we need to figure out if the figure is going to have a title. In Excel, we often click on the main title and stick something in there out of habit. However, habit does not serve us as we create figures in science. Keep in mind that Excel defaults have been created for business applications, not science, so most of the defaults are something you need to be critical of. Compare the figures in Excel to what you see in scientific papers!  Okay, let's get back on track. So, you can add a title, by adding \texttt{main=""}, however, I am going to recommend that you don't. Instead, we use the caption to describe the figure and what the reader should be getting out of it.  So we'll work on that in a few minutes too. But first, let's get rid of stuff that is not helping. For example, what does the frame around the figure provide? Perhaps nothing.  We need a single x-axis and a single y-axis.  We don't need the lines on the right and top, you can use \texttt{frame.plot=F} to remove the frame from the plot, which I did below.\sidenote{Note, the \# symbol denotes the beginning of a comment in R. R will ignore these comments and are present to document what various codes are attempting to accomplish.}  Also, it's a good idea to thicken the line in the graph with a line width command (\texttt{lwd}), which has a default of 1, let's try 3. When you put this figure in a paper, lab report or presentation, you'll find that these tricks can increase the clarity. Science is complicated, so anything we can to to clarify stuff with better figures, the better.
 
+<<echo = FALSE, results = 'hide' >>=
+par(mfrow=c(1,1))
+@
 
-
-
+<<echo = FALSE>>=
+options(width=100)
+@
 
 % R code chunk that produces a graphic
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{par}\hlstd{(}\hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{1.5}\hlstd{,} \hlkwc{mar}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,}\hlnum{4.5}\hlstd{,}\hlnum{0}\hlstd{,}\hlnum{1}\hlstd{))}
-\hlcom{# Example from Foin, 1994}
-\hlkwd{plot}\hlstd{(S,V_cyano,} \hlkwc{xlab}\hlstd{=}\hlkwd{expression}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"Available Nitrogen ("}\hlstd{, mg} \hlopt{~~} \hlstd{L}\hlopt{^-}\hlnum{1}\hlstd{,} \hlstr{")"}\hlstd{)),}
-  \hlkwc{ylab}\hlstd{=}\hlkwd{expression}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"Nitrogen Uptake Rate ( "}\hlstd{, mg} \hlopt{~~} \hlstd{g}\hlopt{^-}\hlnum{1} \hlopt{~~} \hlstd{h}\hlopt{^-}\hlnum{1}\hlstd{,} \hlstr{")"}\hlstd{)),}
-        \hlkwc{lty}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"seagreen"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{ylim}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{0.2}\hlstd{),} \hlkwc{xlim}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{2}\hlstd{),} \hlkwc{type}\hlstd{=}\hlstr{"l"}\hlstd{,} \hlkwc{frame.plot}\hlstd{=F)}
+<<a>>=
+par(las=1, cex=1.5, mar=c(4,4.5,0,1))
+# Example from Foin, 1994
+plot(S,V_cyano, xlab=expression(paste("Available Nitrogen (", mg ~~ L^-1, ")")),
+  ylab=expression(paste("Nitrogen Uptake Rate ( ", mg ~~ g^-1 ~~ h^-1, ")")), 
+	lty=1, col="seagreen", lwd=3, ylim=c(0,0.2), xlim=c(0,2), type="l", frame.plot=F)
+	
+# Add second and third line
+lines(S,V_diatoms, col="blue", lwd=3, lty=2.6)
+lines(S,V_green, col="purple", lwd=3, lty=3)
 
-\hlcom{# Add second and third line}
-\hlkwd{lines}\hlstd{(S,V_diatoms,} \hlkwc{col}\hlstd{=}\hlstr{"blue"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{2.6}\hlstd{)}
-\hlkwd{lines}\hlstd{(S,V_green,} \hlkwc{col}\hlstd{=}\hlstr{"purple"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{)}
-
-\hlcom{# Add legend(x, y, plus some text, symbols, colors, line type, line width, box, and size)}
-\hlkwd{legend}\hlstd{(}\hlnum{.8}\hlstd{,} \hlnum{0.05}\hlstd{,} \hlkwd{c}\hlstd{(}\hlstr{"Cyanobacteria"}\hlstd{,} \hlstr{"Diatoms"}\hlstd{,} \hlstr{"Green Algae"}\hlstd{),} \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"seagreen"}\hlstd{,} \hlstr{"blue"}\hlstd{,} \hlstr{"purple"}\hlstd{),}
-\hlkwc{lty}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{3}\hlstd{),} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{bty}\hlstd{=}\hlstr{"n"}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{1.1}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/a-1} 
-\end{knitrout}
+# Add legend(x, y, plus some text, symbols, colors, line type, line width, box, and size)
+legend(.8, 0.05, c("Cyanobacteria", "Diatoms", "Green Algae"), col=c("seagreen", "blue", "purple"),
+lty=c(1,2,3), lwd=3, bty="n", cex=1.1)
+@
 
 Figure~\ref{fig:michaelis} demonstrates a well known relationship between changes in uptake rates based on different enzymatic characteristics. As it turns out these characteristics have do a pretty good job predicting phytoplankton dynamics in lakes based on nutrient concentrations. However, for our purposes, it is important to notice certain characteristics regarding the figure design:
 
@@ -1282,10 +808,9 @@ Figure~\ref{fig:michaelis} demonstrates a well known relationship between change
 \begin{figure}
 \caption{Substrate and uptake rate of nitrogen comparing various phytoplankton.}
 \label{fig:michaelis}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-63-1} 
-\end{knitrout}
+<<echo = FALSE, fig = TRUE>>=
+<<a>>
+@
 \end{figure}
 
 
