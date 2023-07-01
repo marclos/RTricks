@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 \documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
-=======
-\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{color}
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
 % maxwidth is the original width if it is less than linewidth
 % otherwise use linewidth (to make sure the graphics do not exceed the margin)
 \makeatletter
@@ -16,12 +12,6 @@
 \makeatother
 
 \definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-<<<<<<< HEAD
-=======
-\makeatletter
-\@ifundefined{AddToHook}{}{\AddToHook{package/xcolor/after}{\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}}}
-\makeatother
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
 \newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
 \newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
 \newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
@@ -56,17 +46,6 @@
 \definecolor{messagecolor}{rgb}{0, 0, 0}
 \definecolor{warningcolor}{rgb}{1, 0, 1}
 \definecolor{errorcolor}{rgb}{1, 0, 0}
-<<<<<<< HEAD
-=======
-\makeatletter
-\@ifundefined{AddToHook}{}{\AddToHook{package/xcolor/after}{
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-}}
-\makeatother
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
 \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
@@ -720,16 +699,16 @@ Wow, did you see that--that was the file\ldots scrolling by.\sidenote{I am just 
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{verbatim}
 ##     year month decimal.date average
-## 681 2016     3     2016.208  405.06
-## 682 2016     4     2016.292  407.60
-## 683 2016     5     2016.375  407.90
-## 684 2016     6     2016.458  406.99
-## 685 2016     7     2016.542  404.59
-## 686 2016     8     2016.625  402.45
-## 687 2016     9     2016.708  401.23
-## 688 2016    10     2016.792  401.79
-## 689 2016    11     2016.875  403.72
-## 690 2016    12     2016.958  404.64
+## 681 2015    11     2015.875  400.27
+## 682 2015    12     2015.958  402.06
+## 683 2016     1     2016.042  402.73
+## 684 2016     2     2016.125  404.25
+## 685 2016     3     2016.208  405.06
+## 686 2016     4     2016.292  407.60
+## 687 2016     5     2016.375  407.90
+## 688 2016     6     2016.458  406.99
+## 689 2016     7     2016.542  404.59
+## 690 2016     8     2016.625  402.45
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -770,12 +749,12 @@ Let's start with the easy stuff. We want to get the mean of the monthly average 
 \end{alltt}
 \begin{verbatim}
 ##   year month decimal.date average
-## 1 1959     7     1959.537  316.54
-## 2 1959     8     1959.622  314.80
-## 3 1959     9     1959.707  313.84
-## 4 1959    10     1959.789  313.33
-## 5 1959    11     1959.874  314.81
-## 6 1959    12     1959.956  315.58
+## 1 1959     3     1959.203  316.65
+## 2 1959     4     1959.288  317.72
+## 3 1959     5     1959.370  318.29
+## 4 1959     6     1959.455  318.15
+## 5 1959     7     1959.537  316.54
+## 6 1959     8     1959.622  314.80
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -800,11 +779,7 @@ So, now we can get the number of observations, \ie the length of the vector, by 
 \hlkwd{length}\hlstd{(maunaloa}\hlopt{$}\hlstd{average)}
 \end{alltt}
 \begin{verbatim}
-<<<<<<< HEAD
-## [1] 760
-=======
-## [1] 758
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
+## [1] 771
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -819,21 +794,13 @@ Typing \texttt{mean(maunaloa\$average)} gives an a ambiguous result, \texttt{NA}
 \hlkwd{mean}\hlstd{(maunaloa}\hlopt{$}\hlstd{average,} \hlkwc{na.rm}\hlstd{=T)}
 \end{alltt}
 \begin{verbatim}
-<<<<<<< HEAD
-## [1] 358.4629
-=======
-## [1] 358.3114
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
+## [1] 358.816
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
  
 
-<<<<<<< HEAD
-Okay as of \today, the average is 358.463\sidenote{How many significant figures should you report? Have I reported this correctly?  Look up the rule of rounding on the internet to confirm your response.} It will change next month when new is added to the data set to the NOAA dataset.  Now let's calculate the median and standard deviation.\sidenote{How could you remind yourself what the \texttt{na.rm} argument is doing?}
-=======
-Okay as of \today, the average is 358.311\sidenote{How many significant figures should you report? Have I reported this correctly?  Look up the rule of rounding on the internet to confirm your response.} It will change next month when new is added to the data set to the NOAA dataset.  Now let's calculate the median and standard deviation.\sidenote{How could you remind yourself what the \texttt{na.rm} argument is doing?}
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
+Okay as of \today, the average is 358.816\sidenote{How many significant figures should you report? Have I reported this correctly?  Look up the rule of rounding on the internet to confirm your response.} It will change next month when new is added to the data set to the NOAA dataset.  Now let's calculate the median and standard deviation.\sidenote{How could you remind yourself what the \texttt{na.rm} argument is doing?}
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -841,21 +808,13 @@ Okay as of \today, the average is 358.311\sidenote{How many significant figures 
 \hlkwd{median}\hlstd{(maunaloa}\hlopt{$}\hlstd{average,} \hlkwc{na.rm}\hlstd{=T)}
 \end{alltt}
 \begin{verbatim}
-<<<<<<< HEAD
-## [1] 354.96
-=======
-## [1] 354.91
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
+## [1] 355.1
 \end{verbatim}
 \begin{alltt}
 \hlkwd{sd}\hlstd{(maunaloa}\hlopt{$}\hlstd{average,} \hlkwc{na.rm}\hlstd{=T)}
 \end{alltt}
 \begin{verbatim}
-<<<<<<< HEAD
-## [1] 30.2029
-=======
-## [1] 30.09813
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
+## [1] 30.70661
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -870,19 +829,13 @@ If you would like a summary of each of the variables, the function is pretty eas
 \hlkwd{summary}\hlstd{(maunaloa)}
 \end{alltt}
 \begin{verbatim}
-##       year          month         decimal.date     average     
-##  Min.   :1959   Min.   : 1.000   Min.   :1960   Min.   :313.3  
-##  1st Qu.:1975   1st Qu.: 4.000   1st Qu.:1975   1st Qu.:331.3  
-<<<<<<< HEAD
-##  Median :1991   Median : 7.000   Median :1991   Median :355.0  
-##  Mean   :1991   Mean   : 6.511   Mean   :1991   Mean   :358.5  
-##  3rd Qu.:2006   3rd Qu.: 9.250   3rd Qu.:2007   3rd Qu.:382.7  
-=======
-##  Median :1991   Median : 7.000   Median :1991   Median :354.9  
-##  Mean   :1991   Mean   : 6.503   Mean   :1991   Mean   :358.3  
-##  3rd Qu.:2006   3rd Qu.: 9.000   3rd Qu.:2007   3rd Qu.:382.6  
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
-##  Max.   :2022   Max.   :12.000   Max.   :2023   Max.   :421.0
+##       year          month        decimal.date     average     
+##  Min.   :1959   Min.   : 1.00   Min.   :1959   Min.   :313.3  
+##  1st Qu.:1975   1st Qu.: 3.50   1st Qu.:1975   1st Qu.:331.2  
+##  Median :1991   Median : 6.00   Median :1991   Median :355.1  
+##  Mean   :1991   Mean   : 6.49   Mean   :1991   Mean   :358.8  
+##  3rd Qu.:2007   3rd Qu.: 9.00   3rd Qu.:2007   3rd Qu.:383.8  
+##  Max.   :2023   Max.   :12.00   Max.   :2023   Max.   :424.0
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -944,7 +897,7 @@ Why do we get errors?  Let's try ignoring missing data:
 \hlkwd{max}\hlstd{(maunaloa}\hlopt{$}\hlstd{average,} \hlkwc{na.rm}\hlstd{=T)}
 \end{alltt}
 \begin{verbatim}
-## [1] 420.99
+## [1] 424
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -1063,16 +1016,12 @@ This syntax is still pretty straight forward,
 ## 
 ## Coefficients:
 ## (Intercept)         year  
-<<<<<<< HEAD
-##   -2892.837        1.633
-=======
-##   -2889.767        1.632
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
+##   -2898.764        1.636
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-From this model, we learn that the change in $CO_2$ is 1.63 ppm $year^{-1}$.\sidenote{When I first made this handout the rate of increase was 1.441. Why do you think this rate has changed?} Figure~\ref{fig:maunaloa} shows the increasing concentrations, but also the seasonal variation. Statisticians have more advanced methods to analyze these data then what we have done, but for our purposes the implications are the same.  Greenhouse gas emissions are increasing and the estimated rates suggest an increasing rate.
+From this model, we learn that the change in $CO_2$ is 1.64 ppm $year^{-1}$.\sidenote{When I first made this handout the rate of increase was 1.441. Why do you think this rate has changed?} Figure~\ref{fig:maunaloa} shows the increasing concentrations, but also the seasonal variation. Statisticians have more advanced methods to analyze these data then what we have done, but for our purposes the implications are the same.  Greenhouse gas emissions are increasing and the estimated rates suggest an increasing rate.
 
 % Additional LaTeX code to add caption to figure
 \begin{figure*}
@@ -1098,34 +1047,19 @@ Now let's ask if this value is significant, by putting the linear model into a A
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-<<<<<<< HEAD
-## -8.3683 -3.3390 -0.8886  2.6962 11.6627 
+## -8.5336 -3.3651 -0.9256  2.7509 12.4820 
 ## 
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(>|t|)    
-## (Intercept) -2.893e+03  1.726e+01  -167.6   <2e-16 ***
-## year         1.633e+00  8.671e-03   188.4   <2e-16 ***
-=======
-## -8.3420 -3.3146 -0.8853  2.6741 11.6317 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(>|t|)    
-## (Intercept) -2.890e+03  1.730e+01  -167.0   <2e-16 ***
-## year         1.632e+00  8.693e-03   187.7   <2e-16 ***
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
+## (Intercept) -2.899e+03  1.743e+01  -166.3   <2e-16 ***
+## year         1.636e+00  8.757e-03   186.9   <2e-16 ***
 ## ---
 ## Signif. codes:  
 ## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-<<<<<<< HEAD
-## Residual standard error: 4.371 on 758 degrees of freedom
-## Multiple R-squared:  0.9791,	Adjusted R-squared:  0.9791 
-## F-statistic: 3.548e+04 on 1 and 758 DF,  p-value: < 2.2e-16
-=======
-## Residual standard error: 4.365 on 756 degrees of freedom
-## Multiple R-squared:  0.979,	Adjusted R-squared:  0.979 
-## F-statistic: 3.523e+04 on 1 and 756 DF,  p-value: < 2.2e-16
->>>>>>> b702cd0195f3d723e21a95c11e760e95ca313294
+## Residual standard error: 4.511 on 769 degrees of freedom
+## Multiple R-squared:  0.9785,	Adjusted R-squared:  0.9784 
+## F-statistic: 3.492e+04 on 1 and 769 DF,  p-value: < 2.2e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
