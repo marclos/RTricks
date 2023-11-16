@@ -10,7 +10,7 @@
 \usepackage{graphicx}
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 % \graphicspath{{graphics/}}
-\title{Overview of R %\thanks{}
+\title{Introducing of R: Temperature vs. Depth %\thanks{}
 }
 \author[Marc Los Huertos]{Marc Los Huertos}
 \date{}  % if the \date{} command is left out, the current date will be used
@@ -29,12 +29,6 @@
 % Small sections of multiple columns
 \usepackage{multicol}
 
-% These commands are used to pretty-print LaTeX commands
-% command name -- adds backslash automatically
-\newcommand{\docpkg}[1]{\texttt{#1}}% package name
-\newcommand{\doccls}[1]{\texttt{#1}}% document class name
-\newcommand{\docclsopt}[1]{\texttt{#1}}% document class option name
-
 \begin{document}
 
 \maketitle% this prints the handout title, author, and date
@@ -43,8 +37,6 @@
 
 This handout provides an brief introduction to the syntax of R and some applications to plot and bivariate data. I believe R provides a mechanism to learn 1) skills to process electronic data, 2) a programming environment to implement a range of statistical tests, and 3) provide skills that can be used in your future career, whether or not R is used again.\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
 \end{abstract}
-
-%\printclassoptions
 
 % Setting up the margins, etc for R
 <<echo = FALSE, results = "hide">>=
@@ -58,12 +50,7 @@ options(width=60)
 	\item Open and use the R GUI with consistent results.
 	\item Use math operators to solve simple calculations.
 	\item Create vectors (type of objects).
-%	\item Solve repetitive calculations.
-%	\item Make a function.
-%	\item Get data into the R environment.
-%	\item Generate summary statistics.
-	\item Build and test a linear model.
-%	\item Create publication quality graphics.
+	\item Best fit line and linear models.
 \end{enumerate}
 
 \section{The R GUI}
@@ -202,21 +189,6 @@ Linear model & \texttt{lm()}, \texttt{aov()} \\\hline
 	\label{tab:CommonObjects}
 \end{table}
 
-For now, we will create a data frame, which is the most common type of object for statistical analysis. A data.frame is like a spreadsheet in Excel or a table. However, it has some important unique characteristics. First, the data.frame is composed of vectors of equal length. Second, the the data frame of often described as a list of vectors. Thus, the data frame is combines the vectors in a certain way. 
-
-Several researchers have been investigating the effects of ambient temperatures on snow melt, soil moisture and plant phenology. In a series of experiments with heaters above a few feet above the snow, researchers looked at measures several responses. For this exercise, we'll just look at two vectors to create a data frame.
-
-There were 3 treatments and 5 replicates, for a total of 15 observations. Since vectors can be either numeric or character, we'll use characters to represent the three treatments: Heated, Control, and Procedure Control. The procedure control had heaters installed but not turned on. This tests whether there was an effect of the heaters just being present. We will coerce the data into a vector called Treatment.
-For vectors, we will put the treatments names in quotes. Also to avoid having to type each treatment 5 times, will use the repeat function.
-<<echo = FALSE>>=
-options(width=60)
-@
-
-<<>>=
-rep("Control", 5)
-rep("Treatment", 5)
-rep("Procedure Control", 5)
-@
 
 <<echo = FALSE>>=
 options(width=60)
@@ -224,7 +196,8 @@ options(width=60)
 Okay, we have dumped the each of the treatments onto the screen, but we haven't created any objects. Next, create a vector of the 15 observations, but using the c() function, which combines or more accurately concatenates the values. 
 
 <<>>=
-treatment <- c(rep("Control", 5), rep("Treatment", 5), rep("Procedure Control", 5))
+temperature = c(15, 15, 14, 12, 12, 10)
+depth = c(2, 4, 6, 8, 10, 12)
 @
 
 There are a few things to notice. First, look at all the parentheses. Keeping track of these is really important, for every opening parentheses there is a closing one. And they have to be in the right place, based on the syntax of the function. As you can see, this can get rather complicated and mistakes will be made. In other words, try to pay attention to these characters, and if you get errors, look for mistakes with parenthesis as first strategy to fix errors. Second, notice all the commas. Just as important to the syntax of these commands as parenthesis, commas need to be in the right place. If they are not, you will get errors. Remember, no news is good news in R; when you get some text in return that you haven't asked for, there is an error somewhere, and always check for commas and parenthesis firsts. Finally, failing to match opening and closing quotations marks are also a common error. 
@@ -239,7 +212,7 @@ options(width=110)
 
 \begin{fullwidth}
 <<>>=
-flowering_date <- c(93, 94, 89, 87, 88, 84, 79, 85, 81, 82, 90, 79, 75, 88, 90) 
+
 @
 \end{fullwidth}
 
@@ -252,45 +225,9 @@ The vector name is a bit long, but it describes exactly what are in the data. It
 Let's check to see if both vectors have the same length. If they are not, they will not be able to be combined into a data frame. Notice that each of the vectors have lower case letters. We could have capitalized the first letter, but as you will see below, I reserve that for data frame variable names. It is a matter of preference.
 
 <<>>=
-length(treatment)
-length(flowering_date)
+length(temperature)
+length(depth)
 @
-
-\subsection{The Dataframe: A structure ready for analysis}
-
-So, with both vectors with 15 observations, now we combine them into a data frame. Unfortunately, the help file for creating a data frame is difficult to interpret for beginners, so let me lead you through by showing you the syntax.\sidenote{Do not type this, but translate the variable names and vectors to what you would like the dataframe to have. See below of what I named the variables.}
-
-\begin{fullwidth}
-\begin{verbatim}
-data.frame(Variable_Name1 = vector1, Variable_Names2 = vector2)
-\end{verbatim}
-\end{fullwidth}
-\medskip
-
-In this example, we tell R the variable we are going to create (with a name--best when there are no spaces) and then make that equal to the vector of interest. In the example above, we create two variable names, each with a different vector.  So, let's try it with our created vectors:
-
-<<echo = FALSE, results = 'hide' >>=
-options(width=90)
-@
-
-<<>>=
-data.frame(Treatment = treatment, Flowering_date = flowering_date)
-@
-
-Great, that works, but we haven't created a data frame, we have only dumped the results on the the screen. So, let's create a data frame, called Flowering
-
-<<>>=
-Flowering <- data.frame(Treatment = treatment, Flowering_date = flowering_date)
-@
-
-<<echo = FALSE, results = 'hide' >>=
-options(width=60)
-@
-
-If this worked, then you get no response--just the prompt telling you R is ready for more info. To view all objects you have created, type \texttt{ls()}.\footnote{The ``l'' in the R GUI font is ambiguous because it is indistinguishable from the number 1. The \texttt{ls()} is composed of the letter \texttt{l} (not the number one) and the letter \texttt{s}.} Yes, for those of you old enough to remember how to use mainframe computers, this is the list command, which lists files in a directory. In this case, R lists that objects created and available in the workspace. If you quit and decide to save the work space, it is these files that will remain in R after you quit, otherwise they are erased and must be recreated if you want to use them again.  
-
-\bigskip
-\noindent \textbf{\#4 What is a dataframe?  How is this structure different from vectors and how can it be used?}
 
 
 \section{Linear Models in R}
@@ -320,6 +257,10 @@ I am not showing it here, but you should see a long complex looking help page wi
 Using the linear model, we can analyze several types of data, when the response variable is continuous. If the have a predictor variable that is categorical, then we often analyze the data using the method known as analysis of variance or ANOVA. If the predictor variable is continuous, then we often analyze data using a regression analysis. 
 
 
+<<>>=
+plot(depth, temperature)
+
+@
 
 \end{document}
 

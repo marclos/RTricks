@@ -60,7 +60,7 @@
 \usepackage{graphicx}
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 % \graphicspath{{graphics/}}
-\title{Overview of R %\thanks{}
+\title{Introducing of R: Temperature vs. Depth %\thanks{}
 }
 \author[Marc Los Huertos]{Marc Los Huertos}
 \date{}  % if the \date{} command is left out, the current date will be used
@@ -78,12 +78,6 @@
 
 % Small sections of multiple columns
 \usepackage{multicol}
-
-% These commands are used to pretty-print LaTeX commands
-% command name -- adds backslash automatically
-\newcommand{\docpkg}[1]{\texttt{#1}}% package name
-\newcommand{\doccls}[1]{\texttt{#1}}% document class name
-\newcommand{\docclsopt}[1]{\texttt{#1}}% document class option name
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
@@ -94,8 +88,6 @@
 This handout provides an brief introduction to the syntax of R and some applications to plot and bivariate data. I believe R provides a mechanism to learn 1) skills to process electronic data, 2) a programming environment to implement a range of statistical tests, and 3) provide skills that can be used in your future career, whether or not R is used again.\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
 \end{abstract}
 
-%\printclassoptions
-
 % Setting up the margins, etc for R
 
 
@@ -105,12 +97,7 @@ This handout provides an brief introduction to the syntax of R and some applicat
 	\item Open and use the R GUI with consistent results.
 	\item Use math operators to solve simple calculations.
 	\item Create vectors (type of objects).
-%	\item Solve repetitive calculations.
-%	\item Make a function.
-%	\item Get data into the R environment.
-%	\item Generate summary statistics.
-	\item Build and test a linear model.
-%	\item Create publication quality graphics.
+	\item Best fit line and linear models.
 \end{enumerate}
 
 \section{The R GUI}
@@ -302,39 +289,6 @@ Linear model & \texttt{lm()}, \texttt{aov()} \\\hline
 	\label{tab:CommonObjects}
 \end{table}
 
-For now, we will create a data frame, which is the most common type of object for statistical analysis. A data.frame is like a spreadsheet in Excel or a table. However, it has some important unique characteristics. First, the data.frame is composed of vectors of equal length. Second, the the data frame of often described as a list of vectors. Thus, the data frame is combines the vectors in a certain way. 
-
-Several researchers have been investigating the effects of ambient temperatures on snow melt, soil moisture and plant phenology. In a series of experiments with heaters above a few feet above the snow, researchers looked at measures several responses. For this exercise, we'll just look at two vectors to create a data frame.
-
-There were 3 treatments and 5 replicates, for a total of 15 observations. Since vectors can be either numeric or character, we'll use characters to represent the three treatments: Heated, Control, and Procedure Control. The procedure control had heaters installed but not turned on. This tests whether there was an effect of the heaters just being present. We will coerce the data into a vector called Treatment.
-For vectors, we will put the treatments names in quotes. Also to avoid having to type each treatment 5 times, will use the repeat function.
-
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{rep}\hlstd{(}\hlstr{"Control"}\hlstd{,} \hlnum{5}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] "Control" "Control" "Control" "Control" "Control"
-\end{verbatim}
-\begin{alltt}
-\hlkwd{rep}\hlstd{(}\hlstr{"Treatment"}\hlstd{,} \hlnum{5}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] "Treatment" "Treatment" "Treatment" "Treatment"
-## [5] "Treatment"
-\end{verbatim}
-\begin{alltt}
-\hlkwd{rep}\hlstd{(}\hlstr{"Procedure Control"}\hlstd{,} \hlnum{5}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] "Procedure Control" "Procedure Control"
-## [3] "Procedure Control" "Procedure Control"
-## [5] "Procedure Control"
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
 
 
 Okay, we have dumped the each of the treatments onto the screen, but we haven't created any objects. Next, create a vector of the 15 observations, but using the c() function, which combines or more accurately concatenates the values. 
@@ -342,7 +296,8 @@ Okay, we have dumped the each of the treatments onto the screen, but we haven't 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{treatment} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlstr{"Control"}\hlstd{,} \hlnum{5}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlstr{"Treatment"}\hlstd{,} \hlnum{5}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlstr{"Procedure Control"}\hlstd{,} \hlnum{5}\hlstd{))}
+\hlstd{temperature} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{15}\hlstd{,} \hlnum{15}\hlstd{,} \hlnum{14}\hlstd{,} \hlnum{12}\hlstd{,} \hlnum{12}\hlstd{,} \hlnum{10}\hlstd{)}
+\hlstd{depth} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{6}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{10}\hlstd{,} \hlnum{12}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
@@ -356,13 +311,7 @@ On of the most common objects is a data frame, which appears to be like a spread
 
 
 \begin{fullwidth}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{flowering_date} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{93}\hlstd{,} \hlnum{94}\hlstd{,} \hlnum{89}\hlstd{,} \hlnum{87}\hlstd{,} \hlnum{88}\hlstd{,} \hlnum{84}\hlstd{,} \hlnum{79}\hlstd{,} \hlnum{85}\hlstd{,} \hlnum{81}\hlstd{,} \hlnum{82}\hlstd{,} \hlnum{90}\hlstd{,} \hlnum{79}\hlstd{,} \hlnum{75}\hlstd{,} \hlnum{88}\hlstd{,} \hlnum{90}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+
 \end{fullwidth}
 
 
@@ -374,77 +323,19 @@ Let's check to see if both vectors have the same length. If they are not, they w
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{length}\hlstd{(treatment)}
+\hlkwd{length}\hlstd{(temperature)}
 \end{alltt}
 \begin{verbatim}
-## [1] 15
+## [1] 6
 \end{verbatim}
 \begin{alltt}
-\hlkwd{length}\hlstd{(flowering_date)}
+\hlkwd{length}\hlstd{(depth)}
 \end{alltt}
 \begin{verbatim}
-## [1] 15
+## [1] 6
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-
-\subsection{The Dataframe: A structure ready for analysis}
-
-So, with both vectors with 15 observations, now we combine them into a data frame. Unfortunately, the help file for creating a data frame is difficult to interpret for beginners, so let me lead you through by showing you the syntax.\sidenote{Do not type this, but translate the variable names and vectors to what you would like the dataframe to have. See below of what I named the variables.}
-
-\begin{fullwidth}
-\begin{verbatim}
-data.frame(Variable_Name1 = vector1, Variable_Names2 = vector2)
-\end{verbatim}
-\end{fullwidth}
-\medskip
-
-In this example, we tell R the variable we are going to create (with a name--best when there are no spaces) and then make that equal to the vector of interest. In the example above, we create two variable names, each with a different vector.  So, let's try it with our created vectors:
-
-
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{data.frame}\hlstd{(}\hlkwc{Treatment} \hlstd{= treatment,} \hlkwc{Flowering_date} \hlstd{= flowering_date)}
-\end{alltt}
-\begin{verbatim}
-##            Treatment Flowering_date
-## 1            Control             93
-## 2            Control             94
-## 3            Control             89
-## 4            Control             87
-## 5            Control             88
-## 6          Treatment             84
-## 7          Treatment             79
-## 8          Treatment             85
-## 9          Treatment             81
-## 10         Treatment             82
-## 11 Procedure Control             90
-## 12 Procedure Control             79
-## 13 Procedure Control             75
-## 14 Procedure Control             88
-## 15 Procedure Control             90
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-Great, that works, but we haven't created a data frame, we have only dumped the results on the the screen. So, let's create a data frame, called Flowering
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{Flowering} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{Treatment} \hlstd{= treatment,} \hlkwc{Flowering_date} \hlstd{= flowering_date)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
-
-
-
-If this worked, then you get no response--just the prompt telling you R is ready for more info. To view all objects you have created, type \texttt{ls()}.\footnote{The ``l'' in the R GUI font is ambiguous because it is indistinguishable from the number 1. The \texttt{ls()} is composed of the letter \texttt{l} (not the number one) and the letter \texttt{s}.} Yes, for those of you old enough to remember how to use mainframe computers, this is the list command, which lists files in a directory. In this case, R lists that objects created and available in the workspace. If you quit and decide to save the work space, it is these files that will remain in R after you quit, otherwise they are erased and must be recreated if you want to use them again.  
-
-\bigskip
-\noindent \textbf{\#4 What is a dataframe?  How is this structure different from vectors and how can it be used?}
 
 
 \section{Linear Models in R}
@@ -478,6 +369,14 @@ I am not showing it here, but you should see a long complex looking help page wi
 Using the linear model, we can analyze several types of data, when the response variable is continuous. If the have a predictor variable that is categorical, then we often analyze the data using the method known as analysis of variance or ANOVA. If the predictor variable is continuous, then we often analyze data using a regression analysis. 
 
 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(depth, temperature)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-17-1} 
+\end{knitrout}
 
 \end{document}
 

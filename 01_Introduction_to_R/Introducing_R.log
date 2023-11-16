@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  15 NOV 2023 22:50
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  15 NOV 2023 23:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -343,8 +343,9 @@ LaTeX Info: Redefining \cite on input line 694.
 (/usr/share/texlive/texmf-dist/tex/latex/natbib/bibentry.sty
 Package: bibentry 2007/10/30 1.5 (PWD)
 )
-No file Introducing_R.bbl.
+(./Introducing_R.bbl)
 \c@@tufte@num@bibkeys=\count109
+
 (/usr/share/texlive/texmf-dist/tex/latex/sauerj/optparams.sty
 Package: optparams 2004/08/14 v0.9 multiple optional parameters in macros
 )
@@ -521,7 +522,10 @@ Package: multicol 2017/04/11 v1.8q multicolumn formatting (FMi)
 \mult@nat@firstbox=\box54
 \colbreak@box=\box55
 \mc@col@check@num=\count118
-)))
+)
+(./tufte-common-local.tex
+Package hyperref Info: Option `colorlinks' set `true' on input line 2.
+
 (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
 
@@ -539,20 +543,21 @@ Package graphics Info: Driver file: pdftex.def on input line 99.
 \Gin@req@height=\dimen133
 \Gin@req@width=\dimen134
 )
-(/usr/share/texlive/texmf-dist/tex/latex/framed/framed.sty
-Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
-\OuterFrameSep=\skip87
-\fb@frw=\dimen135
-\fb@frh=\dimen136
-\FrameRule=\dimen137
-\FrameSep=\dimen138
-)
-(/usr/share/texlive/texmf-dist/tex/latex/base/alltt.sty
-Package: alltt 1997/06/16 v2.0g defines alltt environment
+(/usr/share/texlive/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
+Package: fancyvrb 2008/02/07
+
+Style option: `fancyvrb' v2.7a, with DG/SPQR fixes, and firstline=lastline fix 
+<2008/02/07> (tvz)
+\FV@CodeLineNo=\count119
+\FV@InFile=\read1
+\FV@TabBox=\box56
+\c@FancyVerbLine=\count120
+\FV@StepNumber=\count121
+\FV@OutFile=\write3
 )
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2017/09/02 v2.17a AMS math features
-\@mathmargin=\skip88
+\@mathmargin=\skip87
 
 For additional information on amsmath, use the `?' option.
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
@@ -561,72 +566,121 @@ Package: amstext 2000/06/29 v2.01 AMS text
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
 \@emptytoks=\toks19
-\ex@=\dimen139
+\ex@=\dimen135
 ))
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
-\pmbraise@=\dimen140
+\pmbraise@=\dimen136
 )
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2016/03/08 v2.02 operator names
 )
-\inf@bad=\count119
+\inf@bad=\count122
 LaTeX Info: Redefining \frac on input line 213.
-\uproot@=\count120
-\leftroot@=\count121
+\uproot@=\count123
+\leftroot@=\count124
 LaTeX Info: Redefining \overline on input line 375.
-\classnum@=\count122
-\DOTSCASE@=\count123
+\classnum@=\count125
+\DOTSCASE@=\count126
 LaTeX Info: Redefining \ldots on input line 472.
 LaTeX Info: Redefining \dots on input line 475.
 LaTeX Info: Redefining \cdots on input line 596.
-\Mathstrutbox@=\box56
-\strutbox@=\box57
-\big@size=\dimen141
+\Mathstrutbox@=\box57
+\strutbox@=\box58
+\big@size=\dimen137
 LaTeX Font Info:    Redeclaring font encoding OML on input line 712.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 713.
-\macc@depth=\count124
-\c@MaxMatrixCols=\count125
+\macc@depth=\count127
+\c@MaxMatrixCols=\count128
 \dotsspace@=\muskip11
-\c@parentequation=\count126
-\dspbrk@lvl=\count127
+\c@parentequation=\count129
+\dspbrk@lvl=\count130
 \tag@help=\toks20
-\row@=\count128
-\column@=\count129
-\maxfields@=\count130
+\row@=\count131
+\column@=\count132
+\maxfields@=\count133
 \andhelp@=\toks21
-\eqnshift@=\dimen142
-\alignsep@=\dimen143
-\tagshift@=\dimen144
-\tagwidth@=\dimen145
-\totwidth@=\dimen146
-\lineht@=\dimen147
+\eqnshift@=\dimen138
+\alignsep@=\dimen139
+\tagshift@=\dimen140
+\tagwidth@=\dimen141
+\totwidth@=\dimen142
+\lineht@=\dimen143
 \@envbody=\toks22
-\multlinegap=\skip89
-\multlinetaggap=\skip90
+\multlinegap=\skip88
+\multlinetaggap=\skip89
 \mathdisplay@stack=\toks23
 LaTeX Info: Redefining \[ on input line 2817.
 LaTeX Info: Redefining \] on input line 2818.
 )
+(/usr/share/texlive/texmf-dist/tex/latex/wasysym/wasysym.sty
+Package: wasysym 2003/10/30 v2.0 Wasy-2 symbol support package
+\symwasy=\mathgroup5
+LaTeX Font Info:    Overwriting symbol font `wasy' in version `bold'
+(Font)                  U/wasy/m/n --> U/wasy/b/n on input line 90.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/lettrine/lettrine.sty
+File: lettrine.sty 2015/08/31 v1.9 (Daniel Flipo)
+\c@DefaultLines=\count134
+\c@DefaultDepth=\count135
+\DefaultFindent=\dimen144
+\DefaultNindent=\dimen145
+\DefaultSlope=\dimen146
+\DiscardVskip=\dimen147
+\L@lbox=\box59
+\L@tbox=\box60
+\c@L@lines=\count136
+\c@L@depth=\count137
+\L@Pindent=\dimen148
+\L@Findent=\dimen149
+\L@Nindent=\dimen150
+\L@lraise=\dimen151
+\L@first=\dimen152
+\L@next=\dimen153
+\L@slope=\dimen154
+\L@height=\dimen155
+\L@novskip=\dimen156
+\LettrineWidth=\dimen157
+\LettrineHeight=\dimen158
+\LettrineDepth=\dimen159
+
+Loading lettrine.cfg
+(/usr/share/texlive/texmf-dist/tex/latex/lettrine/lettrine.cfg)) (./units.sty)
 (/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2016/04/27 v1.618033 publication quality tables
-\heavyrulewidth=\dimen148
-\lightrulewidth=\dimen149
-\cmidrulewidth=\dimen150
-\belowrulesep=\dimen151
-\belowbottomsep=\dimen152
-\aboverulesep=\dimen153
-\abovetopsep=\dimen154
-\cmidrulesep=\dimen155
-\cmidrulekern=\dimen156
-\defaultaddspace=\dimen157
-\@cmidla=\count131
-\@cmidlb=\count132
-\@aboverulesep=\dimen158
-\@belowrulesep=\dimen159
-\@thisruleclass=\count133
-\@lastruleclass=\count134
-\@thisrulewidth=\dimen160
+\heavyrulewidth=\dimen160
+\lightrulewidth=\dimen161
+\cmidrulewidth=\dimen162
+\belowrulesep=\dimen163
+\belowbottomsep=\dimen164
+\aboverulesep=\dimen165
+\abovetopsep=\dimen166
+\cmidrulesep=\dimen167
+\cmidrulekern=\dimen168
+\defaultaddspace=\dimen169
+\@cmidla=\count138
+\@cmidlb=\count139
+\@aboverulesep=\dimen170
+\@belowrulesep=\dimen171
+\@thisruleclass=\count140
+\@lastruleclass=\count141
+\@thisrulewidth=\dimen172
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/xspace.sty
+Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
+))
+Class tufte-handout Info: Loading tufte-common-local.tex
+))
+(/usr/share/texlive/texmf-dist/tex/latex/framed/framed.sty
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip90
+\fb@frw=\dimen173
+\fb@frh=\dimen174
+\FrameRule=\dimen175
+\FrameSep=\dimen176
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/alltt.sty
+Package: alltt 1997/06/16 v2.0g defines alltt environment
 )
 (/usr/share/texlive/texmf-dist/tex/latex/upquote/upquote.sty
 Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
@@ -635,35 +689,35 @@ tim
 No file Introducing_R.aux.
 \openout1 = `Introducing_R.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 88.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 88.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 82.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 82.
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Try loading font information for T1+pplj on input line 88.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Try loading font information for T1+pplj on input line 82.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pplj.fd
 File: t1pplj.fd 2004/09/06 font definitions for T1/pplj.
 )
-\AtBeginShipoutBox=\box58
-Package hyperref Info: Link coloring OFF on input line 88.
+\AtBeginShipoutBox=\box61
+Package hyperref Info: Link coloring ON on input line 82.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -671,17 +725,17 @@ Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count135
+\c@section@level=\count142
 )
-LaTeX Info: Redefining \ref on input line 88.
-LaTeX Info: Redefining \pageref on input line 88.
-LaTeX Info: Redefining \nameref on input line 88.
-\@outlinefile=\write3
-\openout3 = `Introducing_R.out'.
+LaTeX Info: Redefining \ref on input line 82.
+LaTeX Info: Redefining \pageref on input line 82.
+LaTeX Info: Redefining \nameref on input line 82.
+\@outlinefile=\write4
+\openout4 = `Introducing_R.out'.
 
 
 ABD: EverySelectfont initializing macros
-LaTeX Info: Redefining \selectfont on input line 88.
+LaTeX Info: Redefining \selectfont on input line 82.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -719,16 +773,16 @@ LaTeX Info: Redefining \selectfont on input line 88.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count136
-\scratchdimen=\dimen161
-\scratchbox=\box59
-\nofMPsegments=\count137
-\nofMParguments=\count138
+\scratchcounter=\count143
+\scratchdimen=\dimen177
+\scratchbox=\box62
+\nofMPsegments=\count144
+\nofMParguments=\count145
 \everyMPshowfont=\toks24
-\MPscratchCnt=\count139
-\MPscratchDim=\dimen162
-\MPnumerator=\count140
-\makeMPintoPDFobject=\count141
+\MPscratchCnt=\count146
+\MPscratchDim=\dimen178
+\MPnumerator=\count147
+\makeMPintoPDFobject=\count148
 \everyMPtoPDFconversion=\toks25
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
@@ -748,55 +802,51 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \langwohyphens=\language3
+LaTeX Font Info:    Try loading font information for OT1+pplx on input line 88.
 
-! Undefined control sequence.
-l.92 ...tional software package site licenses (\eg
-                                                   SAS, SPSS, etc).
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-LaTeX Font Info:    Try loading font information for OT1+pplx on input line 94.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pplx.fd
 File: ot1pplx.fd 2004/09/06 font definitions for OT1/pplx.
 )
-LaTeX Font Info:    Try loading font information for OML+zplm on input line 94.
+LaTeX Font Info:    Try loading font information for OML+zplm on input line 88.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlzplm.fd
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMS+zplm on input line 94.
+LaTeX Font Info:    Try loading font information for OMS+zplm on input line 88.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omszplm.fd
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMX+zplm on input line 94.
+LaTeX Font Info:    Try loading font information for OMX+zplm on input line 88.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxzplm.fd
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
-LaTeX Font Info:    Try loading font information for OT1+zplm on input line 94.
+LaTeX Font Info:    Try loading font information for OT1+zplm on input line 88.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1zplm.fd
 File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 )
+LaTeX Font Info:    Try loading font information for U+wasy on input line 88.
+
+(/usr/share/texlive/texmf-dist/tex/latex/wasysym/uwasy.fd
+File: uwasy.fd 2003/10/30 v2.0 Wasy-2 symbol font definitions
+)
 LaTeX Font Info:    Font shape `T1/pplj/bx/n' in size <8> not available
-(Font)              Font shape `T1/pplj/b/n' tried instead on input line 94.
+(Font)              Font shape `T1/pplj/b/n' tried instead on input line 88.
 
 
 Package natbib Warning: Citation `Tufte:1983' on page 1 undefined on input line
- 94.
+ 88.
 
 
 Package natbib Warning: Citation `Tufte:1997' on page 1 undefined on input line
- 94.
+ 88.
 
 
 LaTeX Warning: Marginpar on page 1 moved.
@@ -804,157 +854,88 @@ LaTeX Warning: Marginpar on page 1 moved.
 
 LaTeX Warning: Marginpar on page 1 moved.
 
+<OpeningScreenShot.pdf, id=4, pagebox=cropbox, 675.52374pt x 470.75874pt>
+File: OpeningScreenShot.pdf Graphic file (type pdf)
+<use OpeningScreenShot.pdf>
+Package pdftex.def Info: OpeningScreenShot.pdf  used on input line 110. on inpu
+t line 110.
+Package pdftex.def Info: Requested size: 312.00223pt x 217.428pt on input line 
+110.
 
-LaTeX Warning: File `OpeningScreenShot.pdf' not found on input line 123.
-
-
-! Package pdftex.def Error: File `OpeningScreenShot.pdf' not found: using draft
- setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.123 		\includegraphics{OpeningScreenShot.pdf}
-                                               
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-LaTeX Font Info:    Try loading font information for T1+fvm on input line 123.
-(/usr/share/texlive/texmf-dist/tex/latex/bera/t1fvm.fd
-File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
-)
-LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 8.50006pt on input line 123.
-
-Underfull \hbox (badness 10000) in paragraph at lines 123--126
+Underfull \hbox (badness 10000) in paragraph at lines 110--113
 
  []
 
 [1
 
-{/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}] [2]
+{/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Font shape `T1/pplj/bx/n' in size <10> not available
-(Font)              Font shape `T1/pplj/b/n' tried instead on input line 137.
+(Font)              Font shape `T1/pplj/b/n' tried instead on input line 124.
 
 
-LaTeX Warning: Reference `tab:KeyboardOperators' on page 3 undefined on input l
-ine 141.
+LaTeX Warning: Reference `tab:KeyboardOperators' on page 2 undefined on input l
+ine 128.
 
 
-LaTeX Warning: Marginpar on page 3 moved.
+LaTeX Warning: Marginpar on page 2 moved.
 
-! Undefined control sequence.
-l.161 ...tions, which have a different syntax, \eg
-                                                   \texttt{log()}, \texttt{e...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+LaTeX Font Info:    Try loading font information for T1+fvm on input line 148.
+(/usr/share/texlive/texmf-dist/tex/latex/bera/t1fvm.fd
+File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
+)
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 8.50006pt on input line 148.
 
 
-LaTeX Warning: Marginpar on page 3 moved.
+LaTeX Warning: Marginpar on page 2 moved.
 
+[2 <./OpeningScreenShot.pdf>]
 LaTeX Font Info:    Font shape `T1/fvm/bx/n' in size <10> not available
-(Font)              Font shape `T1/fvm/b/n' tried instead on input line 166.
+(Font)              Font shape `T1/fvm/b/n' tried instead on input line 153.
 LaTeX Font Info:    Font shape `T1/fvm/b/n' will be
-(Font)              scaled to size 8.50006pt on input line 166.
-[3]
-! Undefined control sequence.
-l.205 ...time consuming and subject to typos, (\eg
-                                                   it is easy to forget to p...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
+(Font)              scaled to size 8.50006pt on input line 153.
+ [3]
 
 LaTeX Warning: Marginpar on page 4 moved.
 
-[4]
-Overfull \hbox (0.37985pt too wide) in paragraph at lines 226--227
+
+Overfull \hbox (0.37985pt too wide) in paragraph at lines 213--214
 []\T1/pplj/m/n/10 In this case, each num-ber to be com-bined is sep-a-rated by 
 a comma. 
  []
 
 
-LaTeX Warning: Marginpar on page 5 moved.
+LaTeX Warning: Marginpar on page 4 moved.
 
-! Undefined control sequence.
-l.282 ...rds) and logical or binary responses, \ie
-                                                   TRUE and FALSE.
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
+[4]
 
 LaTeX Warning: Marginpar on page 5 moved.
 
 
 LaTeX Warning: Reference `tab:CommonObjects' on page 5 undefined on input line 
-289.
+276.
 
-[5] [6]
-Overfull \hbox (112.7139pt too wide) in paragraph at lines 345--345
-[][]\T1/fvm/m/n/10 treatment[] []<-[] []\T1/fvm/b/n/10 c[][]\T1/fvm/m/n/10 ([][
-]\T1/fvm/b/n/10 rep[][]\T1/fvm/m/n/10 ([][]"Control"[][],[] []5[][]),[] []\T1/f
-vm/b/n/10 rep[][]\T1/fvm/m/n/10 ([][]"Treatment"[][],[] []5[][]),[] []\T1/fvm/b
-/n/10 rep[][]\T1/fvm/m/n/10 ([][]"Procedure Control"[][],[] []5[][]))[][] 
- []
+[5]
+
+LaTeX Warning: Marginpar on page 6 moved.
 
 
-LaTeX Warning: Marginpar on page 7 moved.
+LaTeX Warning: Marginpar on page 6 moved.
 
+[6]
+<figure/unnamed-chunk-17-1.pdf, id=63, pagebox=cropbox, 505.89pt x 505.89pt>
+File: figure/unnamed-chunk-17-1.pdf Graphic file (type pdf)
+<use figure/unnamed-chunk-17-1.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-17-1.pdf  used on input line 378.
+ on input line 378.
+Package pdftex.def Info: Requested size: 312.00435pt x 312.00435pt on input lin
+e 378.
 
-Overfull \hbox (92.24576pt too wide) in paragraph at lines 362--362
-[][]\T1/fvm/m/n/10 flowering_date[] []<-[] []\T1/fvm/b/n/10 c[][]\T1/fvm/m/n/10
- ([][]93[][],[] []94[][],[] []89[][],[] []87[][],[] []88[][],[] []84[][],[] []7
-9[][],[] []85[][],[] []81[][],[] []82[][],[] []90[][],[] []79[][],[] []75[][],[
-] []88[][],[] []90[][])[][] 
+Overfull \hbox (12.00435pt too wide) in paragraph at lines 378--380
+[][] 
  []
 
 [7]
-Overfull \hbox (2.65977pt too wide) in paragraph at lines 393--394
-\T1/pplj/m/n/10 frame is dif-fi-cult to in-ter-pret for be-gin-ners, so let me 
-lead you through 
- []
-
-
-LaTeX Warning: Marginpar on page 8 moved.
-
-
-Overfull \hbox (10.3732pt too wide) in paragraph at lines 398--398
-[]\T1/fvm/m/n/10 data.frame(Variable_Name1 = vector1, Variable_Names2 = vector2
-)[] 
- []
-
-
-Overfull \hbox (25.7243pt too wide) in paragraph at lines 409--409
-[][]\T1/fvm/b/n/10 data.frame[][]\T1/fvm/m/n/10 ([][]Treatment[] []= treatment,
-[] []Flowering_date[] []= flowering_date)[][] 
- []
-
-
-Overfull \hbox (92.24576pt too wide) in paragraph at lines 437--437
-[][]\T1/fvm/m/n/10 Flowering[] []<-[] []\T1/fvm/b/n/10 data.frame[][]\T1/fvm/m/
-n/10 ([][]Treatment[] []= treatment,[] []Flowering_date[] []= flowering_date)[]
-[] 
- []
-
-LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 6.80005pt on input line 444.
-
-LaTeX Warning: Marginpar on page 8 moved.
-
-[8]
-
-LaTeX Warning: Marginpar on page 9 moved.
-
-[9]
 
 Package natbib Warning: There were undefined citations.
 
@@ -963,12 +944,12 @@ Package bibentry Warning: You have used \nobibliography*
 (bibentry)                without a following \bibliography.
 (bibentry)                You may not be able to run BibTeX.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 482.
-[10]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 482.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 381.
+[8 <./figure/unnamed-chunk-17-1.pdf>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 381.
  (./Introducing_R.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 482.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 482.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 381.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 381.
 
 
 Package rerunfilecheck Warning: File `Introducing_R.out' has changed.
@@ -977,23 +958,23 @@ Package rerunfilecheck Warning: File `Introducing_R.out' has changed.
 
 Package rerunfilecheck Info: Checksums for `Introducing_R.out':
 (rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  F96ADBF22480C14C7F672C5FDF49C7B1;598.
+(rerunfilecheck)             After:  8305864B19187683FA3DBEB00DD4C208;598.
 
 LaTeX Warning: There were undefined references.
 
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 482.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 381.
  ) 
 Here is how much of TeX's memory you used:
- 13077 strings out of 494917
- 183915 string characters out of 6180699
- 284610 words of memory out of 5000000
- 16097 multiletter control sequences out of 15000+600000
- 72351 words of font info for 114 fonts, out of 8000000 for 9000
+ 13877 strings out of 494917
+ 194611 string characters out of 6180699
+ 294344 words of memory out of 5000000
+ 16863 multiletter control sequences out of 15000+600000
+ 77538 words of font info for 124 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 45i,12n,45p,929b,422s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 45i,12n,45p,929b,379s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/
@@ -1004,10 +985,10 @@ ublic/mathpazo/fplmri.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/fpl
 exlive/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/share/texlive/texmf
 -dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/urw/palatino/uplri8a.pfb>
-Output written on Introducing_R.pdf (10 pages, 114687 bytes).
+Output written on Introducing_R.pdf (8 pages, 428771 bytes).
 PDF statistics:
- 113 PDF objects out of 1000 (max. 8388607)
+ 120 PDF objects out of 1000 (max. 8388607)
  90 compressed objects within 1 object stream
- 27 named destinations out of 1000 (max. 500000)
- 1025 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 24 named destinations out of 1000 (max. 500000)
+ 1035 words of extra memory for PDF output out of 10000 (max. 10000000)
 
