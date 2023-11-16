@@ -262,6 +262,16 @@ plot(depth, temperature)
 
 @
 
+
+<<>>=
+TempDepth.lm <- lm(temperature ~ depth)
+
+coef(TempDepth.lm)
+
+@
+
+
+
 \end{document}
 
 

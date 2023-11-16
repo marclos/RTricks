@@ -22,7 +22,11 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
-
+# Folders
+00_resources/
+XX_Draft_Folder/
+# Guides
+# 01_Introduction_to_R/*.log
 
 
 
