@@ -1,5 +1,5 @@
 ---
-title: "A Tufte Handout Example"
+title: "R for Environmental Analysis"
 runningheader: "Learning R for Environmental Analysis" # only for pdf output
 subtitle: "" # only for html output
 author: "Marc Los Huertos"
