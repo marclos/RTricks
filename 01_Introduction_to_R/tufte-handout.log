@@ -1,0 +1,209 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  15 NOV 2023 22:50
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**tufte-handout.cls
+(./tufte-handout.cls
+LaTeX2e <2017-04-15>
+Babel <3.17> and hyphenation patterns for 3 language(s) loaded.
+
+LaTeX Warning: You have requested package `',
+               but the package provides `tufte-handout'.
+
+Package: tufte-handout 2015/06/21 v3.5.2 Tufte-handout class
+
+! LaTeX Error: Command \@ already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.7 \newcommand{\@tufte@class}{article}
+                                       % the base LaTeX class (defaults to t...
+
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.7 \newcommand{\@tufte@class}{article}
+                                       % the base LaTeX class (defaults to t...
+
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no u in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no s in font nullfont!
+Missing character: There is no s in font nullfont!
+! Missing number, treated as zero.
+<to be read again> 
+                   u
+l.7 \newcommand{\@tufte@class}{article}
+                                       % the base LaTeX class (defaults to t...
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! You already have nine parameters.
+\reserved@a ...\def \expandafter \@\reserved@b #10
+                                                  u{
+l.7 \newcommand{\@tufte@class}{article}
+                                       % the base LaTeX class (defaults to t...
+I'm going to ignore the # sign you just used.
+
+Missing character: There is no a in font nullfont!
+Missing character: There is no r in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no i in font nullfont!
+Missing character: There is no c in font nullfont!
+Missing character: There is no l in font nullfont!
+Missing character: There is no e in font nullfont!
+
+! LaTeX Error: Command \@ already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.8 \newcommand{\@tufte@pkgname}{tufte-handout}
+                                               % the name of the package (de...
+
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+Missing character: There is no u in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no @ in font nullfont!
+Missing character: There is no p in font nullfont!
+Missing character: There is no k in font nullfont!
+Missing character: There is no g in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no m in font nullfont!
+Missing character: There is no e in font nullfont!
+! Missing number, treated as zero.
+<to be read again> 
+                   u
+l.8 \newcommand{\@tufte@pkgname}{tufte-handout}
+                                               % the name of the package (de...
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! You already have nine parameters.
+\reserved@a ...\def \expandafter \@\reserved@b #10
+                                                  u{
+l.8 \newcommand{\@tufte@pkgname}{tufte-handout}
+                                               % the name of the package (de...
+I'm going to ignore the # sign you just used.
+
+Missing character: There is no t in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no f in font nullfont!
+Missing character: There is no t in font nullfont!
+Missing character: There is no e in font nullfont!
+Missing character: There is no - in font nullfont!
+Missing character: There is no h in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no n in font nullfont!
+Missing character: There is no d in font nullfont!
+Missing character: There is no o in font nullfont!
+Missing character: There is no u in font nullfont!
+Missing character: There is no t in font nullfont!
+
+Overfull \hbox (20.0pt too wide) in paragraph at lines 7--9
+[] 
+ []
+
+(./tufte-common.def
+File: tufte-common.def 2015/06/21 v3.5.2 Common code for the Tufte-LaTeX styles
+
+
+(/usr/share/texlive/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
+
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks14
+\XKV@tempa@toks=\toks15
+
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/keyval.tex))
+\XKV@depth=\count79
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+)
+
+! Package xkeyval Error: xkeyval loaded before \documentclass.
+
+See the xkeyval package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.62 ...yval loaded before \protect\documentclass}
+                                                  %
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+) (/usr/share/texlive/texmf-dist/tex/latex/xifthen/xifthen.sty
+Package: xifthen 2015/11/05 v1.4.0 Extended ifthen features
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2014/10/28 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count80
+\calc@Bcount=\count81
+\calc@Adimen=\dimen102
+\calc@Bdimen=\dimen103
+\calc@Askip=\skip41
+\calc@Bskip=\skip42
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count82
+\calc@Cskip=\skip43
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/ifmtarg/ifmtarg.sty
+Package: ifmtarg 2009/09/02 v1.2a check for an empty argument
+))
+
+! LaTeX Error: File `hardwrap.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+Enter file name: 
+! Emergency stop.
+<read *> 
+         
+l.18 \GenerateClassLogMacros
+                            [@tufte]{\@tufte@pkgname}^^M
+*** (cannot \read from terminal in nonstop modes)
+
+ 
+Here is how much of TeX's memory you used:
+ 405 strings out of 494917
+ 5818 string characters out of 6180699
+ 53018 words of memory out of 5000000
+ 3789 multiletter control sequences out of 15000+600000
+ 3640 words of font info for 14 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 23i,0n,18p,190b,22s stack positions out of 5000i,500n,10000p,200000b,80000s
+!  ==> Fatal error occurred, no output PDF file produced!

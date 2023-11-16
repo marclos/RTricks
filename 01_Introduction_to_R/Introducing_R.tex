@@ -1,4 +1,54 @@
-\documentclass{tufte-handout}
+\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
 
 %\geometry{showframe}% for debugging purposes -- displays the margins
 
@@ -34,7 +84,7 @@
 \newcommand{\docpkg}[1]{\texttt{#1}}% package name
 \newcommand{\doccls}[1]{\texttt{#1}}% document class name
 \newcommand{\docclsopt}[1]{\texttt{#1}}% document class option name
-
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
 \maketitle% this prints the handout title, author, and date
@@ -47,10 +97,7 @@ This handout provides an brief introduction to the syntax of R and some applicat
 %\printclassoptions
 
 % Setting up the margins, etc for R
-<<echo = FALSE, results = "hide">>=
-options(width=60)
-# rm(list = ls())
-@
+
 
 \section{Session Goals}
 
@@ -113,14 +160,28 @@ Power & $\wedge$ & 3 $\wedge$ 5  \\
 
 In addition, for more complex operations, R uses functions, which have a different syntax, \eg \texttt{log()}, \texttt{exp()}, \texttt{sin()}, etc. The syntax for these functions is fairly straightforward. For example, to calculate the base 10 logarithm of 3.5, we can type:\sidenote{as below, each time you see a ``>'', I am referring to the R prompt and you want to type the text after the prompt.}
 
-<<>>=
-log10(3.5)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{log10}\hlstd{(}\hlnum{3.5}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.544068
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Or to calculate the natural log, type
-<<>>=
-log(3.5)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{log}\hlstd{(}\hlnum{3.5}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 1.252763
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 R allows the user to make complex equations and even solving complex calculations. For example, the if you want to solve the following equation:
 
@@ -130,9 +191,16 @@ V = V_{max}\frac{S}{K_s + S}
 
 And $V_{max}$ = 3, $S$ = 1.0 and $K_s = 0.3$, then you can type
 
-<<>>=
-3.0 * (1.0 / (0.3 + 1.0))
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlnum{3.0} \hlopt{*} \hlstd{(}\hlnum{1.0} \hlopt{/} \hlstd{(}\hlnum{0.3} \hlopt{+} \hlnum{1.0}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## [1] 2.307692
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 However, typing these formulas can be time consuming and subject to typos, (\eg it is easy to forget to put the parentheses in the right place) so we'll see how we can streamline the process to make R uses more efficient. 
 
@@ -147,37 +215,69 @@ Typing a long string of numbers each time you want to due something is a waste o
 
 When creating an object, we need to name the object and define the object type. Usually, this can be done in a single step. But we'll try to break it down so you can follow along. First, let's say we want to make an object that has 10 numbers in it. The most basic type of object is a vector, which can store a string of numbers or characters. Let's call the vector something recognizable, \texttt{myvector}. To put numbers into a vector, we need to concatenate or combine them, thus we need R to do something with the numbers, in other words, we need a "verb". In this case the verb concatenate or combine is abbreviated as \texttt{c()}. Remember with each function, there are parentheses. Now what we put ten numbers into the parentheses to be concatenated. We'll put a series of numbers from 1 to 10. 
 
-<<>>=
-myvector <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) 
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{myvector} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{6}\hlstd{,} \hlnum{7}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{9}\hlstd{,} \hlnum{10}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 In this case, each number to be combined is separated by a comma. Spaces between the commas does not affect the object at all. Notice when you create the vector, R does not return any response. At first, this might seem disconcerting. But soon, you will be excited by the silence. In general, no news is good news in R, i.e. when there is no response, R did something and there was no error. Now it might not be what you wanted, but it did something. So, now let's see if R did what we wanted. 
 
 Now, we can view the vector by typing the name of the vector as below:\sidenote{The numbers in the square brackets are referencing the "index" number of the first observation in the row. It will make more sense when we create longer vectors.}  
 
-<<>>=
-myvector
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{myvector}
+\end{alltt}
+\begin{verbatim}
+##  [1]  1  2  3  4  5  6  7  8  9 10
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \subsection{Interrogating Objects}
 
 We now use a function to interrogate the vector. For example, how long is the vector?
 
-<<>>= 
-length(myvector)
-@ 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{length}\hlstd{(myvector)}
+\end{alltt}
+\begin{verbatim}
+## [1] 10
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 What is the sum of the values in the vector?
 
-<<>>=
-sum(myvector)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sum}\hlstd{(myvector)}
+\end{alltt}
+\begin{verbatim}
+## [1] 55
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 What is the mean of the vector?
 
-<<>>=
-mean(myvector)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(myvector)}
+\end{alltt}
+\begin{verbatim}
+## [1] 5.5
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Congratulations, you have now made an object. This object is a vector, which we  named "myvector".\footnote{By the way, R is case sensitive, so "myvector" or "myVector" or "Myvector" refer to two different objects, two of which don't exists. Failing to keep track of what is upper and lower case can lead to high levels of frustration. I suggest you start with keeping everything lower case to avoid confusion. However, I will violate this suggestion immediately, for reasons that I will explain below.} Another thing to notice is that we have created a vector of numbers, would have also created a vector of characters (and words) and logical or binary responses, \ie TRUE and FALSE.
 
@@ -208,24 +308,44 @@ Several researchers have been investigating the effects of ambient temperatures 
 
 There were 3 treatments and 5 replicates, for a total of 15 observations. Since vectors can be either numeric or character, we'll use characters to represent the three treatments: Heated, Control, and Procedure Control. The procedure control had heaters installed but not turned on. This tests whether there was an effect of the heaters just being present. We will coerce the data into a vector called Treatment.
 For vectors, we will put the treatments names in quotes. Also to avoid having to type each treatment 5 times, will use the repeat function.
-<<echo = FALSE>>=
-options(width=60)
-@
 
-<<>>=
-rep("Control", 5)
-rep("Treatment", 5)
-rep("Procedure Control", 5)
-@
 
-<<echo = FALSE>>=
-options(width=60)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{rep}\hlstd{(}\hlstr{"Control"}\hlstd{,} \hlnum{5}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "Control" "Control" "Control" "Control" "Control"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{rep}\hlstd{(}\hlstr{"Treatment"}\hlstd{,} \hlnum{5}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "Treatment" "Treatment" "Treatment" "Treatment"
+## [5] "Treatment"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{rep}\hlstd{(}\hlstr{"Procedure Control"}\hlstd{,} \hlnum{5}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "Procedure Control" "Procedure Control"
+## [3] "Procedure Control" "Procedure Control"
+## [5] "Procedure Control"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
 Okay, we have dumped the each of the treatments onto the screen, but we haven't created any objects. Next, create a vector of the 15 observations, but using the c() function, which combines or more accurately concatenates the values. 
 
-<<>>=
-treatment <- c(rep("Control", 5), rep("Treatment", 5), rep("Procedure Control", 5))
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{treatment} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlstr{"Control"}\hlstd{,} \hlnum{5}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlstr{"Treatment"}\hlstd{,} \hlnum{5}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlstr{"Procedure Control"}\hlstd{,} \hlnum{5}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 There are a few things to notice. First, look at all the parentheses. Keeping track of these is really important, for every opening parentheses there is a closing one. And they have to be in the right place, based on the syntax of the function. As you can see, this can get rather complicated and mistakes will be made. In other words, try to pay attention to these characters, and if you get errors, look for mistakes with parenthesis as first strategy to fix errors. Second, notice all the commas. Just as important to the syntax of these commands as parenthesis, commas need to be in the right place. If they are not, you will get errors. Remember, no news is good news in R; when you get some text in return that you haven't asked for, there is an error somewhere, and always check for commas and parenthesis firsts. Finally, failing to match opening and closing quotations marks are also a common error. 
 
@@ -233,28 +353,40 @@ Generate 3 different error messages by leaving out a closing parenthesis or quot
 
 On of the most common objects is a data frame, which appears to be like a spreadsheet. We'll create a data frame by combining two vectors. First, let's create the vector of response values, which are flower date, as reported in Julian dates.\footnote[][-1.1cm]{Julian dates are the day number since the first day of the year, thus January 1st is Julian date 1 and Julian date 31 is January 31st.}
 
-<<echo = FALSE>>=
-options(width=110)
-@
+
 
 \begin{fullwidth}
-<<>>=
-flowering_date <- c(93, 94, 89, 87, 88, 84, 79, 85, 81, 82, 90, 79, 75, 88, 90) 
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{flowering_date} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{93}\hlstd{,} \hlnum{94}\hlstd{,} \hlnum{89}\hlstd{,} \hlnum{87}\hlstd{,} \hlnum{88}\hlstd{,} \hlnum{84}\hlstd{,} \hlnum{79}\hlstd{,} \hlnum{85}\hlstd{,} \hlnum{81}\hlstd{,} \hlnum{82}\hlstd{,} \hlnum{90}\hlstd{,} \hlnum{79}\hlstd{,} \hlnum{75}\hlstd{,} \hlnum{88}\hlstd{,} \hlnum{90}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 \end{fullwidth}
 
-<<echo = FALSE>>=
-options(width=60)
-@
+
 
 The vector name is a bit long, but it describes exactly what are in the data. It seems worth having names that are meaningful and that can remembered. But there is a trade off, you have to spell it correctly, so you may prefer shorter names. 
 
 Let's check to see if both vectors have the same length. If they are not, they will not be able to be combined into a data frame. Notice that each of the vectors have lower case letters. We could have capitalized the first letter, but as you will see below, I reserve that for data frame variable names. It is a matter of preference.
 
-<<>>=
-length(treatment)
-length(flowering_date)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{length}\hlstd{(treatment)}
+\end{alltt}
+\begin{verbatim}
+## [1] 15
+\end{verbatim}
+\begin{alltt}
+\hlkwd{length}\hlstd{(flowering_date)}
+\end{alltt}
+\begin{verbatim}
+## [1] 15
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \subsection{The Dataframe: A structure ready for analysis}
 
@@ -269,23 +401,45 @@ data.frame(Variable_Name1 = vector1, Variable_Names2 = vector2)
 
 In this example, we tell R the variable we are going to create (with a name--best when there are no spaces) and then make that equal to the vector of interest. In the example above, we create two variable names, each with a different vector.  So, let's try it with our created vectors:
 
-<<echo = FALSE, results = 'hide' >>=
-options(width=90)
-@
 
-<<>>=
-data.frame(Treatment = treatment, Flowering_date = flowering_date)
-@
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{data.frame}\hlstd{(}\hlkwc{Treatment} \hlstd{= treatment,} \hlkwc{Flowering_date} \hlstd{= flowering_date)}
+\end{alltt}
+\begin{verbatim}
+##            Treatment Flowering_date
+## 1            Control             93
+## 2            Control             94
+## 3            Control             89
+## 4            Control             87
+## 5            Control             88
+## 6          Treatment             84
+## 7          Treatment             79
+## 8          Treatment             85
+## 9          Treatment             81
+## 10         Treatment             82
+## 11 Procedure Control             90
+## 12 Procedure Control             79
+## 13 Procedure Control             75
+## 14 Procedure Control             88
+## 15 Procedure Control             90
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Great, that works, but we haven't created a data frame, we have only dumped the results on the the screen. So, let's create a data frame, called Flowering
 
-<<>>=
-Flowering <- data.frame(Treatment = treatment, Flowering_date = flowering_date)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Flowering} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{Treatment} \hlstd{= treatment,} \hlkwc{Flowering_date} \hlstd{= flowering_date)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
-<<echo = FALSE, results = 'hide' >>=
-options(width=60)
-@
+
 
 If this worked, then you get no response--just the prompt telling you R is ready for more info. To view all objects you have created, type \texttt{ls()}.\footnote{The ``l'' in the R GUI font is ambiguous because it is indistinguishable from the number 1. The \texttt{ls()} is composed of the letter \texttt{l} (not the number one) and the letter \texttt{s}.} Yes, for those of you old enough to remember how to use mainframe computers, this is the list command, which lists files in a directory. In this case, R lists that objects created and available in the workspace. If you quit and decide to save the work space, it is these files that will remain in R after you quit, otherwise they are erased and must be recreated if you want to use them again.  
 
@@ -311,9 +465,13 @@ The order is usually changed, where the intercept is first, followed by the slop
 
 The function to build a linear model is \texttt{lm()}. This function is extremely powerful and can be easily implemented, but this is a good time to see what the help menus look like in R. 
 
-<<echo = TRUE, eval = FALSE, results= 'verbatim' >>=
-help(lm)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{help}\hlstd{(lm)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 I am not showing it here, but you should see a long complex looking help page window pop up. All help files in R are structured the same way, so in spite of the uninterpretable text, written by and for computer programmers, the structure will become familiar. Beginning with the description, the help screen describes the function, how to use it, and give some examples. Admittedly, I rarely understand much of the text, but I find the examples to be very useful! In fact, I suggest you paste the example into R and see what happens, I find this one of the best ways to learn R. Use an example that I know works, then change it to make it do what I want it to do.
 
