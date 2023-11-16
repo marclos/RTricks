@@ -1,0 +1,26 @@
+{
+    "id": "61FD7CC1",
+    "path": "~/RTricks/1Shiny_Mauna_Loa/app1.R",
+    "project_path": "1Shiny_Mauna_Loa/app1.R",
+    "type": "r_source",
+    "hash": "2665521186",
+    "contents": "",
+    "dirty": false,
+    "created": 1668782932645.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "73,6",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1668876381,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1668876381717,
+    "read_only": false,
+    "read_only_alternatives": []
+}
