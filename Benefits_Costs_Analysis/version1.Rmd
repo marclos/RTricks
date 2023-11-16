@@ -15,4 +15,69 @@ Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by press
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+# Introduction
+Benefit-cost analysis (BCA) is a systematic approach used to assess the economic feasibility of a project or policy by comparing the benefits it generates with the costs involved. 
+
+
+# Policy Changes
+
+
+Benefit-cost analysis should be guided by the best available data and methods. Yet when assessing regulations, US agen-cies currently value future impacts using outdated methods and data to determine discount rates. A proposal to revise a docu-ment known as Circular A-4 would address this deficiency by modernizing discounting guidance (1), which would substantially improve US regulatory analysis. A corre-sponding update has also been drafted for Circular A-94, which will improve US fed-eral public investment analysis (2).A social discount rate is used in benefit-cost analysis to translate impacts that occur at different times into comparable present values. Circular A-4, a US regula-tory guidance document written in 2003 (3), directs agencies to use discount rates of 3% and 7% in most contexts. The 3% rate reflects the then-estimated risk-free rate at which society discounts consumption in the future. The 7% rate reflects the then-anticipated market rate of return to capital. These rates matter. For example, a hypothetical regulation might cost $20 bil-lion today and yield $100 billion in undis-counted benefits in 30 years. Using the 7% discount rate, that $100 billion would be equivalent to $13 billion today. Regulators would compare the $20 billion investment with the $13 billion benefit and find a net loss of $7 billion. If a 3% rate is used
+
+Circular A-4
+
+Benefit-cost analysis should be guided by the best available data and methods. Yet when assessing regulations, US agen-cies currently value future impacts using outdated methods and data to determine discount rates. A proposal to revise a docu-ment known as Circular A-4 would address this deficiency by modernizing discounting guidance (1), which would substantially improve US regulatory analysis. A corre-sponding update has also been drafted for Circular A-94, which will improve US fed-eral public investment analysis (2).A social discount rate is used in benefit-cost analysis to translate impacts that occur at different times into comparable present values. 
+
+Circular A-4, a US regula-tory guidance document written in 2003 (3), directs agencies to use discount rates of 3% and 7% in most contexts. The 3% rate reflects the then-estimated risk-free rate at which society discounts consump-tion in the future. The 7% rate reflects the then-anticipated market rate of return to capital. These rates matter. For example, a hypothetical regulation might cost $20 bil-lion today and yield $100 billion in undiscounted benefits in 30 years. Using the 7% discount rate, that $100 billion would be equivalent to $13 billion today. Regulators would compare the $20 billion investment with the $13 billion benefit and find a net loss of $7 billion. If a 3% rate is used instead, the same $20 billion investment, yielding the same $100 billion in 30 years, would be predicted to provide benefits equivalent to $41 billion today, a net gain of $21 billion. A lower discount rate thus
+
+Peter H. Howard et al. ,US benefit-cost analysis requires revision.Science380,803-803(2023).DOI:10.1126/science.adi5943
+
+
+R is a popular programming language for statistical computing and data analysis, which can be used to perform BCA calculations. Here's an explanation of how you can use R for conducting a benefit-cost analysis:
+
+1. Data Collection: Gather the necessary data on costs and benefits associated with the project or policy. This may include information on initial investment costs, operating costs, projected revenues, savings, or any other quantifiable benefits.
+
+2. Data Preparation: Organize the collected data into a suitable format for analysis. Create a dataset in R, ensuring that the costs and benefits are properly labeled and structured.
+
+3. Discounting: In many benefit-cost analyses, future costs and benefits are discounted to account for the time value of money. R provides functions to calculate present values of future cash flows using discount rates. You can use the `npv()` or `fv()` functions from the `financial` package in R to perform discounting calculations.
+
+4. Calculation of Net Present Value (NPV): NPV is a key metric in benefit-cost analysis. It represents the present value of net benefits by subtracting the discounted costs from the discounted benefits. You can calculate NPV by summing up the present values of all benefits and subtracting the present values of all costs. The `sum()` function in R can be used to calculate the sum of values.
+
+5. Sensitivity Analysis: BCA often involves assessing the sensitivity of results to changes in key variables or assumptions. R provides various tools and packages for conducting sensitivity analysis, such as the `sensitivity` package. Sensitivity analysis helps understand the impact of uncertainty on the project's outcomes.
+
+6. Visualization: R offers a wide range of data visualization libraries, such as ggplot2 or plotly, which can be used to create charts, graphs, or plots to visually represent the results of the benefit-cost analysis. Visualizations can help communicate the findings effectively.
+
+By following these steps, you can use R to perform benefit-cost analysis for a project or policy. It's important to note that BCA involves subjective judgment and relies on assumptions and estimates, so it's crucial to be transparent about these assumptions and consider their potential impact on the analysis.
+
+# Simple Example
+
+```{r}
+# Cost and Benefit Values
+year = c(0, 1, 2, 3, 4, 5)
+costs <- c(9, 7, 1, 2, 1, 1) #20 Billion in today's dollars
+costs = c(10, .5, .5, .5, .5, .5)*1000
+benefits <- c(0, 5, 4, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 10, 20, 30, 40) # $13B in today's dollars
+benefits <- c(0, 2.5, 2.5, 2.5, 3, 3)*1000
+# Discount Rate
+discount_rate1 <- 0.03
+discount_rate <- .078
+discount_rate2 <- 0.07
+
+net = benefits-costs; net
+discount_factor = (1+ discount_rate)^year; discount_factor
+
+discount_net = net/discount_factor; discount_net
+
+npv1 = sum(discount_net); npv1
+# Calculate Net Present Value (NPV)
+npv <- sum(benefits / (1 + discount_rate)^(1:length(benefits))) - sum(costs); npv
+
+# Calculate Return on Investment (ROI)
+roi <- (sum(benefits) - sum(costs)) / sum(costs) * 100
+
+# Print Results
+cat("Net Present Value (NPV): $", round(npv, 2), "\n")
+cat("Return on Investment (ROI): ", round(roi, 2), "%\n")
+
+```
+

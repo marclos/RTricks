@@ -1,7 +1,7 @@
 ---
 title: "A Tufte Handout Example"
 runningheader: "Learning R for Environmental Analysis" # only for pdf output
-subtitle: "" # only for html output
+subtitle: "Learning R for Environmental Analysis" # only for html output
 author: "Marc Los Huertos"
 date: "`r Sys.Date()`"
 output:
