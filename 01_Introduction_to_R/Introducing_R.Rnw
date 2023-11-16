@@ -257,7 +257,7 @@ I am not showing it here, but you should see a long complex looking help page wi
 Using the linear model, we can analyze several types of data, when the response variable is continuous. If the have a predictor variable that is categorical, then we often analyze the data using the method known as analysis of variance or ANOVA. If the predictor variable is continuous, then we often analyze data using a regression analysis. 
 
 
-<<>>=
+<<depth_v_temp>>=
 plot(depth, temperature)
 
 @
