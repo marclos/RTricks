@@ -1,0 +1,54 @@
+---
+title: "Visualizating pHake Lake Temperature Profiles"
+author: "Marc Los Huertos"
+date: "2024-01-15"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Downloading and Uploading Data
+
+1. Download the data from Google Sheets as a csv file (Note where on your computer the file is saved!)
+2. Start Rstudio Server (rstudio.pomona.edu)
+3. Create New Folder called pHake_Lake
+4. Upload data into pHake_Lake folder
+
+## Import into R
+
+1. Create an R Markdown file and give it a title and select pdf for the output.
+2. Save the file as R_pHakeLakeTempProfile.Rmd
+3. Use file.choose() in the console to select the file and path of the csv.
+4. Using your path, change the code below to match your path and file name, where you are specifying path to the temp.csv object.
+5. Run the modified code below to import into R.
+
+```{r importCSV}
+temp.csv <- "/home/mwl04747/RTricks/01_Introduction_to_R/Temperature Profile Data Entry - Test.csv"
+temp = read.csv(temp.csv)
+
+```
+
+6. If the code works, add a comment line for each function to explain what it does.
+
+## Check the Data have been imported correctly
+
+```{r checkData}
+ls()
+names(temp)
+str(temp)
+
+```
+
+## Plot the Data
+
+
+```{r plotData}
+plot(Temperature~Depth, data=temp)
+plot(-Depth~Temperature, data=temp)
+
+plot(-Depth~Temperature, data=temp, las=1, ty="l")
+
+plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(13,0), main="pHake Lake Temperature Profile (Jan X, 2023)")
+```
