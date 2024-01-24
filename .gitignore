@@ -24,7 +24,9 @@ vignettes/*.pdf
 *.knit.md
 # Folders
 00_resources/
-XX_Draft_Folder/
+DRAFT/
+OLD/
+
 # Guides
 # 01_Introduction_to_R/*.log
 

@@ -1,0 +1,40 @@
+---
+title: "Keeling Curve"
+author: "Marc Los Huertos"
+date: "2024-01-23"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read Data
+
+```{r}
+maunaloa <- read.csv("/home/mwl04747/RTricks/keeling/Mauna_Loa.csv")
+```
+## Plot Data
+
+```{r}
+plot(average~decimal.date, data=maunaloa, ty="l", xlab="Year", ylab="CO2 Concentration (ppm)")
+
+maunaloa.lm=lm(average~decimal.date, data=maunaloa)
+abline(maunaloa.lm, col="red")
+```
+
+## Check Assumptions
+```{r}
+par(mfrow=c(2,2))
+plot(maunaloa.lm)
+```
+
+## Create Loess Plots
+
+```{r}
+plot(average~decimal.date, data=maunaloa, ty="l", xlab="Year", ylab="CO2 Concentration (ppmv)", las=1, main="Carbon Dioxide Concentration at Mauna Loa Observatory", cex.lab=1.3)
+
+fitted <- loess(average~decimal.date, data=maunaloa, span=1/3)
+lines(maunaloa$decimal.date, fitted$fitted, col="blue", lwd=2)
+```
+
