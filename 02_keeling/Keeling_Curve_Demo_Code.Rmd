@@ -1,5 +1,5 @@
 ---
-title: "Keeling Curve"
+title: "Keeling Curve Demo Code"
 author: "Marc Los Huertos"
 date: "2024-01-23"
 output: pdf_document
@@ -7,12 +7,14 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(here) # used to help move between github users, and with knitr sessions
 ```
 
 ## Read Data
 
 ```{r}
-maunaloa <- read.csv("/home/mwl04747/RTricks/keeling/Mauna_Loa.csv")
+filepath = here("02_keeling","Mauna_Loa.csv")
+maunaloa <- read.csv(filepath)
 ```
 ## Plot Data
 
@@ -38,3 +40,4 @@ fitted <- loess(average~decimal.date, data=maunaloa, span=1/3)
 lines(maunaloa$decimal.date, fitted$fitted, col="blue", lwd=2)
 ```
 
+See handout for more details and more code and examples.
