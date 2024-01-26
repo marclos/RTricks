@@ -13,9 +13,49 @@ library(here) # used to help move between github users, and with knitr sessions
 ## Read Data
 
 ```{r}
-filepath = here("02_keeling","Mauna_Loa.csv")
-maunaloa <- read.csv(filepath)
+#filepath = here("02_keeling","Mauna_Loa.csv")
+filename = "/home/mwl04747/RTricks/02_keeling/Mauna_Loa.csv"
+
+maunaloa <- read.csv(filename)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Plot Data
 
 ```{r}
@@ -25,11 +65,53 @@ maunaloa.lm=lm(average~decimal.date, data=maunaloa)
 abline(maunaloa.lm, col="red")
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Check Assumptions
 ```{r}
 par(mfrow=c(2,2))
 plot(maunaloa.lm)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Create Loess Plots
 
