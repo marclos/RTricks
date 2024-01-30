@@ -319,28 +319,7 @@ To accomplish this, I need to do a loop to select the first 5 stations for each 
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# export file to csv}
-\hlkwd{write.csv}\hlstd{(stations.active.oldest,} \hlstr{"stations.active.oldest.csv"}\hlstd{)}
-
-
-\hlstd{StationStates} \hlkwb{=} \hlkwd{unique}\hlstd{(Station.sel}\hlopt{$}\hlstd{STATE)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in unique(Station.sel\$STATE): object 'Station.sel' not found}}\begin{alltt}
-\hlstd{my.state} \hlkwb{=} \hlstr{"CA"}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{state.df} \hlkwb{=} \hlkwd{subset}\hlstd{(Station.sel,} \hlkwc{subset}\hlstd{=STATE}\hlopt{==}\hlstd{my.state)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in subset(Station.sel, subset = STATE == my.state): object 'Station.sel' not found}}\begin{alltt}
-\hlcom{#subset(Stations, subset=STATE %in% state.df$STATE)}
+\hlkwd{write.csv}\hlstd{(stations.active.oldest,} \hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{))}
 \end{alltt}
 \end{kframe}
 \end{knitrout}

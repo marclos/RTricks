@@ -100,10 +100,128 @@
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlcom{#state.df = subset(Station.sel, subset=STATE==my.state)}
-\hlcom{#subset(Stations, subset=STATE %in% state.df$STATE)}
+\hlcom{# Select Stations in State}
+\hlstd{my.stations} \hlkwb{=} \hlkwd{subset}\hlstd{(stations.active.oldest, STATE} \hlopt{==} \hlstd{my.state)}
+
+\hlcom{# Download Updated Station Data}
+\hlstd{i}\hlkwb{=}\hlnum{1}
+\hlstd{here}\hlopt{::}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{, my.stations}\hlopt{$}\hlstd{ID[i])}
+\end{alltt}
+\begin{verbatim}
+## [1] "/home/mwl04747/RTricks/04_Regional_Climate_Trends/USC00043157"
+\end{verbatim}
+\begin{alltt}
+\hlcom{#station = data.frame(NULL)}
+\hlkwa{for}\hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{nrow}\hlstd{(my.stations))\{}
+  \hlstd{url} \hlkwb{=} \hlkwd{paste0}\hlstd{(}\hlstr{"https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/"}\hlstd{, my.stations}\hlopt{$}\hlstd{ID[i],} \hlstr{".csv.gz"}\hlstd{)}
+
+\hlkwd{print}\hlstd{(i)} \hlcom{# Print Index Number}
+\hlkwd{download.file}\hlstd{(url,} \hlkwd{paste0}\hlstd{(here}\hlopt{::}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"Data"}\hlstd{,} \hlstr{"SP24/"}\hlstd{), my.stations}\hlopt{$}\hlstd{ID[i],} \hlstr{".csv.gz"}\hlstd{),} \hlkwc{quiet} \hlstd{=} \hlnum{FALSE}\hlstd{,} \hlkwc{mode} \hlstd{=} \hlstr{"w"}\hlstd{,} \hlkwc{cacheOK} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{assign}\hlstd{(}\hlkwd{paste0}\hlstd{(}\hlstr{"station"}\hlstd{, i),} \hlkwd{read.csv}\hlstd{(}\hlkwd{gzfile}\hlstd{(}\hlkwd{paste0}\hlstd{(here}\hlopt{::}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"Data"}\hlstd{,} \hlstr{"SP24/"}\hlstd{),my.stations}\hlopt{$}\hlstd{ID[i],} \hlstr{".csv.gz"}\hlstd{)),} \hlkwc{header}\hlstd{=}\hlnum{FALSE}\hlstd{))}
+
+\hlcom{# can't get the header named in loop!}
+\hlcom{#names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT", "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")}
+
+\hlstd{\}}
+\end{alltt}
+\begin{verbatim}
+## [1] 1
+## [1] 2
+## [1] 3
+## [1] 4
+## [1] 5
+\end{verbatim}
+\begin{alltt}
+\hlkwd{names}\hlstd{(station1)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"ID"}\hlstd{,} \hlstr{"DATE"}\hlstd{,} \hlstr{"ELEMENT"}\hlstd{,} \hlstr{"VALUE"}\hlstd{,} \hlstr{"M-FLAG"}\hlstd{,} \hlstr{"Q-FLAG"}\hlstd{,} \hlstr{"S-FLAG"}\hlstd{,} \hlstr{"OBS-TIME"}\hlstd{)}
+\hlkwd{names}\hlstd{(station3)} \hlkwb{<-} \hlkwd{names}\hlstd{(station2)} \hlkwb{<-} \hlkwd{names}\hlstd{(station1)}
+\hlkwd{names}\hlstd{(station5)} \hlkwb{<-} \hlkwd{names}\hlstd{(station4)} \hlkwb{<-} \hlkwd{names}\hlstd{(station1)}
+
+\hlcom{# NAMES OF VARIABLES ARE INCORRECT??}
+
+  \hlcom{#ID = 11 character station identification code}
+  \hlcom{#YEAR/MONTH/DAY = 8 character date in YYYYMMDD format (e.g. 19860529 = May 29, 1986)}
+  \hlcom{#ELEMENT = 4 character indicator of element type }
+  \hlcom{#DATA VALUE = 5 character data value for ELEMENT }
+  \hlcom{#M-FLAG = 1 character Measurement Flag }
+  \hlcom{#Q-FLAG = 1 character Quality Flag }
+  \hlcom{#S-FLAG = 1 character Source Flag }
+  \hlcom{#OBS-TIME = 4-character time of observation in hour-minute format (i.e. 0700 =7:00 am); if no ob time information }
+ \hlcom{#is available, the field is left empty}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
+
+\section{Process and Clean Data}
+
+\subsection{Correct Values Units}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{station1}\hlopt{$}\hlstd{VALUE} \hlkwb{=} \hlstd{station1}\hlopt{$}\hlstd{VALUE}\hlopt{/}\hlnum{10}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Fix Dates!}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#fix Dates}
+\hlstd{station1}\hlopt{$}\hlstd{Ymd} \hlkwb{=} \hlkwd{as.Date}\hlstd{(}\hlkwd{as.character}\hlstd{(station1}\hlopt{$}\hlstd{DATE),} \hlkwc{format} \hlstd{=} \hlstr{"%Y%m%d"}\hlstd{)}
+\hlkwd{str}\hlstd{(station1)}
+\end{alltt}
+\begin{verbatim}
+## 'data.frame':	224921 obs. of  9 variables:
+##  $ ID      : chr  "USC00043157" "USC00043157" "USC00043157" "USC00043157" ...
+##  $ DATE    : int  18670601 18670602 18670603 18670604 18670605 18670606 18670607 18670608 18670609 18670610 ...
+##  $ ELEMENT : chr  "PRCP" "PRCP" "PRCP" "PRCP" ...
+##  $ VALUE   : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ M-FLAG  : chr  "" "" "" "" ...
+##  $ Q-FLAG  : chr  "" "" "" "" ...
+##  $ S-FLAG  : chr  "F" "F" "F" "F" ...
+##  $ OBS-TIME: int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ Ymd     : Date, format: "1867-06-01" "1867-06-02" ...
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Baseline Period 1961-1990}
+
+\hlstd{station1.baseline} \hlkwb{=} \hlkwd{subset}\hlstd{(station1, Ymd} \hlopt{>=} \hlstr{"1961-01-01"} \hlopt{&} \hlstd{Ymd} \hlopt{<=} \hlstr{"1990-12-31"}\hlstd{)}
+\hlstd{a}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'a' not found}}\begin{alltt}
+\hlcom{# Monthly Averages}
+\hlstd{station1}\hlopt{$}\hlstd{MONTH} \hlkwb{=} \hlkwd{as.numeric}\hlstd{(}\hlkwd{format}\hlstd{(station1}\hlopt{$}\hlstd{Ymd,} \hlstr{"%m"}\hlstd{))}
+\hlstd{station1}\hlopt{$}\hlstd{YEAR} \hlkwb{=} \hlkwd{as.numeric}\hlstd{(}\hlkwd{format}\hlstd{(station1}\hlopt{$}\hlstd{Ymd,} \hlstr{"%Y"}\hlstd{))}
+\hlstd{station1.monthly} \hlkwb{=} \hlkwd{aggregate}\hlstd{(VALUE} \hlopt{~} \hlstd{MONTH} \hlopt{+} \hlstd{YEAR,}
+                             \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1, ELEMENT} \hlopt{==} \hlstr{"TMAX"}\hlstd{), mean)}
+\hlkwd{str}\hlstd{(station1.monthly)}
+\end{alltt}
+\begin{verbatim}
+## 'data.frame':	1601 obs. of  3 variables:
+##  $ MONTH: num  1 2 3 4 5 6 7 8 9 10 ...
+##  $ YEAR : num  1870 1870 1870 1870 1870 1870 1870 1870 1870 1870 ...
+##  $ VALUE: num  4.51 7.02 7.14 16.06 20.64 ...
+\end{verbatim}
+\begin{alltt}
+\hlcom{# lm}
+\hlkwa{for}\hlstd{(i} \hlkwa{in} \hlkwd{unique}\hlstd{(station1.monthly}\hlopt{$}\hlstd{MONTH))\{}
+  \hlstd{temp.lm} \hlkwb{<-} \hlkwd{lm}\hlstd{(VALUE} \hlopt{~} \hlstd{YEAR,} \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1.monthly, MONTH}\hlopt{==}\hlstd{i))}
+
+\hlstd{\}}
+
+\hlkwd{plot}\hlstd{(VALUE} \hlopt{~} \hlstd{YEAR,} \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1.monthly, MONTH} \hlopt{==} \hlnum{1}\hlstd{),}
+     \hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.5}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlkwd{coef}\hlstd{(temp.lm),} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-6-1} 
+\end{knitrout}
+
+
+
 
 \end{document}
