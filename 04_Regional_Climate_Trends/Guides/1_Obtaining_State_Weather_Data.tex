@@ -50,7 +50,7 @@
 
 \usepackage{alltt}
 
-\title{Obtaining Climate Data from NOAA}
+\title{Obtaining and Cleaning NOAA Weather Station Data}
 \author{Marc Los Huertos}
 \date{\today~(ver. 0.4)}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -59,7 +59,13 @@
 
 \section{Introduction}
 
+\subsection{Goals}
+
+Using a list of active weather stations in the United States, you  will download and process the data to create a time series of temperature anomalies. 
+
 \subsection{Read Data}
+
+First, we install some packages and read in the data.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -71,7 +77,8 @@
 {\ttfamily\noindent\itshape\color{messagecolor}{\#\# here() starts at /home/mwl04747/RTricks}}\begin{alltt}
 \hlkwd{library}\hlstd{(xtable)}
 
-\hlstd{stations.active.oldest} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{))}
+\hlstd{stations.active.oldest} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}
+  \hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{))}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
@@ -81,18 +88,20 @@
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{stations.unique} \hlkwb{=} \hlkwd{unique}\hlstd{(stations.active.oldest[,}\hlkwd{c}\hlstd{(}\hlstr{"STATE"}\hlstd{,} \hlstr{"STATE_NAME"}\hlstd{)])}
+\hlstd{stations.unique} \hlkwb{=}
+  \hlkwd{unique}\hlstd{(stations.active.oldest[,}\hlkwd{c}\hlstd{(}\hlstr{"STATE"}\hlstd{,} \hlstr{"STATE_NAME"}\hlstd{)])}
 
 \hlstd{xtab} \hlkwb{=} \hlkwd{xtable}\hlstd{(stations.unique)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
+The each of you will select a state -- see the Google Sheet sign up so we have a diverse set of states.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{my.state} \hlkwb{=} \hlstr{"CA"}
+\hlstd{my.state} \hlkwb{=} \hlstr{"CA"} \hlcom{# change the "CA" to your state}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
@@ -101,7 +110,7 @@
 
 \subsection{Function to Download Data}
 
-
+This uses the stations.active.oldest file to download the data from the NOAA website based on the state you have choose.
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -118,15 +127,23 @@
 \begin{alltt}
 \hlcom{#station = data.frame(NULL)}
 \hlkwa{for}\hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{nrow}\hlstd{(my.stations))\{}
-  \hlstd{url} \hlkwb{=} \hlkwd{paste0}\hlstd{(}\hlstr{"https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/"}\hlstd{, my.stations}\hlopt{$}\hlstd{ID[i],} \hlstr{".csv.gz"}\hlstd{)}
+  \hlstd{url} \hlkwb{=} \hlkwd{paste0}\hlstd{(}\hlstr{"https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/"}\hlstd{,}
+               \hlstd{my.stations}\hlopt{$}\hlstd{ID[i],}
+               \hlstr{".csv.gz"}\hlstd{)}
 
 \hlkwd{print}\hlstd{(i)} \hlcom{# Print Index Number}
-\hlkwd{download.file}\hlstd{(url,} \hlkwd{paste0}\hlstd{(here}\hlopt{::}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"Data"}\hlstd{,} \hlstr{"SP24/"}\hlstd{), my.stations}\hlopt{$}\hlstd{ID[i],} \hlstr{".csv.gz"}\hlstd{),} \hlkwc{quiet} \hlstd{=} \hlnum{FALSE}\hlstd{,} \hlkwc{mode} \hlstd{=} \hlstr{"w"}\hlstd{,} \hlkwc{cacheOK} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlkwd{download.file}\hlstd{(url,} \hlkwd{paste0}\hlstd{(here}\hlopt{::}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,}
+                                     \hlstr{"Data"}\hlstd{,}
+                                     \hlstr{"SP24/"}\hlstd{),}
+                          \hlstd{my.stations}\hlopt{$}\hlstd{ID[i],}
+                          \hlstr{".csv.gz"}\hlstd{),}
+              \hlkwc{quiet} \hlstd{=} \hlnum{FALSE}\hlstd{,} \hlkwc{mode} \hlstd{=} \hlstr{"w"}\hlstd{,} \hlkwc{cacheOK} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 
 \hlkwd{assign}\hlstd{(}\hlkwd{paste0}\hlstd{(}\hlstr{"station"}\hlstd{, i),} \hlkwd{read.csv}\hlstd{(}\hlkwd{gzfile}\hlstd{(}\hlkwd{paste0}\hlstd{(here}\hlopt{::}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"Data"}\hlstd{,} \hlstr{"SP24/"}\hlstd{),my.stations}\hlopt{$}\hlstd{ID[i],} \hlstr{".csv.gz"}\hlstd{)),} \hlkwc{header}\hlstd{=}\hlnum{FALSE}\hlstd{))}
 
-\hlcom{# can't get the header named in loop!}
-\hlcom{#names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT", "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")}
+\hlcom{# can't get the header named in loop! Grrr...}
+\hlcom{#names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT", }
+\hlcom{# "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")}
 
 \hlstd{\}}
 \end{alltt}
@@ -138,20 +155,23 @@
 ## [1] 5
 \end{verbatim}
 \begin{alltt}
-\hlkwd{names}\hlstd{(station1)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"ID"}\hlstd{,} \hlstr{"DATE"}\hlstd{,} \hlstr{"ELEMENT"}\hlstd{,} \hlstr{"VALUE"}\hlstd{,} \hlstr{"M-FLAG"}\hlstd{,} \hlstr{"Q-FLAG"}\hlstd{,} \hlstr{"S-FLAG"}\hlstd{,} \hlstr{"OBS-TIME"}\hlstd{)}
+\hlkwd{names}\hlstd{(station1)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"ID"}\hlstd{,} \hlstr{"DATE"}\hlstd{,} \hlstr{"ELEMENT"}\hlstd{,} \hlstr{"VALUE"}\hlstd{,}
+                     \hlstr{"M-FLAG"}\hlstd{,} \hlstr{"Q-FLAG"}\hlstd{,} \hlstr{"S-FLAG"}\hlstd{,} \hlstr{"OBS-TIME"}\hlstd{)}
 \hlkwd{names}\hlstd{(station3)} \hlkwb{<-} \hlkwd{names}\hlstd{(station2)} \hlkwb{<-} \hlkwd{names}\hlstd{(station1)}
 \hlkwd{names}\hlstd{(station5)} \hlkwb{<-} \hlkwd{names}\hlstd{(station4)} \hlkwb{<-} \hlkwd{names}\hlstd{(station1)}
 
-\hlcom{# NAMES OF VARIABLES ARE INCORRECT??}
+\hlcom{# NAMES OF VARIABLES ARE INCORRECT for some STATIONS??}
 
   \hlcom{#ID = 11 character station identification code}
-  \hlcom{#YEAR/MONTH/DAY = 8 character date in YYYYMMDD format (e.g. 19860529 = May 29, 1986)}
+  \hlcom{#YEAR/MONTH/DAY = 8 character date in YYYYMMDD format }
+  \hlcom{#                     (e.g. 19860529 = May 29, 1986)}
   \hlcom{#ELEMENT = 4 character indicator of element type }
   \hlcom{#DATA VALUE = 5 character data value for ELEMENT }
   \hlcom{#M-FLAG = 1 character Measurement Flag }
   \hlcom{#Q-FLAG = 1 character Quality Flag }
   \hlcom{#S-FLAG = 1 character Source Flag }
-  \hlcom{#OBS-TIME = 4-character time of observation in hour-minute format (i.e. 0700 =7:00 am); if no ob time information }
+  \hlcom{#OBS-TIME = 4-character time of observation in hour-minute format}
+  \hlcom{#                     (i.e. 0700 =7:00 am); if no ob time information }
  \hlcom{#is available, the field is left empty}
 \end{alltt}
 \end{kframe}
@@ -159,21 +179,40 @@
 
 \section{Process and Clean Data}
 
-\subsection{Correct Values Units}
+
+I have created a "function" that can process and clean the data, if the data are consistent!  If not, we'll trouble shoot together. 
+
+Here's the data structure, using str(), but if you have something different, please let me know and we'll sort out how to fix it. 
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{station1}\hlopt{$}\hlstd{VALUE} \hlkwb{=} \hlstd{station1}\hlopt{$}\hlstd{VALUE}\hlopt{/}\hlnum{10}
+\hlkwd{str}\hlstd{(station1)}
 \end{alltt}
+\begin{verbatim}
+## 'data.frame':	224921 obs. of  8 variables:
+##  $ ID      : chr  "USC00043157" "USC00043157" "USC00043157" "USC00043157" ...
+##  $ DATE    : int  18670601 18670602 18670603 18670604 18670605 18670606 18670607 18670608 18670609 18670610 ...
+##  $ ELEMENT : chr  "PRCP" "PRCP" "PRCP" "PRCP" ...
+##  $ VALUE   : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ M-FLAG  : chr  "" "" "" "" ...
+##  $ Q-FLAG  : chr  "" "" "" "" ...
+##  $ S-FLAG  : chr  "F" "F" "F" "F" ...
+##  $ OBS-TIME: int  NA NA NA NA NA NA NA NA NA NA ...
+\end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-\subsection{Fix Dates!}
+
+\subsection{Clean Data}
+
+First, I tested each line on station1. I will then create a function to clean the data and apply it to each station.
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlcom{#fix Dates}
+\hlstd{station1}\hlopt{$}\hlstd{VALUE} \hlkwb{=} \hlstd{station1}\hlopt{$}\hlstd{VALUE}\hlopt{/}\hlnum{10}  \hlcom{# Correct Values Units}
+\hlcom{# Fix Date format}
 \hlstd{station1}\hlopt{$}\hlstd{Ymd} \hlkwb{=} \hlkwd{as.Date}\hlstd{(}\hlkwd{as.character}\hlstd{(station1}\hlopt{$}\hlstd{DATE),} \hlkwc{format} \hlstd{=} \hlstr{"%Y%m%d"}\hlstd{)}
 \hlkwd{str}\hlstd{(station1)}
 \end{alltt}
@@ -190,42 +229,84 @@
 ##  $ Ymd     : Date, format: "1867-06-01" "1867-06-02" ...
 \end{verbatim}
 \begin{alltt}
-\hlcom{# Baseline Period 1961-1990}
-
-\hlstd{station1.baseline} \hlkwb{=} \hlkwd{subset}\hlstd{(station1, Ymd} \hlopt{>=} \hlstr{"1961-01-01"} \hlopt{&} \hlstd{Ymd} \hlopt{<=} \hlstr{"1990-12-31"}\hlstd{)}
-\hlstd{a}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'a' not found}}\begin{alltt}
-\hlcom{# Monthly Averages}
 \hlstd{station1}\hlopt{$}\hlstd{MONTH} \hlkwb{=} \hlkwd{as.numeric}\hlstd{(}\hlkwd{format}\hlstd{(station1}\hlopt{$}\hlstd{Ymd,} \hlstr{"%m"}\hlstd{))}
 \hlstd{station1}\hlopt{$}\hlstd{YEAR} \hlkwb{=} \hlkwd{as.numeric}\hlstd{(}\hlkwd{format}\hlstd{(station1}\hlopt{$}\hlstd{Ymd,} \hlstr{"%Y"}\hlstd{))}
 \hlstd{station1.monthly} \hlkwb{=} \hlkwd{aggregate}\hlstd{(VALUE} \hlopt{~} \hlstd{MONTH} \hlopt{+} \hlstd{YEAR,}
-                             \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1, ELEMENT} \hlopt{==} \hlstr{"TMAX"}\hlstd{), mean)}
-\hlkwd{str}\hlstd{(station1.monthly)}
+                   \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1, ELEMENT} \hlopt{==} \hlstr{"TMAX"}\hlstd{), mean)}
+
+\hlcom{# create baseline dataset}
+\hlstd{station1.baseline} \hlkwb{=} \hlkwd{subset}\hlstd{(station1,}
+                           \hlstd{Ymd} \hlopt{>=} \hlstr{"1961-01-01"} \hlopt{&} \hlstd{Ymd} \hlopt{<=} \hlstr{"1990-12-31"}\hlstd{)}
+\hlstd{station1.baseline.monthly} \hlkwb{=} \hlkwd{aggregate}\hlstd{(VALUE} \hlopt{~} \hlstd{MONTH,}
+                   \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1, ELEMENT} \hlopt{==} \hlstr{"TMAX"}\hlstd{), mean)}
+\hlkwd{names}\hlstd{(station1.baseline.monthly)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"MONTH"}\hlstd{,} \hlstr{"BASELINE"}\hlstd{)}
+
+\hlstd{station1.anomaly} \hlkwb{=} \hlkwd{merge}\hlstd{(station1.monthly,}
+                         \hlstd{station1.baseline.monthly,} \hlkwc{by} \hlstd{=} \hlstr{"MONTH"}\hlstd{)}
+\hlstd{station1.anomaly}\hlopt{$}\hlstd{ANOMALY} \hlkwb{=}
+  \hlstd{station1.anomaly}\hlopt{$}\hlstd{VALUE} \hlopt{-} \hlstd{station1.anomaly}\hlopt{$}\hlstd{BASELINE}
 \end{alltt}
-\begin{verbatim}
-## 'data.frame':	1601 obs. of  3 variables:
-##  $ MONTH: num  1 2 3 4 5 6 7 8 9 10 ...
-##  $ YEAR : num  1870 1870 1870 1870 1870 1870 1870 1870 1870 1870 ...
-##  $ VALUE: num  4.51 7.02 7.14 16.06 20.64 ...
-\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Clean Data Function}
+
+Function is probably senstive to missing values, need to work on that!
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlcom{# lm}
-\hlkwa{for}\hlstd{(i} \hlkwa{in} \hlkwd{unique}\hlstd{(station1.monthly}\hlopt{$}\hlstd{MONTH))\{}
-  \hlstd{temp.lm} \hlkwb{<-} \hlkwd{lm}\hlstd{(VALUE} \hlopt{~} \hlstd{YEAR,} \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1.monthly, MONTH}\hlopt{==}\hlstd{i))}
-
+\hlstd{cleandataframe.fun} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)\{}
+  \hlstd{x}\hlopt{$}\hlstd{VALUE} \hlkwb{=} \hlstd{x}\hlopt{$}\hlstd{VALUE}\hlopt{/}\hlnum{10}
+  \hlstd{x}\hlopt{$}\hlstd{Ymd} \hlkwb{=} \hlkwd{as.Date}\hlstd{(}\hlkwd{as.character}\hlstd{(x}\hlopt{$}\hlstd{DATE),} \hlkwc{format} \hlstd{=} \hlstr{"%Y%m%d"}\hlstd{)}
+  \hlstd{x}\hlopt{$}\hlstd{MONTH} \hlkwb{=} \hlkwd{as.numeric}\hlstd{(}\hlkwd{format}\hlstd{(x}\hlopt{$}\hlstd{Ymd,} \hlstr{"%m"}\hlstd{))}
+  \hlstd{x}\hlopt{$}\hlstd{YEAR} \hlkwb{=} \hlkwd{as.numeric}\hlstd{(}\hlkwd{format}\hlstd{(x}\hlopt{$}\hlstd{Ymd,} \hlstr{"%Y"}\hlstd{))}
+  \hlstd{x.monthly} \hlkwb{=} \hlkwd{aggregate}\hlstd{(VALUE} \hlopt{~} \hlstd{MONTH} \hlopt{+} \hlstd{YEAR,}
+                   \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(x, ELEMENT} \hlopt{==} \hlstr{"TMAX"}\hlstd{), mean)}
+  \hlstd{x.baseline} \hlkwb{=} \hlkwd{subset}\hlstd{(x, Ymd} \hlopt{>=} \hlstr{"1961-01-01"} \hlopt{&} \hlstd{Ymd} \hlopt{<=} \hlstr{"1990-12-31"}\hlstd{)}
+  \hlstd{x.baseline.monthly} \hlkwb{=} \hlkwd{aggregate}\hlstd{(VALUE} \hlopt{~} \hlstd{MONTH,}
+                   \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(x, ELEMENT} \hlopt{==} \hlstr{"TMAX"}\hlstd{), mean)}
+  \hlkwd{names}\hlstd{(x.baseline.monthly)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"MONTH"}\hlstd{,} \hlstr{"BASELINE"}\hlstd{)}
+  \hlstd{x.anomaly} \hlkwb{=} \hlkwd{merge}\hlstd{(x.monthly, x.baseline.monthly,} \hlkwc{by} \hlstd{=} \hlstr{"MONTH"}\hlstd{)}
+  \hlstd{x.anomaly}\hlopt{$}\hlstd{ANOMALY} \hlkwb{=} \hlstd{x.anomaly}\hlopt{$}\hlstd{VALUE} \hlopt{-} \hlstd{x.anomaly}\hlopt{$}\hlstd{BASELINE}
+  \hlkwd{return}\hlstd{(x.anomaly)}
 \hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
-\hlkwd{plot}\hlstd{(VALUE} \hlopt{~} \hlstd{YEAR,} \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1.monthly, MONTH} \hlopt{==} \hlnum{1}\hlstd{),}
-     \hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.5}\hlstd{)}
+\subsection{Apply Function to All Stations}
+
+So far, I have only run function for 1 station, but I suspect you can figure out how to run it for each one!
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{station1.TMAX} \hlkwb{=} \hlkwd{cleandataframe.fun}\hlstd{(station1)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Plot Anomoly}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(ANOMALY} \hlopt{~} \hlstd{YEAR,} \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1.TMAX, MONTH} \hlopt{==} \hlnum{1}\hlstd{),}
+     \hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.5}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Year"}\hlstd{,}
+     \hlkwc{ylab} \hlstd{=} \hlstr{"Maximum Temp Anomaly (C)"}\hlstd{,}
+     \hlkwc{main}\hlstd{=}\hlstr{"January Maximum Temp Anomaly"}\hlstd{)}
+\hlstd{temp.lm} \hlkwb{=} \hlkwd{lm}\hlstd{(ANOMALY} \hlopt{~} \hlstd{YEAR,} \hlkwc{data} \hlstd{=} \hlkwd{subset}\hlstd{(station1.TMAX, MONTH} \hlopt{==} \hlnum{1}\hlstd{))}
 \hlkwd{abline}\hlstd{(}\hlkwd{coef}\hlstd{(temp.lm),} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-6-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-1} 
 \end{knitrout}
 
+
+\section{Next Steps}
+
+This is all we need to do so far. Next week, we'll look at different way to visualize the data!
 
 
 
