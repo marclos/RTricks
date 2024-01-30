@@ -2,7 +2,7 @@
 
 \title{Obtaining and Cleaning NOAA Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.4)} 
+\date{\today~(ver. 0.75)} 
 
 \begin{document}
 \maketitle
@@ -15,7 +15,7 @@ Using a list of active weather stations in the United States, you  will download
 
 \subsection{Read Data}
 
-First, we install some packages and read in the data.
+First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called "04\_Regional\_Climate\_Trends") and then used the function here() to get the working directory and read the csv into R. This might be easier than the file.choose() option, but you can use that if you prefer.
 
 <<>>=
 library(here)
@@ -23,8 +23,25 @@ library(xtable)
 
 stations.active.oldest = read.csv(
   here("04_Regional_Climate_Trends", "stations.active.oldest.csv"))
+
+# OR
+# use file.choose() to select the file
+# filename = "MY.PATH/04_Regional_Climate_Trends/stations.active.oldest.csv"
+# stations.active.oldest = read.csv(filename)
 @ 
 
+
+\subsection{Map US Weather Stations}
+
+Here's a map of the weather stations in the dataset. Pretty lame map!  We'll make a better one later.\footnote{Evelyn/Brody: This is a good change to see how to use R for map making! First we need to transform that data.}
+
+<<>>=
+plot(stations.active.oldest$LONGITUDE, 
+     stations.active.oldest$LATITUDE, 
+     xlab = "Longitude",ylab = "Latitude", 
+     pch=20, cex=0.3, col='gray60', las=1,
+     main = "US Weather Stations")
+@
 \subsection{Select and Evaluate State Data}
 
 <<>>=
@@ -42,18 +59,21 @@ my.state = "CA" # change the "CA" to your state
 
 \section{Download Data from NOAA}
 
-\subsection{Function to Download Data}
+\subsection{Subset Station Data by State}
 
 This uses the stations.active.oldest file to download the data from the NOAA website based on the state you have choose.
-<<>>=
-# Select Stations in State
+
+<<>>=# Select Stations in State
 my.stations = subset(stations.active.oldest, STATE == my.state)
 
 # Download Updated Station Data
 i=1
 here::here("04_Regional_Climate_Trends", my.stations$ID[i])
+@
 
-#station = data.frame(NULL)
+
+The loop is not ideal -- loops are slow in R and prone to break -- but it should work for our purposes.\footnote{Evelyn/Brody: I wonder if we can test if the file exists so we don't have to downwload every time!} 
+<<>>=
 for(i in 1:nrow(my.stations)){
   url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", 
                my.stations$ID[i], 
@@ -67,14 +87,18 @@ download.file(url, paste0(here::here("04_Regional_Climate_Trends",
                           ".csv.gz"), 
               quiet = FALSE, mode = "w", cacheOK = TRUE)
 
-assign(paste0("station", i), read.csv(gzfile(paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24/"),my.stations$ID[i], ".csv.gz")), header=FALSE))
+assign(paste0("station", i), 
+       read.csv(gzfile(paste0(here::here("04_Regional_Climate_Trends", 
+            "Data", "SP24/"),my.stations$ID[i], ".csv.gz")), 
+            header=FALSE))
 
 # can't get the header named in loop! Grrr...
 #names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT", 
 # "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
 
-}
+} # LOOP END
 
+# Fix Variable Names based on NOAA Documentation
 names(station1) <- c("ID", "DATE", "ELEMENT", "VALUE", 
                      "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
 names(station3) <- names(station2) <- names(station1)
@@ -123,17 +147,17 @@ station1$YEAR = as.numeric(format(station1$Ymd, "%Y"))
 station1.monthly = aggregate(VALUE ~ MONTH + YEAR, 
                    data = subset(station1, ELEMENT == "TMAX"), mean)
 
-# create baseline dataset
-station1.baseline = subset(station1, 
+# create baseline (normals) dataset
+station1.normals = subset(station1, 
                            Ymd >= "1961-01-01" & Ymd <= "1990-12-31") 
-station1.baseline.monthly = aggregate(VALUE ~ MONTH, 
-                   data = subset(station1, ELEMENT == "TMAX"), mean)
-names(station1.baseline.monthly) <- c("MONTH", "BASELINE")
+station1.normals.monthly = aggregate(VALUE ~ MONTH, 
+                   data = subset(station1.normals, ELEMENT == "TMAX"), mean)
+names(station1.normals.monthly) <- c("MONTH", "NORMALS")
 
 station1.anomaly = merge(station1.monthly, 
-                         station1.baseline.monthly, by = "MONTH")
+                         station1.normals.monthly, by = "MONTH")
 station1.anomaly$ANOMALY = 
-  station1.anomaly$VALUE - station1.anomaly$BASELINE
+  station1.anomaly$VALUE - station1.anomaly$NORMALS
 
 @
 
@@ -149,12 +173,12 @@ cleandataframe.fun <- function(x){
   x$YEAR = as.numeric(format(x$Ymd, "%Y"))
   x.monthly = aggregate(VALUE ~ MONTH + YEAR, 
                    data = subset(x, ELEMENT == "TMAX"), mean)
-  x.baseline = subset(x, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")
-  x.baseline.monthly = aggregate(VALUE ~ MONTH, 
-                   data = subset(x, ELEMENT == "TMAX"), mean)
-  names(x.baseline.monthly) <- c("MONTH", "BASELINE")
-  x.anomaly = merge(x.monthly, x.baseline.monthly, by = "MONTH")
-  x.anomaly$ANOMALY = x.anomaly$VALUE - x.anomaly$BASELINE
+  x.normals = subset(x, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")
+  x.normals.monthly = aggregate(VALUE ~ MONTH, 
+                   data = subset(x.normals, ELEMENT == "TMAX"), mean)
+  names(x.normals.monthly) <- c("MONTH", "NORMALS")
+  x.anomaly = merge(x.monthly, x.normals.monthly, by = "MONTH")
+  x.anomaly$ANOMALY = x.anomaly$VALUE - x.anomaly$NORMALS
   return(x.anomaly)
 }
 @
@@ -167,13 +191,19 @@ So far, I have only run function for 1 station, but I suspect you can figure out
 station1.TMAX = cleandataframe.fun(station1)
 @
 
-\subsection{Plot Anomoly}
+\subsection{Plot Anomaly}
+
+Graphic has lots of issues. more next time!  But here's a start.
 
 <<>>=
+options(scipen=5)
+par(mar=c(4,6,2,5))
+
 plot(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1), 
-     las=1, pch=19, col = "blue", cex=.5, xlab = "Year", 
+     las=1, pch=19, col = "blue", cex=.5, #xlab = "Year", 
      ylab = "Maximum Temp Anomaly (C)",
      main="January Maximum Temp Anomaly")
+mtext("Maximum Temp Anomaly (C)", side = 2, line = 3)
 temp.lm = lm(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1))
 abline(coef(temp.lm), col = "red")
 
@@ -183,7 +213,6 @@ abline(coef(temp.lm), col = "red")
 \section{Next Steps}
 
 This is all we need to do so far. Next week, we'll look at different way to visualize the data!
-
 
 
 \end{document}
