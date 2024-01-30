@@ -7,14 +7,12 @@
 \usepackage{natbib}
 
 <<echo=FALSE>>=
-opts_chunk$set(width=60, echo=FALSE, results='hide')
+#opts_chunk$set(width=60, echo=FALSE, results='hide')
 @
 
 
 <<libraries, echo=FALSE, warnings=FALSE, message=FALSE >>=
 start_time <- Sys.time()
-library(here)
-# library(rgdal) rgdal has been retired.
 
 library(tidyverse)
 library(dplyr)
@@ -22,13 +20,16 @@ library(plyr)
 library(ggplot2)
 library(ggmap)
 
-# library(rnoaa) # 5/9/22, the API stopped working.
+
 library(ncdf4)
 library(magick)
 library(animation)
 library(xtable)
 library(lubridate)
+library(here)
 
+# library(rgdal) rgdal has been retired.
+# library(rnoaa) # 5/9/22, the API stopped working.
 #library(densEstBayes)
 #library(pdftools)
 
@@ -39,14 +40,13 @@ library(lubridate)
 #setwd("/home/mwl04747/Climate_Change_Narratives")
 # png_public = "/home/mwl04747/Climate_Change_Narratives/docs/FiftyStates/State_htmls/png/"
 
-png_public = here("04_Regional_Climate_Trends", "output1")
+png_public = here::here("04_Regional_Climate_Trends", "output1")
 
+# png_private = "/home/mwl04747/Climate_Change_Narratives/Social_Media/State_htmls/png/"
 
-png_private = "/home/mwl04747/Climate_Change_Narratives/Social_Media/State_htmls/png/"
+png_private = here::here("04_Regional_Climate_Trends", "output1")
 
-png_private = here("04_Regional_Climate_Trends", "output1")
-
-gif_private = here("04_Regional_Climate_Trends", "output1")
+gif_private = here::here("04_Regional_Climate_Trends", "output1")
 @
 
 <<noaakey, echo=FALSE>>=
@@ -78,7 +78,7 @@ fips = get_locationid(5); str(fips);
 \title{US Weather Station Records and Reliability} %--\Sexpr{fips$State}
 %\subtitle{test}
 \author{Marc Los Huertos}
-\date{\today~(ver.~0.03)}
+\date{\today~(ver.~0.05)}
 \begin{document}
 
 \maketitle

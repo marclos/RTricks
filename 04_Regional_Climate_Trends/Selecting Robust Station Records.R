@@ -95,6 +95,45 @@ points(LATITUDE~LONGITUDE, data=subset(temp2, subset=FIRSTYEAR<=1888), pch=20, c
 points(LATITUDE~LONGITUDE, data=subset(temp2, subset=FIRSTYEAR<=1873), pch=20, cex=.4, col="blue")
 
 
+# Select State
+State = "CA"
+
+temp3 = subset(temp2, subset=STATE==State)
+
+plot_usmap(include = State) +
+  theme(panel.background = element_rect(color = "blue"))
+
+
+lon_lat <- data.frame(lon = temp3$LONGITUDE, lat = temp3$LATITUDE)
+
+transformed_data <- usmap_transform(lon_lat)
+
+
+plot_usmap("states") + 
+  geom_point(data = temp4, 
+             aes(x = lon, y = lat), 
+             color = "red",
+             size = 3)
+
+
+
+
+library(maps)
+library(mapdata)
+
+usa <- map_data('usa')
+Next, we use geom_ploygon function to plot U.S. map.
+
+ggplot(data=usa, aes(x=long, y=lat, group=group)) + 
+  geom_polygon(fill='lightblue') + 
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + 
+  ggtitle('U.S. Map') + 
+  geom_point(data=temp3, aes(x=LONGITUDE, y=LATITUDE), color='red', size=1) +
+  coord_fixed(1.3)
+
+
+plot(LATITUDE~LONGITUDE, data=temp3, pch=20, cex=.4)
 
 
 # Download Updated Station Data
