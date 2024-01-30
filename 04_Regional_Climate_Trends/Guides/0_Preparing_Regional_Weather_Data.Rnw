@@ -12,6 +12,8 @@
 
 \subsection{Project Goals}
 
+Create a public product (video) that explains climate change trends in a state; what the state is doing to mitigate climate change; and what the state and it's residents could do to improve its efforts to mitigate climate change.
+
 \subsection{Project Stages}
 
 \begin{enumerate}
