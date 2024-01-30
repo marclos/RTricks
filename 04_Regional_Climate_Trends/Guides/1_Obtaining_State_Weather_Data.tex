@@ -49,8 +49,13 @@
 \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
+
+\title{Obtaining Climate Data from NOAA}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.4)}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
+\maketitle
 
 \section{Introduction}
 
@@ -66,7 +71,7 @@
 {\ttfamily\noindent\itshape\color{messagecolor}{\#\# here() starts at /home/mwl04747/RTricks}}\begin{alltt}
 \hlkwd{library}\hlstd{(xtable)}
 
-\hlstd{stations.active.oldest} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"Guides"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{))}
+\hlstd{stations.active.oldest} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{))}
 \end{alltt}
 \end{kframe}
 \end{knitrout}

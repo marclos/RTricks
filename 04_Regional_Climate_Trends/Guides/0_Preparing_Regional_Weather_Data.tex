@@ -55,6 +55,8 @@
 \date{\today~(ver. 0.4)} % without \date command, current date is supplied
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
+\maketitle
+
 
 \section{Background}
 
@@ -112,6 +114,34 @@
 \end{kframe}
 \end{knitrout}
 
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(geodata)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: terra}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# terra 1.7.55}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Attaching package: 'terra'}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# The following object is masked from 'package:knitr':\\\#\# \\\#\# \ \ \ \ spin}}\begin{alltt}
+\hlstd{d} \hlkwb{<-} \hlkwd{worldclim_country}\hlstd{(}\hlkwc{country} \hlstd{=} \hlstr{"USA"}\hlstd{,} \hlkwc{var} \hlstd{=} \hlstr{"tmin"}\hlstd{,}
+                       \hlkwc{path} \hlstd{=} \hlkwd{tempdir}\hlstd{())}
+\hlstd{terra}\hlopt{::}\hlkwd{plot}\hlstd{(}\hlkwd{mean}\hlstd{(d),} \hlkwc{plg} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{title} \hlstd{=} \hlstr{"Min. temperature (C)"}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## |---------|---------|---------|---------|=========================================                                          
+\end{verbatim}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-2-1} 
+\end{knitrout}
+
+
 \subsection{Visualizing of Active Weather Stations with Maximum Daily Temperature Readings}
 
 \begin{knitrout}
@@ -162,7 +192,7 @@
   \label{fig:global-weather-stations}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-3-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-4-1} 
 \end{knitrout}
 \end{figure}
 
@@ -309,7 +339,7 @@ To accomplish this, I need to do a loop to select the first 5 stations for each 
 \hlkwd{plot}\hlstd{(stations.active.oldest}\hlopt{$}\hlstd{LONGITUDE, stations.active.oldest}\hlopt{$}\hlstd{LATITUDE,} \hlkwc{pch}\hlstd{=}\hlnum{20}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.4}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"Long"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Lat"}\hlstd{,} \hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-1} 
 \end{knitrout}
 
 \subsection{Next Steps}
