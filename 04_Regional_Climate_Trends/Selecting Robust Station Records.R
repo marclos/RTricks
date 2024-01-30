@@ -1,9 +1,10 @@
+# Rcode to select weather stations by state.
 
 library(dplyr)
 library(R.utils)
 library(usmap)
 library(ggplot2)
-
+library(here)
 
 #devtools::install_github(“UrbanInstitute/urbnmapr”)
 
@@ -37,7 +38,7 @@ plot(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1961), pc
 points(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1928), pch=20, cex=.2, col="azure")
 points(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1893), pch=20, cex=.2, col="cornflowerblue")
 points(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1888), pch=20, cex=.3, col="green")
-points(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1873), pch=20, cex=.4, col="blue")
+points(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1873), pch=20, cex=.3, col="blue")
 
 # Read All Stations
 
@@ -69,11 +70,12 @@ str(States)
 StateIDs = subset(Stations, select=c("ID", "STATE"))
 StateIDs = merge(StateIDs, States, by="STATE")
 
+
 temp.TMAX = merge(inventory.TMAX, StateIDs, by="ID")
 
-Station.sel = subset(temp.TMAX, subset=(STATE!="  "))
+Station.sel = subset(temp.TMAX, subset=(STATE!="  ")) # Missing some in States!
 
-# Missing some in States!
+
 StationStates = unique(Station.sel$STATE)
 i = 3
 temp2<-NULL
@@ -93,14 +95,17 @@ points(LATITUDE~LONGITUDE, data=subset(temp2, subset=FIRSTYEAR<=1888), pch=20, c
 points(LATITUDE~LONGITUDE, data=subset(temp2, subset=FIRSTYEAR<=1873), pch=20, cex=.4, col="blue")
 
 
+
+
 # Download Updated Station Data
 i=3
+here::here("04_Regional_Climate_Trends", temp2$ID[i])
 
 for(i in 1:nrow(temp2)){
   url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", temp2$ID[i], ".csv.gz")
-  download.file(url,paste0("Data/SP24/",temp2$ID[i], ".csv.gz"), quiet = FALSE, mode = "w", cacheOK = TRUE)
-  
-  temp3 <- read.csv(gzfile(paste0("Data/SP24/",temp2$ID[i], ".csv.gz")), header=FALSE)
+  #download.file(url,paste0("Data/SP24/",temp2$ID[i], ".csv.gz"), quiet = FALSE, mode = "w", cacheOK = TRUE)
+  download.file(url, paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24/"),temp2$ID[i], ".csv.gz"), quiet = FALSE, mode = "w", cacheOK = TRUE)
+  temp3 <- read.csv(gzfile(paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24/"),temp2$ID[i], ".csv.gz")), header=FALSE)
   print(i)
 }
 
