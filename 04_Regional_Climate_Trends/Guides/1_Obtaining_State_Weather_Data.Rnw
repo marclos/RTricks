@@ -1,0 +1,109 @@
+\documentclass{article}
+
+\begin{document}
+
+\section{Introduction}
+
+\subsection{Read Data}
+
+<<>>=
+library(here)
+library(xtable)
+
+stations.active.oldest = read.csv(here("04_Regional_Climate_Trends", "Guides", "stations.active.oldest.csv"))
+@ 
+
+\subsection{Select and Evaluate State Data}
+
+<<>>=
+stations.unique = unique(stations.active.oldest[,c("STATE", "STATE_NAME")])
+
+xtab = xtable(stations.unique)
+@
+
+
+<<>>=
+my.state = "CA"
+@
+
+\section{Download Data from NOAA}
+
+\subsection{Function to Download Data}
+
+
+<<>>=
+# Select Stations in State
+my.stations = subset(stations.active.oldest, STATE == my.state)
+
+# Download Updated Station Data
+i=1
+here::here("04_Regional_Climate_Trends", my.stations$ID[i])
+
+#station = data.frame(NULL)
+for(i in 1:nrow(my.stations)){
+  url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", my.stations$ID[i], ".csv.gz")
+  
+print(i) # Print Index Number
+download.file(url, paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24/"), my.stations$ID[i], ".csv.gz"), quiet = FALSE, mode = "w", cacheOK = TRUE)
+
+assign(paste0("station", i), read.csv(gzfile(paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24/"),my.stations$ID[i], ".csv.gz")), header=FALSE))
+
+# can't get the header named in loop!
+#names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT", "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
+
+}
+
+names(station1) <- c("ID", "DATE", "ELEMENT", "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
+names(station3) <- names(station2) <- names(station1)
+names(station5) <- names(station4) <- names(station1)
+
+# NAMES OF VARIABLES ARE INCORRECT??
+      
+  #ID = 11 character station identification code
+  #YEAR/MONTH/DAY = 8 character date in YYYYMMDD format (e.g. 19860529 = May 29, 1986)
+  #ELEMENT = 4 character indicator of element type 
+  #DATA VALUE = 5 character data value for ELEMENT 
+  #M-FLAG = 1 character Measurement Flag 
+  #Q-FLAG = 1 character Quality Flag 
+  #S-FLAG = 1 character Source Flag 
+  #OBS-TIME = 4-character time of observation in hour-minute format (i.e. 0700 =7:00 am); if no ob time information 
+ #is available, the field is left empty
+
+
+@
+
+\section{Process and Clean Data}
+
+\subsection{Correct Values Units}
+
+<<>>=
+station1$VALUE = station1$VALUE/10
+@
+
+\subsection{Fix Dates!}
+<<>>=
+#fix Dates
+station1$Ymd = as.Date(as.character(station1$DATE), format = "%Y%m%d")
+str(station1)
+
+# Baseline Period 1961-1990
+
+station1.baseline = subset(station1, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")
+
+
+# Monthly Averages
+station1$MONTH = as.numeric(format(station1$Ymd, "%m"))
+station1$YEAR = as.numeric(format(station1$Ymd, "%Y"))
+station1.monthly = aggregate(VALUE ~ MONTH + YEAR, data = subset(station1, ELEMENT == "TMAX"), mean)
+str(station1.monthly)
+# lm
+for(i in unique(station1.monthly$MONTH)){
+  temp.lm <- lm(VALUE ~ YEAR, data = subset(station1.monthly, MONTH==i))
+  
+}
+
+plot(VALUE ~ YEAR, data = subset(station1.monthly, MONTH == 1), las=1, pch=19, col = "blue", cex=.5)
+abline(coef(temp.lm), col = "red")
+
+@
+\end{
