@@ -15,7 +15,6 @@ library(here) # used to help move between github users, and with knitr sessions
 ```{r}
 #filepath = here("02_keeling","Mauna_Loa.csv")
 filename = "/home/mwl04747/RTricks/02_keeling/Mauna_Loa.csv"
-
 maunaloa <- read.csv(filename)
 ```
 

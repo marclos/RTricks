@@ -4,34 +4,49 @@
 %\usepackage{l3regex}
 \usepackage[version=4]{mhchem}
 % \usepackage{animate}
+\usepackage{natbib}
 
 <<echo=FALSE>>=
 opts_chunk$set(width=60, echo=FALSE, results='hide')
 @
 
 
-<<echo=FALSE, warnings=FALSE, message=FALSE >>=
+<<libraries, echo=FALSE, warnings=FALSE, message=FALSE >>=
 start_time <- Sys.time()
-library(rgdal)
-library(ggmap)
+library(here)
+# library(rgdal) rgdal has been retired.
+
 library(tidyverse)
-library(plyr)
 library(dplyr)
-library(rnoaa)
+library(plyr)
+library(ggplot2)
+library(ggmap)
+
+# library(rnoaa) # 5/9/22, the API stopped working.
 library(ncdf4)
 library(magick)
 library(animation)
 library(xtable)
 library(lubridate)
-library(ggplot2)
+
 #library(densEstBayes)
 #library(pdftools)
 
-setwd("/home/mwl04747/Climate_Change_Narratives")
-png_public = "/home/mwl04747/Climate_Change_Narratives/docs/FiftyStates/State_htmls/png/"
+@
+
+<<setdirectories, echo=FALSE>>=
+
+#setwd("/home/mwl04747/Climate_Change_Narratives")
+# png_public = "/home/mwl04747/Climate_Change_Narratives/docs/FiftyStates/State_htmls/png/"
+
+png_public = here("04_Regional_Climate_Trends", "output1")
+
+
 png_private = "/home/mwl04747/Climate_Change_Narratives/Social_Media/State_htmls/png/"
 
-gif_private = "/home/mwl04747/Climate_Change_Narratives/Social_Media/State_htmls/Climate_gifs/"
+png_private = here("04_Regional_Climate_Trends", "output1")
+
+gif_private = here("04_Regional_Climate_Trends", "output1")
 @
 
 <<noaakey, echo=FALSE>>=
@@ -63,7 +78,7 @@ fips = get_locationid(5); str(fips);
 \title{US Weather Station Records and Reliability} %--\Sexpr{fips$State}
 %\subtitle{test}
 \author{Marc Los Huertos}
-
+\date{\today~(ver.~0.03)}
 \begin{document}
 
 \maketitle
@@ -2181,5 +2196,7 @@ rm(dbase)
 @
 
 The document took \Sexpr{round(totaltime,1)} minutes to process and compile. My next goal will be to optimize the process and streamline the time to analyze. 
+
+
 
 \end{document}
