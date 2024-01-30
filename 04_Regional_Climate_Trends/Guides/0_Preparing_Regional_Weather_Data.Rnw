@@ -178,7 +178,7 @@ plot(stations.active.oldest$LONGITUDE, stations.active.oldest$LATITUDE, pch=20, 
 
 <<>>=
 # export file to csv
-write.csv(stations.active.oldest, "stations.active.oldest.csv")
+write.csv(stations.active.oldest, here("04_Regional_Climate_Trends", "stations.active.oldest.csv"))
 @
 
 

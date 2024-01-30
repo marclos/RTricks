@@ -10,7 +10,7 @@
 library(here)
 library(xtable)
 
-stations.active.oldest = read.csv(here("04_Regional_Climate_Trends", "Guides", "stations.active.oldest.csv"))
+stations.active.oldest = read.csv(here("04_Regional_Climate_Trends", "stations.active.oldest.csv"))
 @ 
 
 \subsection{Select and Evaluate State Data}
@@ -89,21 +89,28 @@ str(station1)
 # Baseline Period 1961-1990
 
 station1.baseline = subset(station1, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")
-
+a
 
 # Monthly Averages
 station1$MONTH = as.numeric(format(station1$Ymd, "%m"))
 station1$YEAR = as.numeric(format(station1$Ymd, "%Y"))
-station1.monthly = aggregate(VALUE ~ MONTH + YEAR, data = subset(station1, ELEMENT == "TMAX"), mean)
+station1.monthly = aggregate(VALUE ~ MONTH + YEAR, 
+                             data = subset(station1, ELEMENT == "TMAX"), mean)
 str(station1.monthly)
+
 # lm
 for(i in unique(station1.monthly$MONTH)){
   temp.lm <- lm(VALUE ~ YEAR, data = subset(station1.monthly, MONTH==i))
   
 }
 
-plot(VALUE ~ YEAR, data = subset(station1.monthly, MONTH == 1), las=1, pch=19, col = "blue", cex=.5)
+plot(VALUE ~ YEAR, data = subset(station1.monthly, MONTH == 1), 
+     las=1, pch=19, col = "blue", cex=.5)
 abline(coef(temp.lm), col = "red")
 
 @
-\end{
+
+
+
+
+\end{document}
