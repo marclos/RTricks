@@ -1,6 +1,11 @@
 \documentclass{article}
 
+\title{Obtaining Climate Data from NOAA}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.4)} 
+
 \begin{document}
+\maketitle
 
 \section{Introduction}
 

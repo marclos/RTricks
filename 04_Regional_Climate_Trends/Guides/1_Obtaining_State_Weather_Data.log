@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  30 JAN 2024 00:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  30 JAN 2024 00:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -82,18 +82,18 @@ tim
 (./1_Obtaining_State_Weather_Data.aux)
 \openout1 = `1_Obtaining_State_Weather_Data.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -164,43 +164,49 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 58.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 58.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 58.
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 62.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 67.
 
-Overfull \hbox (227.24501pt too wide) in paragraph at lines 69--69
+Overfull \hbox (174.74547pt too wide) in paragraph at lines 74--74
 [][]\OT1/cmtt/m/n/10 stations.active.oldest[] []=[] []read.csv[][]([][]here[][]
-([][]"04_Regional_Climate_Trends"[][],[] []"Guides"[][],[] []"stations.active.o
-ldest.csv"[][]))[][] 
+([][]"04_Regional_Climate_Trends"[][],[] []"stations.active.oldest.csv"[][]))[]
+[] 
  []
 
 
-Overfull \hbox (48.74657pt too wide) in paragraph at lines 79--79
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 84--84
 [][]\OT1/cmtt/m/n/10 stations.unique[] []=[] []unique[][](stations.active.oldes
 t[,[][]c[][]([][]"STATE"[][],[] []"STATE_NAME"[][])])[][] 
  []
 
 
-Overfull \hbox (22.4968pt too wide) in paragraph at lines 112--112
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 117--117
 []\OT1/cmtt/m/n/10 ## [1] "/home/mwl04747/RTricks/04_Regional_Climate_Trends/US
 C00043157"[] 
  []
 
-LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 115
+LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 120
 .
 (/opt/R/4.2.2/lib64/R/share/texmf/tex/latex/omscmtt.fd
 File: omscmtt.fd 
 )
 LaTeX Font Info:    Font shape `OMS/cmtt/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 115.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 120.
 
-Overfull \hbox (206.2452pt too wide) in paragraph at lines 116--116
+Overfull \hbox (206.2452pt too wide) in paragraph at lines 121--121
 []  []\OT1/cmtt/m/n/10 url[] []=[] []paste0[][]([][]"https://www.ncei.noaa.gov/
 pub/data/ghcn/daily/by_station/"[][], my.stations[][]$[][]ID[i],[] []".csv.gz"[
 ][])[][] 
  []
 
 
-Overfull \hbox (484.49277pt too wide) in paragraph at lines 119--119
+Overfull \hbox (484.49277pt too wide) in paragraph at lines 124--124
 [][]\OT1/cmtt/m/n/10 download.file[][](url,[] []paste0[][](here[][]::[][]here[]
 []([][]"04_Regional_Climate_Trends"[][],[] []"Data"[][],[] []"SP24/"[][]), my.s
 tations[][]$[][]ID[i],[] []".csv.gz"[][]),[] []quiet[] []=[] []FALSE[][],[] []m
@@ -208,7 +214,7 @@ ode[] []=[] []"w"[][],[] []cacheOK[] []=[] []TRUE[][])[][]
  []
 
 
-Overfull \hbox (473.99286pt too wide) in paragraph at lines 121--121
+Overfull \hbox (473.99286pt too wide) in paragraph at lines 126--126
 [][]\OT1/cmtt/m/n/10 assign[][]([][]paste0[][]([][]"station"[][], i),[] []read.
 csv[][]([][]gzfile[][]([][]paste0[][](here[][]::[][]here[][]([][]"04_Regional_C
 limate_Trends"[][],[] []"Data"[][],[] []"SP24/"[][]),my.stations[][]$[][]ID[i],
@@ -216,106 +222,107 @@ limate_Trends"[][],[] []"Data"[][],[] []"SP24/"[][]),my.stations[][]$[][]ID[i],
  []
 
 
-Overfull \hbox (223.73117pt too wide) in paragraph at lines 124--124
+Overfull \hbox (223.73117pt too wide) in paragraph at lines 129--129
 [][]\OT1/cmtt/m/it/10 #names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT",
  "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")[][] 
  []
 
 
-Overfull \hbox (158.9956pt too wide) in paragraph at lines 136--136
+Overfull \hbox (158.9956pt too wide) in paragraph at lines 141--141
 [][]\OT1/cmtt/m/n/10 names[][](station1)[] []<-[] []c[][]([][]"ID"[][],[] []"DA
 TE"[][],[] []"ELEMENT"[][],[] []"VALUE"[][],[] []"M-FLAG"[][],[] []"Q-FLAG"[][]
 ,[] []"S-FLAG"[][],[] []"OBS-TIME"[][])[][] 
  []
 
 
-Overfull \hbox (108.23218pt too wide) in paragraph at lines 143--143
+Overfull \hbox (108.23218pt too wide) in paragraph at lines 148--148
 []  []\OT1/cmtt/m/it/10 #YEAR/MONTH/DAY = 8 character date in YYYYMMDD format (
 e.g. 19860529 = May 29, 1986)[][] 
  []
 
 
-Overfull \hbox (265.7308pt too wide) in paragraph at lines 149--149
+Overfull \hbox (265.7308pt too wide) in paragraph at lines 154--154
 []  []\OT1/cmtt/m/it/10 #OBS-TIME = 4-character time of observation in hour-min
 ute format (i.e. 0700 =7:00 am); if no ob time information [][] 
  []
 
 [1
 
-{/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (22.4968pt too wide) in paragraph at lines 172--172
+{/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}] [2]
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 177--177
 [][]\OT1/cmtt/m/n/10 station1[][]$[][]Ymd[] []=[] []as.Date[][]([][]as.characte
 r[][](station1[][]$[][]DATE),[] []format[] []=[] []"%Y%m%d"[][])[][] 
  []
 
 
-Overfull \hbox (74.99634pt too wide) in paragraph at lines 186--186
+Overfull \hbox (74.99634pt too wide) in paragraph at lines 191--191
 []\OT1/cmtt/m/n/10 ##  $ ID      : chr  "USC00043157" "USC00043157" "USC0004315
 7" "USC00043157" ...[] 
  []
 
 
-Overfull \hbox (253.49478pt too wide) in paragraph at lines 186--186
+Overfull \hbox (253.49478pt too wide) in paragraph at lines 191--191
 []\OT1/cmtt/m/n/10 ##  $ DATE    : int  18670601 18670602 18670603 18670604 186
 70605 18670606 18670607 18670608 18670609 18670610 ...[] 
  []
 
 
-Overfull \hbox (69.74638pt too wide) in paragraph at lines 190--190
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 195--195
 [][]\OT1/cmtt/m/n/10 station1.baseline[] []=[] []subset[][](station1, Ymd[] []>
 =[] []"1961-01-01"[] []&[] []Ymd[] []<=[] []"1990-12-31"[][])[][] 
  []
 
 
-Overfull \hbox (64.49643pt too wide) in paragraph at lines 200--200
+Overfull \hbox (64.49643pt too wide) in paragraph at lines 205--205
 []                             []\OT1/cmtt/m/n/10 data[] []=[] []subset[][](sta
 tion1, ELEMENT[] []==[] []"TMAX"[][]), mean)[][] 
  []
 
 
-Overfull \hbox (27.74675pt too wide) in paragraph at lines 208--208
+Overfull \hbox (27.74675pt too wide) in paragraph at lines 213--213
 []\OT1/cmtt/m/n/10 ##  $ YEAR : num  1870 1870 1870 1870 1870 1870 1870 1870 18
 70 1870 ...[] 
  []
 
 
-Overfull \hbox (32.9967pt too wide) in paragraph at lines 212--212
+Overfull \hbox (32.9967pt too wide) in paragraph at lines 217--217
 []  []\OT1/cmtt/m/n/10 temp.lm[] []<-[] []lm[][](VALUE[] []~[] []YEAR,[] []data
 [] []=[] []subset[][](station1.monthly, MONTH[][]==[][]i))[][] 
  []
 
-[2]
-<figure/unnamed-chunk-6-1.pdf, id=14, pagebox=cropbox, 505.89pt x 505.89pt>
+<figure/unnamed-chunk-6-1.pdf, id=16, pagebox=cropbox, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-6-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-6-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-6-1.pdf  used on input line 221. 
-on input line 221.
+Package pdftex.def Info: figure/unnamed-chunk-6-1.pdf  used on input line 226. 
+on input line 226.
 Package pdftex.def Info: Requested size: 345.0pt x 345.00414pt on input line 22
-1.
+6.
 
-Overfull \hbox (15.0pt too wide) in paragraph at lines 221--223
+Overfull \hbox (15.0pt too wide) in paragraph at lines 226--228
 [][]
  []
 
 [3] [4 <./figure/unnamed-chunk-6-1.pdf>] (./1_Obtaining_State_Weather_Data.aux)
  ) 
 Here is how much of TeX's memory you used:
- 2007 strings out of 494917
- 27768 string characters out of 6180699
- 92655 words of memory out of 5000000
- 5318 multiletter control sequences out of 15000+600000
- 5186 words of font info for 20 fonts, out of 8000000 for 9000
+ 2027 strings out of 494917
+ 27979 string characters out of 6180699
+ 90687 words of memory out of 5000000
+ 5330 multiletter control sequences out of 15000+600000
+ 7923 words of font info for 29 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 41i,5n,35p,444b,292s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 41i,6n,35p,444b,292s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/sha
 re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on 1_Obtaining_State_Weather_Data.pdf (4 pages, 81236 bytes).
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on 1_Obtaining_State_Weather_Data.pdf (4 pages, 102635 bytes).
 PDF statistics:
- 43 PDF objects out of 1000 (max. 8388607)
- 29 compressed objects within 1 object stream
+ 51 PDF objects out of 1000 (max. 8388607)
+ 35 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

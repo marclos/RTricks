@@ -5,6 +5,8 @@
 \date{\today~(ver. 0.4)} % without \date command, current date is supplied
 
 \begin{document}
+\maketitle
+
 
 \section{Background}
 
@@ -44,6 +46,16 @@ names(inventory) = inventory_names
 # Check the structure of the data
 str(inventory)
 @
+
+
+
+<<>>=
+library(geodata)
+d <- worldclim_country(country = "USA", var = "tmin",
+                       path = tempdir())
+terra::plot(mean(d), plg = list(title = "Min. temperature (C)"))
+@
+
 
 \subsection{Visualizing of Active Weather Stations with Maximum Daily Temperature Readings}
 
