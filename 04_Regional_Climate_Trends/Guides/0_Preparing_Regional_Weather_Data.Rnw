@@ -2,7 +2,7 @@
 
 \title{Preparing Regional Weather Data Analysis Project}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.4)} % without \date command, current date is supplied
+\date{\today~(ver. 0.5)} % without \date command, current date is supplied
 
 \begin{document}
 \maketitle
@@ -17,11 +17,11 @@ Create a public product (video) that explains climate change trends in a state; 
 \subsection{Project Stages}
 
 \begin{enumerate}
-  \item Data Collection
-  \item Data Processing
-  \item Data Analysis
-  \item Data Visualization
-  \item Communicating Project
+  \item Data Collection (Download data from the web and read into R.)
+  \item Data Processing (Clean and organize data for analysis.)
+  \item Data Analysis (Use R to analyze data (means, trends, etc))
+  \item Data Visualization (Create visualizations of data)
+  \item Communicating Project Results (Create a video that explains the data and the results of the analysis.)
 \end{enumerate}
 
 
