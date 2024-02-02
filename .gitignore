@@ -28,7 +28,10 @@ DRAFT/
 OLD/
 04_Regional_Climate_Trends/Data
 04_Regional_Climate_Trends/Guides/OLD
-
+04_Regional_Climate_Trends/Guides/*.log
+04_Regional_Climate_Trends/Guides/*.tex
+04_Regional_Climate_Trends/Guides/*.concordance.tex
+04_Regional_Climate_Trends/Guides/*.synctex.gz
 # Guides
 # 01_Introduction_to_R/*.log
 
