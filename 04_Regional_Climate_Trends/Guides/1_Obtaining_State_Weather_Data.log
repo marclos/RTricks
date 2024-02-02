@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  30 JAN 2024 11:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  30 JAN 2024 19:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -325,6 +325,12 @@ Overfull \hbox (15.0pt too wide) in paragraph at lines 341--343
 [][]
  []
 
+
+Overfull \hbox (6.25066pt too wide) in paragraph at lines 350--355
+[]\OT1/cmr/m/n/10 write.csv(station1.TMAX, file = "sta-tion1.TMAX.csv", row.nam
+es = FALSE)
+ []
+
 [7 <./figure/unnamed-chunk-10-1.pdf>] (./1_Obtaining_State_Weather_Data.aux) ) 
 Here is how much of TeX's memory you used:
  2035 strings out of 494917
@@ -345,7 +351,7 @@ nts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type
 /amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mtt10.pfb>
-Output written on 1_Obtaining_State_Weather_Data.pdf (7 pages, 173651 bytes).
+Output written on 1_Obtaining_State_Weather_Data.pdf (7 pages, 174812 bytes).
 PDF statistics:
  82 PDF objects out of 1000 (max. 8388607)
  58 compressed objects within 1 object stream
