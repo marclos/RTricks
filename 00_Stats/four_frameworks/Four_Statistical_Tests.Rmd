@@ -1,0 +1,53 @@
+---
+title: "Four Statistical Tests and Four Statistical Framworks"
+author: "my name"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(xtable)
+```
+
+## R Markdown and this assignment
+
+For this assignment, you will using the following data sets to analyze and interpret the results of four statistical tests and four statistical frameworks.
+
+## Testing if Treatment Means are Equal
+
+The first test is the Analysis of Variances (ANOVA) test. This test is used to compare the means of three or more groups. 
+
+```{r}
+treatments = c("A", "B", "C", "D")
+
+```
+
+### Creating a Dataset
+
+The data set that you will be using is XXX and 10 replicated measurements for each treatment. 
+
+To create the data set, use the following code that defines the treatments and generates the data for each treatment. The data is generated using the `rnorm` function. The `rnorm` function generates random numbers from a normal distribution. The `mean` and `sd` parameters are used to specify the mean and standard deviation of the normal distribution. The `rnorm` function is used to generate 10 random numbers for each treatment. The mean and standard deviation of the normal distribution are set to 10 and 2, respectively. 
+
+```{r, echo=FALSE}
+set.seed(4454)
+a = round(rnorm(10, mean = 8, sd = 2), 1)
+b = round(rnorm(10, mean = 9, sd = 2), 1)
+c = round(rnorm(10, mean = 10, sd = 2), 1)
+d = round(rnorm(10, mean = 11, sd = 2), 1)
+```
+
+```{r, echo=FALSE}
+values = c(a, b, c, d)
+treatments = rep(treatments, each = 10)
+replicates = rep(1:10, 4)
+data = data.frame(Treatment = treatments, Replicate = replicates, Value = values)
+```
+
+```{r}
+xtable(cbind(replicates, a, b, c, d))
+```
+
+
+The null hypothesis is that the means of the three species are equal. The alternative hypothesis is that the means of the three species are not equal. The ANOVA test is used to test the null hypothesis. 
+
