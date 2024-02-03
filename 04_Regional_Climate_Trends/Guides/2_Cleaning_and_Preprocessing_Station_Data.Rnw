@@ -1,8 +1,15 @@
-\title{Obtaining State Weather Station Data}
-\author{Marc Los Huertos}
-\date{\today~(ver. 0.8)} 
-
 \documentclass{article}
+\usepackage{natbib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    hyperindex=true,
+    linkcolor=red,
+    filecolor=magenta,
+    urlcolor=purple,
+    citecolor=violet
+}
+
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
@@ -15,7 +22,7 @@
 
 \subsection{Goals}
 
-The goal of this guide is to provide a step-by-step process for cleaning and pre-processing weather station data. The data is from the Global Historical Climatology Network (GHCN) Daily dataset. The data is available from the National Oceanic and Atmospheric Administration (NOAA) and is available from the National Centers for Environmental Information (NCEI) at %\url{https://www.ncdc.noaa.gov/data-access/land-based-station-data/land-based-datasets/global-historical-climatology-network-ghcn}.
+The goal of this guide is to provide a step-by-step process for cleaning and pre-processing weather station data. The data is from the Global Historical Climatology Network (GHCN) Daily dataset. The data is available from the National Oceanic and Atmospheric Administration (NOAA) and is available from the National Centers for Environmental Information (NCEI) at \url{https://www.ncdc.noaa.gov/data-access/land-based-station-data/land-based-datasets/global-historical-climatology-network-ghcn}.
 
 \subsection{Background}
 
@@ -35,7 +42,6 @@ We need to address several things that might get in the way of our analysis:
   \item Other stuff??
 \end{enumerate}
 
-
 \section{Cleaning and Pre-Processing Functions}
 
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
@@ -43,36 +49,63 @@ library(here)
 source(here("04_Regional_Climate_Trends", "Guides", "Guide2.R"))
 @
 
-\subsection{Starting the Process}
+\subsection{Before Starting the Process}
 
-Before you begin, make sure you have the stations read into R. You can do this by running the following code:
+Before you begin, make sure you have the stations to read into R. Got to the ``Files" tab in RStudio and make sure you see the station csv files in your data folder. If not, please Slack Marc and mentors, so we can troubleshoot the issue!
 
-<<>>=
-ls()
-@
+\subsection{R Code with Custom Functions}
 
-You should see station1\ldots stationN, where N is the number of stations you have read in.
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide2.R}{Guide2.R} code and the functions will be loaded into your environment automatically.
 
-If the data are not in the R environment, you can read them in using the following but you have the uncompressed files, you can read them in using the following function:
+\subsection{Function Descriptions and Use}
+
+The following functions are used to read the weather stations data into R, clean and pre-process data so we can analyze the data with the next guide.
+
+\subsection{Reading csv and Checking dataframe objects}
+
+\begin{description}
+
+\item[Read all csv files into R]
+
+The If the data are not in the R environment, you can read them in using the following but you have the uncompressed files, you can read them in using the following function:
 
 <<show_ReadStation.fun, echo=FALSE>>=
 print(ReadStations.fun)
 @
 
-Example of how to use the function
+Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
 datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24"
 ReadStations.fun(datafolder)
 @
 
-Using str(), make sure the data sets look right!
+\item[Check the dataframes in the environment]
+
+You can do this by running the following code:
+
+<<>>=
+ls()
+@
+
+You should see weather station objects. 
+
+\item[Check the structure of the dataframes]
+
+Using str(), make sure the datasets look right!
+
+For example: 
 
 <<echo=TRUE, results='hide'>>=
 str(station2)
 @
 
+\end{description}
+
+
 \subsection{Clean Data}
+
+Next we'll ``clean'' the dataset by fixing the date format and preparing it for the analysis stages.
 
 \begin{description}
 
@@ -82,9 +115,9 @@ str(station2)
 print(fixdates.fun)
 @
 
-Example of how to use the function
+Example of how to use the function (Note: the new dataframe name change): 
 
-<<echo=TRUE, results='hide'>>=
+<<fixdates, echo=TRUE, results='hide'>>=
 station1a <- fixdates.fun(station1)
 @
 
@@ -97,28 +130,82 @@ print(coverage.fun)
 @
 
 
-Example of how to use the function
+Example of how to use the function: 
 
 <<echo=TRUE, results='hide'>>=
 coverage.fun(station1a)
 @
 
+In general, we want something like 95\% coverage for the period of record. If you don't have that, please let us know and we'll help you get additional stations with better coverage!
+
 \item[Function to Convert Units]
 
-\item[Function to Create Monthly Values]
+According the the NOAA website, the csv.gz files have  five core elements include the following units, which we will convert:
+\begin{description}
+  \item[PRCP =] Precipitation (tenths of mm) $\rightarrow$ mm
+  \item[SNOW =] Snowfall (mm)  $\rightarrow$ cm
+	\item[SNWD =] Snow depth (mm) $\rightarrow$ cm
+  \item[TMAX =] Maximum temperature (tenths of degrees C) $\rightarrow$ degrees C
+  \item[TMIN =] Minimum temperature (tenths of degrees C) $\rightarrow$ degrees C
+\end{description}
+
+<<show_ConvertUnits.fun, echo=FALSE>>=
+print(ConvertUnits.fun)
+@
+
+
+Example of how to use the function (Note: the new dataframe name change):
+
+<<echo=TRUE, results='hide'>>=
+station1b <- ConvertUnits.fun(station1a)
+@
+
+\item[Checking for Outliers]
+
+NOAA website conducts a very rudimentary data quality check, but every year, we find stations with wacky numbers. Hopefully this function will find them. But if you do have some, let Marc and mentors know so we can figure out how to address them!
+
+Here are some stuff we'll look for: 
+\begin{description}
+  \item[Extreme Values] Plot values with time, is the scale crazy with just a few observations at the extreme?
+  \item[Sudden Shift] ???
+  \item[Note QA/QC Flags] TBD
+\end{description}
+
+<<show_QAQC.fun, echo=FALSE>>=
+print(QAQC.fun)
+@
+
+
+Example of how to use the function:
+
+<<echo=TRUE, results='hide'>>=
+QAQC.fun(station1b)
+@
+
+If you have any hints of data problems, let's sort them out together!
+
+\item[Function to Create Monthly Values and Normals]
 
 For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly totals.\footnote{Brody/Evyln: We need code to exclue months with missing data, these might not be represenative of the month if missing, especically for PRCP!}
 
-Here's the function: 
+Here's the function for Monthly Values: 
 
 <<echo=FALSE>>=
 print(MonthlyValues.fun)
 @
 
-Example of how to use the function:
+Here's the function for Monthly Normals:
+
+<<echo=FALSE>>=
+print(MonthlyNormals.fun)
+@
+
+
+Example of how to use the functions:
 
 <<echo=TRUE, results='hide'>>=
-station1.monthly <- MonthlyValues.fun(station1a)
+station1.monthly <- MonthlyValues.fun(station1b)
+station1.normals <- MonthlyNormals.fun(station1b)
 @
 
 \item[Function to Create Anomalies]
@@ -126,17 +213,54 @@ station1.monthly <- MonthlyValues.fun(station1a)
 Here's the function: 
 
 <<echo=FALSE>>=
-print(Anomalies.fun)
+print(MonthlyAnomalies.fun)
 @
 
 Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
-station1.monthly.Anomalies <- Anomalies.fun(station1a)
+station1.anomolies <- MonthlyAnomalies.fun(station1.monthly, station1.normals)
 @
 
+\end{description}
+
+\subsection{Checking on the Results}
+
+Getting into the data is a bit tricky. The datasets is a list of dataframes. Each dataframe is a different variable, where 1 is TMAX, 2 is TMIN, and 3 is PRCP.
+
+The get access to each you use the following code:
+
+\begin{itemize}
+  \item \verb|station1.anomolies[[1]]| for TMAX
+  \item \verb|station1.anomolies[[2]]| for TMIN
+  \item \verb|station1.anomolies[[3]]| for PRCP
+\end{itemize}
+
+\begin{figure}
+<<echo=FALSE>>=
+# plot the data
+par(mfrow=c(3,1), mar=c(4,5,3,2))
+plot(TMAX.a ~ Ymd, data=station1.anomolies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Maximum Temperature Change")
+plot(TMIN.a ~ Ymd, data=station1.anomolies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Minimum Temperature Change")
+plot(PRCP.a ~ Ymd, data=station1.anomolies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anomaly (C)", main="Monthly Precipiation Change")
+@
+\end{figure}
+
+\clearpage
+
+\section{Explaining the Code, TBD!}
+
+\subsection{QA/QC: Troubleshooting}
+
+I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
 
 
+\subsection{Work Arounds}
+
+TBD!
+
+
+Function is probably sensitive to missing values, need to work on that!
 
 First, I tested each line on station1. I will then create a function to clean the data and apply it to each station.
 
@@ -165,14 +289,6 @@ station1.anomaly$ANOMALY =
 
 @
 
-
-\end{description}
-
-
-\section{Code for QA/QC and Preparing for our Analyses}
-
-
-Function is probably sensitive to missing values, need to work on that!
 
 <<cleandataframe.fun, echo=TRUE, eval=FALSE>>=
 x=station1
