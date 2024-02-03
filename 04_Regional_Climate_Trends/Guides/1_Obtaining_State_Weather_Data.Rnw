@@ -133,7 +133,7 @@ This will download the data from the NOAA website and read it into R then writte
 
 \subsection{Trouble Shooting and Workarounds}
 
-I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described!
+I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
 
 \subsection{Selecting Weather Records by State}
 

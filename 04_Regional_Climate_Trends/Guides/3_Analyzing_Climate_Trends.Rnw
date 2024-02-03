@@ -1,5 +1,16 @@
 \documentclass{article}
 
+\usepackage{natbib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    hyperindex=true,
+    linkcolor=red,
+    filecolor=magenta,
+    urlcolor=purple,
+    citecolor=violet
+}
+
 \title{Analyzing Climate Trends}
 \author{Marc Los Huertos}
 \date{\today~(ver. 0.27)} 
@@ -1876,5 +1887,12 @@ rm(dbase)
 @
 
 The document took \Sexpr{round(totaltime,1)} minutes to process and compile. My next goal will be to optimize the process and streamline the time to analyze. 
+
+% bibilography section here-------------------------------------------
+%\clearpage
+
+\bibliographystyle{apalike}
+%\renewcommand\bibname{References}{}
+\bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
 
 \end{document}

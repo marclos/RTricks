@@ -7,7 +7,8 @@ ReadStations.fun <- function(datafolder){
   colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
                 "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
   for (i in 1:length(StationList)){
-    assign(paste0("station", i), read.csv(StationList[i], header=TRUE, col.names=colnames), envir = parent.frame())
+    assign(paste0("station", i), read.csv(StationList[i], 
+        header=TRUE, col.names=colnames), envir = parent.frame())
  #   return(paste0("station", i))
   }
 }
@@ -24,61 +25,131 @@ fixdates.fun <- function(station){
 
 # Data Coverage Function --Determine percent missing
 coverage.fun <- function(station, element="TMAX"){
-    Dates.all = data.frame(Ymd=seq.Date(from=min(station$Ymd), to=max(station$Ymd), by="day"))
-    station.full = merge(Dates.all, station, all = TRUE)
-    station.coverage = sum(!is.na(station.full$VALUE[station.full$ELEMENT==element]))/
-      length(station.full$VALUE[station.full$ELEMENT==element])*100
-    return(round(station.coverage,2))
+  Dates.all = data.frame(Ymd=seq.Date(from=min(station$Ymd), 
+                          to=max(station$Ymd), by="day"))
+  station.full = merge(Dates.all, station, all = TRUE)
+  station.coverage = 
+    sum(!is.na(station.full$VALUE[station.full$ELEMENT==element]))/
+  length(station.full$VALUE[station.full$ELEMENT==element])*100
+  return(round(station.coverage,2))
   }
 
+# Function to Convert Units
+ConvertUnits.fun <- function(station){
+    station$VALUE = station$VALUE/10
+  return(station)
+}
 
+# QA/QC Function
+QAQC.fun <- function(station){
+  par(mfrow=c(3,1))
+  plot(VALUE ~ Ymd, data = subset(station, 
+        subset=ELEMENT=="PRCP"), type = "l", col = "blue", 
+      main = "Time Series of Daily PRCP", xlab = "Date", ylab = "PRCP (mm)")
+  plot(VALUE ~ Ymd, data = subset(station, subset=ELEMENT=="TMAX"), 
+       type = "l", col = "blue", 
+       main = "Time Series of Daily TMAX", xlab = "Date", ylab = "TMAX (C)")
+  plot(VALUE ~ Ymd, data = subset(station, 
+        subset=ELEMENT=="TMIN"), type = "l", col = "blue", 
+       main = "Time Series of Daily TMIN", xlab = "Date", ylab = "TMIN (C)") 
+  station = subset(station, Q.FLAG != "")
+  station = subset(station, M.FLAG != "")
+  station = subset(station, S.FLAG != "")
+  return(station)
+}
 # Create Monthly Averages/Sums
 MonthlyValues.fun <- function(x=station1){
   x.TMAX.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-                             data = subset(x, ELEMENT == "TMAX"), mean)
+        data = subset(x, ELEMENT == "TMAX"), mean)
   names(x.TMAX.monthly) <- c("MONTH", "YEAR", "TMAX")
   x.TMIN.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-                             data = subset(x, ELEMENT == "TMIN"), mean)
+        data = subset(x, ELEMENT == "TMIN"), mean)
   names(x.TMIN.monthly) <- c("MONTH", "YEAR", "TMIN")
   x.PRCP.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-                             data = subset(x, ELEMENT == "PRCP"), sum)
+        data = subset(x, ELEMENT == "PRCP"), sum)
   names(x.PRCP.monthly) <- c("MONTH", "YEAR", "PRCP")
   return(list(x.TMAX.monthly, x.TMIN.monthly, x.PRCP.monthly))
 }
 
 # Function to Create Monthly Normals
-MonthlyNormals.fun <- function(x=station1){
-  x.normals = subset(x, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")  
+MonthlyNormals.fun <- function(x=station1b){
+  x.normals = subset(x, 
+    Ymd >= "1961-01-01" & Ymd <= "1990-12-31")  
   x.TMAX.normals.monthly = aggregate(VALUE ~ MONTH, 
-                                     data = subset(x.normals, ELEMENT == "TMAX"), mean)
+    data = subset(x.normals, ELEMENT == "TMAX"), mean)
   names(x.TMAX.normals.monthly) <- c("MONTH", "NORMALS")
   x.TMIN.normals.monthly = aggregate(VALUE ~ MONTH, 
-                                     data = subset(x.normals, ELEMENT == "TMIN"), mean)
+    data = subset(x.normals, ELEMENT == "TMIN"), mean)
   names(x.TMIN.normals.monthly) <- c("MONTH", "NORMALS")
+  x.PRCP.normals.month.year = aggregate(VALUE ~ MONTH + YEAR, 
+    data = subset(x.normals, ELEMENT == "PRCP"), sum)
   x.PRCP.normals.monthly = aggregate(VALUE ~ MONTH, 
-                                     data = subset(x.normals, ELEMENT == "PRCP"), sum)
+    data = subset(x.PRCP.normals.month.year), mean)
   names(x.PRCP.normals.monthly) <- c("MONTH", "NORMALS")
-  return(list(x.TMAX.normals.monthly, x.TMIN.normals.monthly, x.PRCP.normals.monthly))
+  return(list(x.TMAX.normals.monthly, 
+              x.TMIN.normals.monthly, 
+              x.PRCP.normals.monthly))
 }
+
+# Check on PRCP Values!
+#par(mfrow=c(1,1))
+#plot(VALUE ~ Ymd, data = subset(station1a, subset=ELEMENT=="PRCP"), type = "p", col = "blue", main = "Time Series of Daily PRCP", xlab = "Date", ylab = "PRCP (mm)", pch=20, cex=.2)
+#plot(NORMALS ~ MONTH, data = station1.normals[[3]], type = "p", col = "blue", main = "NORMALS PRCP", xlab = "MONTH", ylab = "PRCP (mm)") 
+#plot(PRCP ~ YEAR + MONTH, data = station1.monthly[[3]], type = "p", col = "blue",  main = "MONTHLY PRCP", xlab = "MONTH", ylab = "PRCP (mm)")
+
+#---------------------------------------------------------------------
+# Function to Calculate Monthly Anomalies
+MonthlyAnomalies.fun <- function(station.monthly, station.normals){
+for(i in seq_along(station.monthly)){
+  TMAX <- merge(station.monthly[[1]], station.normals[[1]], by = "MONTH")
+  TMAX$TMAX.a = TMAX$TMAX - TMAX$NORMALS
+  TMAX$Ymd = as.Date(paste(TMAX$YEAR, TMAX$MONTH, "01", sep = "-"))
+  TMIN <- merge(station.monthly[[2]], station.normals[[2]], by = "MONTH")
+  TMIN$TMIN.a = TMIN$TMIN - TMIN$NORMALS
+  TMIN$Ymd = as.Date(paste(TMIN$YEAR, TMIN$MONTH, "01", sep = "-"))
+  PRCP <- merge(station.monthly[[3]], station.normals[[3]], by = "MONTH")
+  PRCP$PRCP.a = PRCP$PRCP - PRCP$NORMALS 
+  PRCP$Ymd = as.Date(paste(PRCP$YEAR, PRCP$MONTH, "01", sep = "-"))
+  return(list(TMAX, TMIN, PRCP))  
+  }
+}
+
+# Testing function!
+MonthlyAnomalies.fun(station1.monthly, station1.normals)
+
+#-----------------------------------------------------------------------------
+## OLD STUFF
+# Function to Create Monthly Anomalies
+
+# MonthlyAnomalies.fun <- function(station){
+#  x.anomaly = merge(x.TMAX.monthly, x.TMAX.normals.monthly, by = "MONTH")
+#  x.anomaly$TMAX.anomaly = x.TMAX.anomaly$TMAX - x.TMAX.anomaly$NORMALS
+#  x.anomaly <- merge(TEMP, x.PRCP.anomaly, by = c("MONTH", "YEAR"))[,c(1:3, 5:6, 8:9, 11)]
+#  return(x.anomaly)
+# }
 
 
 # Function to Create Monthly Anomalies
-MonthlyAnomalies.fun <- function(station=station1){
-  x.TMAX.anomaly = merge(x.TMAX.monthly, x.TMAX.normals.monthly, by = "MONTH")
-  x.TMAX.anomaly$TMAX.anomaly = x.TMAX.anomaly$TMAX - x.TMAX.anomaly$NORMALS
-  x.TMIN.anomaly = merge(x.TMIN.monthly, x.TMIN.normals.monthly, by = "MONTH")
-  x.TMIN.anomaly$TMIN.anomaly = x.TMIN.anomaly$TMIN - x.TMIN.anomaly$NORMALS
-  x.PRCP.anomaly = merge(x.PRCP.monthly, x.PRCP.normals.monthly, by = "MONTH")
-  x.PRCP.anomaly$PRCP.anomaly = x.PRCP.anomaly$PRCP - x.PRCP.anomaly$NORMALS
-  TEMP <- merge(x.TMAX.anomaly, x.TMIN.anomaly, by = c("MONTH", "YEAR") )
-  x.anomaly <- merge(TEMP, x.PRCP.anomaly, by = c("MONTH", "YEAR"))[,c(1:3, 5:6, 8:9, 11)]
-  return(x.anomaly)
-}
+# MonthlyAnomalies.fun <- function(station){
+#  x.TMAX.anomaly = merge(x.TMAX.monthly, x.TMAX.normals.monthly, by = "MONTH")
+#  x.TMAX.anomaly$TMAX.anomaly = x.TMAX.anomaly$TMAX - x.TMAX.anomaly$NORMALS
+#  x.TMIN.anomaly = merge(x.TMIN.monthly, x.TMIN.normals.monthly, by = "MONTH")
+#  x.TMIN.anomaly$TMIN.anomaly = x.TMIN.anomaly$TMIN - x.TMIN.anomaly$NORMALS
+##  x.PRCP.anomaly = merge(x.PRCP.monthly, x.PRCP.normals.monthly, by = "MONTH")
+#  x.PRCP.anomaly$PRCP.anomaly = x.PRCP.anomaly$PRCP - x.PRCP.anomaly$NORMALS
+#  TEMP <- merge(x.TMAX.anomaly, x.TMIN.anomaly, by = c("MONTH", "YEAR") )
+#  x.anomaly <- merge(TEMP, x.PRCP.anomaly, by = c("MONTH", "YEAR"))[,c(1:3, 5:6, 8:9, 11)]
+#  return(x.anomaly)
+#}
 
 # Function to Up R Environment
+## Write Anomaly Data to CSV
+## Remove functions from Guide 1 and 2 from environment
+## Remove station data, except anomaly data from environment
+
 CleanUp.fun <- function(datafolder, station=station1){
   write.csv(station, file = paste0(datafolder, "station1.csv"), row.names = FALSE)
-  rm(station)
+  rm(station, )
   rm(list = ls()[!ls() %in% c("fixdates.fun", "coverage.fun", 
                               "MonthlyValues.fun", "MonthlyNormals.fun")])
   
