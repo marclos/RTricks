@@ -24,23 +24,43 @@ What is GHCN-Daily?Links to an external site.
 
 \subsection{Approach}
 
+We need to address several things that might get in the way of our analysis: 
+
+\begin{enumerate}
+  \item missing data
+  \item date format (convert to POSIXct, adding month and year as varibles)
+  \item units
+  \item outliers
+  \item Other stuff??
+\end{enumerate}
+
 
 \section{Cleaning and Pre-Processing Functions}
-
 
 \subsection{Starting the Process}
 
 Before you begin, make sure you have the stations read into R. You can do this by running the following code:
 
 <<>>=
-#ls()
+ls()
 @
 
 You should see station1\ldots stationN, where N is the number of stations you have read in.
 
+If the data are not in the R environment, you can read them in using the following but you have the uncompressed files, you can read them in using the following function:
+
+<<show_ReadStation.fun, echo=FALSE>>=
+print(ReadStation.fun)
+@
+
+Example of how to use the function
+
+<<echo=TRUE, results='hide'>>=
+datafolder = "04_Regional_Climate_Trends/Data/SP24"
+ReadStation.fun(station1)
+@
+
 Using str(), make sure the data sets look right!
-
-
 
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
 library(here)
@@ -50,9 +70,63 @@ source(here("04_Regional_Climate_Trends", "Guides", "Guide2.R"))
 
 \subsection{Clean Data}
 
+\begin{description}
+
+\item[Function to Fix Dates]
+
+<<show_fixdates.fun, echo=FALSE>>=
+print(fixdates.fun)
+@
+
+Example of how to use the function
+
+<<echo=TRUE, results='hide'>>=
+fixdates.fun(station1)
+@
+
+\item[Evaluation Data Coverage]
+
+We need to know how much data we have for each station. This is important for the next steps in the process.
+
+<<show_datacoverage.fun, echo=FALSE>>=
+print(coverage.fun)
+@
+
+
+Example of how to use the function
+
+<<echo=TRUE, results='hide'>>=
+coverage.fun(station1)
+@
+
+\item[Function to Convert Units]
+
+\item[Function to Create Monthly Values]
+
+For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly totals.\footnote{Brody/Evyln: We need code to exclue months with missing data, these might not be represenative of the month if missing, especically for PRCP!}
+
+Here's the function: j
+
+<<echo=FALSE>>=
+print(monthlyvalues.fun)
+@
+
+Example of how to use the function:
+
+<<echo=TRUE, results='hide'>>=
+monthlyvalues.fun(station1)
+@
+
+\item[Function to Create Anomalies]
+
+
+
+
+
+
 First, I tested each line on station1. I will then create a function to clean the data and apply it to each station.
 
-<<>>=
+<<eval=FALSE>>=
 # station1$VALUE = station1$VALUE/10  # Correct Values Units
 # Fix Date format
 station1$Ymd = as.Date(as.character(station1$DATE), format = "%Y%m%d") 
@@ -77,11 +151,16 @@ station1.anomaly$ANOMALY =
 
 @
 
-\subsection{Clean Data Function}
+
+\end{description}
+
+
+\section{Code for QA/QC and Preparing for our Analyses}
+
 
 Function is probably sensitive to missing values, need to work on that!
 
-<<cleandataframe.fun, echo=TRUE>>=
+<<cleandataframe.fun, echo=TRUE, eval=FALSE>>=
 x=station1
 cleandataframe.fun <- function(x){
   #x$VALUE = x$VALUE/10
@@ -134,7 +213,7 @@ cleandataframe.fun <- function(x){
 
 So far, I have only run function for 1 station, but I suspect you can figure out how to run it for each one!
 
-<<>>=
+<<eval=FALSE>>=
 station1.clean= cleandataframe.fun(station1)
 @
 
@@ -142,7 +221,7 @@ station1.clean= cleandataframe.fun(station1)
 
 Graphic has lots of issues. more next time!  But here's a start.
 
-<<>>=
+<<eval=FALSE>>=
 options(scipen=5)
 par(mar=c(4,6,2,5))
 
@@ -160,7 +239,7 @@ abline(coef(temp.lm), col = "red")
 
 \subsection{Missing Data}
 
-<<>>=
+<<eval=FALSE>>=
 # determine percent missing in station1
 station1.TMAX.coverage = sum(!is.na(station1$VALUE[station1$ELEMENT=="TMAX"]))/length(station1$VALUE[station1$ELEMENT=="TMAX"])*100
 
@@ -191,7 +270,7 @@ This is all we need to do so far. Next week, we'll look at different way to visu
 
 I'll save all the station data into csv files, then use them in the next guide to clean, process, and visualize data.
 
-<<>>=
+<<eval=FALSE>>=
 write.csv(station1, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station1.csv")), row.names = FALSE)
 write.csv(station2, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station2.csv")), row.names = FALSE)
 write.csv(station3, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station3.csv")), row.names = FALSE)
