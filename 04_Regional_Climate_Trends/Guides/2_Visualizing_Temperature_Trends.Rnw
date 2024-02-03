@@ -13,6 +13,13 @@
 
 Using a list of active weather stations in the United States, you  will download and process the data to create a time series of temperature anomalies. These datasets will be used to develop trend analysis to frame the policy implications for the region.
 
+<<eval=FALSE>>=
+library(geodata)
+d <- worldclim_country(country = "USA", var = "tmin",
+                       path = tempdir())
+terra::plot(mean(d), plg = list(title = "Min. temperature (C)"))
+@
+
 <<>>=
 library(here)
 library(xtable)

@@ -1,8 +1,8 @@
 \documentclass{article}
 
-\title{Obtaining and Cleaning NOAA Weather Station Data}
+\title{Guide1 : Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.75)} 
+\date{\today~(ver. 0.8)} 
 
 \begin{document}
 \maketitle
@@ -11,7 +11,9 @@
 
 \subsection{Goals}
 
-Using a list of active weather stations in the United States, you  will download and process the data to create a time series of temperature anomalies. \section{Evaluating Terrestrial Meteorological Data}
+Using a list of active weather stations in the United States, you  will download the data from five stations and read these into the R environment. 
+
+%\section{Evaluating Terrestrial Meteorological Data}
 
 \subsection{Selected History of Climate Science}
 
@@ -19,7 +21,7 @@ Geologists have known the climate has been changing over the Earth's history. Bu
 
 It's the last one that we'll spend time because the Earth's temperature are changing pretty dramatically over the last 100 years and the cause is no mystery -- the human activity that has released carbon dioxide (CO$_2$) into the atmosphere. The two main sources of CO$_2$ is from land use change, e.g. deforestration, and the burning of fossil fuels, e.g. coal, oil, and natural gas. 
 
-The first to propose the role of CO$_2$ on the Earth's atmosphere was a Swedish scientist Svante Arrhenius, who figured out that CO$_2$ absorbs infarred light. Moreover, he deduced that the Earth's temperature was actually warmer than it might otherwise be if CO$_2$ was not part of the Earth's atmoshere. 
+The first person to propose the role of CO$_2$ on the Earth's atmosphere was a Swedish scientist Svante Arrhenius, who figured out that CO$_2$ absorbs infarred light. Moreover, he deduced that the Earth's temperature was actually warmer than it might otherwise be if CO$_2$ was not part of the Earth's atmosphere. 
 
 \subsection{Why Look at Individual Stations?}
 
@@ -47,6 +49,72 @@ I will use these data to select for a station with a long record for each state 
 
 R is an open source programming environment that has become one of the most popular tools for statiticians and data scientists. Capitalizing on the open source framework, a wide range of libraries or packages have been developed to faciliate data processing, analysis, and graphical displays. 
 
+For the project we'll use a few packages that need to be installed and loaded. Using the lower right panel, you can install the packages by clicking on the "Packages" tab and then "Install" and then type in the package name and click "Install".
+
+\subsection{Revised Documentat Structure}
+
+Based on some feedback in the last week, I have re-orgnaized the document with bullets of the steps and then the code. In the following sections, I'll descriptions about ``what the code does and why". But several folks see the text and get tuned out.
+
+There are two weaknesses with this approach that I can see. First, if the code does not work, you will have a really hard time figuring out why, since you have no idea what the code is supposed to do. Second, if the code works, you will not really be learning any R coding. Just how to copy and paste.
+
+I have created a bunch of functions, which can then be used to collect Let's try this and see how it works! Please download and run the code called Guide1.R, which has the functions for this handout.
+
+<<setup, echo=FALSE, results='hide', message=FALSE>>=
+library(here)
+source(here("04_Regional_Climate_Trends", "Guides", "Guide1.R"))
+@
+
+\section{R Functions for Getting Weather Station Data}
+
+The following functions are used to select the weather stations, download data, and read into R.
+
+\begin{description}
+
+\item[Subset Inventory Data with my.state]  
+
+This function requires two parameters to be set: filename and my.state. 
+
+Here's the function:
+
+<<show_readInventory.fun, echo=FALSE>>=
+print(readInventory.fun)
+@
+
+I suggest you use file.choose() and assign filename.csv to the path and name of the csv file. 
+
+Example of how to use the function:
+
+<<echo=TRUE, eval=FALSE>>=
+my.state <- "CA"
+filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
+my.inventory <- readInventory.fun(filename.csv, my.state)
+@
+
+
+\item[Download Weather Station Data and Read into R]
+
+This functions requires two parameters: data path and dataframe of my.inventory. The data path is a folder that you can always get your station data from if you need it. For example, if you need to update the data, you can just download the data from the NOAA website and then read it into R. 
+
+Your data path will be different, I created a directory to separate my data by class year, you don't need that!
+
+<<show_downloadStation.fun, echo=FALSE>>=
+print(downloadStations.fun)
+@
+
+
+An example of how to use the function: 
+
+<<echo=TRUE, eval=FALSE>>=
+datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24"
+downloadStations.fun(datapath, my.inventory)
+@ 
+
+
+\end{description}
+
+
+\section{Explaining the Code}
+
 \subsection{Selecting Weather Records by State}
 
 There are numerous ways to analyze temperature records, where stations can be analyzed individually or records could be sampled and analyzed in spatially in grids. Each of these are valid approaches depending on the question to be addressed. 
@@ -57,26 +125,28 @@ Here are the questions we will address:
   \item What stations have the longest meterological records in the USA?
   \item Can we determine the reliability of these stations?
   \item Finally, is there a temperature trend?
+\end{itemize}
 
-\subsubsection{Identify List of State IDs (FIPS)}
 
-Using the rNOAA library in R, we can query NOAA's database to identify station codes (FIPS) by state. With the states and some territories, there are 55 FIPS for US weather stations. Althogh these include the District of Columbia, they do not include US Territories, sich as Guam, Puerto Rico, Marshall Islands, etc. We'll have to use a different search code for these.
+%\subsubsection{Identify List of State IDs (FIPS)}
 
-rNOAA has a simple function to list for each of the states and the weather stations in each. I use ncdc\_locs() functions to select each state and ncdc\_station() to obtain the station ids with the longest records. 
+%Using the rNOAA library in R, we can query NOAA's database to identify station codes (FIPS) by state. With the states and some territories, there are 55 FIPS for US weather stations. Althogh these include the District of Columbia, they do not include US Territories, sich as Guam, Puerto Rico, Marshall Islands, etc. We'll have to use a different search code for these.
 
-The function queries the NOAA website and retrieves state codes, ``FIPS:XX''. Each state has a number of weather stations,\footnote{Project Idea: It would be nice to make a map of how concentrated the stations spatially.} some with a long record, some with a short record, and some with numerous interruptions. Our goal is to select a long record with few missing data. 
+%rNOAA has a simple function to list for each of the states and the weather stations in each. I use ncdc\_locs() functions to select each state and ncdc\_station() to obtain the station ids with the longest records. 
 
-\subsubsection{Selection Stations}
+%The function queries the NOAA website and retrieves state codes, ``FIPS:XX''. Each state has a number of weather stations,\footnote{Project Idea: It would be nice to make a map of how concentrated the stations spatially.} some with a long record, some with a short record, and some with numerous interruptions. Our goal is to select a long record with few missing data. 
 
-With the state ids, we can evaluate the metadata for all the weather stations, which will work to get the longest records, using \texttt{ncdc\_stations()}. 
+%\subsubsection{Selection Stations}
 
-First, we subset the data for stations that actively collecting data. Then we'll sort to the active stations to find the one with the longest records. We will use these stations for our analysis. 
+%With the state ids, we can evaluate the metadata for all the weather stations, which will work to get the longest records, using \texttt{ncdc\_stations()}. 
 
-There were some records that didn't have robust TMAX/TMIN records, so there are some states that I had to manually select an alternative stations. 
+%First, we subset the data for stations that actively collecting data. Then we'll sort to the active stations to find the one with the longest records. We will use these stations for our analysis. 
 
-\subsection{Read Data}
+%There were some records that didn't have robust TMAX/TMIN records, so there are some states that I had to manually select an alternative stations. 
 
-First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called "04\_Regional\_Climate\_Trends") and then used the function here() to get the working directory and read the csv into R. This might be easier than the file.choose() option, but you can use that if you prefer.
+\subsection{Defining Path \& Read Data}
+
+First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``04\_Regional\_Climate\_Trends") and then used the function here() to get the working directory and read the csv into R. This might be easier than the file.choose() option, but you can use that if you prefer.
 
 <<>>=
 library(here)
@@ -133,215 +203,7 @@ here::here("04_Regional_Climate_Trends", my.stations$ID[i])
 @
 
 
-The loop is not ideal -- loops are slow in R and prone to break -- but it should work for our purposes.\footnote{Evelyn/Brody: I wonder if we can test if the file exists so we don't have to downwload every time!} 
-<<>>=
-for(i in 1:nrow(my.stations)){
-  url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", 
-               my.stations$ID[i], 
-               ".csv.gz")
-  
-print(i) # Print Index Number
-download.file(url, paste0(here::here("04_Regional_Climate_Trends", 
-                                     "Data", 
-                                     "SP24/"), 
-                          my.stations$ID[i], 
-                          ".csv.gz"), 
-              quiet = FALSE, mode = "w", cacheOK = TRUE)
-
-assign(paste0("station", i), 
-       read.csv(gzfile(paste0(here::here("04_Regional_Climate_Trends", 
-            "Data", "SP24/"),my.stations$ID[i], ".csv.gz")), 
-            header=FALSE))
-
-# can't get the header named in loop! Grrr...
-#names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT", 
-# "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
-
-} # LOOP END
-
-# Fix Variable Names based on NOAA Documentation
-names(station1) <- c("ID", "DATE", "ELEMENT", "VALUE", 
-                     "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
-names(station3) <- names(station2) <- names(station1)
-names(station5) <- names(station4) <- names(station1)
-
-# NAMES OF VARIABLES ARE INCORRECT for some STATIONS??
-      
-  #ID = 11 character station identification code
-  #YEAR/MONTH/DAY = 8 character date in YYYYMMDD format 
-  #                     (e.g. 19860529 = May 29, 1986)
-  #ELEMENT = 4 character indicator of element type 
-  #DATA VALUE = 5 character data value for ELEMENT 
-  #M-FLAG = 1 character Measurement Flag 
-  #Q-FLAG = 1 character Quality Flag 
-  #S-FLAG = 1 character Source Flag 
-  #OBS-TIME = 4-character time of observation in hour-minute format
-  #                     (i.e. 0700 =7:00 am); if no ob time information 
- #is available, the field is left empty
-
-@
-
-\section{Process and Clean Data}
 
 
-I have created a "function" that can process and clean the data, if the data are consistent!  If not, we'll trouble shoot together. 
-
-Here's the data structure, using str(), but if you have something different, please let me know and we'll sort out how to fix it. 
-
-<<>>=
-str(station1)
-@
-
-
-\subsection{Clean Data}
-
-First, I tested each line on station1. I will then create a function to clean the data and apply it to each station.
-
-<<>>=
-# station1$VALUE = station1$VALUE/10  # Correct Values Units
-# Fix Date format
-station1$Ymd = as.Date(as.character(station1$DATE), format = "%Y%m%d") 
-str(station1)
-
-station1$MONTH = as.numeric(format(station1$Ymd, "%m"))
-station1$YEAR = as.numeric(format(station1$Ymd, "%Y"))
-station1.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-                   data = subset(station1, ELEMENT == "TMAX"), mean)
-
-# create baseline (normals) dataset
-station1.normals = subset(station1, 
-                           Ymd >= "1961-01-01" & Ymd <= "1990-12-31") 
-station1.normals.monthly = aggregate(VALUE ~ MONTH, 
-                   data = subset(station1.normals, ELEMENT == "TMAX"), mean)
-names(station1.normals.monthly) <- c("MONTH", "NORMALS")
-
-station1.anomaly = merge(station1.monthly, 
-                         station1.normals.monthly, by = "MONTH")
-station1.anomaly$ANOMALY = 
-  station1.anomaly$VALUE - station1.anomaly$NORMALS
-
-@
-
-\subsection{Clean Data Function}
-
-Function is probably sensitive to missing values, need to work on that!
-
-<<cleandataframe.fun, echo=TRUE>>=
-x=station1
-cleandataframe.fun <- function(x){
-  #x$VALUE = x$VALUE/10
-  x$Ymd = as.Date(as.character(x$DATE), format = "%Y%m%d")
-  x$MONTH = as.numeric(format(x$Ymd, "%m"))
-  x$YEAR = as.numeric(format(x$Ymd, "%Y"))
-
-  x.TMAX.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-            data = subset(x, ELEMENT == "TMAX"), mean)
-  names(x.TMAX.monthly) <- c("MONTH", "YEAR", "TMAX")
-  x.TMIN.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-            data = subset(x, ELEMENT == "TMIN"), mean)
-  names(x.TMIN.monthly) <- c("MONTH", "YEAR", "TMIN")
-  x.PRCP.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-            data = subset(x, ELEMENT == "PRCP"), sum)
-  names(x.PRCP.monthly) <- c("MONTH", "YEAR", "PRCP")
-  
-  x.normals = subset(x, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")  
-  x.TMAX.normals.monthly = aggregate(VALUE ~ MONTH, 
-            data = subset(x.normals, ELEMENT == "TMAX"), mean)
-  names(x.TMAX.normals.monthly) <- c("MONTH", "NORMALS")
-  x.TMIN.normals.monthly = aggregate(VALUE ~ MONTH, 
-            data = subset(x.normals, ELEMENT == "TMIN"), mean)
-  names(x.TMIN.normals.monthly) <- c("MONTH", "NORMALS")
-  x.PRCP.normals.monthly = aggregate(VALUE ~ MONTH, 
-            data = subset(x.normals, ELEMENT == "PRCP"), sum)
-  names(x.PRCP.normals.monthly) <- c("MONTH", "NORMALS")
-  
-  
-  x.TMAX.anomaly = merge(x.TMAX.monthly, x.TMAX.normals.monthly, by = "MONTH")
-  x.TMAX.anomaly$TMAX.anomaly = x.TMAX.anomaly$TMAX - x.TMAX.anomaly$NORMALS
-  
-  x.TMIN.anomaly = merge(x.TMIN.monthly, x.TMIN.normals.monthly, by = "MONTH")
-  x.TMIN.anomaly$TMIN.anomaly = x.TMIN.anomaly$TMIN - x.TMIN.anomaly$NORMALS
-  
-  x.PRCP.anomaly = merge(x.PRCP.monthly, x.PRCP.normals.monthly, by = "MONTH")
-  x.PRCP.anomaly$PRCP.anomaly = x.PRCP.anomaly$PRCP - x.PRCP.anomaly$NORMALS
-  
-  TEMP <- merge(x.TMAX.anomaly, x.TMIN.anomaly, by = c("MONTH", "YEAR") )
-  x.anomaly <- merge(TEMP, x.PRCP.anomaly, by = c("MONTH", "YEAR"))[,c(1:3, 5:6, 8:9, 11)]
-  library(lubridate)
-  #x.anomaly$Ym1 = as.Date(paste(x.anomaly$YEAR, x.anomaly$MONTH), format="%Y %m")
-  x.anomaly$Ym1 =  lubridate::myd(paste(x.anomaly$MONTH, x.anomaly$YEAR, "1"))
-  str(x.anomaly)
-  return(x.anomaly)
-}
-@
-
-\subsection{Apply Function to All Stations}
-
-So far, I have only run function for 1 station, but I suspect you can figure out how to run it for each one!
-
-<<>>=
-station1.clean= cleandataframe.fun(station1)
-@
-
-\subsection{Plot Anomaly}
-
-Graphic has lots of issues. more next time!  But here's a start.
-
-<<>>=
-options(scipen=5)
-par(mar=c(4,6,2,5))
-
-plot(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1), 
-     las=1, pch=19, col = "blue", cex=.5, #xlab = "Year", 
-     ylab = "Maximum Temp Anomaly (C)",
-     main="January Maximum Temp Anomaly")
-mtext("Maximum Temp Anomaly (C)", side = 2, line = 3)
-temp.lm = lm(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1))
-abline(coef(temp.lm), col = "red")
-
-@
-
-\seciton{QA/QC}
-
-\subsection{Missing Data}
-
-<<>>=
-# determine percent missing in station1
-station1.TMAX.coverage = sum(!is.na(station1$VALUE[station1$ELEMENT=="TMAX"]))/length(station1$VALUE[station1$ELEMENT=="TMAX"])*100
-
-# function to determine percent missing
-coverage.fun <- function(station, element){
-  Dates.all = data.frame(Ymd=seq.Date(from=min(station$Ymd), to=max(station$Ymd), by="day"))
-  station.full = merge(Dates.all, station, all = TRUE)
-  station.coverage = sum(!is.na(station.full$VALUE[station.full$ELEMENT==element]))/
-    length(station.full$VALUE[station.full$ELEMENT==element])*100
-  return(round(station.coverage,2))
-}
-
-coverage.data(station1, "TMAX")
-coverage.data(station2, "TMAX")
-
-Date.full = data.frame(Ymd=seq.Date(from=min(station1$Ymd), to=max(station1$Ymd), by="day"))
-str(Date.full)
-
-station1.full = merge(Date.full, station1, all = TRUE)
-coverage.fun(station1, "TMAX")
-coverage.fun(station2, "TMAX")
-
-
-@
-\section{Next Steps}
-
-This is all we need to do so far. Next week, we'll look at different way to visualize the data! 
-
-I'll save all the station data into csv files, then use them in the next guide to clean, process, and visualize data.
-
-<<>>=
-write.csv(station1, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station1.csv")), row.names = FALSE)
-write.csv(station2, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station2.csv")), row.names = FALSE)
-write.csv(station3, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station3.csv")), row.names = FALSE)
-write.csv(station4, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station4.csv")), row.names = FALSE)
-write.csv(station5, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station5.csv")), row.names = FALSE)
-@
 
 \end{document}
