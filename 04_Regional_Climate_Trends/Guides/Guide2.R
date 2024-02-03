@@ -1,21 +1,29 @@
 # Guide2.R
 
-# Function to Read Station Data in R Environment
-ReadStation.fun <- function(datafolder, station="station1"){
-  station = read.csv(paste0(datafolder, station, ".csv"))
+# Function to Read CSV Files into R
+ReadStations.fun <- function(datafolder){
+  StationList <- list.files(datafolder, full.names=TRUE, pattern = "\\.csv$")
+  # Fix Variable Names based on NOAA Documentation
+  colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
+                "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
+  for (i in 1:length(StationList)){
+    assign(paste0("station", i), read.csv(StationList[i], header=TRUE, col.names=colnames), envir = parent.frame())
+ #   return(paste0("station", i))
+  }
+}
+  
+
+# function to fix date formats, etc.
+fixdates.fun <- function(station){
+  station$Ymd = as.Date(as.character(station$DATE), format = "%Y%m%d")
+  station$MONTH = as.numeric(format(station$Ymd, "%m"))
+  station$YEAR = as.numeric(format(station$Ymd, "%Y"))
   return(station)
 }
 
-# function to fix date formats, etc.
-fixdates.fun <- function(x=station1){
-  x$Ymd = as.Date(as.character(x$DATE), format = "%Y%m%d")
-  x$MONTH = as.numeric(format(x$Ymd, "%m"))
-  x$YEAR = as.numeric(format(x$Ymd, "%Y"))
-  return(x)
-}
 
 # Data Coverage Function --Determine percent missing
-coverage.fun <- function(station, element){
+coverage.fun <- function(station, element="TMAX"){
     Dates.all = data.frame(Ymd=seq.Date(from=min(station$Ymd), to=max(station$Ymd), by="day"))
     station.full = merge(Dates.all, station, all = TRUE)
     station.coverage = sum(!is.na(station.full$VALUE[station.full$ELEMENT==element]))/

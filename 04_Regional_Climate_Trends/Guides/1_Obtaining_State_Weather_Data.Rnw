@@ -1,8 +1,8 @@
 \documentclass{article}
 
-\title{Guide1 : Obtaining State Weather Station Data}
+\title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.8)} 
+\date{\today~(ver. 0.88)} 
 
 \begin{document}
 \maketitle
@@ -51,7 +51,7 @@ R is an open source programming environment that has become one of the most popu
 
 For the project we'll use a few packages that need to be installed and loaded. Using the lower right panel, you can install the packages by clicking on the "Packages" tab and then "Install" and then type in the package name and click "Install".
 
-\subsection{Revised Documentat Structure}
+\subsection{Revised Document Structure}
 
 Based on some feedback in the last week, I have re-orgnaized the document with bullets of the steps and then the code. In the following sections, I'll descriptions about ``what the code does and why". But several folks see the text and get tuned out.
 
@@ -86,7 +86,7 @@ I suggest you use file.choose() and assign filename.csv to the path and name of 
 
 Example of how to use the function:
 
-<<echo=TRUE, eval=FALSE>>=
+<<echo=TRUE, eval=TRUE>>=
 my.state <- "CA"
 filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
@@ -97,7 +97,7 @@ my.inventory <- readInventory.fun(filename.csv, my.state)
 
 This functions requires two parameters: data path and dataframe of my.inventory. The data path is a folder that you can always get your station data from if you need it. For example, if you need to update the data, you can just download the data from the NOAA website and then read it into R. 
 
-Your data path will be different, I created a directory to separate my data by class year, you don't need that!
+Your data path will be different, I created a directory to separate my data by class year, you don't need that! But it is nice to keep the data in a separate folder so things don't get to hectic.
 
 <<show_downloadStation.fun, echo=FALSE>>=
 print(downloadStations.fun)
@@ -106,8 +106,8 @@ print(downloadStations.fun)
 
 An example of how to use the function: 
 
-<<echo=TRUE, eval=FALSE>>=
-datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24"
+<<echo=TRUE, eval=TRUE>>=
+datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 downloadStations.fun(datapath, my.inventory)
 @ 
 
@@ -115,7 +115,7 @@ downloadStations.fun(datapath, my.inventory)
 \end{description}
 
 
-\section{Explaining the Code}
+\section{Explaining the Code TBD!!}
 
 \subsection{Selecting Weather Records by State}
 

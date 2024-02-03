@@ -50,9 +50,9 @@
 
 \usepackage{alltt}
 
-\title{Guide1 : Obtaining State Weather Station Data}
+\title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.8)}
+\date{\today~(ver. 0.88)}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 \maketitle
@@ -101,7 +101,7 @@ R is an open source programming environment that has become one of the most popu
 
 For the project we'll use a few packages that need to be installed and loaded. Using the lower right panel, you can install the packages by clicking on the "Packages" tab and then "Install" and then type in the package name and click "Install".
 
-\subsection{Revised Documentat Structure}
+\subsection{Revised Document Structure}
 
 Based on some feedback in the last week, I have re-orgnaized the document with bullets of the steps and then the code. In the following sections, I'll descriptions about ``what the code does and why". But several folks see the text and get tuned out.
 
@@ -157,7 +157,7 @@ Example of how to use the function:
 
 This functions requires two parameters: data path and dataframe of my.inventory. The data path is a folder that you can always get your station data from if you need it. For example, if you need to update the data, you can just download the data from the NOAA website and then read it into R. 
 
-Your data path will be different, I created a directory to separate my data by class year, you don't need that!
+Your data path will be different, I created a directory to separate my data by class year, you don't need that! But it is nice to keep the data in a separate folder so things don't get to hectic.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -169,15 +169,18 @@ Your data path will be different, I created a directory to separate my data by c
 ##             my.inventory$ID[i], ".csv.gz")
 ##         download.file(url, paste0(datafolder, my.inventory$ID[i], 
 ##             ".csv.gz"), quiet = FALSE, mode = "w", cacheOK = TRUE)
-##         assign(paste0("station", i), read.csv(gzfile(paste0(datafolder, 
-##             my.inventory$ID[i], ".csv.gz")), header = FALSE))
 ##         print(paste("Index (Loop) ", i, " Completed."))
 ##         print("Think about something you are grateful for today!")
 ##     }
-##     names(station1) <- c("ID", "DATE", "ELEMENT", "VALUE", "M-FLAG", 
+##     StationList.df <- lapply(list.files(datafolder, full.names = TRUE, 
+##         pattern = "\\.gz$"), read.csv, header = FALSE)
+##     colnames <- c("ID", "DATE", "ELEMENT", "VALUE", "M-FLAG", 
 ##         "Q-FLAG", "S-FLAG", "OBS-TIME")
-##     names(station3) <- names(station2) <- names(station1)
-##     names(station5) <- names(station4) <- names(station1)
+##     lapply(StationList.df, setNames, colnames)
+##     for (i in seq_along(StationList.df)) {
+##         filename = paste0(datafolder, my.inventory$ID[i], ".csv")
+##         write.csv(StationList.df[[i]], filename, row.names = FALSE)
+##     }
 ## }
 \end{verbatim}
 \end{kframe}
@@ -189,9 +192,21 @@ An example of how to use the function:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{datapath} \hlkwb{=} \hlstr{"/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24"}
+\hlstd{datapath} \hlkwb{=} \hlstr{"/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"}
 \hlkwd{downloadStations.fun}\hlstd{(datapath, my.inventory)}
 \end{alltt}
+\begin{verbatim}
+## [1] "Index (Loop)  1  Completed."
+## [1] "Think about something you are grateful for today!"
+## [1] "Index (Loop)  2  Completed."
+## [1] "Think about something you are grateful for today!"
+## [1] "Index (Loop)  3  Completed."
+## [1] "Think about something you are grateful for today!"
+## [1] "Index (Loop)  4  Completed."
+## [1] "Think about something you are grateful for today!"
+## [1] "Index (Loop)  5  Completed."
+## [1] "Think about something you are grateful for today!"
+\end{verbatim}
 \end{kframe}
 \end{knitrout}
 
@@ -199,7 +214,7 @@ An example of how to use the function:
 \end{description}
 
 
-\section{Explaining the Code}
+\section{Explaining the Code TBD!!}
 
 \subsection{Selecting Weather Records by State}
 
