@@ -27,8 +27,9 @@ What is GHCN-Daily?Links to an external site.
 We need to address several things that might get in the way of our analysis: 
 
 \begin{enumerate}
-  \item missing data
+  \item read station data into R
   \item date format (convert to POSIXct, adding month and year as varibles)
+  \item evaluate missing data
   \item units
   \item outliers
   \item Other stuff??
@@ -36,6 +37,11 @@ We need to address several things that might get in the way of our analysis:
 
 
 \section{Cleaning and Pre-Processing Functions}
+
+<<setup, echo=FALSE, results='hide', message=FALSE>>=
+library(here)
+source(here("04_Regional_Climate_Trends", "Guides", "Guide2.R"))
+@
 
 \subsection{Starting the Process}
 
@@ -50,23 +56,21 @@ You should see station1\ldots stationN, where N is the number of stations you ha
 If the data are not in the R environment, you can read them in using the following but you have the uncompressed files, you can read them in using the following function:
 
 <<show_ReadStation.fun, echo=FALSE>>=
-print(ReadStation.fun)
+print(ReadStations.fun)
 @
 
 Example of how to use the function
 
 <<echo=TRUE, results='hide'>>=
-datafolder = "04_Regional_Climate_Trends/Data/SP24"
-ReadStation.fun(station1)
+datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24"
+ReadStations.fun(datafolder)
 @
 
 Using str(), make sure the data sets look right!
 
-<<setup, echo=FALSE, results='hide', message=FALSE>>=
-library(here)
-source(here("04_Regional_Climate_Trends", "Guides", "Guide2.R"))
+<<echo=TRUE, results='hide'>>=
+str(station2)
 @
-
 
 \subsection{Clean Data}
 
@@ -81,7 +85,7 @@ print(fixdates.fun)
 Example of how to use the function
 
 <<echo=TRUE, results='hide'>>=
-fixdates.fun(station1)
+station1a <- fixdates.fun(station1)
 @
 
 \item[Evaluation Data Coverage]
@@ -96,7 +100,7 @@ print(coverage.fun)
 Example of how to use the function
 
 <<echo=TRUE, results='hide'>>=
-coverage.fun(station1)
+coverage.fun(station1a)
 @
 
 \item[Function to Convert Units]
@@ -105,21 +109,31 @@ coverage.fun(station1)
 
 For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly totals.\footnote{Brody/Evyln: We need code to exclue months with missing data, these might not be represenative of the month if missing, especically for PRCP!}
 
-Here's the function: j
+Here's the function: 
 
 <<echo=FALSE>>=
-print(monthlyvalues.fun)
+print(MonthlyValues.fun)
 @
 
 Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
-monthlyvalues.fun(station1)
+station1.monthly <- MonthlyValues.fun(station1a)
 @
 
 \item[Function to Create Anomalies]
 
+Here's the function: 
 
+<<echo=FALSE>>=
+print(Anomalies.fun)
+@
+
+Example of how to use the function:
+
+<<echo=TRUE, results='hide'>>=
+station1.monthly.Anomalies <- Anomalies.fun(station1a)
+@
 
 
 
