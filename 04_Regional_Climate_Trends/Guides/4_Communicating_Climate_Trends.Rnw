@@ -1,0 +1,1882 @@
+\documentclass{article}
+
+\title{Communicating Climate Trends}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.27)} 
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+Visualizing
+
+\subsection{Goals}
+
+Using a list of active weather stations in the United States, you  will download and process the data to create a time series of temperature anomalies. These datasets will be used to develop trend analysis to frame the policy implications for the region.
+
+<<eval=FALSE>>=
+library(geodata)
+d <- worldclim_country(country = "USA", var = "tmin",
+                       path = tempdir())
+terra::plot(mean(d), plg = list(title = "Min. temperature (C)"))
+@
+
+<<>>=
+library(here)
+library(xtable)
+
+stations.active.oldest = read.csv(
+  here("04_Regional_Climate_Trends", "stations.active.oldest.csv"))
+
+# OR
+# use file.choose() to select the file
+# filename = "MY.PATH/04_Regional_Climate_Trends/stations.active.oldest.csv"
+# stations.active.oldest = read.csv(filename)
+@ 
+
+
+\subsection{Map US Weather Stations}
+
+Here's map that has been transformed using a bunch of libraries that I don't really know how to use, but I found webpage that told me how to make this!
+
+It would be nice to add Canada and Mexico so the USA is not floating in space. I'll work on that later.
+
+<<>>=
+library(usmap)
+library(ggplot2)
+library(sf)
+library(tidyverse)
+library("rnaturalearth")
+library("rnaturalearthdata")
+library(usmap)
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+
+usa <- subset(world, admin == "United States of America")
+
+(mainland <- ggplot(data = usa) +
+     geom_sf(fill = "cornsilk") +
+     #geom_sf(data = subset(sites), size = 3, shape = 21, fill = "gray70") +
+     geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
+    coord_sf(crs = st_crs(2163), xlim = c(-2500000, 2500000), ylim = c(-2300000, 
+         730000)))
+
+(alaska <- ggplot(data = usa) +
+     geom_sf(fill = "cornsilk") +
+    geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
+     coord_sf(crs = st_crs(3467), xlim = c(-2400000, 1600000), ylim = c(200000, 
+         2500000), expand = FALSE, datum = NA))
+
+(hawaii  <- ggplot(data = usa) +
+     geom_sf(fill = "cornsilk") +
+     geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
+     coord_sf(crs = st_crs(4135), xlim = c(-161, -154), ylim = c(18, 
+         23), expand = FALSE, datum = NA))
+
+(world.sf <- ggplot(data =world) +
+     geom_sf() +
+     #geom_sf(data = subset(sites), size = 3, shape = 21, fill = "gray70") +
+     geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
+    coord_sf(crs = st_crs(2163), xlim = c(-2500000, 2500000), ylim = c(-2300000, 
+         730000)))
+
+
+mainland +
+ annotation_custom(
+      grob = ggplotGrob(alaska),
+      xmin = -2750000,
+      xmax = -2750000 + (1600000 - (-2400000))/2.5,
+      ymin = -2450000,
+      ymax = -2450000 + (2500000 - 200000)/2.5
+  ) +
+  annotation_custom(
+      grob = ggplotGrob(hawaii),
+      xmin = -1250000,
+      xmax = -1250000 + (-154 - (-161))*120000,
+      ymin = -2450000,
+      ymax = -2450000 + (23 - 18)*120000
+  )
+
+@
+\subsection{Select and Evaluate State Data}
+
+<<>>=
+stations.unique = 
+  unique(stations.active.oldest[,c("STATE", "STATE_NAME")])
+
+xtab = xtable(stations.unique)
+@
+
+The each of you will select a state -- see the Google Sheet sign up so we have a diverse set of states.
+
+<<>>=
+my.state = "CA" # change the "CA" to your state
+@
+
+\section{Download Data from NOAA}
+
+\subsection{Subset Station Data by State}
+
+This uses the stations.active.oldest file to download the data from the NOAA website based on the state you have choose.
+
+<<>>=# Select Stations in State
+my.stations = subset(stations.active.oldest, STATE == my.state)
+
+# Download Updated Station Data
+i=1
+here::here("04_Regional_Climate_Trends", my.stations$ID[i])
+@
+
+
+The loop is not ideal -- loops are slow in R and prone to break -- but it should work for our purposes.\footnote{Evelyn/Brody: I wonder if we can test if the file exists so we don't have to downwload every time!} 
+<<>>=
+for(i in 1:nrow(my.stations)){
+  url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", 
+               my.stations$ID[i], 
+               ".csv.gz")
+  
+print(i) # Print Index Number
+download.file(url, paste0(here::here("04_Regional_Climate_Trends", 
+                                     "Data", 
+                                     "SP24/"), 
+                          my.stations$ID[i], 
+                          ".csv.gz"), 
+              quiet = FALSE, mode = "w", cacheOK = TRUE)
+
+assign(paste0("station", i), 
+       read.csv(gzfile(paste0(here::here("04_Regional_Climate_Trends", 
+            "Data", "SP24/"),my.stations$ID[i], ".csv.gz")), 
+            header=FALSE))
+
+# can't get the header named in loop! Grrr...
+#names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT", 
+# "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
+
+} # LOOP END
+
+# Fix Variable Names based on NOAA Documentation
+names(station1) <- c("ID", "DATE", "ELEMENT", "VALUE", 
+                     "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
+names(station3) <- names(station2) <- names(station1)
+names(station5) <- names(station4) <- names(station1)
+
+# NAMES OF VARIABLES ARE INCORRECT for some STATIONS??
+      
+  #ID = 11 character station identification code
+  #YEAR/MONTH/DAY = 8 character date in YYYYMMDD format 
+  #                     (e.g. 19860529 = May 29, 1986)
+  #ELEMENT = 4 character indicator of element type 
+  #DATA VALUE = 5 character data value for ELEMENT 
+  #M-FLAG = 1 character Measurement Flag 
+  #Q-FLAG = 1 character Quality Flag 
+  #S-FLAG = 1 character Source Flag 
+  #OBS-TIME = 4-character time of observation in hour-minute format
+  #                     (i.e. 0700 =7:00 am); if no ob time information 
+ #is available, the field is left empty
+
+@
+
+\section{Process and Clean Data}
+
+
+I have created a "function" that can process and clean the data, if the data are consistent!  If not, we'll trouble shoot together. 
+
+Here's the data structure, using str(), but if you have something different, please let me know and we'll sort out how to fix it. 
+
+<<>>=
+str(station1)
+@
+
+
+\subsection{Clean Data}
+
+First, I tested each line on station1. I will then create a function to clean the data and apply it to each station.
+
+<<>>=
+station1$VALUE = station1$VALUE/10  # Correct Values Units
+# Fix Date format
+station1$Ymd = as.Date(as.character(station1$DATE), format = "%Y%m%d") 
+str(station1)
+
+station1$MONTH = as.numeric(format(station1$Ymd, "%m"))
+station1$YEAR = as.numeric(format(station1$Ymd, "%Y"))
+station1.monthly = aggregate(VALUE ~ MONTH + YEAR, 
+                   data = subset(station1, ELEMENT == "TMAX"), mean)
+
+# create baseline (normals) dataset
+station1.normals = subset(station1, 
+                           Ymd >= "1961-01-01" & Ymd <= "1990-12-31") 
+station1.normals.monthly = aggregate(VALUE ~ MONTH, 
+                   data = subset(station1.normals, ELEMENT == "TMAX"), mean)
+names(station1.normals.monthly) <- c("MONTH", "NORMALS")
+
+station1.anomaly = merge(station1.monthly, 
+                         station1.normals.monthly, by = "MONTH")
+station1.anomaly$ANOMALY = 
+  station1.anomaly$VALUE - station1.anomaly$NORMALS
+
+@
+
+\subsection{Clean Data Function}
+
+Function is probably sensitive to missing values, need to work on that!
+
+<<cleandataframe.fun, echo=TRUE>>=
+cleandataframe.fun <- function(x, y="TMAX"){
+  x$VALUE = x$VALUE/10
+  x$Ymd = as.Date(as.character(x$DATE), format = "%Y%m%d") 
+  x$MONTH = as.numeric(format(x$Ymd, "%m"))
+  x$YEAR = as.numeric(format(x$Ymd, "%Y"))
+  x.monthly = aggregate(VALUE ~ MONTH + YEAR, 
+                   data = subset(x, ELEMENT == y), mean)
+  x.normals = subset(x, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")
+  x.normals.monthly = aggregate(VALUE ~ MONTH, 
+                   data = subset(x.normals, ELEMENT == "TMAX"), mean)
+  names(x.normals.monthly) <- c("MONTH", "NORMALS")
+  x.anomaly = merge(x.monthly, x.normals.monthly, by = "MONTH")
+  x.anomaly$ANOMALY = x.anomaly$VALUE - x.anomaly$NORMALS
+  return(x.anomaly)
+}
+@
+
+\subsection{Apply Function to All Stations}
+
+So far, I have only run function for 1 station, but I suspect you can figure out how to run it for each one!
+
+<<>>=
+station1.TMAX = cleandataframe.fun(station1)
+@
+
+\subsection{Plot Anomaly}
+
+Graphic has lots of issues. more next time!  But here's a start.
+
+<<>>=
+options(scipen=5)
+par(mar=c(4,6,2,5))
+
+plot(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1), 
+     las=1, pch=19, col = "blue", cex=.5, #xlab = "Year", 
+     ylab = "Maximum Temp Anomaly (C)",
+     main="January Maximum Temp Anomaly")
+mtext("Maximum Temp Anomaly (C)", side = 2, line = 3)
+temp.lm = lm(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1))
+abline(coef(temp.lm), col = "red")
+
+@
+
+
+\section{Monthly Anomalies Linear Regression}
+
+<<Monthly_summarystats, eval=TRUE, echo=FALSE>>=
+# find most important month
+sumstats = NA
+for (m in 1:12){
+  TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
+  TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
+   PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
+
+ sumstats = rbind(sumstats, 
+   data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
+   r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
+   data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
+   r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
+   data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
+   r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
+
+} #end loop
+
+sumstats=data.frame(sumstats)[-1,]
+rownames(sumstats)<-NULL
+head(sumstats)
+
+head(sumstats)
+
+sumstats$Symbol = ""
+sumstats$Symbol[sumstats$p_value < 0.05] = "*"
+sumstats$Symbol[sumstats$p_value < 0.01] = "**"
+sumstats$Symbol[sumstats$p_value < 0.001] = "***"
+
+sumstats
+
+@
+Evaluate both TMAX and TMIN in GSOM by Year using MonthEvalStats() function. 
+
+<<EvaluationMonthlyTrends, eval=TRUE>>=
+MonthEvalStatsOLD <- function(GSOM) {
+sumstats = NA
+for (m in 1:12){
+  TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
+  TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
+   PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
+
+ sumstats = rbind(sumstats, 
+   data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
+   r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
+   data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
+   r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
+   data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
+   r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
+
+}
+
+sumstats=data.frame(sumstats)[-1,]
+rownames(sumstats)<-NULL
+
+sumstats$Symbol = ""
+sumstats$Symbol[sumstats$p_value < 0.05] = "*"
+sumstats$Symbol[sumstats$p_value < 0.01] = "**"
+sumstats$Symbol[sumstats$p_value < 0.001] = "***"
+sumstats[,c(7,9)]
+return(sumstats)
+}
+
+MonthEvalStats <- function(GSOM) {
+sumstats = NA
+for (m in 1:12){
+  TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
+  TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
+   PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
+
+ sumstats = rbind(sumstats, 
+   data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
+   r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
+   data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
+   r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
+   data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
+   r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
+
+} #end loop
+
+sumstats=data.frame(sumstats)[-1,]
+rownames(sumstats)<-NULL
+head(sumstats)
+
+sumstats$Symbol = ""
+sumstats$Symbol[sumstats$p_value < 0.05] = "*"
+sumstats$Symbol[sumstats$p_value < 0.01] = "**"
+sumstats$Symbol[sumstats$p_value < 0.001] = "***"
+return(sumstats)
+}
+
+# test function
+sumstats = MonthEvalStats(GSOM[500:4000,])
+@
+
+
+\subsubsection{Trends in Tabular Formats}
+
+Admittedly, determining the months with the biggest changes isn't a very good approach for hypothesize testing -- it's more like a fishing expedition, but as long as we understand the difference between an a priori hypothesis and an exploratory analysis, we should be okay if we make appropriate conclusions. 
+
+<<EvaluatingMonthDelta>>=
+# Selecting Most Important Monthly Changes (TMAX overwrites)
+#sumstats = MonthEvalStats(GSOM)
+
+TMIN_Increase_month = with(sumstats[sumstats$Param=="TMIN",], 
+     Month[Slope==max(Slope, na.rm=T)])
+TMIN_Decrease_month = with(sumstats[sumstats$Param=="TMIN",], 
+     Month[Slope==min(Slope, na.rm=T)])
+TMAX_Increase_month = with(sumstats[sumstats$Param=="TMAX",], 
+     Month[Slope==max(Slope, na.rm=T)])
+TMAX_Decrease_month = with(sumstats[sumstats$Param=="TMAX",], 
+     Month[Slope==min(Slope, na.rm=T)])
+PPT_Increase_month = with(sumstats[sumstats$Param=="PPT",], 
+     Month[Slope==max(Slope, na.rm=T)])
+PPT_Decrease_month = with(sumstats[sumstats$Param=="PPT",], 
+     Month[Slope==min(Slope, na.rm=T)])
+@
+
+For this section, we'll look to see what months had the greatest changes for both TMIN and TMAX. By looking at significant slopes in whatever direction, we might learn if warming is really the dominiant pattern. 
+
+Table~\ref{tab:TMINtrends} summarizes the monthly trends for TMAX.
+
+<<echo=FALSE, results='asis'>>=
+sumstats$Slope100 = sumstats$Slope*100
+TMIN.xtbl <- xtable(sumstats[sumstats$Param=="TMIN", c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMIN Trends")
+
+print(TMIN.xtbl, type="latex", comment=FALSE)
+#, caption="Montly TMIN Trends", label = "tab:TMINtrends")
+
+@
+
+Table~\ref{tab:TMAXtrends} summarizes the monthly trends for TMAX.
+
+<<echo=FALSE, results='asis'>>=
+sumstats$Slope100 = sumstats$Slope*100
+TMAX.xtbl <- xtable(sumstats[sumstats$Param=="TMAX", c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMAX Trends")
+
+print(TMAX.xtbl)
+
+#, type="latex", comment=FALSE, caption="TMAX Trends by Month", label = "tab:TMAXtrends")
+@
+
+PPT changes are tricky to capture and I'll have to keep working on this (Table~\ref{tab:PPTtrends}).
+
+<<echo=FALSE, results='asis'>>=
+PPT.xtbl <- xtable(sumstats[sumstats$Param=="PPT", c(1,7,4:6)], digits=c(0,0,4,2,4,3))
+
+print(PPT.xtbl, type="latex", label = "tab:PPTtrends")
+      
+#      caption="Precipitation Trends by Month")
+
+#
+
+#tmp <- tempfile()
+#options(xtable.comment=FALSE)  ## removes the nasty comments
+#capture.output(PPT.xtbl, file=tmp)
+#rmarkdown::render(tmp, output_format="pdf_document", output_file="deleteme.pdf")
+#unlink(tmp)
+#pdftools::pdf_convert("deleteme.pdf", format="png")
+@
+
+\subsubsection{Defining TMAXmonth and TMINmonth}
+
+<<>>=
+TMINSlopeMax = max(abs(sumstats$Slope)[sumstats$Param=="TMIN"])
+TMAXSlopeMax = max(abs(sumstats$Slope)[sumstats$Param=="TMAX"])
+
+TMINmonthMax = as.numeric(subset(sumstats, select=Month, subset=abs(Slope)==TMINSlopeMax))
+
+TMAXmonthMax = as.numeric(subset(sumstats, select=Month, subset=abs(Slope)==TMAXSlopeMax))
+
+@
+The greatest changes for Station \Sexpr{GSOM_Longest$id}
+
+\section{Communicating Long-term Weather Records}
+
+\subsection{Complete Records vs. Post 1975 Trends}
+
+Communicating climate change based on station records is tricky. The long-term record would on the surface to be the most robust, but several issues arise with a naive analytical approach -- my favorite!
+
+<<trend1975>>=
+
+GSOM_1975.png = paste0(fips$State2, "_", stid, "_GSOM_1975.png")
+
+png(paste0(png_private, GSOM_1975.png), width = 480, height = 320, units = "px", pointsize = 12, bg = "white")
+par(las=1, mfrow=c(1,1))
+plot(TMAX~Date, GSOM, pch=20, cex=.5, col="grey", ylab="°F", main=paste0(fips$State2, "-", stid))
+GSOM.lm = lm(TMAX~Date, GSOM)
+pred_dates <-data.frame(Date = GSOM$Date); 
+nrow(pred_dates);# pred_dates
+#Predits the values with confidence interval 
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="gray50")
+
+# Post 1975
+GSOM.lm = lm(TMAX~Date, GSOM[GSOM$Year>1975,])
+pred_dates <-data.frame(Date = GSOM$Date[GSOM$Year>1975]); 
+nrow(pred_dates); #pred_dates
+#Predits the values with confidence interval 
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="red")
+lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
+lines(pred_dates$Date, ci[,3], col="darkorange")
+location_index = round(length(GSOM[GSOM$Year>1975,]$Date) * 0.99,0)
+text(pred_dates$Date[location_index], ci[location_index,3], 
+     paste(report_prob3(GSOM.lm))[2], pos=2, cex=1.0, col="red")
+#abline(coef(lm(TMAX~Date, GSOM)), col="black")
+#abline(coef(lm(TMAX~Date, GSOM[GSOM$Year>1975,])), col="red")
+dev.off()
+@
+
+The noise in the data may suggests that no trend is present (Figure~\ref{fig:GSOM-1975trend}). It's tricky because the seasonal variation dominates the source of varition. In other words the intra-annual variation exceeds the inter-annual variation, making signal detection very difficult. Is there a way to "filter" out the seasonal effect? Yes, let's see how that works next. 
+
+\begin{figure}
+\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, GSOM_1975.png)}}
+\caption{The climate trends from full record and post 1975 data. These data have a high level of variability due to seasonality effects that have not been filtered out.}
+\label{fig:GSOM-1975trend}
+\end{figure}
+
+
+\subsection{Filtering Seasonal Effect}
+
+There are several ways to filter out seasonal effects. The easiest way is subtract the mean value for each date, but that's tricky because every four years there is an extra day in Februrary -- although there are ways to deal with this, a more straight forward way is to use mean monthly values to capture the seasonality for each month. With 12 months, this is a pretty good approach because there is pretty good resolution. 
+
+\subsubsection{Method 1: Filtering by Monthly Mean} 
+
+<<GSOM_Anomaly>>=
+TMAX.Monthly.means = aggregate(TMAX~Month, data=GSOM, mean)
+names(TMAX.Monthly.means)=c("Month", "TMAXmean")
+GSOM2 = merge(GSOM, TMAX.Monthly.means, by="Month")
+GSOM2$TMAX.anom = GSOM2$TMAX - GSOM2$TMAXmean
+
+TMIN.Monthly.means = aggregate(TMIN~Month, GSOM, mean)
+names(TMIN.Monthly.means)=c("Month", "TMINmean")
+GSOM2 = merge(GSOM2, TMIN.Monthly.means, by="Month")
+GSOM2$TMIN.anom = GSOM2$TMIN - GSOM2$TMINmean
+
+PPT.Monthly.means = aggregate(PPT~Month, GSOM, mean)
+names(PPT.Monthly.means)=c("Month", "PPTmean")
+GSOM2 = merge(GSOM2, PPT.Monthly.means, by="Month")
+GSOM2$PPT.anom = GSOM2$PPT - GSOM2$PPTmean
+
+# Sort by date
+GSOM2 <- GSOM2[order(GSOM2$Date),]
+@
+
+<<>>=
+GSOM_anomaly_1975.png = paste0(fips$State2, "_", stid, "_GSOM_anomaly_1975.png")
+
+png(paste0(png_private, GSOM_anomaly_1975.png), 
+    width = 480, height = 320, units = "px",
+    pointsize = 12, bg = "white")
+par(las=1, mfrow=c(1,1))
+
+GSOM.lm = lm(TMAX.anom~Date, GSOM2)
+
+plot(TMAX.anom~Date, GSOM2, pch=20, cex=.5, 
+     col="grey", ylab="Max. Temp (anomaly) °F",
+     main=paste0("Seasonally Filtered -- ", fips$State, " (", stid, ") ",
+         report_prob3(GSOM.lm)[3]))
+
+pred_dates <-data.frame(Date = GSOM2$Date); 
+nrow(pred_dates); #pred_dates
+#Predits the values with confidence interval 
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="gray50")
+
+ymax=max(GSOM2$TMAX.anom) - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.3
+ymax2 <- ymax - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.1
+
+location_index = round(length(GSOM2[GSOM2$Year>1975,]$Date) * 0.99,3)
+text(pred_dates$Date[location_index], ymax, 
+     paste(report_prob3(GSOM.lm))[1], pos=2, cex=.9)
+text(pred_dates$Date[location_index], ymax2, 
+     paste(report_prob3(GSOM.lm))[2], pos=2, cex=.9)
+
+# Post 1975
+GSOM.lm = lm(TMAX.anom~Date, GSOM2[GSOM2$Year>1975,])
+pred_dates <-data.frame(Date = GSOM2$Date[GSOM2$Year>1975]); 
+nrow(pred_dates); #pred_dates
+#Predits the values with confidence interval 
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="red")
+lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
+lines(pred_dates$Date, ci[,3], col="darkorange")
+
+ymax=max(GSOM2$TMAX.anom) - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.7
+ymax2 <- ymax - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.1
+
+location_index = round(length(GSOM2[GSOM2$Year>1975,]$Date) * 0.99,0)
+text(pred_dates$Date[location_index], ymax, 
+     paste(report_prob3(GSOM.lm))[1], pos=2, cex=.9, col="red")
+text(pred_dates$Date[location_index], ymax2, 
+     paste(report_prob3(GSOM.lm))[2], pos=2, cex=.9, col="red")
+dev.off()
+@
+
+And to see what we created, see Figure~\ref{fig:GSOM-anomaly}.
+
+\begin{figure}
+\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, GSOM_anomaly_1975.png)}}
+\caption{The changing in monthly temperature data.}
+\label{fig:GSOM-anomaly}
+\end{figure}
+
+\subsubsection{Method 2: Polynomial Filter}
+
+Project to be followed up with.
+
+<<polynomial, eval=FALSE, echo=TRUE>>=
+# fit polynomial: x^2*b1 + x*b2 + ... + bn
+
+# create time series object
+#X = [i%365 for i in range(0, len(series))]
+# y = series.values
+
+# degree = 4
+#coef = polyfit(X, y, degree)
+# print('Coefficients: %s' % coef)
+# create curve
+
+@
+
+
+\subsection{Extreme Events--Using Daily Records}
+
+\subsubsection{Complicated Nature of Rainfall Patterns}
+
+Rainfall trends are tough. Exteme events can occur in 24 hours or over long periods that might result in floods or droughts. Each region might have different patterns, so developing a consistent approach is tough.
+
+We can look for trends in monthly averages, number of days without rain (important in tropics), and/or extreme events based on daily or hourly data. 
+
+I don't know of a robust way to look at this for the entire globe. 
+
+<<<>>=
+PRCP.Total = aggregate(PRCP~Year, data=CHCND, sum, na.rm=T)
+PRCP.Season.Total = aggregate(PRCP~Season+Year, data=CHCND, sum, na.rm=T)
+@
+
+Rainfall totals by season might be a useful way to think about changes, because the rainfall is often seasonal, I wonder if we can see pattners by season. 
+
+<<warning=FALSE>>=
+ggplot( ) +
+   geom_bar(data = PRCP.Season.Total, 
+      aes(x=Year, y=PRCP, fill=Season), stat="identity") + 
+         xlim(min(CHCND$Year), max(CHCND$Year)-1) +
+   #ylab("Number of Extreme Temps") + # for the y axis label
+   geom_smooth(data = PRCP.Total, 
+      aes(y=PRCP, x=Year), method = "lm", 
+      se = T, color= "black") 
+
+# + geom_smooth(data= PRCP.Season.Total, aes(x=Year, y = PRCP, color = Season, group=Season), se=F)
+@
+
+\subsubsection{Drought}
+
+Days without rain...within a calendar year... bleed over between years isn't captured.. This is screwed up, Drought.run needs work.
+
+<<>>=
+CHCND$PRCP.count = sequence(rle(CHCND$PRCP)$lengths)
+Drought.run.temp <- data.frame(Year = NA, lengths=NA, values=NA)
+for(i in min(CHCND$Year):max(CHCND$Year)){
+   # print(i)
+   run.length = rle(CHCND[CHCND$Year==i,]$PRCP)
+   run.length.df = data.frame(Year = rep(i, length(run.length$values)), 
+         lengths = run.length$lengths,
+         values = run.length$values)
+   
+   Drought.run.temp <- rbind(Drought.run.temp, 
+         run.length.df[run.length.df$values==0,])
+}
+Drought.run <- Drought.run.temp[-1,]
+str(Drought.run)
+names(Drought.run)
+
+# What is a drought 10 days, 20 days, 40 days?
+
+Drought.run.10 = aggregate(lengths~Year, 
+   data=Drought.run[Drought.run$lengths>=10,], sum)
+Drought.run.20 = aggregate(lengths~Year, 
+   data=Drought.run[Drought.run$lengths>=20,], sum)
+Drought.run.40 = aggregate(lengths~Year, 
+   data=Drought.run[Drought.run$lengths>=40,], sum)
+
+if(Drought.run$lengths>100) {
+   Drought.run.100 = aggregate(lengths~Year, 
+   data=Drought.run[Drought.run$lengths>=100,], sum)
+}
+
+plot(lengths~Year, Drought.run.10, pch=20, cex=.5)
+points(lengths~Year, Drought.run.20, pch=20, col="blue", cex=.5)
+points(lengths~Year, Drought.run.40, pch=20, col="red", cex=.5)
+points(lengths~Year, Drought.run.100, pch=20, col="purple", cex=.5)
+
+abline(lm(lengths~Year, Drought.run.10))
+abline(lm(lengths~Year, Drought.run.20), col="blue")
+abline(lm(lengths~Year, Drought.run.40), col="red")
+abline(lm(lengths~Year, Drought.run.100), col="purple")
+summary(lm(lengths~Year, Drought.run.100))
+
+
+plot(lengths~Year, Drought.run[Drought.run$lengths>30,], pch=20)
+plot(lengths~Year, Drought.run[Drought.run$lengths>30,], pch=20)
+
+
+Drought.run.lm <- lm(lengths~Year, Drought.run[Drought.run$lengths>10,])
+summary(Drought.run.lm)
+text(min(Drought.run$Year, na.rm=T), max(Drought.run$lengths, na.rm=T), 
+     paste("Slope (x100) = ", round(coef(Drought.run.lm)[2]*100, 3)), pos=4)
+#plot(PRCP.count ~ Year, data=CHCND[CHCND$PRCP==0,])
+
+@
+
+Rainfall Probability Distributions by decade... to be developed.
+
+<<eval=FALSE>>=
+CHCND$Decade <- floor_decade(CHCND$Year)
+
+PRCP.Decade <- aggregate(PRCP~Month+Decade, data=CHCND, sum)
+head(PRCP.Decade)
+
+x <- PRCP.Decade$PRCP[PRCP.Decade$Decade==1900]
+df <- approxfun(density(x))
+plot(1:12, density(x))
+xnew <- c(0.45,1.84,2.3)
+points(xnew,df(xnew),col=2)
+
+@
+
+<<>>=
+CHCND$Score <- floor_score(CHCND$Year)
+@
+
+\subsection{Record Setting Temperature Records}
+
+In many cases, people seem to "feel" how temperature has been changing over time, and new records seem to capture the attention in the media. So, we'll create a updated record of maximum temperatures and display them. 
+
+<<extremetempplot, echo=FALSE, results='hide', eval=TRUE>>=
+CHCND_Mean = mean(CHCND$TMAX, na.rm=T)
+CHCND$maxTMAX <- CHCND$minTMIN <- NA
+
+for(i in 1:nrow(CHCND)){
+   if(is.na(CHCND$TMAX[i])) next
+   
+   CHCNDmmdd <- CHCND$mmdd[i] # Index Correct Day/Month to compare
+   CHCND$maxTMAX[i] <- CHCND$TMAX[i] # Assign value to maxTMAX
+
+   if(CHCND$TMAX[i] < 
+      max(CHCND$TMAX[CHCND$mmdd==CHCNDmmdd], na.rm=T) ){ 
+      CHCND$maxTMAX[i] <- NA} else
+      {
+      CHCND$maxTMAX[i] <- CHCND$TMAX[i]
+      }
+}
+
+
+for(i in 1:nrow(CHCND)){
+   if(is.na(CHCND$TMIN[i])) next
+   
+   CHCNDmmdd <- CHCND$mmdd[i] # Index Correct Day/Month to compare  
+   CHCND$minTMIN[i] <- CHCND$TMIN[i] # Assign value to mintMIN
+
+   if(CHCND$TMIN[i] > 
+      min(CHCND$TMIN[CHCND$mmdd==CHCNDmmdd], na.rm=T) ){ 
+      CHCND$minTMIN[i] <- NA} else
+      {
+      CHCND$minTMIN[i] <- CHCND$TMIN[i]
+      }
+ }
+head(CHCND)
+@
+
+
+
+This is a common way to communicate temperatures changes. I suspect we have a better sense of change when we notice "extreme" events...
+
+<<eval=FALSE>>=
+names(CHCND)
+
+minTMIN.length = aggregate(minTMIN~Year, data=CHCND, length)
+minTMIN.length$group <- "Record Lows"
+names(minTMIN.length) <- c("Year", "Num", "Group")
+minTMIN.length$Num = -minTMIN.length$Num
+
+maxTMAX.length = aggregate(maxTMAX~Year, data=CHCND, length); 
+maxTMAX.length$group <- "Record Highs"
+names(maxTMAX.length) <- c("Year", "Num", "Group")
+
+records = rbind(minTMIN.length, maxTMAX.length); # records
+
+
+ggplot( ) +
+   geom_point(data = CHCND, aes(y=TMIN, x=YearDay), 
+      size=.05, color="gray") + 
+   geom_bar(data = records, aes(x=Year, y=Num, fill=Group), 
+      stat="identity", position="identity") +
+   xlim(min(CHCND$Year), max(CHCND$Year)-1) +
+   #ylab("Number of Extreme Temps") + # for the y axis label
+   scale_fill_manual("Legend", 
+      values = c("Record Highs" = "red", "Record Lows" = "blue")) +
+   geom_smooth(data = CHCND, aes(y=TMIN, x=YearDay), method = "lm", se = FALSE)
+   
+   
+@
+
+
+<<eval=FALSE>>=
+ggplot( ) +
+   geom_bar(data = records, aes(x=Year, y=Num, fill=Group), 
+      stat="identity", position="identity") +
+   xlim(min(CHCND$Year), max(CHCND$Year)-1) +
+   ylab("Number of Extreme Temps") + # for the y axis label
+   scale_fill_manual("Legend", 
+      values = c("Record Highs" = "red", "Record Lows" = "blue"))
+@
+
+I tried to use a for loop and in then statements and it was painfully slow, so I converted the data to a matrix that can be used by barplots with much more effeciency!
+
+Create the matrix
+<<CHCNDmatrix>>=
+library(lubridate)
+str(CHCND)
+
+TMAX.mat.noleap <- matrix(NA, nrow=366, ncol=max(CHCND$Year) - min(CHCND$Year)+1)
+TMIN.mat <- matrix(NA, nrow=366, ncol=max(CHCND$Year) - min(CHCND$Year)+1)
+#TMAX.mat.leap <- matrix(NA, nrow=1, ncol=max(CHCND$Year) - min(CHCND$Year))
+
+# Dumb Method, fraction of year might be better...
+
+CHCND.noleap = subset(CHCND, select=c(Date, Year, yday, TMAX, TMIN, PRCP), 
+                      subset=(mmdd!="02-29"))
+
+## Add yday for leap year 
+CHCND.noleap$yday[CHCND.noleap$yday>=60 & !leap_year(CHCND.noleap$Date)]<-CHCND.noleap$yday[CHCND.noleap$yday>=60 & !leap_year(CHCND.noleap$Date)] + 1
+
+## Create leap year dataframe
+CHCND.leap  = subset(CHCND, select=c(Date, Year, yday, TMAX, TMIN, PRCP), 
+                     subset=(mmdd=="02-29"))
+names(CHCND.noleap)
+years = seq(min(CHCND$Year), max(CHCND$Year), by=1)
+year.seq = data.frame(Year = years, Col = seq_len(length(seq(min(CHCND$Year), max(CHCND$Year)))))
+
+for(i in min(CHCND.noleap$Year):max(CHCND.noleap$Year)){
+      for(j in c(1:59, 61:366)){
+      # i=2016; j = 50;
+         TMAX.mat.noleap[j, year.seq$Col[year.seq$Year==i]] <- 
+         CHCND.noleap$TMAX[CHCND.noleap$Year==i & CHCND.noleap$yday == j]
+         TMIN.mat[j, year.seq$Col[year.seq$Year==i]] <- 
+         CHCND.noleap$TMIN[CHCND.noleap$Year==i & CHCND.noleap$yday == j]
+      }
+   if(leap_year(i)){
+      TMAX.mat.noleap[60, year.seq$Col[year.seq$Year==i]] <- CHCND.leap$TMAX[CHCND.leap$Year== i & CHCND.leap$yday == 60]
+      TMIN.mat[60, year.seq$Col[year.seq$Year==i]] <- CHCND.leap$TMIN[CHCND.leap$Year== i & CHCND.leap$yday == 60]
+      print(paste0("Added Leap Year", i))
+   } else {print(paste0("Process non-leap year ", i))}
+}
+
+dim(TMAX.mat.noleap)
+
+max(CHCND$yday[CHCND$Year==max(CHCND$Year)])
+
+# subset(CHCND, select=c(Date, yday, Year, TMAX), subset=(Year >= max(CHCND$Year)-1 & yday<=max(CHCND$yday[CHCND$Year<=max(CHCND$Year)]) & yday>=135))
+
+# TMAX.mat.noleap[140:144,134:135]
+
+@
+
+
+<<recordtemploop>>=
+records.png = paste0(fips$State2, "_", stid, "_CHCND_Temp_Records.png")
+
+png(paste0(png_private, records.png), width = 480, height = 280, units = "px", pointsize = 12, bg = "white")
+
+results<-NULL
+decades <- years[years/10 == floor(years/10)]
+i = max(CHCND$Year)
+# START LOOP
+   j = which(years %in% i)  
+   if(sum(is.na(TMAX.mat.noleap[,j]))==366) next
+TMAX1 = apply(TMAX.mat.noleap[,1:j], 1, function (x) which.max(x)); 
+is.na(TMAX1) <- lengths(TMAX1) == 0
+TMAX1 <- unlist(TMAX1)
+TMAX1 <- count(TMAX1)
+#str(TMAX1)
+names(TMAX1)=c("Year", "TMAX")
+TMAX_na = data.frame(Year=1:j)
+TMAX <- merge(TMAX_na, TMAX1, all.x=TRUE, by="Year")
+
+if(sum(is.na(TMIN.mat[,j]))==366) next
+   # Select Minimum and Change to Negative Value
+TMIN1 = apply(TMIN.mat[,1:j], 1, function (x) which.min(x)); 
+is.na(TMIN1) <- lengths(TMIN1) == 0
+TMIN1 <- unlist(TMIN1)
+TMIN1 <- count(TMIN1) # Max Counts Negagive
+#str(TMIN1)   
+names(TMIN1)=c("Year", "TMIN")
+TMIN_na <- data.frame(Year=1:j)
+TMIN <- merge(TMIN_na, TMIN1, all.x=TRUE, by="Year")
+
+R1 <- merge(TMAX, TMIN, by="Year")
+R1$Index = rep(j, nrow(R1))
+#results = rbind(results, R)
+R1$TMIN = -R1$TMIN
+## Sorting out X Axis
+tic.no <- 4
+rowskip = round(nrow(R1)/tic.no, 0)
+row_numb <- seq_len(nrow(R1)) %% rowskip
+row.sel = which(row_numb %in% c(1))
+index.year <- years[row.sel]
+# switch to decades?
+
+xtics = row.sel
+xlabs = index.year
+
+yrange = range(c(R1$TMIN, R1$TMAX), na.rm=T)
+ytics = floor(seq(yrange[1], yrange[2], length.out=tic.no))
+ylabs = as.character(abs(ytics))
+
+par(las=1, xpd=TRUE)
+plot(c(1,nrow(R1)), c(yrange[1], yrange[2]), ty="n", xaxt='n', yaxt='n', xlab="Year", ylab="No. of Record Temps", main="Record Highs and Lows")
+axis(2,at=ytics, labels=ylabs)
+axis(1,at=xtics, labels=xlabs)
+barplot(height = R1$TMAX, space=0, add = TRUE, axes = FALSE, col="red")
+barplot(height = R1$TMIN, space=0, add = TRUE, axes = FALSE, col="blue")
+# END LOOP
+
+dev.off()
+@
+
+The patterns of record temperatures often shows increasing number of new high temperature records  and fewer record low temperatures more recently, but as usual, it depends on the location (Figure~\ref{fig:Records}).
+\begin{figure}
+\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, records.png)}}
+\caption{Daily temperatures that have been the highest on record (in red) and lowest on record (in blue). In some cases, climate change has created more records in the recent decades, while other stations seem don't show that trend.}
+\label{fig:Records}
+\end{figure}
+
+\subsection{Iterate TMAX vs. Month Boxplots}
+
+Evaluating the changes in TMAX and Monthly temperatures might be useful, but for now, I think it's hard to see the patterns. 
+
+<<boxplots, eval=FALSE, echo=FALSE, results='hide'>>=
+for(i in min(CHCND$Year+5):max(CHCND$Year)){
+  # i=1930
+CHCNDsub = subset(CHCND, CHCND$Year<=i, 
+                  select=c(Month, Month.name, TMAX, TMIN))
+
+boxplot(TMAX ~ Month.name, data=CHCNDsub, xlab="",
+        main=paste("Maximum Daily Temp.", min(CHCND$Year), "-",
+                   i, GSOM_Longest$name),
+   sub="(NOTE: Red astrisks with signfic. changes)")
+
+symbol.y = (par()$yaxp[2])-diff(par()$yaxp[1:2])*.99
+#symbol.y = (par()$yaxp[2])
+with(sumstats[sumstats$Param=="TMAX",], text(Month, symbol.y, Symbol, col="red", cex=1))
+}
+@
+
+
+\subsection{Four Plots Compelling Figures}
+
+To test the code, I have created graphics that can then be used in the animation process, i.e. try to create code that doesn't get too complicated and then fail! 
+
+<<static_template, eval=TRUE, echo=FALSE>>=
+panel4.png = paste0(fips$State2, "_", stid, "_4panel.png")
+              
+png(paste0(png_private, panel4.png), width = 480, height = 480, units = "px", pointsize = 12, bg = "white")
+
+# START ----
+ylim_new=NA
+for(i in seq(min(GSOM$Year), max(GSOM$Year), by=2)) 
+   {
+par(las=1, mfrow=c(4,1), mar= c(2, 4, 2, 1) + 0.1)
+# TMINmonthMax
+   GSOMsub <- GSOM[GSOM$Month==TMINmonthMax & GSOM$Year<=i,]
+   if(nrow(GSOMsub)<10) next
+plot(TMIN~Date, GSOMsub[GSOMsub$Month==TMINmonthMax,], 
+   col='gray70', pch=20, xlab="", 
+   main=paste("Mean", format(GSOMsub$Date,"%B")[1], 
+              "Min. Temp", GSOM_Longest$name))
+GSOM.lm = lm(TMIN~Date, GSOMsub)
+pred_dates <-data.frame(Date = GSOMsub$Date); 
+nrow(pred_dates); pred_dates
+
+#Predits the values with confidence interval 
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="darkred")
+lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
+lines(pred_dates$Date, ci[,3], col="darkorange")
+location_index = round(length(GSOMsub$Date) * 0.99,0)
+text(pred_dates$Date[location_index], ci[location_index,3], 
+     paste(report_prob2(GSOM.lm)), pos=2, cex=1.5)
+
+# Box Plot of TMAX by Month
+CHCNDsub = subset(CHCND, CHCND$Year<=i, 
+      select=c(Month, Month.name, TMAX, TMIN))
+boxplot(TMAX ~ Month.name, data=CHCNDsub, main="", xlab="")
+symbol.y = (par()$yaxp[2])-diff(par()$yaxp[1:2])*.99
+#symbol.y = (par()$yaxp[2])
+with(sumstats[sumstats$Param=="TMAX",], text(Month, symbol.y, Symbol, col="red", cex=1))
+mtext(paste("Maximum Daily Temp.", min(CHCND$Year), 
+      "-", i, GSOM_Longest$name), line=1)
+mtext("(NOTE: Red astrisks correspond to signficant changes)", 
+      line=0, cex=.7)
+
+# TMAXmonthMax 
+GSOMsub <- GSOM[GSOM$Month==TMAXmonthMax & GSOM$Year<=i,]
+ylim = range(GSOMsub$TMAX)
+#if(!is.na(ylim_new)) ylim[2]=ylim_new
+plot(TMAX~Date, GSOMsub, col='gray70', pch=20,
+     ylim=ylim, xlab="",
+     main=paste("Mean", format(GSOMsub$Date,"%B")[1], 
+                "Max. Temp", GSOM_Longest$name))
+GSOM.lm = lm(TMAX~Date, GSOMsub) 
+
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="darkred")
+lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
+lines(pred_dates$Date, ci[,3], col="darkorange")
+
+text(pred_dates$Date[location_index], ci[location_index,3], 
+     paste(report_prob2(GSOM.lm)), pos=2, cex=1.5)
+}
+# Record High Temperatures
+# START LOOP
+   j = which(years %in% i)  
+   if(sum(is.na(TMAX.mat.noleap[,j]))==366) next
+TMAX1 = apply(TMAX.mat.noleap[,1:j], 1, function (x) which.max(x)); 
+is.na(TMAX1) <- lengths(TMAX1) == 0
+TMAX1 <- unlist(TMAX1)
+TMAX1 <- count(TMAX1)
+#str(TMAX1)
+names(TMAX1)=c("Year", "TMAX")
+TMAX_na = data.frame(Year=1:j)
+TMAX <- merge(TMAX_na, TMAX1, all.x=TRUE, by="Year")
+
+if(sum(is.na(TMIN.mat[,j]))==366) next
+   # Select Minimum and Change to Negative Value
+TMIN1 = apply(TMIN.mat[,1:j], 1, function (x) which.min(x)); 
+is.na(TMIN1) <- lengths(TMIN1) == 0
+TMIN1 <- unlist(TMIN1)
+TMIN1 <- count(TMIN1) # Max Counts Negagive
+#str(TMIN1)   
+names(TMIN1)=c("Year", "TMIN")
+TMIN_na <- data.frame(Year=1:j)
+TMIN <- merge(TMIN_na, TMIN1, all.x=TRUE, by="Year")
+
+R1 <- merge(TMAX, TMIN, by="Year")
+R1$Index = rep(j, nrow(R1))
+#results = rbind(results, R)
+R1$TMIN = -R1$TMIN
+## Sorting out X Axis
+tic.no <- 4
+rowskip = round(nrow(R1)/tic.no, 0)
+row_numb <- seq_len(nrow(R1)) %% rowskip
+row.sel = which(row_numb %in% c(1))
+index.year <- years[row.sel]
+# switch to decades?
+
+xtics = row.sel
+xlabs = index.year
+
+yrange = range(c(R1$TMIN, R1$TMAX), na.rm=T)
+ytics = floor(seq(yrange[1], yrange[2], length.out=tic.no))
+ylabs = as.character(abs(ytics))
+
+par(las=1, xpd=TRUE)
+plot(c(1,nrow(R1)), c(yrange[1], yrange[2]), ty="n", xaxt='n', yaxt='n', ylab="No. of Record Temps", xlab="", main="Record Highs and Lows")
+axis(2,at=ytics, labels=ylabs)
+axis(1,at=xtics, labels=xlabs)
+barplot(height = R1$TMAX, space=0, add = TRUE, axes = FALSE, col="red")
+barplot(height = R1$TMIN, space=0, add = TRUE, axes = FALSE, col="blue")
+# END LOOP
+
+# STOP ----
+dev.off()
+@
+
+\begin{figure}
+\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, panel4.png)}}
+\caption{Climate can be analyzed using several types of lenses. In this case, we have analyzed show the months with the greatest changes. The first figure is monthly average of TMINs (daily low temperatures) with a best fit line. The second figure shows the monthly TMAX range and asterisks indicate singificant changes over the station record and the third figure is the trend for these TMAXs over time and includes the best fit line. The final figure shows the daily temperatures that have been the highest on record (in red) and the lowest minimum temperatures (in blue). In some cases, climate change has created more records in the recent decades, while other stations seem don't show that trend.}
+\label{fig:4panel}
+\end{figure}
+
+\subsection{KISS}
+
+Keeping it simple is critical in communicating scientific information. In this section, I try to come up with a consistent message for every state and a simple graphic. 
+
+\subsubsection{Change Point Analysis}
+First, TMIN and TMAX and change point analysis...
+
+https://cran.r-project.org/web/packages/mcp/readme/README.html
+
+<<eval=FALSE>>=
+
+dyn.load('/opt/jags/4.3.1/lib/libjags.so.4')
+library(mcp)
+
+# Define the model
+model = list(
+  response ~ 1,  # plateau (int_1)
+  ~ 0 + time,    # joined slope (time_2) at cp_1
+  ~ 1 + time     # disjoined slope (int_3, time_3) at cp_2
+)
+
+# Get example data and fit it
+ex = mcp_example("demo")
+fit = mcp(model, data = ex$data) 
+
+summary(fit)
+
+# Simulate
+set.seed(42)  # I always use 42; no fiddling
+df = data.frame(
+  x = 1:100,
+  y = c(rnorm(30, 2), rnorm(40, 0), rnorm(30, 1))
+)
+
+# Plot it
+plot(df)
+abline(v = c(30, 70), col="red")
+
+model = list(y~1, 1~1, 1~1)  # three intercept-only segments
+fit_mcp = mcp(model, data = df, par_x = "x")
+
+summary(fit_mcp)
+
+library(patchwork)
+plot(fit_mcp) + plot_pars(fit_mcp, pars = c("cp_1", "cp_2"), type = "dens_overlay")
+
+model = list(
+  price ~ 1 + ar(2),
+  ~ 0 + time + ar(1)
+)
+ex = mcp_example("ar")
+
+ex$data$time; 
+fit = mcp(model, ex$data)
+summary(fit)
+
+plot(fit) + plot_pars(fit, pars = c("cp_1"), type = "dens_overlay")
+
+ex$data$time;  
+fit = mcp(model, ex$data)
+summary(fit)
+
+GSOM$TMAX
+test.df = data.frame(TMAX = GSOM$TMAX , time=1:1523)
+model2 = list(
+  price ~ 1 + ar(2),
+  ~ 0 + time + ar(1)
+)
+fit2 = mcp(model2, test.df)
+plot(fit2) + plot_pars(fit2, pars = c("cp_1"), type = "dens_overlay")
+
+@
+
+Let's create a figure that simplifies the narrative, if we can!
+
+<<KISS, eval=TRUE, echo=FALSE>>=
+
+KISS.png <- paste0(fips$State2, "_", stid, "_KISS.png")
+
+png(paste0(png_private, KISS.png), width = 480, height = 480, units = "px", pointsize = 12, bg = "white")
+
+ylim_new=NA
+for(i in seq(min(GSOM$Year), max(GSOM$Year), by=2)) 
+   {
+par(las=1, mfrow=c(3,1), mar= c(2, 4, 2, 1) + 0.1)
+   
+# Box Plot of TMAX by Month
+   
+CHCNDsub = subset(CHCND, CHCND$Year<=i, 
+      select=c(Month, Month.name, TMAX, TMIN))
+boxplot(TMAX ~ Month.name, data=CHCNDsub, main="")
+symbol.y = (par()$yaxp[2])-diff(par()$yaxp[1:2])*.99
+#symbol.y = (par()$yaxp[2])
+text(sumstats$Month, symbol.y, sumstats$TMAX_Symbol, 
+     col="red", cex=2)
+mtext(paste("Maximum Daily Temperatures", min(CHCND$Year), 
+      "-", i, GSOM_Longest$name), line=1)
+mtext("(NOTE: Red astrisks correspond to signficant changes)", 
+      line=0, cex=.7)
+
+
+GSOMsub <- GSOM[GSOM$Month==TMINmonthMax & GSOM$Year<=i,]
+   if(nrow(GSOMsub)<10) next
+
+# TMIN
+plot(TMIN~Date, GSOMsub[GSOMsub$Month==TMINmonthMax,], 
+   col='gray70', pch=20, xlab="", 
+   main=paste("Mean", format(GSOMsub$Date,"%B")[1], 
+              "Min. Temp", GSOM_Longest$name))
+GSOM.lm = lm(TMIN~Date, GSOMsub)
+pred_dates <-data.frame(Date = GSOMsub$Date); 
+nrow(pred_dates); pred_dates
+#Predits the values with confidence interval 
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="darkred")
+lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
+lines(pred_dates$Date, ci[,3], col="darkorange")
+location_index = round(length(GSOMsub$Date) * 0.99,0)
+text(pred_dates$Date[location_index], ci[location_index,3], 
+     paste(report_prob2(GSOM.lm)), pos=2, cex=1.6)
+
+
+# TMAX --------------------------------
+ylim = range(GSOMsub$TMAX)
+GSOMsub <- GSOM[GSOM$Month==TMAXmonthMax & GSOM$Year<=i,]
+plot(TMAX~Date, GSOMsub, col='gray70', pch=20, xlab="",
+    # ylim=ylim,
+     main=paste("Mean", format(GSOMsub$Date,"%B")[1], 
+                "Max. Temp", GSOM_Longest$name))
+GSOM.lm = lm(TMAX~Date, GSOMsub) 
+
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="darkred")
+lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
+lines(pred_dates$Date, ci[,3], col="darkorange")
+
+text(pred_dates$Date[location_index], ci[location_index,3], 
+     paste(report_prob2(GSOM.lm)), pos=2, cex=1.6)
+}
+
+# STOP
+dev.off()
+@
+
+\begin{figure}
+\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, KISS.png)}}
+\caption{Keep it simple stupid!}
+\label{fig:GSOM-KISS}
+\end{figure}
+
+\subsection{Temp \& Precipitation Probability}
+
+To highlight the patterns of change, it might be useful to analyze how the probability ditributuion might change -- we can use a normal probability distribion as a theoretical distribution (and we can check if this distribuion is approrpriate with a Chi-Square test), or we can use the data to create a emperical distribution, which is my favored approach. 
+
+I started with decade bins, but used 20 years bins (scores) to simplify the graphics while keeping a pretty good temporal resolution.
+
+<<normalPDF>>=
+library(wesanderson)
+
+h.ramp <- rev(heat.colors(length(unique(GSOM2$Score))+1))[-1]
+h.ramp <- wes_palette("Zissou1", length(unique(GSOM2$Score)), 
+      type = "continuous")[1:length(unique(GSOM2$Score))]
+#TMAX.anomaly.Score = aggregate(TMAX.anom ~ Score, GSOM2, mean)
+#TMAX.sd.anomaly.Score = aggregate(TMAX.anom ~ Score, GSOM2, sd)
+
+
+# I hate list!
+TMAX.anomaly.list = aggregate(TMAX.anom ~ Score, GSOM2, 
+   FUN = function(x) c(mean = mean(x), sd = sd(x)))
+TMIN.anomaly.list = aggregate(TMIN.anom ~ Score, GSOM2, 
+   FUN = function(x) c(mean = mean(x), sd = sd(x)))
+PPT.anomaly.list = aggregate(PPT.anom ~ Score, GSOM2, 
+   FUN = function(x) c(mean = mean(x), sd = sd(x)))
+
+GSOM_dnorm.png <- paste0(fips$State2, "_", stid, "_GSOM_dnorm.png")
+
+png(paste0(png_private, GSOM_dnorm.png), 
+    width = 480, height = 300, units = "px", pointsize = 12, bg = "white")
+# TMIN
+par(mfrow=c(1, 3), las=1, mar = c(5, 4, 4, 0.2) + 0.1, xpd=FALSE)
+Anom.x = seq(min(GSOM2$TMIN.anom), max(GSOM2$TMIN.anom),by=.1)
+Anom.y = max(dnorm(Anom.x,
+   mean=TMIN.anomaly.list$TMIN.anom[1,1],
+   sd=TMIN.anomaly.list$TMIN.anom[1,2]))*1.2
+
+plot(Anom.x, dnorm(Anom.x,
+   mean=TMIN.anomaly.list$TMIN.anom[1, 1],
+   sd=TMIN.anomaly.list$TMIN.anom[1, 2]), 
+   ty="l", col=h.ramp[1], ylim=c(0, Anom.y),
+   ylab="Density", xlab="TMIN Anomaly (°F)", main="")
+
+abline(v=TMIN.anomaly.list$TMIN.anom[1,1], col=h.ramp[1], lwd=2)
+for(i in 2:nrow(TMIN.anomaly.list)){
+lines(Anom.x, dnorm(Anom.x,
+   mean=TMIN.anomaly.list$TMIN.anom[i, 1],
+   sd=TMIN.anomaly.list$TMIN.anom[i, 2]), col=h.ramp[i])
+}
+abline(v=TMIN.anomaly.list$TMIN.anom[i,1], col=h.ramp[i], lwd=2)
+Delta = TMIN.anomaly.list$TMIN.anom[i,1] - TMIN.anomaly.list$TMIN.anom[1,1]
+
+text(TMIN.anomaly.list$TMIN.anom[i,1], Anom.y*.95, 
+   paste0("Change ", round(Delta, 1), "°F"), pos=3, cex=.9)
+
+
+
+# TMAX
+Anom.x = seq(min(GSOM2$TMAX.anom), max(GSOM2$TMAX.anom),by=.1)
+Anom.y = max(dnorm(Anom.x,
+   mean=TMAX.anomaly.list$TMAX.anom[1,1],
+   sd=TMAX.anomaly.list$TMAX.anom[1,2]))*1.2
+
+plot(Anom.x, dnorm(Anom.x,
+   mean=TMAX.anomaly.list$TMAX.anom[1, 1],
+   sd=TMAX.anomaly.list$TMAX.anom[1, 2]), 
+   ty="l", col=h.ramp[1], ylim=c(0, Anom.y),
+   ylab="Density", xlab="TMAX Anomaly (°F)")
+
+abline(v=TMAX.anomaly.list$TMAX.anom[1,1], col=h.ramp[1], lwd=2)
+for(i in 2:nrow(TMAX.anomaly.list)){
+lines(Anom.x, dnorm(Anom.x,
+   mean=TMAX.anomaly.list$TMAX.anom[i, 1],
+   sd=TMAX.anomaly.list$TMAX.anom[i, 2]), col=h.ramp[i])
+}
+abline(v=TMAX.anomaly.list$TMAX.anom[i,1], col=h.ramp[i], lwd=2)
+Delta = TMAX.anomaly.list$TMAX.anom[i,1] - TMAX.anomaly.list$TMAX.anom[1,1]
+
+text(TMAX.anomaly.list$TMAX.anom[i,1], Anom.y*.96, 
+   paste0("Change ", round(Delta, 1), "°F"), pos=3, cex=0.9)
+
+mtext(paste0(fips$State, " (", GSOM_Longest$name, ")"), side=3, line=2)
+
+# PPT
+Anom.x = seq(min(GSOM2$PPT.anom), max(GSOM2$PPT.anom),by=.1)
+Anom.y = max(dnorm(Anom.x,
+   mean=PPT.anomaly.list$PPT.anom[1,1],
+   sd=PPT.anomaly.list$PPT.anom[1,2]))*1.2
+
+plot(Anom.x, dnorm(Anom.x,
+   mean=PPT.anomaly.list$PPT.anom[1, 1],
+   sd=PPT.anomaly.list$PPT.anom[1, 2]), 
+   ty="l", col=h.ramp[1], ylim=c(0, Anom.y),
+   ylab="Density", xlab="PPT Anomaly")
+
+abline(v=PPT.anomaly.list$PPT.anom[1,1], col=h.ramp[1], lwd=2)
+for(i in 2:nrow(PPT.anomaly.list)){
+lines(Anom.x, dnorm(Anom.x,
+   mean=PPT.anomaly.list$PPT.anom[i, 1],
+   sd=PPT.anomaly.list$PPT.anom[i, 2]), col=h.ramp[i])
+}
+abline(v=PPT.anomaly.list$PPT.anom[i,1], col=h.ramp[i], lwd=2)
+Delta = PPT.anomaly.list$PPT.anom[i,1] - PPT.anomaly.list$PPT.anom[1,1]
+
+text(PPT.anomaly.list$PPT.anom[i,1], Anom.y*.96,
+   paste0("Change ", round(Delta, 1), " inches"), pos=3, cex=0.9)
+
+dev.off()
+@
+
+This figure is pretty effective, but still needs work. 
+
+\begin{figure}
+\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, GSOM_dnorm.png)}}
+\caption{The changing in monthly temperature data, assuming a normal probability distribution.}
+\label{fig:GSOM_dnorm}
+\end{figure}
+
+\subsection{Using library densEstBayes}
+
+Now, I used a screen split to look at the distribution of the temperate anomolies. First, we look at a simple histogram of the entire dataset. 
+
+<<>>=
+par(mfrow=c(1,1))
+hist(GSOM2$TMIN.anom, col = "gold",
+     main = "", probability = TRUE, 
+     xlab = "Minimum Temperature Anomaly (°F)")
+@
+
+The data center around zero, as expected, but are these normally distributed? 
+
+%For TMAX there is a \Sexpr{round(shapiro.test(GSOM2$TMAX.anom)$p.value, 7)} probability that the distribution is the same as the normal distribution. For TMIN there is a \Sexpr{round(shapiro.test(GSOM2$TMIN.anom)$p.value, 7)} probability that the distribution is the same as the normal distribution. For PPT is a \Sexpr{round(shapiro.test(GSOM2$PPT.anom)$p.value, 7)} probability that the distribution is the same as the normal distribution.
+
+<<shapiro_test>>=
+if(shapiro.test(GSOM2$TMAX.anom)$p.value<.05 | 
+   shapiro.test(GSOM2$TMIN.anom)$p.value<.05 | 
+   shapiro.test(GSOM2$PPT.anom)$p.value<.05){
+   text= "to avoid "
+   } else {
+   text="to use"
+      }
+@
+
+These values suggest that there is good reason \Sexpr{text} the normal probability distribution. 
+
+Next we use a function to estimate the probability distribution using a markof chain the creates an estimated probability distribution. This doesn't always work when the distribution is not even and their only 10 years of data per slot. I suspect, I should make this by every 20 years. Plus that will go way faster and I think the data visualization will be more robust. 
+
+<<estDensity, warning=FALSE, results='hide'>>=
+GSOM_estPDF.png = paste0(fips$State2, "_", stid, "_GSOM_estPDF.png")
+
+if(!file.exists(paste0(png_private, GSOM_estPDF.png))){
+   print("Creating estimated density distribution")
+
+png(paste0(png_private, GSOM_estPDF.png), 
+    width = 480, height = 320, units = "px", pointsize = 12, bg = "white")
+
+# Split Screen TMAX Legend TMIN
+# screen with values for left, right, bottom, and top.
+split.screen(rbind(c(.01, 0.99, 0.86, 0.95),
+                   c(0.01, 0.45, 0.01, 0.85),
+                   c(0.45, 0.55, 0.01, 0.85),
+                   c(0.55, 0.99, 0.01, 0.85)))
+
+screen(1)
+par(mar=c(0,0,0,0))
+plot(NA, xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=c(0,10), ylim=c(0, 10))
+mtext(paste0(fips$State, " (", GSOM_Longest$name, ")"), side=3, line=-1, cex=1.4)
+
+screen(2)
+
+# Determine xg (range)
+dest <- densEstBayes(GSOM2$TMIN.anom, method = "NUTS"); dest$range.x
+
+control = densEstBayes.control(range.x = dest$range.x, 
+      numBins = 401,
+      numBasis = 50, sigmabeta = 1e5, ssigma = 1000,
+      convToler = 1e-5, maxIter = 500, nWarm = NULL,
+      nKept = NULL, nThin = 1, msgCode = 1)
+
+#destSMFVB <- densEstBayes(GSOM2$TMIN.anom, method = "SMFVB", control = control)
+#plot(destSMFVB, plotIt=T, xlab = "TMIN", main = "", setCol=h.ramp[i])
+par(las=1, mar=c(4, 4, 0, 0) + 0.1)
+for(i in 1:length(unique(GSOM2$Score))){
+   # i = 13
+   GSOM2sub = GSOM2[GSOM2$Score==sort(unique(GSOM2$Score))[i],]
+   dest <- densEstBayes(GSOM2sub$TMIN.anom, method = "NUTS", control = control)
+   xg = plot(dest, plotIt=FALSE)$xg
+   densEstg = plot(dest, plotIt=FALSE)$densEstg
+   
+   if(i==1) plot(0, type = "n", bty = "l", 
+         xlim=range(xg), ylim=c(0,0.25), 
+         xlab = "TMIN anomaly (°F)", main = "", ylab="Density")
+   lines(xg, densEstg, col=h.ramp[i])
+rug(jitter(GSOM2sub$TMIN.anom,amount = 0.2), col=h.ramp[i])
+}
+
+screen(3)
+par(mar=c(0,0,1,0))
+plot(NA,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=c(0,10), ylim=c(0,10))
+# 
+legend("topright", inset=c(0,0), bg="transparent", bty="n",
+       legend=unique(GSOM2$Score), 
+       fill=h.ramp, horiz=FALSE, cex=0.85)
+
+screen(4)
+par(las=1, mar=c(4, 4, 0, 0) +0.1)
+# Determine xg (range)
+dest <- densEstBayes(GSOM2$TMAX.anom, method = "NUTS"); dest$range.x
+
+control = densEstBayes.control(range.x = dest$range.x, 
+      numBins = 401,
+      numBasis = 50, sigmabeta = 1e5, ssigma = 1000,
+      convToler = 1e-5, maxIter = 500, nWarm = NULL,
+      nKept = NULL, nThin = 1, msgCode = 1)
+
+for(i in 1:length(unique(GSOM2$Score))){
+   # i = 13
+   GSOM2sub = GSOM2[GSOM2$Score==sort(unique(GSOM2$Score))[i],]
+   dest <- densEstBayes(GSOM2sub$TMAX.anom, method = "NUTS", control = control)
+   xg = plot(dest, plotIt=FALSE)$xg
+   densEstg = plot(dest, plotIt=FALSE)$densEstg
+   
+   if(i==1) plot(0, type = "n", bty = "l", 
+         xlim=range(xg), ylim=c(0,.25), 
+         xlab = "TMAX anomaly (°F)", main = "", ylab="Density")
+   lines(xg, densEstg, col=h.ramp[i])
+rug(jitter(GSOM2sub$TMIN.anom,amount = 0.2), col=h.ramp[i])
+}
+#rug(jitter(GSOM2sub$TMIN.anom,amount = 0.2), col=h.ramp[i])
+
+close.screen(all.screens = TRUE)
+dev.off()
+} else {
+   print("Skipping estimated density distribution chunk")}
+@
+
+The process to create these figures is very time consuming, so in general, I need to come up with an if then statement to avoid creating these everytime!
+
+\begin{figure}
+\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, GSOM_estPDF.png)}}
+\caption{The changing in monthly temperature data.}
+\label{fig:GSOM_estPDF}
+\end{figure}
+
+\section{Animated GIFs}
+
+So far, this creates a gif file, but I haven't been able get the gif in the pdf directly yet. I will need an additional package or create separate png that are combined. For now, we'll create a gif file to be used in separate documents.
+
+\subsection{Probability Distributions}
+
+<<animated_normalPDFs, results='hide', eval=TRUE>>=
+
+GSOM_dnorm.gif = paste0(fips$State2, "_", stid, "_GSOM_dnorm.gif")
+
+if(!file.exists(paste0(gif_private, GSOM_dnorm.gif))){
+   print("Creating animated normal probability")
+   
+# Define an image_graph size
+img <- image_graph(600, 480, res = 96)
+
+# START ------------------------------------------
+
+ylim_new=NA
+for(i in 1:length(unique(GSOM2$Decade))) 
+   {
+# i = 9
+decade=(unique(GSOM2$Decade))[order(unique(GSOM2$Decade))==i]
+
+GSOM2sub <- GSOM2[GSOM2$Decade==decade,]
+h.ramp <- rev(heat.colors(length(unique(GSOM2$Decade))+1))[-1]
+   
+# Determine Stats for PDFs
+TMAX.mean.anomaly.decade = aggregate(TMAX.anom ~ Decade, GSOM2sub, mean)
+TMAX.sd.anomaly.decade = aggregate(TMAX.anom ~ Decade, GSOM2sub, sd)
+names(TMAX.sd.anomaly.decade)=c("Decade", "TMAX.sd.anom")
+TMIN.mean.anomaly.decade = aggregate(TMIN.anom ~ Decade, GSOM2sub, mean)
+TMIN.sd.anomaly.decade = aggregate(TMIN.anom ~ Decade, GSOM2sub, sd)
+names(TMIN.sd.anomaly.decade)=c("Decade", "TMIN.sd.anom")
+
+TMAX.temp = merge(TMAX.mean.anomaly.decade, TMAX.sd.anomaly.decade, by="Decade")
+
+TMIN.temp = merge(TMIN.mean.anomaly.decade, TMIN.sd.anomaly.decade, by="Decade")
+
+GSOM.Monthly.Anom.mean.sd = merge(TMAX.temp, TMIN.temp, by="Decade")
+
+par(las=1, mfrow=c(1,2), mar= c(4, 4, 2, 1) + 0.1)
+
+Anom.x = seq(min(GSOM2$TMAX.anom), max(GSOM2$TMAX.anom), by=.1)
+plot(Anom.x, dnorm(Anom.x, mean=GSOM.Monthly.Anom.mean.sd$TMAX.anom[1], 
+   sd=GSOM.Monthly.Anom.mean.sd$TMAX.sd.anom[1]), ty="l", col=h.ramp[i], ylab="Density", xlab="TMAX Anomaly")
+abline(v=mean(GSOM2$TMAX.anom[GSOM2$Decade==min(GSOM$Decade)]))
+mtext(paste0(fips$State, " ", decade), side=3)
+
+Anom.x = seq(min(GSOM2$TMIN.anom), max(GSOM2$TMIN.anom), by=.1)
+plot(Anom.x, dnorm(Anom.x, mean=GSOM.Monthly.Anom.mean.sd$TMIN.anom[1], 
+   sd=GSOM.Monthly.Anom.mean.sd$TMIN.sd.anom[1]), ty="l", col=h.ramp[i], ylab="Density", xlab="TMIN Anomaly")
+abline(v=mean(GSOM2$TMIN.anom[GSOM2$Decade==min(GSOM$Decade)]))
+mtext(paste0(fips$State, " ", decade), side=3)
+}
+
+par(las=1, mfrow=c(1,2), mar= c(4, 4, 2, 1) + 0.1)
+
+TMAX.anomaly.decade = aggregate(TMAX.anom ~ Decade, GSOM2, 
+   FUN = function(x) c(mean = mean(x), sd = sd(x)))
+TMIN.anomaly.decade = aggregate(TMIN.anom ~ Decade, GSOM2, 
+   FUN = function(x) c(mean = mean(x), sd = sd(x)))
+
+
+Anom.x = seq(min(GSOM2$TMIN.anom), max(GSOM2$TMIN.anom), by=.1)
+plot(Anom.x, dnorm(Anom.x, mean=TMIN.anomaly.decade$TMIN.anom[[1,1]], 
+   sd=TMIN.anomaly.decade$TMIN.anom[[1,2]]), ty="l", col=h.ramp[1], ylab="Density", xlab="TMIN Anomaly")
+mtext(paste0(fips$State, " ", decade), side=3)
+for(i in 2:nrow(TMIN.anomaly.decade)){
+lines(Anom.x, dnorm(Anom.x, mean=TMIN.anomaly.decade$TMIN.anom[[i,1]], sd=TMIN.anomaly.decade$TMIN.anom[[i,2]]), col=h.ramp[i])
+}
+abline(v=mean(GSOM2$TMIN.anom[GSOM2$Decade==min(GSOM$Decade)]), col="blue")
+abline(v=mean(GSOM2$TMIN.anom[GSOM2$Decade==max(GSOM$Decade)]), col="red")
+
+Anom.x = seq(min(GSOM2$TMAX.anom), max(GSOM2$TMAX.anom), by=.1)
+plot(Anom.x, dnorm(Anom.x, mean=TMAX.anomaly.decade$TMAX.anom[[1,1]], 
+   sd=TMAX.anomaly.decade$TMAX.anom[[1,2]]), ty="l", col=h.ramp[1], ylab="Density", xlab="TMAX Anomaly")
+mtext(paste0(fips$State, " ", decade), side=3)
+for(i in 2:nrow(TMAX.anomaly.decade)){
+lines(Anom.x, dnorm(Anom.x, mean=TMAX.anomaly.decade$TMAX.anom[[i,1]], sd=TMAX.anomaly.decade$TMAX.anom[[i,2]]), col=h.ramp[i])
+}
+abline(v=mean(GSOM2$TMAX.anom[GSOM2$Decade==min(GSOM$Decade)]), col="blue")
+abline(v=mean(GSOM2$TMAX.anom[GSOM2$Decade==max(GSOM$Decade)]), col="red")
+
+
+# END -----------------------------------------------------
+dev.off()
+
+GSOM_animation <- image_animate(img, fps = 1, loop=2, optimize = TRUE)
+#print(GSOM_animation)
+
+image_write(GSOM_animation, paste0(gif_private, GSOM_dnorm.gif))
+
+} else {
+   print("Skipping animated normal distribution chunk")}
+@
+
+
+The file is saved in the main directory. 
+
+
+\subsection{4 Weather Trend Plots}
+
+<<animate, results='hide', eval=TRUE>>=
+panel4.gif = paste0(fips$State2, "_", stid, "_4panel.gif")
+
+if(!file.exists(paste0(gif_private, panel4.gif))){
+   print("Creating animated 4panel.gif")  
+
+img <- image_graph(600, 480, res = 96)
+# START ----
+ylim_new=NA
+for(i in seq(min(GSOM$Year), max(GSOM$Year), by=2)) 
+   {
+par(las=1, mfrow=c(4,1), mar= c(2, 4, 2, 1) + 0.1)
+# TMINmonthMax
+   GSOMsub <- GSOM[GSOM$Month==TMINmonthMax & GSOM$Year<=i,]
+   if(nrow(GSOMsub)<10) next
+plot(TMIN~Date, GSOMsub[GSOMsub$Month==TMINmonthMax,], 
+   col='gray70', pch=20, xlab="", 
+   main=paste("Mean", format(GSOMsub$Date,"%B")[1], 
+              "Min. Temp", GSOM_Longest$name))
+GSOM.lm = lm(TMIN~Date, GSOMsub)
+pred_dates <-data.frame(Date = GSOMsub$Date); 
+nrow(pred_dates); pred_dates
+#Predits the values with confidence interval 
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="darkred")
+lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
+lines(pred_dates$Date, ci[,3], col="darkorange")
+location_index = round(length(GSOMsub$Date) * 0.99,0)
+text(pred_dates$Date[location_index], ci[location_index,3], 
+     paste(report_prob2(GSOM.lm)), pos=2, cex=1.5)
+
+# Box Plot of TMAX by Month
+CHCNDsub = subset(CHCND, CHCND$Year<=i, 
+      select=c(Month, Month.name, TMAX, TMIN))
+boxplot(TMAX ~ Month.name, data=CHCNDsub, xlab="", main="")
+symbol.y = (par()$yaxp[2])-diff(par()$yaxp[1:2])*.99
+#symbol.y = (par()$yaxp[2])
+text(sumstats$Month, symbol.y, sumstats$TMAX_Symbol, 
+     col="red", cex=2)
+mtext(paste("Maximum Daily Temperatures", min(CHCND$Year), 
+      "-", i, GSOM_Longest$name), line=1)
+mtext("(NOTE: Red astrisks correspond to signficant changes)", 
+      line=0, cex=.7)
+
+# TMAXmonthMax 
+GSOMsub <- GSOM[GSOM$Month==TMAXmonthMax & GSOM$Year<=i,]
+ylim = range(GSOMsub$TMAX)
+#if(!is.na(ylim_new)) ylim[2]=ylim_new
+plot(TMAX~Date, GSOMsub, col='gray70', pch=20,
+     ylim=ylim, xlab="",
+     main=paste("Mean", format(GSOMsub$Date,"%B")[1], 
+                "Max. Temp", GSOM_Longest$name))
+GSOM.lm = lm(TMAX~Date, GSOMsub) 
+
+ci <- predict(GSOM.lm, newdata = pred_dates, 
+              interval = 'confidence')
+lines(pred_dates$Date, as.numeric(ci[,1]), col="darkred")
+lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
+lines(pred_dates$Date, ci[,3], col="darkorange")
+
+text(pred_dates$Date[location_index], ci[location_index,3], 
+     paste(report_prob2(GSOM.lm)), pos=2, cex=1.5)
+
+# Record High Temperatures
+# START
+   j = which(years %in% i)  
+   if(sum(is.na(TMAX.mat.noleap[,j]))==366) next
+TMAX1 = apply(TMAX.mat.noleap[,1:j], 1, function (x) which.max(x)); 
+is.na(TMAX1) <- lengths(TMAX1) == 0
+TMAX1 <- unlist(TMAX1)
+TMAX1 <- count(TMAX1)
+#str(TMAX1)
+names(TMAX1)=c("Year", "TMAX")
+TMAX_na = data.frame(Year=1:j)
+TMAX <- merge(TMAX_na, TMAX1, all.x=TRUE, by="Year")
+
+if(sum(is.na(TMIN.mat[,j]))==366) next
+   # Select Minimum and Change to Negative Value
+TMIN1 = apply(TMIN.mat[,1:j], 1, function (x) which.min(x)); 
+is.na(TMIN1) <- lengths(TMIN1) == 0
+TMIN1 <- unlist(TMIN1)
+TMIN1 <- count(TMIN1) # Max Counts Negagive
+#str(TMIN1)   
+names(TMIN1)=c("Year", "TMIN")
+TMIN_na <- data.frame(Year=1:j)
+TMIN <- merge(TMIN_na, TMIN1, all.x=TRUE, by="Year")
+
+R1 <- merge(TMAX, TMIN, by="Year")
+R1$Index = rep(j, nrow(R1))
+#results = rbind(results, R)
+R1$TMIN = -R1$TMIN
+## Sorting out X Axis
+tic.no <- 4
+rowskip = round(nrow(R1)/tic.no, 0)
+row_numb <- seq_len(nrow(R1)) %% rowskip
+row.sel = which(row_numb %in% c(1))
+index.year <- years[row.sel]
+# switch to decades?
+
+xtics = row.sel
+xlabs = index.year
+
+yrange = range(c(R1$TMIN, R1$TMAX), na.rm=T)
+ytics = floor(seq(yrange[1], yrange[2], length.out=tic.no))
+ylabs = as.character(abs(ytics))
+
+par(las=1, xpd=TRUE)
+plot(c(1,nrow(R1)), c(yrange[1], yrange[2]), ty="n", xaxt='n', yaxt='n', ylab="No. of Record Temps", xlab="", main="Record Highs and Lows")
+axis(2,at=ytics, labels=ylabs)
+axis(1,at=xtics, labels=xlabs)
+barplot(height = R1$TMAX, space=0, add = TRUE, axes = FALSE, col="red")
+barplot(height = R1$TMIN, space=0, add = TRUE, axes = FALSE, col="blue")
+# END
+}
+
+# STOP ----
+dev.off()
+
+GSOM_animation <- image_animate(img, fps = 1, loop=2, optimize = TRUE)
+image_write(GSOM_animation, paste0(gif_private, panel4.gif)) 
+
+} else {
+   print("Skipping animated GSOM_4plots chunk")}
+
+@
+
+
+The file is saved in the main directory. 
+
+
+\subsection{Evaluating Records}
+
+TBD
+
+\subsection{Export Options}
+
+TBD
+
+\section{Sea Surface Temperature Data -- SURP PROJECT WAITING TO HAPPEN}
+
+In contrast to terrestrial data, sea surface temperature (SST) is quite difficult to obtain and process. There are numerous tools to access the data, but they often require knowledge of complex software tools that are not easy to set up or programming experience with python or others.
+
+\url{https://climexp.knmi.nl/select.cgi?id=someone@somewhere&field=ersstv5}
+
+There are, however, a few tools build for R users that seem to accomplish all that we need. 
+
+\url{https://rda.ucar.edu/index.html?hash=data_user&action=register}
+
+\url{https://rda.ucar.edu/datasets/ds277.9/}
+
+Alternatively, we can download flat ascII tables of gridded data:
+
+\url{https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/}
+
+
+<<echo=FALSE, eval=FALSE>>=
+
+library(chron)
+library(RColorBrewer)
+library(lattice)
+#library(ncdf)
+library(ncdf4)
+#library(greenbrown) # for gridded trend analysis
+
+ersst.nc = "/home/CAMPUS/mwl04747/github/Climate_Change_Narratives/Data/FA19/ersst.v5.185401.nc"
+Y1854 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1854.asc"
+Y1864 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1864.asc"
+Y1874 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1874.asc"
+Y1884 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1884.asc"
+Y1894 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1894.asc"
+Y1904 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1904.asc"
+Y1914 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1914.asc"
+Y1924 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1924.asc"
+Y1934 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1934.asc"
+Y1944 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1944.asc"
+Y1954 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1954.asc"
+Y1964 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1964.asc"
+Y1974 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1974.asc"
+Y1984 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1984.asc"
+Y1994 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.1994.asc"
+Y2004 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.2004.asc"
+Y2014 = "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/ascii/ersst.v5.2014.asc"
+
+temp = rbind(read.table(Y1854)[75,67], read.table(Y1864)[75,67], read.table(Y1874)[75,67],
+read.table(Y1884)[75,67], read.table(Y1894)[75,67], read.table(Y1904)[75,67],
+read.table(Y1914)[75,67], read.table(Y1924)[75,67], read.table(Y1934)[75,67],
+read.table(Y1944)[75,67], read.table(Y1954)[75,67], read.table(Y1964)[75,67],
+read.table(Y1974)[75,67], read.table(Y1984)[75,67], read.table(Y1994)[75,67],
+read.table(Y2004)[75,67], read.table(Y2014)[75,67])
+
+temp.df = data.frame(Temp = as.vector(temp)/100); temp.df
+temp.df$Year = seq(1854, 2014, 10)
+plot(Temp~ Year, temp.df)
+abline(coef(lm(Temp~Year, data=temp.df)), col="red")
+#automating this process!
+
+directory = "/pub/data/cmb/ersst/v5/ascii"
+
+B195401 = nc_open(ersst.nc)
+
+
+# str(B195401)
+# print(B195401)
+
+ncin = B195401
+
+print(ncin)
+lon <- ncvar_get(ncin, "lon")
+nlon <- dim(lon)
+head(lon)
+
+lat <- ncvar_get(ncin, "lat", verbose = F)
+nlat <- dim(lat)
+head(lat)
+
+print(c(nlon, nlat))
+
+t <- ncvar_get(ncin, "time")
+tunits <- ncatt_get(ncin, "time", "units")
+nt <- dim(t); nt
+
+lat.sel = 67; lon.set = 75
+
+#ncvar_get(ncin, sst) #object 'sst' not found
+
+#ncvar_get(ncin, var$sst) object of type 'closure' is not subsettable
+#ncvar_get(ncin, var) second argument to ncvar_get must be an object of type ncvar or ncdim (both parts of the ncdf object returned by nc_open()), the character-string name of a variable or dimension or NA to get the default variable from the file.  If the file is netcdf version 4 format and uses groups, then the fully qualified var name must be given, for example, model1/run5/Temperature
+
+ncvar_get(ncin, "sst") #spits out the temperatures. but why the negative numbers!
+
+# tmp.array <- ncvar_get(ncin, dname) # doesn't work...
+
+tmp.array <- ncvar_get(ncin, "sst")
+dim(tmp.array)
+
+tmp.array[75, 67]
+
+tmp.array[67,]
+
+dlname <- ncatt_get(ncin, "sst", "long_name")
+dunits <- ncatt_get(ncin, "sst", "units")
+fillvalue <- ncatt_get(ncin, "sst", "_FillValue")
+dim(tmp.array)
+
+title <- ncatt_get(ncin, 0, "title")
+institution <- ncatt_get(ncin, 0, "institution")
+datasource <- ncatt_get(ncin, 0, "source")
+references <- ncatt_get(ncin, 0, "references")
+history <- ncatt_get(ncin, 0, "history")
+Conventions <- ncatt_get(ncin, 0, "Conventions")
+
+# split the time units string into fields
+tustr <- strsplit(tunits$value, " ")
+tdstr <- strsplit(unlist(tustr)[3], "-")
+tmonth = as.integer(unlist(tdstr)[2])
+tday = as.integer(unlist(tdstr)[3])
+tyear = as.integer(unlist(tdstr)[1])
+chron(t, origin = c(tmonth, tday, tyear))
+
+# tmp.array[tmp.array == fillvalue$value] <- NA
+
+# length(na.omit(as.vector(tmp.array[, , 1])))
+
+m <- 1
+tmp.slice <- tmp.array[, , m]
+
+image(lon, lat, tmp.array, col = rev(brewer.pal(10, "RdBu")))
+
+# image(lon, lat, tmp.slice, col = rev(brewer.pal(10, "RdBu")))
+
+
+@
+
+\section{Satellite Data}
+
+TBD
+
+\section{Ice-Core Data}
+
+TBD
+
+\section{Conclusions}
+
+Developing a robust method to analyze weather stations is both time consuming and difficult to justify the outcome. In part because the data suggest that each station (region) requires different types of analysis, based on the expected patterns of temperature and rainfall. As climate scientists have known for decades, the terminology of global warming is not very useful. Not because scientists are trying to hide something or promote some biased agenda, but that even as warming of the global average is well documented, the impacts of climate change on each region is highly specific, requiring specificity in the analysis. 
+
+Hopefully, this little analysis has created some mechanism for others to appreciate this compexity. 
+
+<<endtime, echo=FALSE, warning=FALSE>>=
+
+# Create CSV with filenames for blog/
+paste0(GSOM_Longest$name, " (ID: ", GSOM_Longest$id, ")")
+
+dbase = data.frame(State = fips$State, 
+   Station_ID = paste0(GSOM_Longest$name, " (ID: ", GSOM_Longest$id, ")"), 
+   Startyear = startyear, Endyear = endyear, 
+   gif_private = gif_private, png_private = png_private, 
+   Map.png = map.png, 
+   GSOM_1975.png = GSOM_1975.png, 
+   GSOM_1975_anomaly.png = GSOM_anomaly_1975.png,
+   Records.png = records.png, 
+   panel4.png = panel4.png,
+   GSOM_dnorm.png = GSOM_dnorm.png,
+   KISS.png = KISS.png,
+   GSOM_estPDF.png = GSOM_estPDF.png,
+   panel4.gif = panel4.gif,
+   GSOM_dnorm.gif = GSOM_dnorm.gif
+)
+
+# print(dbase)
+write.table(dbase, file = "/home/CAMPUS/mwl04747/github/Climate_Change_Narratives/Social_Media/State_htmls/dbase.csv", 
+            append = TRUE, quote = TRUE, sep = ",",
+            eol = "\n", na = "NA", dec = ".", row.names = FALSE,
+            col.names = FALSE, #qmethod = c("escape", "double"),
+            )
+
+end_time <- Sys.time()
+(totaltime = end_time - start_time)
+rm(dbase)
+@
+
+The document took \Sexpr{round(totaltime,1)} minutes to process and compile. My next goal will be to optimize the process and streamline the time to analyze. 
+
+\end{document}
