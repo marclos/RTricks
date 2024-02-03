@@ -10,10 +10,9 @@
     citecolor=violet
 }
 
-
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.4)} 
+\date{\today~(ver. 0.65)} 
 
 \begin{document}
 \maketitle
@@ -37,7 +36,7 @@ We need to address several things that might get in the way of our analysis:
   \item read station data into R
   \item date format (convert to POSIXct, adding month and year as varibles)
   \item evaluate missing data
-  \item units
+  \item units conversion
   \item outliers
   \item Other stuff??
 \end{enumerate}
@@ -76,7 +75,7 @@ print(ReadStations.fun)
 Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
-datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24"
+datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 ReadStations.fun(datafolder)
 @
 
@@ -245,6 +244,17 @@ plot(TMIN.a ~ Ymd, data=station1.anomolies[[2]], type="p", col="blue", pch=19, c
 plot(PRCP.a ~ Ymd, data=station1.anomolies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anomaly (C)", main="Monthly Precipiation Change")
 @
 \end{figure}
+
+\subsection{Clean Up R Environment}
+
+I tend to avoid having lots of objects in my R environment. I like to clean up after myself. 
+
+Also, I like to move the final products into csv files. Here's the function to do that: coming soon
+
+<<cleanup, echo=FALSE, eval=FALSE>>=
+CleanUp.fun(datafolder, station1)
+@
+
 
 \clearpage
 

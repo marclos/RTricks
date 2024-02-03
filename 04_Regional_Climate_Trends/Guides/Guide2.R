@@ -1,18 +1,36 @@
 # Guide2.R
+# 2/4/2024 Converting all station referenced to GNCNd ID
 
 # Function to Read CSV Files into R
 ReadStations.fun <- function(datafolder){
   StationList <- list.files(datafolder, full.names=TRUE, pattern = "\\.csv$")
+   # exclude unfinished stuff
+  StationList <- StationList[!grepl("\\-TMAX.csv$", StationList)]
+  StationList <- StationList[!grepl("\\-TMIN.csv$", StationList)]
+  StationList <- StationList[!grepl("\\-PRCP.csv$", StationList)]
+  CHCNd_ID = read.csv(my.inventory.csv))
   # Fix Variable Names based on NOAA Documentation
   colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
                 "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
   for (i in 1:length(StationList)){
     assign(paste0("station", i), read.csv(StationList[i], 
         header=TRUE, col.names=colnames), envir = parent.frame())
- #   return(paste0("station", i))
+  return(paste0("station", i))
   }
 }
   
+ReadStations2.fun <- function(datafolder){
+  my.stations = read.csv(paste0(datafolder, "my.inventory.csv"))
+# Fix Variable Names based on NOAA Documentation
+colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
+              "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
+for (i in 1:nrow(my.stations)){
+  assign(paste0(my.stations$ID[i], 
+        read.csv(StationList[i], header=TRUE, col.names=colnames), 
+        envir = parent.frame()))
+#  return(paste0("station", i))
+}
+}
 
 # function to fix date formats, etc.
 fixdates.fun <- function(station){
@@ -115,7 +133,7 @@ for(i in seq_along(station.monthly)){
 }
 
 # Testing function!
-MonthlyAnomalies.fun(station1.monthly, station1.normals)
+# MonthlyAnomalies.fun(station1.monthly, station1.normals)
 
 #-----------------------------------------------------------------------------
 ## OLD STUFF
@@ -147,13 +165,18 @@ MonthlyAnomalies.fun(station1.monthly, station1.normals)
 ## Remove functions from Guide 1 and 2 from environment
 ## Remove station data, except anomaly data from environment
 
-CleanUp.fun <- function(datafolder, station=station1){
-  write.csv(station, file = paste0(datafolder, "station1.csv"), row.names = FALSE)
-  rm(station, )
-  rm(list = ls()[!ls() %in% c("fixdates.fun", "coverage.fun", 
-                              "MonthlyValues.fun", "MonthlyNormals.fun")])
-  
+CleanUp.fun <- function(datafolder, station){
+  write.csv(station[[1]], file = paste0(datafolder, substitute(station), "-TMAX.csv"), 
+            row.names = FALSE)
+  write.csv(station[[2]], file = paste0(datafolder, substitute(station), "-TMIN.csv"), 
+            row.names = FALSE)
+  write.csv(station[[3]], file = paste0(datafolder, substitute(station), "-PRCP.csv"), 
+            row.names = FALSE)
+ # print(ls(pattern=substitute(get(station))))
+ # rm(list=ls(pattern=substitute(station)))
+ # rm(station, substitute(station, "a"))
+rm(list = ls()[!ls() %in% c("fixdates.fun", "coverage.fun", "MonthlyValues.fun", "MonthlyNormals.fun")])
 }
 
-
+#CleanUp.fun(datapath, station1)
 

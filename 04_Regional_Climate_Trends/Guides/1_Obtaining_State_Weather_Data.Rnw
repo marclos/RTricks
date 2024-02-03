@@ -12,7 +12,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.88)} 
+\date{\today~(ver. 0.89)} 
 
 \begin{document}
 \maketitle
