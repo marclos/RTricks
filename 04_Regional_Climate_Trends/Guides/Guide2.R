@@ -8,7 +8,7 @@ ReadStations.fun <- function(datafolder){
   StationList <- StationList[!grepl("\\-TMAX.csv$", StationList)]
   StationList <- StationList[!grepl("\\-TMIN.csv$", StationList)]
   StationList <- StationList[!grepl("\\-PRCP.csv$", StationList)]
-  CHCNd_ID = read.csv(my.inventory.csv))
+  #CHCNd_ID = read.csv(my.inventory.csv))
   # Fix Variable Names based on NOAA Documentation
   colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
                 "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
@@ -25,12 +25,13 @@ ReadStations2.fun <- function(datafolder){
 colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
               "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
 for (i in 1:nrow(my.stations)){
-  assign(paste0(my.stations$ID[i], 
-        read.csv(StationList[i], header=TRUE, col.names=colnames), 
-        envir = parent.frame()))
-#  return(paste0("station", i))
+  assign(my.stations$ID[i], 
+  read.csv(paste0(datafolder, noquote(my.stations$ID[i]), ".csv"), header=TRUE, col.names=colnames), envir = parent.frame())
 }
 }
+
+# i = 1
+# ReadStations2.fun(datafolder)
 
 # function to fix date formats, etc.
 fixdates.fun <- function(station){
@@ -62,14 +63,14 @@ ConvertUnits.fun <- function(station){
 QAQC.fun <- function(station){
   par(mfrow=c(3,1))
   plot(VALUE ~ Ymd, data = subset(station, 
-        subset=ELEMENT=="PRCP"), type = "l", col = "blue", 
-      main = "Time Series of Daily PRCP", xlab = "Date", ylab = "PRCP (mm)")
+      subset=ELEMENT=="PRCP"), type = "l", col = "blue", 
+    main = "Time Series of Daily PRCP", xlab = "Date", ylab = "PRCP (mm)")
   plot(VALUE ~ Ymd, data = subset(station, subset=ELEMENT=="TMAX"), 
-       type = "l", col = "blue", 
-       main = "Time Series of Daily TMAX", xlab = "Date", ylab = "TMAX (C)")
+      type = "l", col = "blue", 
+    main = "Time Series of Daily TMAX", xlab = "Date", ylab = "TMAX (C)")
   plot(VALUE ~ Ymd, data = subset(station, 
-        subset=ELEMENT=="TMIN"), type = "l", col = "blue", 
-       main = "Time Series of Daily TMIN", xlab = "Date", ylab = "TMIN (C)") 
+      subset=ELEMENT=="TMIN"), type = "l", col = "blue", 
+    main = "Time Series of Daily TMIN", xlab = "Date", ylab = "TMIN (C)") 
   station = subset(station, Q.FLAG != "")
   station = subset(station, M.FLAG != "")
   station = subset(station, S.FLAG != "")

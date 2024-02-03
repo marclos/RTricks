@@ -69,25 +69,25 @@ The following functions are used to read the weather stations data into R, clean
 The If the data are not in the R environment, you can read them in using the following but you have the uncompressed files, you can read them in using the following function:
 
 <<show_ReadStation.fun, echo=FALSE>>=
-print(ReadStations.fun)
+print(ReadStations2.fun)
 @
 
 Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
 datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
-ReadStations.fun(datafolder)
+ReadStations2.fun(datafolder)
 @
 
 \item[Check the dataframes in the environment]
 
 You can do this by running the following code:
 
-<<>>=
+<<list, echo=TRUE>>=
 ls()
 @
 
-You should see weather station objects. 
+%You should see object named after the stations you read in. For example, if you read in the station data (e.g. \Sexpr{my.inventory$ID[1]}, you should see an object named station1 in your environment.
 
 \item[Check the structure of the dataframes]
 
@@ -95,8 +95,8 @@ Using str(), make sure the datasets look right!
 
 For example: 
 
-<<echo=TRUE, results='hide'>>=
-str(station2)
+<<echo=FALSE, results='markup'>>=
+str(USC00042294)
 @
 
 \end{description}
@@ -117,7 +117,7 @@ print(fixdates.fun)
 Example of how to use the function (Note: the new dataframe name change): 
 
 <<fixdates, echo=TRUE, results='hide'>>=
-station1a <- fixdates.fun(station1)
+USC00042294a <- fixdates.fun(USC00042294)
 @
 
 \item[Evaluation Data Coverage]
@@ -132,7 +132,7 @@ print(coverage.fun)
 Example of how to use the function: 
 
 <<echo=TRUE, results='hide'>>=
-coverage.fun(station1a)
+coverage.fun(USC00042294a)
 @
 
 In general, we want something like 95\% coverage for the period of record. If you don't have that, please let us know and we'll help you get additional stations with better coverage!
@@ -156,7 +156,7 @@ print(ConvertUnits.fun)
 Example of how to use the function (Note: the new dataframe name change):
 
 <<echo=TRUE, results='hide'>>=
-station1b <- ConvertUnits.fun(station1a)
+USC00042294b <- ConvertUnits.fun(USC00042294a)
 @
 
 \item[Checking for Outliers]
@@ -170,6 +170,8 @@ Here are some stuff we'll look for:
   \item[Note QA/QC Flags] TBD
 \end{description}
 
+Yes, I am still working on this. QA/QC is a big deal and I want to make I can explain it AND make sure the code works.
+
 <<show_QAQC.fun, echo=FALSE>>=
 print(QAQC.fun)
 @
@@ -178,7 +180,7 @@ print(QAQC.fun)
 Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
-QAQC.fun(station1b)
+QAQC.fun(USC00042294b)
 @
 
 If you have any hints of data problems, let's sort them out together!
@@ -203,8 +205,8 @@ print(MonthlyNormals.fun)
 Example of how to use the functions:
 
 <<echo=TRUE, results='hide'>>=
-station1.monthly <- MonthlyValues.fun(station1b)
-station1.normals <- MonthlyNormals.fun(station1b)
+USC00042294.monthly <- MonthlyValues.fun(USC00042294b)
+USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
 @
 
 \item[Function to Create Anomalies]
@@ -218,7 +220,7 @@ print(MonthlyAnomalies.fun)
 Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
-station1.anomolies <- MonthlyAnomalies.fun(station1.monthly, station1.normals)
+USC00042294.anomolies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
 @
 
 \end{description}
@@ -230,18 +232,18 @@ Getting into the data is a bit tricky. The datasets is a list of dataframes. Eac
 The get access to each you use the following code:
 
 \begin{itemize}
-  \item \verb|station1.anomolies[[1]]| for TMAX
-  \item \verb|station1.anomolies[[2]]| for TMIN
-  \item \verb|station1.anomolies[[3]]| for PRCP
+  \item \verb|USC00042294.anomolies[[1]]| for TMAX
+  \item \verb|USC00042294.anomolies[[2]]| for TMIN
+  \item \verb|USC00042294.anomolies[[3]]| for PRCP
 \end{itemize}
 
 \begin{figure}
 <<echo=FALSE>>=
 # plot the data
 par(mfrow=c(3,1), mar=c(4,5,3,2))
-plot(TMAX.a ~ Ymd, data=station1.anomolies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Maximum Temperature Change")
-plot(TMIN.a ~ Ymd, data=station1.anomolies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Minimum Temperature Change")
-plot(PRCP.a ~ Ymd, data=station1.anomolies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anomaly (C)", main="Monthly Precipiation Change")
+plot(TMAX.a ~ Ymd, data=USC00042294.anomolies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Maximum Temperature Change")
+plot(TMIN.a ~ Ymd, data=USC00042294.anomolies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Minimum Temperature Change")
+plot(PRCP.a ~ Ymd, data=USC00042294.anomolies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anomaly (C)", main="Monthly Precipiation Change")
 @
 \end{figure}
 
