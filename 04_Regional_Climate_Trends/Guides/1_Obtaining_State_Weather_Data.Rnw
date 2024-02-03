@@ -1,4 +1,14 @@
 \documentclass{article}
+\usepackage{natbib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    hyperindex=true,
+    linkcolor=red,
+    filecolor=magenta,
+    urlcolor=purple,
+    citecolor=violet
+}
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
@@ -11,7 +21,7 @@
 
 \subsection{Goals}
 
-Using a list of active weather stations in the United States, you  will download the data from five stations and read these into the R environment. 
+Using a list of active weather stations in the United States, you  will download the data from five stations and write weather station data csv files. 
 
 %\section{Evaluating Terrestrial Meteorological Data}
 
@@ -21,7 +31,7 @@ Geologists have known the climate has been changing over the Earth's history. Bu
 
 It's the last one that we'll spend time because the Earth's temperature are changing pretty dramatically over the last 100 years and the cause is no mystery -- the human activity that has released carbon dioxide (CO$_2$) into the atmosphere. The two main sources of CO$_2$ is from land use change, e.g. deforestration, and the burning of fossil fuels, e.g. coal, oil, and natural gas. 
 
-The first person to propose the role of CO$_2$ on the Earth's atmosphere was a Swedish scientist Svante Arrhenius, who figured out that CO$_2$ absorbs infarred light. Moreover, he deduced that the Earth's temperature was actually warmer than it might otherwise be if CO$_2$ was not part of the Earth's atmosphere. 
+The first person to propose the role of CO$_2$ on the Earth's atmosphere was a Swedish scientist Svante Arrhenius, who figured out that CO$_2$ absorbs infarred light \citep{rodhe1997svante}. Moreover, he deduced that the Earth's temperature was actually warmer than it might otherwise be if CO$_2$ was not part of the Earth's atmosphere. 
 
 \subsection{Why Look at Individual Stations?}
 
@@ -49,7 +59,7 @@ I will use these data to select for a station with a long record for each state 
 
 R is an open source programming environment that has become one of the most popular tools for statiticians and data scientists. Capitalizing on the open source framework, a wide range of libraries or packages have been developed to faciliate data processing, analysis, and graphical displays. 
 
-For the project we'll use a few packages that need to be installed and loaded. Using the lower right panel, you can install the packages by clicking on the "Packages" tab and then "Install" and then type in the package name and click "Install".
+%For the project we'll use a few packages that need to be installed and loaded. Using the lower right panel, you can install the packages by clicking on the "Packages" tab and then "Install" and then type in the package name and click "Install".
 
 \subsection{Revised Document Structure}
 
@@ -66,13 +76,17 @@ source(here("04_Regional_Climate_Trends", "Guides", "Guide1.R"))
 
 \section{R Functions for Getting Weather Station Data}
 
-The following functions are used to select the weather stations, download data, and read into R.
+\subsection{R Code with Custom Functions}
 
-Run the Guide1.R code and the functions will be loaded into your environment automatically.
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1.R}{Guide1.R} code and the functions will be loaded into your environment automatically.
+
+\subsection{Function Descriptions and Use}
+
+The following functions are used to select the weather stations, download data, and write weather station data csv files.
 
 \begin{description}
 
-\item[Subset Inventory Data with my.state]  
+\item[Subset Inventory Data with my.state]  The inventory data is a list of all the weather stations in the USA, US Territories, and Canada. This function will subset the data to only include the stations in the state of interest.
 
 This function requires two parameters to be set: filename and my.state. 
 
@@ -92,17 +106,17 @@ filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.acti
 my.inventory <- readInventory.fun(filename.csv, my.state)
 @
 
+Creates a dataframe called my.inventory that contains the inventory data for the state/territory of interest.
 
-\item[Download Weather Station Data and Read into R]
+\item[Download and Read Selected Weather Station Data into R]  This function will download the weather station data from the NOAA website and read it into R.
 
-This functions requires two parameters: data path and dataframe of my.inventory. The data path is a folder that you can always get your station data from if you need it. For example, if you need to update the data, you can just download the data from the NOAA website and then read it into R. 
-
-Your data path will be different, I created a directory to separate my data by class year, you don't need that! But it is nice to keep the data in a separate folder so things don't get to hectic.
+This functions requires two parameters: data path and name of inventory dataframe (my.inventory). The data path is a folder that you can always get your station data from if you need it. For example, if you need to update the data, you can just download the data from the NOAA website and then read it into R. 
 
 <<show_downloadStation.fun, echo=FALSE>>=
 print(downloadStations.fun)
 @
 
+The path to your data folder will be different, I created a directory to separate my data by class year, you don't need that! But it is nice to keep the data in a separate folder so things don't get to hectic.
 
 An example of how to use the function: 
 
@@ -111,11 +125,15 @@ datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 downloadStations.fun(datapath, my.inventory)
 @ 
 
+This will download the data from the NOAA website and read it into R then written as csv files in your data folder.
 
 \end{description}
 
-
 \section{Explaining the Code TBD!!}
+
+\subsection{Trouble Shooting and Workarounds}
+
+I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described!
 
 \subsection{Selecting Weather Records by State}
 
@@ -196,6 +214,8 @@ my.state = "CA" # change the "CA" to your state
 
 This uses the stations.active.oldest file to download the data from the NOAA website based on the state you have choose.
 
+The URL for the data is: \url{https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USW00023230/detail}.
+
 <<>>=# Select Stations in State
 my.stations = subset(stations.active.oldest, STATE == my.state)
 
@@ -205,7 +225,12 @@ here::here("04_Regional_Climate_Trends", my.stations$ID[i])
 @
 
 
+% bibilography section here-------------------------------------------
+%\clearpage
 
+\bibliographystyle{apalike}
+%\renewcommand\bibname{References}{}
+\bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
 
 
 \end{document}
