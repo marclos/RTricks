@@ -1,14 +1,15 @@
-# Guide1.R
+# Guide2.R
 
-# function to read(inventory.active.oldest) and subset(my.state)
-readInventory.fun<-function(filename, my.state){
-  inventory.active.oldest <- read.csv(filename)
-  my.inventory = subset(inventory.active.oldest, STATE == my.state)
-  return(my.inventory)
+cleandataframe.fun <- function(x=station1){
+  if(x$VALUE==-9999) {x$VALUE <- NA}
+  x$Ymd = as.Date(as.character(x$DATE), format = "%Y%m%d")
+  x$MONTH = as.numeric(format(x$Ymd, "%m"))
+  x$YEAR = as.numeric(format(x$Ymd, "%Y"))
 }
 
+
 # Download Station Data and Read Into R
-downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
+#downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
 
 
 
