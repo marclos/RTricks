@@ -62,7 +62,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.88)}
+\date{\today~(ver. 0.89)}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 \maketitle
@@ -194,6 +194,8 @@ This functions requires two parameters: data path and name of inventory datafram
 ##         filename = paste0(datafolder, my.inventory$ID[i], ".csv")
 ##         write.csv(StationList.df[[i]], filename, row.names = FALSE)
 ##     }
+##     write.csv(my.inventory, paste0(datafolder, "my.inventory.csv"), 
+##         row.names = FALSE)
 ## }
 \end{verbatim}
 \end{kframe}
@@ -232,7 +234,7 @@ This will download the data from the NOAA website and read it into R then writte
 
 \subsection{Trouble Shooting and Workarounds}
 
-I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described!
+I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
 
 \subsection{Selecting Weather Records by State}
 
