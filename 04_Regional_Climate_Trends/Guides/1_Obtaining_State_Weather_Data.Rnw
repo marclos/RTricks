@@ -68,6 +68,8 @@ source(here("04_Regional_Climate_Trends", "Guides", "Guide1.R"))
 
 The following functions are used to select the weather stations, download data, and read into R.
 
+Run the Guide1.R code and the functions will be loaded into your environment automatically.
+
 \begin{description}
 
 \item[Subset Inventory Data with my.state]  

@@ -1,16 +1,50 @@
+\title{Obtaining State Weather Station Data}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.8)} 
+
 \documentclass{article}
 
+\title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.4)} 
+
 \begin{document}
+\maketitle
 
-\section{Process and Clean Data}
+\section{Introduction}
+
+\subsection{Goals}
+
+The goal of this guide is to provide a step-by-step process for cleaning and pre-processing weather station data. The data is from the Global Historical Climatology Network (GHCN) Daily dataset. The data is available from the National Oceanic and Atmospheric Administration (NOAA) and is available from the National Centers for Environmental Information (NCEI) at %\url{https://www.ncdc.noaa.gov/data-access/land-based-station-data/land-based-datasets/global-historical-climatology-network-ghcn}.
+
+\subsection{Background}
+
+What is GHCN-Daily?Links to an external site.
 
 
-I have created a "function" that can process and clean the data, if the data are consistent!  If not, we'll trouble shoot together. 
+\subsection{Approach}
 
-Here's the data structure, using str(), but if you have something different, please let me know and we'll sort out how to fix it. 
+
+\section{Cleaning and Pre-Processing Functions}
+
+
+\subsection{Starting the Process}
+
+Before you begin, make sure you have the stations read into R. You can do this by running the following code:
 
 <<>>=
-str(station1)
+#ls()
+@
+
+You should see station1\ldots stationN, where N is the number of stations you have read in.
+
+Using str(), make sure the data sets look right!
+
+
+
+<<setup, echo=FALSE, results='hide', message=FALSE>>=
+library(here)
+source(here("04_Regional_Climate_Trends", "Guides", "Guide2.R"))
 @
 
 
