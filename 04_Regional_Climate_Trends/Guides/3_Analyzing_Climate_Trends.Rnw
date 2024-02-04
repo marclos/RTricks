@@ -22,266 +22,121 @@
 
 \subsection{Goals}
 
-Using a list of active weather stations in the United States, you  will download and process the data to create a time series of temperature anomalies. These datasets will be used to develop trend analysis to frame the policy implications for the region.
+We will use basic linear regression models, i.e. the lm() function to determine if there are trends in the data.
 
-<<eval=FALSE>>=
-library(geodata)
-d <- worldclim_country(country = "USA", var = "tmin",
-                       path = tempdir())
-terra::plot(mean(d), plg = list(title = "Min. temperature (C)"))
-@
+\subsection{Weather vs. Climate}
 
-<<>>=
-library(here)
+
+
+\section{Function to Analyze Monthly Trends}
+
+<<setup, echo=FALSE, results='hide', message=FALSE>>=
 library(xtable)
-
-stations.active.oldest = read.csv(
-  here("04_Regional_Climate_Trends", "stations.active.oldest.csv"))
-
-# OR
-# use file.choose() to select the file
-# filename = "MY.PATH/04_Regional_Climate_Trends/stations.active.oldest.csv"
-# stations.active.oldest = read.csv(filename)
-@ 
-
-
-\subsection{Map US Weather Stations}
-
-Here's map that has been transformed using a bunch of libraries that I don't really know how to use, but I found webpage that told me how to make this!
-
-It would be nice to add Canada and Mexico so the USA is not floating in space. I'll work on that later.
-
-<<>>=
-library(usmap)
-library(ggplot2)
-library(sf)
-library(tidyverse)
-library("rnaturalearth")
-library("rnaturalearthdata")
-library(usmap)
-
-world <- ne_countries(scale = "medium", returnclass = "sf")
-class(world)
-
-usa <- subset(world, admin == "United States of America")
-
-(mainland <- ggplot(data = usa) +
-     geom_sf(fill = "cornsilk") +
-     #geom_sf(data = subset(sites), size = 3, shape = 21, fill = "gray70") +
-     geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
-    coord_sf(crs = st_crs(2163), xlim = c(-2500000, 2500000), ylim = c(-2300000, 
-         730000)))
-
-(alaska <- ggplot(data = usa) +
-     geom_sf(fill = "cornsilk") +
-    geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
-     coord_sf(crs = st_crs(3467), xlim = c(-2400000, 1600000), ylim = c(200000, 
-         2500000), expand = FALSE, datum = NA))
-
-(hawaii  <- ggplot(data = usa) +
-     geom_sf(fill = "cornsilk") +
-     geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
-     coord_sf(crs = st_crs(4135), xlim = c(-161, -154), ylim = c(18, 
-         23), expand = FALSE, datum = NA))
-
-(world.sf <- ggplot(data =world) +
-     geom_sf() +
-     #geom_sf(data = subset(sites), size = 3, shape = 21, fill = "gray70") +
-     geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
-    coord_sf(crs = st_crs(2163), xlim = c(-2500000, 2500000), ylim = c(-2300000, 
-         730000)))
-
-
-mainland +
- annotation_custom(
-      grob = ggplotGrob(alaska),
-      xmin = -2750000,
-      xmax = -2750000 + (1600000 - (-2400000))/2.5,
-      ymin = -2450000,
-      ymax = -2450000 + (2500000 - 200000)/2.5
-  ) +
-  annotation_custom(
-      grob = ggplotGrob(hawaii),
-      xmin = -1250000,
-      xmax = -1250000 + (-154 - (-161))*120000,
-      ymin = -2450000,
-      ymax = -2450000 + (23 - 18)*120000
-  )
-
-@
-\subsection{Select and Evaluate State Data}
-
-<<>>=
-stations.unique = 
-  unique(stations.active.oldest[,c("STATE", "STATE_NAME")])
-
-xtab = xtable(stations.unique)
+library(here)
+source(here("04_Regional_Climate_Trends", "Guides", "Guide3.R"))
 @
 
-The each of you will select a state -- see the Google Sheet sign up so we have a diverse set of states.
+\subsection{Before Starting the Process}
 
-<<>>=
-my.state = "CA" # change the "CA" to your state
+Before you begin, make sure you have the stations to read into R. Got to the ``Files" tab in RStudio and make sure you see the station csv files in your data folder. If not, please Slack Marc and mentors, so we can troubleshoot the issue!
+
+\subsection{Before Starting the Process}
+
+Before you begin, make sure you have the stations to read into R. Got to the ``Files" tab in RStudio and make sure you see the station csv files in your data folder. If not, please Slack Marc and mentors, so we can troubleshoot the issue!
+
+\subsection{R Code with Custom Functions}
+
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide3.R}{Guide3.R} code and the functions will be loaded into your environment automatically.
+
+\subsection{Function Descriptions and Use}
+
+The following functions are used to read the weather stations data into R, clean and pre-process data so we can analyze the data with the next guide.
+
+\subsection{Reading csv and Checking dataframe objects}
+
+
+\subsection{Functions to Evaluate Trends}
+
+\begin{description}
+
+  \item[Analyze Stations for Trends by Month] This function will take the list of dataframes and return a list of linear models for each month. The function will also return a summary of the linear models.
+
+<<show_monthlyTrend.fun, echo=FALSE>>=
+print(monthlyTrend.fun)
 @
 
-\section{Download Data from NOAA}
+Example of how to use the function:
 
-\subsection{Subset Station Data by State}
-
-This uses the stations.active.oldest file to download the data from the NOAA website based on the state you have choose.
-
-<<>>=# Select Stations in State
-my.stations = subset(stations.active.oldest, STATE == my.state)
-
-# Download Updated Station Data
-i=1
-here::here("04_Regional_Climate_Trends", my.stations$ID[i])
+<<echo=TRUE, results='hide'>>=
+USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
 @
 
+Explore Results
 
-The loop is not ideal -- loops are slow in R and prone to break -- but it should work for our purposes.\footnote{Evelyn/Brody: I wonder if we can test if the file exists so we don't have to downwload every time!} 
-<<>>=
-for(i in 1:nrow(my.stations)){
-  url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", 
-               my.stations$ID[i], 
-               ".csv.gz")
-  
-print(i) # Print Index Number
-download.file(url, paste0(here::here("04_Regional_Climate_Trends", 
-                                     "Data", 
-                                     "SP24/"), 
-                          my.stations$ID[i], 
-                          ".csv.gz"), 
-              quiet = FALSE, mode = "w", cacheOK = TRUE)
-
-assign(paste0("station", i), 
-       read.csv(gzfile(paste0(here::here("04_Regional_Climate_Trends", 
-            "Data", "SP24/"),my.stations$ID[i], ".csv.gz")), 
-            header=FALSE))
-
-# can't get the header named in loop! Grrr...
-#names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT", 
-# "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
-
-} # LOOP END
-
-# Fix Variable Names based on NOAA Documentation
-names(station1) <- c("ID", "DATE", "ELEMENT", "VALUE", 
-                     "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
-names(station3) <- names(station2) <- names(station1)
-names(station5) <- names(station4) <- names(station1)
-
-# NAMES OF VARIABLES ARE INCORRECT for some STATIONS??
-      
-  #ID = 11 character station identification code
-  #YEAR/MONTH/DAY = 8 character date in YYYYMMDD format 
-  #                     (e.g. 19860529 = May 29, 1986)
-  #ELEMENT = 4 character indicator of element type 
-  #DATA VALUE = 5 character data value for ELEMENT 
-  #M-FLAG = 1 character Measurement Flag 
-  #Q-FLAG = 1 character Quality Flag 
-  #S-FLAG = 1 character Source Flag 
-  #OBS-TIME = 4-character time of observation in hour-minute format
-  #                     (i.e. 0700 =7:00 am); if no ob time information 
- #is available, the field is left empty
-
+<<echo=FALSE, results='markup'>>=
+xtable(USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",])
 @
 
-\section{Process and Clean Data}
+\end{description}
 
-
-I have created a "function" that can process and clean the data, if the data are consistent!  If not, we'll trouble shoot together. 
-
-Here's the data structure, using str(), but if you have something different, please let me know and we'll sort out how to fix it. 
-
-<<>>=
-str(station1)
-@
-
-
-\subsection{Clean Data}
-
-First, I tested each line on station1. I will then create a function to clean the data and apply it to each station.
-
-<<>>=
-station1$VALUE = station1$VALUE/10  # Correct Values Units
-# Fix Date format
-station1$Ymd = as.Date(as.character(station1$DATE), format = "%Y%m%d") 
-str(station1)
-
-station1$MONTH = as.numeric(format(station1$Ymd, "%m"))
-station1$YEAR = as.numeric(format(station1$Ymd, "%Y"))
-station1.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-                   data = subset(station1, ELEMENT == "TMAX"), mean)
-
-# create baseline (normals) dataset
-station1.normals = subset(station1, 
-                           Ymd >= "1961-01-01" & Ymd <= "1990-12-31") 
-station1.normals.monthly = aggregate(VALUE ~ MONTH, 
-                   data = subset(station1.normals, ELEMENT == "TMAX"), mean)
-names(station1.normals.monthly) <- c("MONTH", "NORMALS")
-
-station1.anomaly = merge(station1.monthly, 
-                         station1.normals.monthly, by = "MONTH")
-station1.anomaly$ANOMALY = 
-  station1.anomaly$VALUE - station1.anomaly$NORMALS
-
-@
-
-\subsection{Clean Data Function}
-
-Function is probably sensitive to missing values, need to work on that!
-
-<<cleandataframe.fun, echo=TRUE>>=
-cleandataframe.fun <- function(x, y="TMAX"){
-  x$VALUE = x$VALUE/10
-  x$Ymd = as.Date(as.character(x$DATE), format = "%Y%m%d") 
-  x$MONTH = as.numeric(format(x$Ymd, "%m"))
-  x$YEAR = as.numeric(format(x$Ymd, "%Y"))
-  x.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-                   data = subset(x, ELEMENT == y), mean)
-  x.normals = subset(x, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")
-  x.normals.monthly = aggregate(VALUE ~ MONTH, 
-                   data = subset(x.normals, ELEMENT == "TMAX"), mean)
-  names(x.normals.monthly) <- c("MONTH", "NORMALS")
-  x.anomaly = merge(x.monthly, x.normals.monthly, by = "MONTH")
-  x.anomaly$ANOMALY = x.anomaly$VALUE - x.anomaly$NORMALS
-  return(x.anomaly)
-}
-@
-
-\subsection{Apply Function to All Stations}
-
-So far, I have only run function for 1 station, but I suspect you can figure out how to run it for each one!
-
-<<>>=
-station1.TMAX = cleandataframe.fun(station1)
-@
-
-\subsection{Plot Anomaly}
-
-Graphic has lots of issues. more next time!  But here's a start.
-
-<<>>=
-options(scipen=5)
-par(mar=c(4,6,2,5))
-
-plot(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1), 
-     las=1, pch=19, col = "blue", cex=.5, #xlab = "Year", 
-     ylab = "Maximum Temp Anomaly (C)",
-     main="January Maximum Temp Anomaly")
-mtext("Maximum Temp Anomaly (C)", side = 2, line = 3)
-temp.lm = lm(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1))
-abline(coef(temp.lm), col = "red")
-
-@
-
-
-\section{Monthly Anomalies Linear Regression}
-
-<<Monthly_summarystats, eval=TRUE, echo=FALSE>>=
+<<Monthly_summarystats, eval=FALSE, echo=FALSE>>=
 # find most important month
-sumstats = NA
+
+# separate 
+names(USC00042294.anomalies)
+
+str(USC00042294.anomalies)
+
+
+USC00042294TMAX = USC00042294.anomalies$TMAX
+names(USC00042294TMAX)
+str(USC00042294TMAX)
+
+
+TMAX.lm <- lm(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1))
+coef(TMAX.lm)
+summary(TMAX.lm)
+plot(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1), pch=19, col="gray", cex=.5)
+abline(TMAX.lm, col="red")
+
+
+
+test.lm <- lm(TMAXa ~ YEAR, Data = USC00042294TMAX$MONTH==1)
+
+a = 1:20
+x = rnorm(20)
+
+plot(x, a)
+
+lm(USC00042294TMAX$TMAXa ~ USC00042294TMAX$YEAR)
+
+
+USC00042294TMAX$TMAX.a <- USC00042294TMAX$TMAX.a
+# determine the lm for each month
+  
+
+test.lm <- lm(TMAX.a ~ YEAR, Data = USC00042294TMAX$MONTH==1)
+
+hist(USC00042294TMAX$TMAXa, main="TMAX.a", xlab="TMAX.a")
+hist(USC00042294TMAX$YEAR, main="TMAX.a", xlab="TMAX.a")
+
+
+aggregate(TMAX.a ~ YEAR, Data = USC00042294TMAX, by=list(Month=MONTH), FUN=mean)
+
+
+
+
+# Monthly Eval Stats function use lm()
+MonthEvalStats <- function(month, data) {
+  lm(TMAX.a~YEAR, data)
+}
+
+
+lapply(USC00042294.anomalies, function(x) MonthEvalStats(1, data=x))
+
+
+
+
 for (m in 1:12){
   TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
   TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
@@ -313,7 +168,7 @@ sumstats
 @
 Evaluate both TMAX and TMIN in GSOM by Year using MonthEvalStats() function. 
 
-<<EvaluationMonthlyTrends, eval=TRUE>>=
+<<EvaluationMonthlyTrends, eval=FALSE>>=
 MonthEvalStatsOLD <- function(GSOM) {
 sumstats = NA
 for (m in 1:12){
@@ -379,7 +234,7 @@ sumstats = MonthEvalStats(GSOM[500:4000,])
 
 Admittedly, determining the months with the biggest changes isn't a very good approach for hypothesize testing -- it's more like a fishing expedition, but as long as we understand the difference between an a priori hypothesis and an exploratory analysis, we should be okay if we make appropriate conclusions. 
 
-<<EvaluatingMonthDelta>>=
+<<EvaluatingMonthDelta, eval=FALSE>>=
 # Selecting Most Important Monthly Changes (TMAX overwrites)
 #sumstats = MonthEvalStats(GSOM)
 
@@ -401,7 +256,7 @@ For this section, we'll look to see what months had the greatest changes for bot
 
 Table~\ref{tab:TMINtrends} summarizes the monthly trends for TMAX.
 
-<<echo=FALSE, results='asis'>>=
+<<echo=FALSE, results='asis', eval=FALSE>>=
 sumstats$Slope100 = sumstats$Slope*100
 TMIN.xtbl <- xtable(sumstats[sumstats$Param=="TMIN", c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMIN Trends")
 
@@ -412,7 +267,7 @@ print(TMIN.xtbl, type="latex", comment=FALSE)
 
 Table~\ref{tab:TMAXtrends} summarizes the monthly trends for TMAX.
 
-<<echo=FALSE, results='asis'>>=
+<<echo=FALSE, results='asis', eval=FALSE>>=
 sumstats$Slope100 = sumstats$Slope*100
 TMAX.xtbl <- xtable(sumstats[sumstats$Param=="TMAX", c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMAX Trends")
 
@@ -423,7 +278,7 @@ print(TMAX.xtbl)
 
 PPT changes are tricky to capture and I'll have to keep working on this (Table~\ref{tab:PPTtrends}).
 
-<<echo=FALSE, results='asis'>>=
+<<echo=FALSE, results='asis', eval=FALSE>>=
 PPT.xtbl <- xtable(sumstats[sumstats$Param=="PPT", c(1,7,4:6)], digits=c(0,0,4,2,4,3))
 
 print(PPT.xtbl, type="latex", label = "tab:PPTtrends")
@@ -442,7 +297,7 @@ print(PPT.xtbl, type="latex", label = "tab:PPTtrends")
 
 \subsubsection{Defining TMAXmonth and TMINmonth}
 
-<<>>=
+<<eval=FALSE>>=
 TMINSlopeMax = max(abs(sumstats$Slope)[sumstats$Param=="TMIN"])
 TMAXSlopeMax = max(abs(sumstats$Slope)[sumstats$Param=="TMAX"])
 
@@ -459,7 +314,7 @@ TMAXmonthMax = as.numeric(subset(sumstats, select=Month, subset=abs(Slope)==TMAX
 
 Communicating climate change based on station records is tricky. The long-term record would on the surface to be the most robust, but several issues arise with a naive analytical approach -- my favorite!
 
-<<trend1975, eval=FALSE>=
+<<trend1975, eval=FALSE>>=
 
 GSOM_1975.png = paste0(fips$State2, "_", stid, "_GSOM_1975.png")
 
@@ -507,7 +362,7 @@ There are several ways to filter out seasonal effects. The easiest way is subtra
 
 \subsubsection{Method 1: Filtering by Monthly Mean} 
 
-<<GSOM_Anomaly, eval=FALSE
+<<GSOM_Anomaly, eval=FALSE>>=
 TMAX.Monthly.means = aggregate(TMAX~Month, data=GSOM, mean)
 names(TMAX.Monthly.means)=c("Month", "TMAXmean")
 GSOM2 = merge(GSOM, TMAX.Monthly.means, by="Month")
@@ -527,7 +382,7 @@ GSOM2$PPT.anom = GSOM2$PPT - GSOM2$PPTmean
 GSOM2 <- GSOM2[order(GSOM2$Date),]
 @
 
-<<eval=FALSE
+<<eval=FALSE>>=
 GSOM_anomaly_1975.png = paste0(fips$State2, "_", stid, "_GSOM_anomaly_1975.png")
 
 png(paste0(png_private, GSOM_anomaly_1975.png), 
@@ -1143,7 +998,7 @@ plot(fit2) + plot_pars(fit2, pars = c("cp_1"), type = "dens_overlay")
 
 Let's create a figure that simplifies the narrative, if we can!
 
-<<KISS, eval=TRUE, echo=FALSE>>=
+<<KISS, eval=FALSE, echo=FALSE>>=
 
 KISS.png <- paste0(fips$State2, "_", stid, "_KISS.png")
 
@@ -1361,7 +1216,9 @@ if(shapiro.test(GSOM2$TMAX.anom)$p.value<.05 |
       }
 @
 
-These values suggest that there is good reason %\Sexpr{text} the normal probability distribution. 
+These values suggest that there is good reason 
+
+%Sexpr{text} the normal probability distribution. 
 
 Next we use a function to estimate the probability distribution using a markof chain the creates an estimated probability distribution. This doesn't always work when the distribution is not even and their only 10 years of data per slot. I suspect, I should make this by every 20 years. Plus that will go way faster and I think the data visualization will be more robust. 
 
@@ -1886,7 +1743,7 @@ end_time <- Sys.time()
 rm(dbase)
 @
 
-The document took \Sexpr{round(totaltime,1)} minutes to process and compile. My next goal will be to optimize the process and streamline the time to analyze. 
+The document took %Sexpr{round(totaltime,1)} minutes to process and compile. My next goal will be to optimize the process and streamline the time to analyze. 
 
 % bibilography section here-------------------------------------------
 %\clearpage
