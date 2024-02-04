@@ -19,11 +19,12 @@
 
 \section{Introduction}
 
-Visualizing
+Developing the skills to communicate climate trends is an important skill for scientists and policy makers. This exercise will focus on developing the skills to communicate climate trends using R and RMarkdown. We'll produce graphics that can be used in the video presentations.
 
 \subsection{Goals}
 
-Using a list of active weather stations in the United States, you  will download and process the data to create a time series of temperature anomalies. These datasets will be used to develop trend analysis to frame the policy implications for the region.
+Create a compelling story... 
+
 
 <<eval=FALSE>>=
 library(geodata)
@@ -110,349 +111,7 @@ mainland +
   )
 
 @
-\subsection{Select and Evaluate State Data}
 
-<<>>=
-stations.unique = 
-  unique(stations.active.oldest[,c("STATE", "STATE_NAME")])
-
-xtab = xtable(stations.unique)
-@
-
-The each of you will select a state -- see the Google Sheet sign up so we have a diverse set of states.
-
-<<>>=
-my.state = "CA" # change the "CA" to your state
-@
-
-\section{Download Data from NOAA}
-
-\subsection{Subset Station Data by State}
-
-This uses the stations.active.oldest file to download the data from the NOAA website based on the state you have choose.
-
-<<>>=# Select Stations in State
-my.stations = subset(stations.active.oldest, STATE == my.state)
-
-# Download Updated Station Data
-i=1
-here::here("04_Regional_Climate_Trends", my.stations$ID[i])
-@
-
-
-The loop is not ideal -- loops are slow in R and prone to break -- but it should work for our purposes.\footnote{Evelyn/Brody: I wonder if we can test if the file exists so we don't have to downwload every time!} 
-<<>>=
-for(i in 1:nrow(my.stations)){
-  url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", 
-               my.stations$ID[i], 
-               ".csv.gz")
-  
-print(i) # Print Index Number
-download.file(url, paste0(here::here("04_Regional_Climate_Trends", 
-                                     "Data", 
-                                     "SP24/"), 
-                          my.stations$ID[i], 
-                          ".csv.gz"), 
-              quiet = FALSE, mode = "w", cacheOK = TRUE)
-
-assign(paste0("station", i), 
-       read.csv(gzfile(paste0(here::here("04_Regional_Climate_Trends", 
-            "Data", "SP24/"),my.stations$ID[i], ".csv.gz")), 
-            header=FALSE))
-
-# can't get the header named in loop! Grrr...
-#names(paste0("station",i)) <- c("ID", "DATE", "ELEMENT", 
-# "VALUE", "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
-
-} # LOOP END
-
-# Fix Variable Names based on NOAA Documentation
-names(station1) <- c("ID", "DATE", "ELEMENT", "VALUE", 
-                     "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
-names(station3) <- names(station2) <- names(station1)
-names(station5) <- names(station4) <- names(station1)
-
-# NAMES OF VARIABLES ARE INCORRECT for some STATIONS??
-      
-  #ID = 11 character station identification code
-  #YEAR/MONTH/DAY = 8 character date in YYYYMMDD format 
-  #                     (e.g. 19860529 = May 29, 1986)
-  #ELEMENT = 4 character indicator of element type 
-  #DATA VALUE = 5 character data value for ELEMENT 
-  #M-FLAG = 1 character Measurement Flag 
-  #Q-FLAG = 1 character Quality Flag 
-  #S-FLAG = 1 character Source Flag 
-  #OBS-TIME = 4-character time of observation in hour-minute format
-  #                     (i.e. 0700 =7:00 am); if no ob time information 
- #is available, the field is left empty
-
-@
-
-\section{Process and Clean Data}
-
-
-I have created a "function" that can process and clean the data, if the data are consistent!  If not, we'll trouble shoot together. 
-
-Here's the data structure, using str(), but if you have something different, please let me know and we'll sort out how to fix it. 
-
-<<>>=
-str(station1)
-@
-
-
-\subsection{Clean Data}
-
-First, I tested each line on station1. I will then create a function to clean the data and apply it to each station.
-
-<<>>=
-station1$VALUE = station1$VALUE/10  # Correct Values Units
-# Fix Date format
-station1$Ymd = as.Date(as.character(station1$DATE), format = "%Y%m%d") 
-str(station1)
-
-station1$MONTH = as.numeric(format(station1$Ymd, "%m"))
-station1$YEAR = as.numeric(format(station1$Ymd, "%Y"))
-station1.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-                   data = subset(station1, ELEMENT == "TMAX"), mean)
-
-# create baseline (normals) dataset
-station1.normals = subset(station1, 
-                           Ymd >= "1961-01-01" & Ymd <= "1990-12-31") 
-station1.normals.monthly = aggregate(VALUE ~ MONTH, 
-                   data = subset(station1.normals, ELEMENT == "TMAX"), mean)
-names(station1.normals.monthly) <- c("MONTH", "NORMALS")
-
-station1.anomaly = merge(station1.monthly, 
-                         station1.normals.monthly, by = "MONTH")
-station1.anomaly$ANOMALY = 
-  station1.anomaly$VALUE - station1.anomaly$NORMALS
-
-@
-
-\subsection{Clean Data Function}
-
-Function is probably sensitive to missing values, need to work on that!
-
-<<cleandataframe.fun, echo=TRUE>>=
-cleandataframe.fun <- function(x, y="TMAX"){
-  x$VALUE = x$VALUE/10
-  x$Ymd = as.Date(as.character(x$DATE), format = "%Y%m%d") 
-  x$MONTH = as.numeric(format(x$Ymd, "%m"))
-  x$YEAR = as.numeric(format(x$Ymd, "%Y"))
-  x.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-                   data = subset(x, ELEMENT == y), mean)
-  x.normals = subset(x, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")
-  x.normals.monthly = aggregate(VALUE ~ MONTH, 
-                   data = subset(x.normals, ELEMENT == "TMAX"), mean)
-  names(x.normals.monthly) <- c("MONTH", "NORMALS")
-  x.anomaly = merge(x.monthly, x.normals.monthly, by = "MONTH")
-  x.anomaly$ANOMALY = x.anomaly$VALUE - x.anomaly$NORMALS
-  return(x.anomaly)
-}
-@
-
-\subsection{Apply Function to All Stations}
-
-So far, I have only run function for 1 station, but I suspect you can figure out how to run it for each one!
-
-<<>>=
-station1.TMAX = cleandataframe.fun(station1)
-@
-
-\subsection{Plot Anomaly}
-
-Graphic has lots of issues. more next time!  But here's a start.
-
-<<>>=
-options(scipen=5)
-par(mar=c(4,6,2,5))
-
-plot(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1), 
-     las=1, pch=19, col = "blue", cex=.5, #xlab = "Year", 
-     ylab = "Maximum Temp Anomaly (C)",
-     main="January Maximum Temp Anomaly")
-mtext("Maximum Temp Anomaly (C)", side = 2, line = 3)
-temp.lm = lm(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1))
-abline(coef(temp.lm), col = "red")
-
-@
-
-
-\section{Monthly Anomalies Linear Regression}
-
-<<Monthly_summarystats, eval=TRUE, echo=FALSE>>=
-# find most important month
-sumstats = NA
-for (m in 1:12){
-  TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
-  TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
-   PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
-
- sumstats = rbind(sumstats, 
-   data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
-   r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
-   data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
-   r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
-   data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
-   r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
-
-} #end loop
-
-sumstats=data.frame(sumstats)[-1,]
-rownames(sumstats)<-NULL
-head(sumstats)
-
-head(sumstats)
-
-sumstats$Symbol = ""
-sumstats$Symbol[sumstats$p_value < 0.05] = "*"
-sumstats$Symbol[sumstats$p_value < 0.01] = "**"
-sumstats$Symbol[sumstats$p_value < 0.001] = "***"
-
-sumstats
-
-@
-Evaluate both TMAX and TMIN in GSOM by Year using MonthEvalStats() function. 
-
-<<EvaluationMonthlyTrends, eval=TRUE>>=
-MonthEvalStatsOLD <- function(GSOM) {
-sumstats = NA
-for (m in 1:12){
-  TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
-  TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
-   PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
-
- sumstats = rbind(sumstats, 
-   data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
-   r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
-   data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
-   r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
-   data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
-   r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
-
-}
-
-sumstats=data.frame(sumstats)[-1,]
-rownames(sumstats)<-NULL
-
-sumstats$Symbol = ""
-sumstats$Symbol[sumstats$p_value < 0.05] = "*"
-sumstats$Symbol[sumstats$p_value < 0.01] = "**"
-sumstats$Symbol[sumstats$p_value < 0.001] = "***"
-sumstats[,c(7,9)]
-return(sumstats)
-}
-
-MonthEvalStats <- function(GSOM) {
-sumstats = NA
-for (m in 1:12){
-  TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
-  TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
-   PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
-
- sumstats = rbind(sumstats, 
-   data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
-   r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
-   data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
-   r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
-   data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
-   r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
-
-} #end loop
-
-sumstats=data.frame(sumstats)[-1,]
-rownames(sumstats)<-NULL
-head(sumstats)
-
-sumstats$Symbol = ""
-sumstats$Symbol[sumstats$p_value < 0.05] = "*"
-sumstats$Symbol[sumstats$p_value < 0.01] = "**"
-sumstats$Symbol[sumstats$p_value < 0.001] = "***"
-return(sumstats)
-}
-
-# test function
-sumstats = MonthEvalStats(GSOM[500:4000,])
-@
-
-
-\subsubsection{Trends in Tabular Formats}
-
-Admittedly, determining the months with the biggest changes isn't a very good approach for hypothesize testing -- it's more like a fishing expedition, but as long as we understand the difference between an a priori hypothesis and an exploratory analysis, we should be okay if we make appropriate conclusions. 
-
-<<EvaluatingMonthDelta>>=
-# Selecting Most Important Monthly Changes (TMAX overwrites)
-#sumstats = MonthEvalStats(GSOM)
-
-TMIN_Increase_month = with(sumstats[sumstats$Param=="TMIN",], 
-     Month[Slope==max(Slope, na.rm=T)])
-TMIN_Decrease_month = with(sumstats[sumstats$Param=="TMIN",], 
-     Month[Slope==min(Slope, na.rm=T)])
-TMAX_Increase_month = with(sumstats[sumstats$Param=="TMAX",], 
-     Month[Slope==max(Slope, na.rm=T)])
-TMAX_Decrease_month = with(sumstats[sumstats$Param=="TMAX",], 
-     Month[Slope==min(Slope, na.rm=T)])
-PPT_Increase_month = with(sumstats[sumstats$Param=="PPT",], 
-     Month[Slope==max(Slope, na.rm=T)])
-PPT_Decrease_month = with(sumstats[sumstats$Param=="PPT",], 
-     Month[Slope==min(Slope, na.rm=T)])
-@
-
-For this section, we'll look to see what months had the greatest changes for both TMIN and TMAX. By looking at significant slopes in whatever direction, we might learn if warming is really the dominiant pattern. 
-
-Table~\ref{tab:TMINtrends} summarizes the monthly trends for TMAX.
-
-<<echo=FALSE, results='asis'>>=
-sumstats$Slope100 = sumstats$Slope*100
-TMIN.xtbl <- xtable(sumstats[sumstats$Param=="TMIN", c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMIN Trends")
-
-print(TMIN.xtbl, type="latex", comment=FALSE)
-#, caption="Montly TMIN Trends", label = "tab:TMINtrends")
-
-@
-
-Table~\ref{tab:TMAXtrends} summarizes the monthly trends for TMAX.
-
-<<echo=FALSE, results='asis'>>=
-sumstats$Slope100 = sumstats$Slope*100
-TMAX.xtbl <- xtable(sumstats[sumstats$Param=="TMAX", c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMAX Trends")
-
-print(TMAX.xtbl)
-
-#, type="latex", comment=FALSE, caption="TMAX Trends by Month", label = "tab:TMAXtrends")
-@
-
-PPT changes are tricky to capture and I'll have to keep working on this (Table~\ref{tab:PPTtrends}).
-
-<<echo=FALSE, results='asis'>>=
-PPT.xtbl <- xtable(sumstats[sumstats$Param=="PPT", c(1,7,4:6)], digits=c(0,0,4,2,4,3))
-
-print(PPT.xtbl, type="latex", label = "tab:PPTtrends")
-      
-#      caption="Precipitation Trends by Month")
-
-#
-
-#tmp <- tempfile()
-#options(xtable.comment=FALSE)  ## removes the nasty comments
-#capture.output(PPT.xtbl, file=tmp)
-#rmarkdown::render(tmp, output_format="pdf_document", output_file="deleteme.pdf")
-#unlink(tmp)
-#pdftools::pdf_convert("deleteme.pdf", format="png")
-@
-
-\subsubsection{Defining TMAXmonth and TMINmonth}
-
-<<>>=
-TMINSlopeMax = max(abs(sumstats$Slope)[sumstats$Param=="TMIN"])
-TMAXSlopeMax = max(abs(sumstats$Slope)[sumstats$Param=="TMAX"])
-
-TMINmonthMax = as.numeric(subset(sumstats, select=Month, subset=abs(Slope)==TMINSlopeMax))
-
-TMAXmonthMax = as.numeric(subset(sumstats, select=Month, subset=abs(Slope)==TMAXSlopeMax))
-
-@
-The greatest changes for Station \Sexpr{GSOM_Longest$id}
 
 \section{Communicating Long-term Weather Records}
 
@@ -460,7 +119,7 @@ The greatest changes for Station \Sexpr{GSOM_Longest$id}
 
 Communicating climate change based on station records is tricky. The long-term record would on the surface to be the most robust, but several issues arise with a naive analytical approach -- my favorite!
 
-<<trend1975>>=
+<<trend1975, eval=F>>=
 
 GSOM_1975.png = paste0(fips$State2, "_", stid, "_GSOM_1975.png")
 
@@ -502,115 +161,10 @@ The noise in the data may suggests that no trend is present (Figure~\ref{fig:GSO
 \end{figure}
 
 
-\subsection{Filtering Seasonal Effect}
 
-There are several ways to filter out seasonal effects. The easiest way is subtract the mean value for each date, but that's tricky because every four years there is an extra day in Februrary -- although there are ways to deal with this, a more straight forward way is to use mean monthly values to capture the seasonality for each month. With 12 months, this is a pretty good approach because there is pretty good resolution. 
+\section{Extreme Events--Using Daily Records}
 
-\subsubsection{Method 1: Filtering by Monthly Mean} 
-
-<<GSOM_Anomaly>>=
-TMAX.Monthly.means = aggregate(TMAX~Month, data=GSOM, mean)
-names(TMAX.Monthly.means)=c("Month", "TMAXmean")
-GSOM2 = merge(GSOM, TMAX.Monthly.means, by="Month")
-GSOM2$TMAX.anom = GSOM2$TMAX - GSOM2$TMAXmean
-
-TMIN.Monthly.means = aggregate(TMIN~Month, GSOM, mean)
-names(TMIN.Monthly.means)=c("Month", "TMINmean")
-GSOM2 = merge(GSOM2, TMIN.Monthly.means, by="Month")
-GSOM2$TMIN.anom = GSOM2$TMIN - GSOM2$TMINmean
-
-PPT.Monthly.means = aggregate(PPT~Month, GSOM, mean)
-names(PPT.Monthly.means)=c("Month", "PPTmean")
-GSOM2 = merge(GSOM2, PPT.Monthly.means, by="Month")
-GSOM2$PPT.anom = GSOM2$PPT - GSOM2$PPTmean
-
-# Sort by date
-GSOM2 <- GSOM2[order(GSOM2$Date),]
-@
-
-<<>>=
-GSOM_anomaly_1975.png = paste0(fips$State2, "_", stid, "_GSOM_anomaly_1975.png")
-
-png(paste0(png_private, GSOM_anomaly_1975.png), 
-    width = 480, height = 320, units = "px",
-    pointsize = 12, bg = "white")
-par(las=1, mfrow=c(1,1))
-
-GSOM.lm = lm(TMAX.anom~Date, GSOM2)
-
-plot(TMAX.anom~Date, GSOM2, pch=20, cex=.5, 
-     col="grey", ylab="Max. Temp (anomaly) °F",
-     main=paste0("Seasonally Filtered -- ", fips$State, " (", stid, ") ",
-         report_prob3(GSOM.lm)[3]))
-
-pred_dates <-data.frame(Date = GSOM2$Date); 
-nrow(pred_dates); #pred_dates
-#Predits the values with confidence interval 
-ci <- predict(GSOM.lm, newdata = pred_dates, 
-              interval = 'confidence')
-lines(pred_dates$Date, as.numeric(ci[,1]), col="gray50")
-
-ymax=max(GSOM2$TMAX.anom) - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.3
-ymax2 <- ymax - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.1
-
-location_index = round(length(GSOM2[GSOM2$Year>1975,]$Date) * 0.99,3)
-text(pred_dates$Date[location_index], ymax, 
-     paste(report_prob3(GSOM.lm))[1], pos=2, cex=.9)
-text(pred_dates$Date[location_index], ymax2, 
-     paste(report_prob3(GSOM.lm))[2], pos=2, cex=.9)
-
-# Post 1975
-GSOM.lm = lm(TMAX.anom~Date, GSOM2[GSOM2$Year>1975,])
-pred_dates <-data.frame(Date = GSOM2$Date[GSOM2$Year>1975]); 
-nrow(pred_dates); #pred_dates
-#Predits the values with confidence interval 
-ci <- predict(GSOM.lm, newdata = pred_dates, 
-              interval = 'confidence')
-lines(pred_dates$Date, as.numeric(ci[,1]), col="red")
-lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
-lines(pred_dates$Date, ci[,3], col="darkorange")
-
-ymax=max(GSOM2$TMAX.anom) - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.7
-ymax2 <- ymax - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.1
-
-location_index = round(length(GSOM2[GSOM2$Year>1975,]$Date) * 0.99,0)
-text(pred_dates$Date[location_index], ymax, 
-     paste(report_prob3(GSOM.lm))[1], pos=2, cex=.9, col="red")
-text(pred_dates$Date[location_index], ymax2, 
-     paste(report_prob3(GSOM.lm))[2], pos=2, cex=.9, col="red")
-dev.off()
-@
-
-And to see what we created, see Figure~\ref{fig:GSOM-anomaly}.
-
-\begin{figure}
-\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, GSOM_anomaly_1975.png)}}
-\caption{The changing in monthly temperature data.}
-\label{fig:GSOM-anomaly}
-\end{figure}
-
-\subsubsection{Method 2: Polynomial Filter}
-
-Project to be followed up with.
-
-<<polynomial, eval=FALSE, echo=TRUE>>=
-# fit polynomial: x^2*b1 + x*b2 + ... + bn
-
-# create time series object
-#X = [i%365 for i in range(0, len(series))]
-# y = series.values
-
-# degree = 4
-#coef = polyfit(X, y, degree)
-# print('Coefficients: %s' % coef)
-# create curve
-
-@
-
-
-\subsection{Extreme Events--Using Daily Records}
-
-\subsubsection{Complicated Nature of Rainfall Patterns}
+\subsection{Complicated Nature of Rainfall Patterns}
 
 Rainfall trends are tough. Exteme events can occur in 24 hours or over long periods that might result in floods or droughts. Each region might have different patterns, so developing a consistent approach is tough.
 
@@ -625,7 +179,7 @@ PRCP.Season.Total = aggregate(PRCP~Season+Year, data=CHCND, sum, na.rm=T)
 
 Rainfall totals by season might be a useful way to think about changes, because the rainfall is often seasonal, I wonder if we can see pattners by season. 
 
-<<warning=FALSE>>=
+<<warning=FALSE, eval=F>>=
 ggplot( ) +
    geom_bar(data = PRCP.Season.Total, 
       aes(x=Year, y=PRCP, fill=Season), stat="identity") + 
@@ -638,11 +192,11 @@ ggplot( ) +
 # + geom_smooth(data= PRCP.Season.Total, aes(x=Year, y = PRCP, color = Season, group=Season), se=F)
 @
 
-\subsubsection{Drought}
+\subsection{Drought}
 
 Days without rain...within a calendar year... bleed over between years isn't captured.. This is screwed up, Drought.run needs work.
 
-<<>>=
+<<echo=FALSE, eval=FALSE>>=
 CHCND$PRCP.count = sequence(rle(CHCND$PRCP)$lengths)
 Drought.run.temp <- data.frame(Year = NA, lengths=NA, values=NA)
 for(i in min(CHCND$Year):max(CHCND$Year)){
@@ -697,7 +251,7 @@ text(min(Drought.run$Year, na.rm=T), max(Drought.run$lengths, na.rm=T),
 
 @
 
-Rainfall Probability Distributions by decade... to be developed.
+\subsection{Rainfall Probability Distributions by decade... to be developed.}
 
 <<eval=FALSE>>=
 CHCND$Decade <- floor_decade(CHCND$Year)
@@ -713,7 +267,7 @@ points(xnew,df(xnew),col=2)
 
 @
 
-<<>>=
+<<eval=FALSE>>=
 CHCND$Score <- floor_score(CHCND$Year)
 @
 
@@ -721,7 +275,7 @@ CHCND$Score <- floor_score(CHCND$Year)
 
 In many cases, people seem to "feel" how temperature has been changing over time, and new records seem to capture the attention in the media. So, we'll create a updated record of maximum temperatures and display them. 
 
-<<extremetempplot, echo=FALSE, results='hide', eval=TRUE>>=
+<<extremetempplot, echo=FALSE, results='hide', eval=FALSE>>=
 CHCND_Mean = mean(CHCND$TMAX, na.rm=T)
 CHCND$maxTMAX <- CHCND$minTMIN <- NA
 
@@ -803,7 +357,7 @@ ggplot( ) +
 I tried to use a for loop and in then statements and it was painfully slow, so I converted the data to a matrix that can be used by barplots with much more effeciency!
 
 Create the matrix
-<<CHCNDmatrix>>=
+<<CHCNDmatrix, eval=FALSE>>=
 library(lubridate)
 str(CHCND)
 
@@ -852,7 +406,7 @@ max(CHCND$yday[CHCND$Year==max(CHCND$Year)])
 @
 
 
-<<recordtemploop>>=
+<<recordtemploop, eval=FALSE>>=
 records.png = paste0(fips$State2, "_", stid, "_CHCND_Temp_Records.png")
 
 png(paste0(png_private, records.png), width = 480, height = 280, units = "px", pointsize = 12, bg = "white")
@@ -946,7 +500,7 @@ with(sumstats[sumstats$Param=="TMAX",], text(Month, symbol.y, Symbol, col="red",
 
 To test the code, I have created graphics that can then be used in the animation process, i.e. try to create code that doesn't get too complicated and then fail! 
 
-<<static_template, eval=TRUE, echo=FALSE>>=
+<<static_template, eval=FALSE, echo=FALSE>>=
 panel4.png = paste0(fips$State2, "_", stid, "_4panel.png")
               
 png(paste0(png_private, panel4.png), width = 480, height = 480, units = "px", pointsize = 12, bg = "white")
