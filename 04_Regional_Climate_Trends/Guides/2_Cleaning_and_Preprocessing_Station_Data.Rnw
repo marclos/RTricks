@@ -12,7 +12,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.65)} 
+\date{\today~(ver. 0.86)} 
 
 \begin{document}
 \maketitle
@@ -25,7 +25,13 @@ The goal of this guide is to provide a step-by-step process for cleaning and pre
 
 \subsection{Background}
 
-What is GHCN-Daily?Links to an external site.
+\subsubsection{What is GHCN-Daily?}
+
+The new dataset is referred to as GHCN-Daily, version 3. The new dataset has a number of improvements over the older dataset, including a more comprehensive and robust quality assurance process. The new dataset also includes more station records and is updated more frequently than the older dataset. 
+
+The new dataset is also available in a more user-friendly format, including a set of pre-packaged data files that are available for download from the NCEI website. However, devoloping instructions to interact with their website is way to time consuming! So, we'll use the R file transfer protocol, via https, to download the data. 
+
+In 2011, there was a major update to the daily updates to the GHCN dataset: \ref{https://www.ncei.noaa.gov/pub/data/ghcn/daily/COOPDaily_announcement_042011.pdf}{IMMEDIATE -- Changes to COOP Daily Form Access}. It's a useful history.
 
 
 \subsection{Approach}
@@ -83,7 +89,7 @@ ReadStations2.fun(datafolder)
 
 You can do this by running the following code:
 
-<<list, echo=TRUE>>=
+<<listfunction, echo=TRUE>>=
 ls()
 @
 
@@ -220,7 +226,7 @@ print(MonthlyAnomalies.fun)
 Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
-USC00042294.anomolies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
+USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
 @
 
 \end{description}
@@ -232,18 +238,18 @@ Getting into the data is a bit tricky. The datasets is a list of dataframes. Eac
 The get access to each you use the following code:
 
 \begin{itemize}
-  \item \verb|USC00042294.anomolies[[1]]| for TMAX
-  \item \verb|USC00042294.anomolies[[2]]| for TMIN
-  \item \verb|USC00042294.anomolies[[3]]| for PRCP
+  \item \verb|USC00042294.anomalies[[1]]| for TMAX
+  \item \verb|USC00042294.anomalies[[2]]| for TMIN
+  \item \verb|USC00042294.anomalies[[3]]| for PRCP
 \end{itemize}
 
 \begin{figure}
 <<echo=FALSE>>=
 # plot the data
 par(mfrow=c(3,1), mar=c(4,5,3,2))
-plot(TMAX.a ~ Ymd, data=USC00042294.anomolies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Maximum Temperature Change")
-plot(TMIN.a ~ Ymd, data=USC00042294.anomolies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Minimum Temperature Change")
-plot(PRCP.a ~ Ymd, data=USC00042294.anomolies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anomaly (C)", main="Monthly Precipiation Change")
+plot(TMAX.a ~ Ymd, data=USC00042294.anomalies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Maximum Temperature Change")
+plot(TMIN.a ~ Ymd, data=USC00042294.anomalies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anomaly (C)", main="Monthly Minimum Temperature Change")
+plot(PRCP.a ~ Ymd, data=USC00042294.anomalies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anomaly (C)", main="Monthly Precipiation Change")
 @
 \end{figure}
 
@@ -251,12 +257,13 @@ plot(PRCP.a ~ Ymd, data=USC00042294.anomolies[[3]], type="p", col="green", pch=1
 
 I tend to avoid having lots of objects in my R environment. I like to clean up after myself. 
 
-Also, I like to move the final products into csv files. Here's the function to do that: coming soon
+Also, I like to move the final products into csv files. Here's the function to do that: 
 
-<<cleanup, echo=FALSE, eval=FALSE>>=
-CleanUp.fun(datafolder, station1)
+<<cleanup, echo=TRUE, eval=FALSE>>=
+CleanUp.fun(datafolder, USC00042294.anomalies, "USC00042294")
 @
 
+It's clunky, but not that imporant at this point, so I'll work on it later.
 
 \clearpage
 
@@ -381,44 +388,15 @@ abline(coef(temp.lm), col = "red")
 
 \subsection{Missing Data}
 
-<<eval=FALSE>>=
-# determine percent missing in station1
-station1.TMAX.coverage = sum(!is.na(station1$VALUE[station1$ELEMENT=="TMAX"]))/length(station1$VALUE[station1$ELEMENT=="TMAX"])*100
-
-# function to determine percent missing
-coverage.fun <- function(station, element){
-  Dates.all = data.frame(Ymd=seq.Date(from=min(station$Ymd), to=max(station$Ymd), by="day"))
-  station.full = merge(Dates.all, station, all = TRUE)
-  station.coverage = sum(!is.na(station.full$VALUE[station.full$ELEMENT==element]))/
-    length(station.full$VALUE[station.full$ELEMENT==element])*100
-  return(round(station.coverage,2))
-}
-
-coverage.data(station1, "TMAX")
-coverage.data(station2, "TMAX")
-
-Date.full = data.frame(Ymd=seq.Date(from=min(station1$Ymd), to=max(station1$Ymd), by="day"))
-str(Date.full)
-
-station1.full = merge(Date.full, station1, all = TRUE)
-coverage.fun(station1, "TMAX")
-coverage.fun(station2, "TMAX")
+TBD...
 
 
-@
 \section{Next Steps}
 
 This is all we need to do so far. Next week, we'll look at different way to visualize the data! 
 
 I'll save all the station data into csv files, then use them in the next guide to clean, process, and visualize data.
 
-<<eval=FALSE>>=
-write.csv(station1, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station1.csv")), row.names = FALSE)
-write.csv(station2, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station2.csv")), row.names = FALSE)
-write.csv(station3, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station3.csv")), row.names = FALSE)
-write.csv(station4, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station4.csv")), row.names = FALSE)
-write.csv(station5, file = paste0(here::here("04_Regional_Climate_Trends", "Data", "SP24", "station5.csv")), row.names = FALSE)
-@
 
 
 

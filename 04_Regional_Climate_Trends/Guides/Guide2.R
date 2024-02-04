@@ -77,7 +77,7 @@ QAQC.fun <- function(station){
   return(station)
 }
 # Create Monthly Averages/Sums
-MonthlyValues.fun <- function(x=station1){
+MonthlyValues.fun <- function(x){
   x.TMAX.monthly = aggregate(VALUE ~ MONTH + YEAR, 
         data = subset(x, ELEMENT == "TMAX"), mean)
   names(x.TMAX.monthly) <- c("MONTH", "YEAR", "TMAX")
@@ -91,7 +91,7 @@ MonthlyValues.fun <- function(x=station1){
 }
 
 # Function to Create Monthly Normals
-MonthlyNormals.fun <- function(x=station1b){
+MonthlyNormals.fun <- function(x){
   x.normals = subset(x, 
     Ymd >= "1961-01-01" & Ymd <= "1990-12-31")  
   x.TMAX.normals.monthly = aggregate(VALUE ~ MONTH, 
@@ -129,55 +129,20 @@ for(i in seq_along(station.monthly)){
   PRCP <- merge(station.monthly[[3]], station.normals[[3]], by = "MONTH")
   PRCP$PRCP.a = PRCP$PRCP - PRCP$NORMALS 
   PRCP$Ymd = as.Date(paste(PRCP$YEAR, PRCP$MONTH, "01", sep = "-"))
-  return(list(TMAX, TMIN, PRCP))  
+  return(list(TMAX = TMAX, TMIN = TMIN, PRCP = PRCP))  
   }
 }
 
-# Testing function!
-# MonthlyAnomalies.fun(station1.monthly, station1.normals)
-
-#-----------------------------------------------------------------------------
-## OLD STUFF
-# Function to Create Monthly Anomalies
-
-# MonthlyAnomalies.fun <- function(station){
-#  x.anomaly = merge(x.TMAX.monthly, x.TMAX.normals.monthly, by = "MONTH")
-#  x.anomaly$TMAX.anomaly = x.TMAX.anomaly$TMAX - x.TMAX.anomaly$NORMALS
-#  x.anomaly <- merge(TEMP, x.PRCP.anomaly, by = c("MONTH", "YEAR"))[,c(1:3, 5:6, 8:9, 11)]
-#  return(x.anomaly)
-# }
-
-
-# Function to Create Monthly Anomalies
-# MonthlyAnomalies.fun <- function(station){
-#  x.TMAX.anomaly = merge(x.TMAX.monthly, x.TMAX.normals.monthly, by = "MONTH")
-#  x.TMAX.anomaly$TMAX.anomaly = x.TMAX.anomaly$TMAX - x.TMAX.anomaly$NORMALS
-#  x.TMIN.anomaly = merge(x.TMIN.monthly, x.TMIN.normals.monthly, by = "MONTH")
-#  x.TMIN.anomaly$TMIN.anomaly = x.TMIN.anomaly$TMIN - x.TMIN.anomaly$NORMALS
-##  x.PRCP.anomaly = merge(x.PRCP.monthly, x.PRCP.normals.monthly, by = "MONTH")
-#  x.PRCP.anomaly$PRCP.anomaly = x.PRCP.anomaly$PRCP - x.PRCP.anomaly$NORMALS
-#  TEMP <- merge(x.TMAX.anomaly, x.TMIN.anomaly, by = c("MONTH", "YEAR") )
-#  x.anomaly <- merge(TEMP, x.PRCP.anomaly, by = c("MONTH", "YEAR"))[,c(1:3, 5:6, 8:9, 11)]
-#  return(x.anomaly)
-#}
-
+#-----------------------------------------------------------------------------=
 # Function to Up R Environment
 ## Write Anomaly Data to CSV
 ## Remove functions from Guide 1 and 2 from environment
 ## Remove station data, except anomaly data from environment
-
-CleanUp.fun <- function(datafolder, station){
-  write.csv(station[[1]], file = paste0(datafolder, substitute(station), "-TMAX.csv"), 
-            row.names = FALSE)
-  write.csv(station[[2]], file = paste0(datafolder, substitute(station), "-TMIN.csv"), 
-            row.names = FALSE)
-  write.csv(station[[3]], file = paste0(datafolder, substitute(station), "-PRCP.csv"), 
-            row.names = FALSE)
- # print(ls(pattern=substitute(get(station))))
- # rm(list=ls(pattern=substitute(station)))
- # rm(station, substitute(station, "a"))
-rm(list = ls()[!ls() %in% c("fixdates.fun", "coverage.fun", "MonthlyValues.fun", "MonthlyNormals.fun")])
+CleanUp.fun <- function(datapath, stationdf, stationID){
+  lapply(1:length(stationdf), function(i) write.csv(stationdf[[i]], 
+      file = paste0(datapath, stationID, "-", names(stationdf[i]), ".csv"),
+            row.names = FALSE))
+      station.obj = ls(pattern=stationID, envir = parent.frame())
+      rm(list = station.obj, envir = parent.frame())
 }
-
-#CleanUp.fun(datapath, station1)
 
