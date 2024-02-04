@@ -2,13 +2,25 @@
 
 # Function to Determine Trends for Each Month
 
-# Load the data
+# Read Data into List of Dataframes
+# This method of using data required when I Rstudio to knit code
+# which creates its own environment and the objects created in the 
+# console are not available to the knitted code. Just learned 
+# this from the discussion board after years of some minor 
+# frustration.
+
+load(file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
+
+read_and_load_data.fun <- function(x){
+  print("This function might not be needed, waiting to see how the class does")
+}
+
 
 #load("C:/Users/Owner/Documents/Georgetown/Analytics/Analytics Programming/Week 3/USC00042294.RData")
 
 # Look at the data
 
-
+@------------------------------------------------------------------------------
 # Function to analyze each month's trend
 monthlyTrend.fun <- function(station) {
   # Disaggregate the data
@@ -64,13 +76,54 @@ monthlyTrend.fun <- function(station) {
 # test function
 # USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
 
+# Testing the trend since 1975, where evidence suggest global
+# warming has been more pronounced or even accerating
 
+USC00042294.1975 <- lapply(USC00042294.anomalies, function(x) subset(x, YEAR >= 1975))
+
+# test function
+USC00042294.trends <- monthlyTrend.fun(USC00042294.1975)
 
 
 # Plot the results
 
-TMAX.lm <- lm(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1))
-coef(TMAX.lm)
-summary(TMAX.lm)
-plot(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1), pch=19, col="gray", cex=.5)
-abline(TMAX.lm, col="red")
+#TMAX.lm <- lm(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1))
+#coef(TMAX.lm)
+#summary(TMAX.lm)
+#plot(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1), pch=19, col="gray", cex=.5)
+#abline(TMAX.lm, col="red")
+
+
+#-------------------------------------------------------------------------------
+#Loopwithfunction, eval=FALSE, echo=TRUE>>=
+
+MonthEvalStats.fun <- function(GSOM) {
+  sumstats = NA
+  for (m in 1:12){
+    TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
+    TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
+    PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
+    
+    sumstats = rbind(sumstats, 
+                     data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
+                                r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
+                     data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
+                                r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
+                     data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
+                                r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
+    
+  } #end loop
+  
+  sumstats=data.frame(sumstats)[-1,]
+  rownames(sumstats)<-NULL
+  head(sumstats)
+  
+  sumstats$Symbol = ""
+  sumstats$Symbol[sumstats$p_value < 0.05] = "*"
+  sumstats$Symbol[sumstats$p_value < 0.01] = "**"
+  sumstats$Symbol[sumstats$p_value < 0.001] = "***"
+  return(sumstats)
+}
+
+# test function
+# sumstats = MonthEvalStats(GSOM[500:4000,])

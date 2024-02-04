@@ -146,3 +146,5 @@ CleanUp.fun <- function(datapath, stationdf, stationID){
       rm(list = station.obj, envir = parent.frame())
 }
 
+
+save(USC00042294.anomalies, file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
