@@ -20,7 +20,7 @@ read_and_load_data.fun <- function(x){
 
 # Look at the data
 
-@------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # Function to analyze each month's trend
 monthlyTrend.fun <- function(station) {
   # Disaggregate the data
@@ -127,3 +127,76 @@ MonthEvalStats.fun <- function(GSOM) {
 
 # test function
 # sumstats = MonthEvalStats(GSOM[500:4000,])
+
+
+#-------------------------------------------------------------------------------
+# Functions for Evaluating drought
+
+# Function to calculate the SPI
+spi.fun <- function(x, scale=3, fit="pearson3") {
+  # Calculate the SPI
+  spi = droughtTools::spi(x, scale=scale, fit=fit)
+  return(spi)
+}
+
+# Function to Count the number of consecutive days of drought
+droughtCount.fun <- function(station=USC00040693, threshold=0.1) {
+  drought.df <- subset(station, ELEMENT=="PRCP")
+  x <- drought.df$VALUE
+  length(x)
+  # Count the number of days of drought
+  drought = x < threshold; str(drought)
+  drought = rle(drought); str(drought)
+  
+  rle.values <- as.data.frame(do.call(cbind, drought)); str(rle.values)
+  drought.df$Drought = as.logical(rep(rle.values$values, 
+                times = rle.values$lengths)); head(drought.df)
+  # change this to populate the end of the drough period MLH 2/4/2024
+  drought.df$Length = rep(rle.values$lengths, rle.values$lengths); head(drought.df)
+  if("Ymd" %in% names(drought.df) == FALSE){
+    drought.df$Ymd = as.Date(as.character(drought.df$DATE), format = "%Y%m%d")
+    drought.df$MONTH = as.numeric(format(drought.df$Ymd, "%m"))
+    drought.df$YEAR = as.numeric(format(drought.df$Ymd, "%Y"))
+  }
+  drought.df$WY = ifelse(drought.df$MONTH < 10, drought.df$YEAR, drought.df$YEAR+1)
+  #Drought = subset(station, Drought==TRUE); str(Drought)
+  #values = run.length$values  
+  
+  str(drought.df)
+
+  aggregate(drought.df$Drought, by=list(YEAR = drought.df$YEAR, MONTH = drought.df$MONTH), FUN=sum)
+  DroughtperYear = aggregate(drought.df$Drought, by=list(WY = drought.df$WY), FUN=sum)
+  RecordperYear = aggregate(drought.df$DATE, by=list(WY = drought.df$WY), FUN=length)
+
+  drought = merge(RecordperYear, DroughtperYear, by="WY"); head(drought)
+  drought$DroughtPerYear = round(drought$x.y/drought$x.x *100); head(drought)
+  
+  
+  return(drought)
+}
+
+# Test Function
+# USC00040693.drought <- droughtCount.fun(USC00040693, threshold=0.1)
+
+# Scratch Pad
+# str(USC00040693)
+# USC00040693.PRCP <- subset(USC00040693, ELEMENT=="PRCP", select=VALUE)[1]$VALUE
+# str(USC00040693.PRCP)
+# str(USC00040693.drought)
+
+# par(mfrow=c(1,1), las=1)
+# plot(DroughtPerYear ~ WY, data=USC00040693.drought, col="gray", 
+#     main="Percentage of Rainless Days", xlab="Water Year", ylab="Percent Days w/o Rain", pch=19, cex=.4)
+# abline(h=mean(USC00040693.drought$DroughtPerYear), col="red", lty=2)
+# abline(coef(lm(USC00040693.drought$DroughtPerYear ~ USC00040693.drought$WY)), col="blue", lty=2)
+            
+
+
+
+# What is a drought 10 days, 20 days, 40 days?
+
+#Drought.run.10 = aggregate(lengths~Year, data=Drought.run[Drought.run$lengths>=10,], sum)
+#Drought.run.20 = aggregate(lengths~Year, data=Drought.run[Drought.run$lengths>=20,], sum)
+# Drought.run.40 = aggregate(lengths~Year, data=Drought.run[Drought.run$lengths>=40,], sum)
+
+# if(Drought.run$lengths>100) {Drought.run.100 = aggregate(lengths~Year, data=Drought.run[Drought.run$lengths>=100,], sum)}
