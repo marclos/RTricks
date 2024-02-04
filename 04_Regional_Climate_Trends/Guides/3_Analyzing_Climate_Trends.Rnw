@@ -13,7 +13,7 @@
 
 \title{Analyzing Climate Trends}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.27)} 
+\date{\today~(ver. 0.29)} 
 
 \begin{document}
 \maketitle
@@ -26,11 +26,25 @@ We will use basic linear regression models, i.e. the lm() function to determine 
 
 \subsection{Weather vs. Climate}
 
+The difference between weather and climate is a measure of time. Weather is what conditions of the atmosphere are over a short period of time, and climate is how the atmosphere "behaves" over relatively long periods of time.
 
+In general, understanding the climate is a question of averages and ranges, of statistical likelihoods, and of repeated or predictable patterns. Weather, on the other hand, is what we experience on a day-to-day basis, and it mihght vary wildly from minute to minute, hour to hour, day to day, and season to season.
 
-\section{Function to Analyze Monthly Trends}
+\subsection{Approach}
+
+We need to address several things that might get in the way of our analysis: 
+
+\begin{enumerate}
+  \item Determine if there are trends by months
+  \item Determine if there if trends are more common in recent years
+  \item Evaluate distirbution changes by decade / score
+  \item Evaluate extreme events
+\end{enumerate}
+
+\section{Functions to Analyze Monthly Trends}
 
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
+datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 library(xtable)
 library(here)
 source(here("04_Regional_Climate_Trends", "Guides", "Guide3.R"))
@@ -38,24 +52,31 @@ source(here("04_Regional_Climate_Trends", "Guides", "Guide3.R"))
 
 \subsection{Before Starting the Process}
 
-Before you begin, make sure you have the stations to read into R. Got to the ``Files" tab in RStudio and make sure you see the station csv files in your data folder. If not, please Slack Marc and mentors, so we can troubleshoot the issue!
-
-\subsection{Before Starting the Process}
-
-Before you begin, make sure you have the stations to read into R. Got to the ``Files" tab in RStudio and make sure you see the station csv files in your data folder. If not, please Slack Marc and mentors, so we can troubleshoot the issue!
+Before you begin, make sure you have the stations to read into R. Loot at the R eneivornment to see that the stations have been loaded in to R. If not, please Slack Marc and mentors, so we help you get these files into the R environment, which might mean running the previous guide again. 
 
 \subsection{R Code with Custom Functions}
 
 Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide3.R}{Guide3.R} code and the functions will be loaded into your environment automatically.
 
+As we get futhrer into the project, these code chunks may require tweaking because of the questions you are interested in your location. Marc and the mentors will help you with this.
+
 \subsection{Function Descriptions and Use}
 
 The following functions are used to read the weather stations data into R, clean and pre-process data so we can analyze the data with the next guide.
 
-\subsection{Reading csv and Checking dataframe objects}
+\subsection{Reading csv and loading R.data}
 
+\begin{description}
 
-\subsection{Functions to Evaluate Trends}
+  \item[Read and Load Data] This function will read the csv files and load the data into R. The function will also return a list of dataframes.
+  
+<<read_and_load_data.fun, echo=FALSE>>=
+print(read_and_load_data.fun)
+@
+
+end{description}
+
+\subsection{Function to Evaluate Trends by Month}
 
 \begin{description}
 
@@ -65,295 +86,36 @@ The following functions are used to read the weather stations data into R, clean
 print(monthlyTrend.fun)
 @
 
-Example of how to use the function:
+\item[Example of how to use the function]
 
 <<echo=TRUE, results='hide'>>=
 USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
 @
 
-Explore Results
+\item[Explore Results] bwzr
 
-<<echo=FALSE, results='markup'>>=
-xtable(USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",])
-@
+Table %~\ref{tab:TMAXtrends} 
+summarizes the monthly trends for TMAX. Admittedly, determining the months with the biggest changes isn't a very good approach for hypothesize testing -- it's more like a fishing expedition, but as long as we understand the difference between an a priori hypothesis and an exploratory analysis, we should be okay if we make appropriate conclusions. 
 
 \end{description}
 
-<<Monthly_summarystats, eval=FALSE, echo=FALSE>>=
-# find most important month
-
-# separate 
-names(USC00042294.anomalies)
-
-str(USC00042294.anomalies)
-
-
-USC00042294TMAX = USC00042294.anomalies$TMAX
-names(USC00042294TMAX)
-str(USC00042294TMAX)
-
-
-TMAX.lm <- lm(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1))
-coef(TMAX.lm)
-summary(TMAX.lm)
-plot(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1), pch=19, col="gray", cex=.5)
-abline(TMAX.lm, col="red")
-
-
-
-test.lm <- lm(TMAXa ~ YEAR, Data = USC00042294TMAX$MONTH==1)
-
-a = 1:20
-x = rnorm(20)
-
-plot(x, a)
-
-lm(USC00042294TMAX$TMAXa ~ USC00042294TMAX$YEAR)
-
-
-USC00042294TMAX$TMAX.a <- USC00042294TMAX$TMAX.a
-# determine the lm for each month
-  
-
-test.lm <- lm(TMAX.a ~ YEAR, Data = USC00042294TMAX$MONTH==1)
-
-hist(USC00042294TMAX$TMAXa, main="TMAX.a", xlab="TMAX.a")
-hist(USC00042294TMAX$YEAR, main="TMAX.a", xlab="TMAX.a")
-
-
-aggregate(TMAX.a ~ YEAR, Data = USC00042294TMAX, by=list(Month=MONTH), FUN=mean)
-
-
-
-
-# Monthly Eval Stats function use lm()
-MonthEvalStats <- function(month, data) {
-  lm(TMAX.a~YEAR, data)
-}
-
-
-lapply(USC00042294.anomalies, function(x) MonthEvalStats(1, data=x))
-
-
-
-
-for (m in 1:12){
-  TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
-  TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
-   PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
-
- sumstats = rbind(sumstats, 
-   data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
-   r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
-   data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
-   r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
-   data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
-   r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
-
-} #end loop
-
-sumstats=data.frame(sumstats)[-1,]
-rownames(sumstats)<-NULL
-head(sumstats)
-
-head(sumstats)
-
-sumstats$Symbol = ""
-sumstats$Symbol[sumstats$p_value < 0.05] = "*"
-sumstats$Symbol[sumstats$p_value < 0.01] = "**"
-sumstats$Symbol[sumstats$p_value < 0.001] = "***"
-
-sumstats
-
-@
-Evaluate both TMAX and TMIN in GSOM by Year using MonthEvalStats() function. 
-
-<<EvaluationMonthlyTrends, eval=FALSE>>=
-MonthEvalStatsOLD <- function(GSOM) {
-sumstats = NA
-for (m in 1:12){
-  TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
-  TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
-   PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
-
- sumstats = rbind(sumstats, 
-   data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
-   r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
-   data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
-   r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
-   data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
-   r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
-
-}
-
-sumstats=data.frame(sumstats)[-1,]
-rownames(sumstats)<-NULL
-
-sumstats$Symbol = ""
-sumstats$Symbol[sumstats$p_value < 0.05] = "*"
-sumstats$Symbol[sumstats$p_value < 0.01] = "**"
-sumstats$Symbol[sumstats$p_value < 0.001] = "***"
-sumstats[,c(7,9)]
-return(sumstats)
-}
-
-MonthEvalStats <- function(GSOM) {
-sumstats = NA
-for (m in 1:12){
-  TMIN.lm = lm(TMIN~Date, GSOM[GSOM$Month==m,])
-  TMAX.lm = lm(TMAX~Date, GSOM[GSOM$Month==m,])
-   PPT.lm  = lm(PPT~Date, GSOM[GSOM$Month==m,])
-
- sumstats = rbind(sumstats, 
-   data.frame(Month = m, Param="TMIN", Slope = coef(TMIN.lm)[2], 
-   r2 = summary(TMIN.lm)$r.squared, p_value= anova(TMIN.lm)$'Pr(>F)'[1]),
-   data.frame(Month = m, Param="TMAX", Slope = coef(TMAX.lm)[2], 
-   r2 = summary(TMAX.lm)$r.squared, p_value= anova(TMAX.lm)$'Pr(>F)'[1]),
-   data.frame(Month= m, Param="PPT", Slope = coef(PPT.lm)[2], 
-   r2 = summary(PPT.lm)$r.squared, p_value= anova(PPT.lm)$'Pr(>F)'[1]))
-
-} #end loop
-
-sumstats=data.frame(sumstats)[-1,]
-rownames(sumstats)<-NULL
-head(sumstats)
-
-sumstats$Symbol = ""
-sumstats$Symbol[sumstats$p_value < 0.05] = "*"
-sumstats$Symbol[sumstats$p_value < 0.01] = "**"
-sumstats$Symbol[sumstats$p_value < 0.001] = "***"
-return(sumstats)
-}
-
-# test function
-sumstats = MonthEvalStats(GSOM[500:4000,])
-@
-
-
-\subsubsection{Trends in Tabular Formats}
-
-Admittedly, determining the months with the biggest changes isn't a very good approach for hypothesize testing -- it's more like a fishing expedition, but as long as we understand the difference between an a priori hypothesis and an exploratory analysis, we should be okay if we make appropriate conclusions. 
-
-<<EvaluatingMonthDelta, eval=FALSE>>=
-# Selecting Most Important Monthly Changes (TMAX overwrites)
-#sumstats = MonthEvalStats(GSOM)
-
-TMIN_Increase_month = with(sumstats[sumstats$Param=="TMIN",], 
-     Month[Slope==max(Slope, na.rm=T)])
-TMIN_Decrease_month = with(sumstats[sumstats$Param=="TMIN",], 
-     Month[Slope==min(Slope, na.rm=T)])
-TMAX_Increase_month = with(sumstats[sumstats$Param=="TMAX",], 
-     Month[Slope==max(Slope, na.rm=T)])
-TMAX_Decrease_month = with(sumstats[sumstats$Param=="TMAX",], 
-     Month[Slope==min(Slope, na.rm=T)])
-PPT_Increase_month = with(sumstats[sumstats$Param=="PPT",], 
-     Month[Slope==max(Slope, na.rm=T)])
-PPT_Decrease_month = with(sumstats[sumstats$Param=="PPT",], 
-     Month[Slope==min(Slope, na.rm=T)])
-@
-
-For this section, we'll look to see what months had the greatest changes for both TMIN and TMAX. By looking at significant slopes in whatever direction, we might learn if warming is really the dominiant pattern. 
-
-Table~\ref{tab:TMINtrends} summarizes the monthly trends for TMAX.
-
-<<echo=FALSE, results='asis', eval=FALSE>>=
-sumstats$Slope100 = sumstats$Slope*100
-TMIN.xtbl <- xtable(sumstats[sumstats$Param=="TMIN", c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMIN Trends")
-
-print(TMIN.xtbl, type="latex", comment=FALSE)
-#, caption="Montly TMIN Trends", label = "tab:TMINtrends")
-
-@
-
-Table~\ref{tab:TMAXtrends} summarizes the monthly trends for TMAX.
-
-<<echo=FALSE, results='asis', eval=FALSE>>=
-sumstats$Slope100 = sumstats$Slope*100
-TMAX.xtbl <- xtable(sumstats[sumstats$Param=="TMAX", c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMAX Trends")
-
-print(TMAX.xtbl)
+<<echo=FALSE, results='asis'>>=
+xtable(USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",],
+       caption="TMAX Trends")
+# print command?
+#c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMIN Trends"
+# print(TMAX.xtbl)
 
 #, type="latex", comment=FALSE, caption="TMAX Trends by Month", label = "tab:TMAXtrends")
 @
 
-PPT changes are tricky to capture and I'll have to keep working on this (Table~\ref{tab:PPTtrends}).
+\subsubsection{Example of Loop Code from Provious Interation}
 
-<<echo=FALSE, results='asis', eval=FALSE>>=
-PPT.xtbl <- xtable(sumstats[sumstats$Param=="PPT", c(1,7,4:6)], digits=c(0,0,4,2,4,3))
+Station data frames were called GSOM (Monthly data). See if you can interpret each of the steps. Evaluate both TMAX and TMIN in GSOM by Year using MonthEvalStats() function. 
 
-print(PPT.xtbl, type="latex", label = "tab:PPTtrends")
-      
-#      caption="Precipitation Trends by Month")
-
-#
-
-#tmp <- tempfile()
-#options(xtable.comment=FALSE)  ## removes the nasty comments
-#capture.output(PPT.xtbl, file=tmp)
-#rmarkdown::render(tmp, output_format="pdf_document", output_file="deleteme.pdf")
-#unlink(tmp)
-#pdftools::pdf_convert("deleteme.pdf", format="png")
+<<AlternativeLoopFunction, eval=TRUE, echo=FALSE>>=
+print(MonthEvalStats.fun
 @
-
-\subsubsection{Defining TMAXmonth and TMINmonth}
-
-<<eval=FALSE>>=
-TMINSlopeMax = max(abs(sumstats$Slope)[sumstats$Param=="TMIN"])
-TMAXSlopeMax = max(abs(sumstats$Slope)[sumstats$Param=="TMAX"])
-
-TMINmonthMax = as.numeric(subset(sumstats, select=Month, subset=abs(Slope)==TMINSlopeMax))
-
-TMAXmonthMax = as.numeric(subset(sumstats, select=Month, subset=abs(Slope)==TMAXSlopeMax))
-
-@
-%The greatest changes for Station \Sexpr{GSOM_Longest$id}
-
-\section{Communicating Long-term Weather Records}
-
-\subsection{Complete Records vs. Post 1975 Trends}
-
-Communicating climate change based on station records is tricky. The long-term record would on the surface to be the most robust, but several issues arise with a naive analytical approach -- my favorite!
-
-<<trend1975, eval=FALSE>>=
-
-GSOM_1975.png = paste0(fips$State2, "_", stid, "_GSOM_1975.png")
-
-png(paste0(png_private, GSOM_1975.png), width = 480, height = 320, units = "px", pointsize = 12, bg = "white")
-par(las=1, mfrow=c(1,1))
-plot(TMAX~Date, GSOM, pch=20, cex=.5, col="grey", ylab="°F", main=paste0(fips$State2, "-", stid))
-GSOM.lm = lm(TMAX~Date, GSOM)
-pred_dates <-data.frame(Date = GSOM$Date); 
-nrow(pred_dates);# pred_dates
-#Predits the values with confidence interval 
-ci <- predict(GSOM.lm, newdata = pred_dates, 
-              interval = 'confidence')
-lines(pred_dates$Date, as.numeric(ci[,1]), col="gray50")
-
-# Post 1975
-GSOM.lm = lm(TMAX~Date, GSOM[GSOM$Year>1975,])
-pred_dates <-data.frame(Date = GSOM$Date[GSOM$Year>1975]); 
-nrow(pred_dates); #pred_dates
-#Predits the values with confidence interval 
-ci <- predict(GSOM.lm, newdata = pred_dates, 
-              interval = 'confidence')
-lines(pred_dates$Date, as.numeric(ci[,1]), col="red")
-lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
-lines(pred_dates$Date, ci[,3], col="darkorange")
-location_index = round(length(GSOM[GSOM$Year>1975,]$Date) * 0.99,0)
-text(pred_dates$Date[location_index], ci[location_index,3], 
-     paste(report_prob3(GSOM.lm))[2], pos=2, cex=1.0, col="red")
-#abline(coef(lm(TMAX~Date, GSOM)), col="black")
-#abline(coef(lm(TMAX~Date, GSOM[GSOM$Year>1975,])), col="red")
-dev.off()
-@
-
-The noise in the data may suggests that no trend is present (Figure~\ref{fig:GSOM-1975trend}). It's tricky because the seasonal variation dominates the source of varition. In other words the intra-annual variation exceeds the inter-annual variation, making signal detection very difficult. Is there a way to "filter" out the seasonal effect? Yes, let's see how that works next. 
-
-\begin{figure}
-%includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, GSOM_1975.png)}}
-\caption{The climate trends from full record and post 1975 data. These data have a high level of variability due to seasonality effects that have not been filtered out.}
-\label{fig:GSOM-1975trend}
-\end{figure}
 
 
 \subsection{Filtering Seasonal Effect}
@@ -462,9 +224,9 @@ Project to be followed up with.
 @
 
 
-\subsection{Extreme Events--Using Daily Records}
+\section{Extreme Events--Using Daily Records}
 
-\subsubsection{Complicated Nature of Rainfall Patterns}
+\subsection{Complicated Nature of Rainfall Patterns}
 
 Rainfall trends are tough. Exteme events can occur in 24 hours or over long periods that might result in floods or droughts. Each region might have different patterns, so developing a consistent approach is tough.
 
@@ -492,7 +254,7 @@ ggplot( ) +
 # + geom_smooth(data= PRCP.Season.Total, aes(x=Year, y = PRCP, color = Season, group=Season), se=F)
 @
 
-\subsubsection{Drought}
+\subsection{Drought}
 
 Days without rain...within a calendar year... bleed over between years isn't captured.. This is screwed up, Drought.run needs work.
 
