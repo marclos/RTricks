@@ -269,104 +269,22 @@ It's clunky, but not that imporant at this point, so I'll work on it later.
 
 \section{Explaining the Code, TBD!}
 
+
+
+
 \subsection{QA/QC: Troubleshooting}
 
 I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
 
+\subsubsection{Coverage Problems ($<$95\%)}
 
-\subsection{Work Arounds}
+If you have too many stations that don't have enough data, we'll need to download additional stations. I can show you a way to decipher that ahead of time if you'd like to know. Otherwise, I suggest you double the number of stations selected in the code that generated my.inventory. 
 
-TBD!
+\subsection{Missing Data}
 
+Similar to the problem above, missing data can be a problem. The real issue that I can see is that rainfall is so central because we use the data to calculate monthly totals, but if the month is missing data, then we have a severe bias. Same issue in temperature, but because we are looking at averages, it's less likely to be a major source of bias. But we should should check!
 
-Function is probably sensitive to missing values, need to work on that!
-
-First, I tested each line on station1. I will then create a function to clean the data and apply it to each station.
-
-<<eval=FALSE>>=
-# station1$VALUE = station1$VALUE/10  # Correct Values Units
-# Fix Date format
-station1$Ymd = as.Date(as.character(station1$DATE), format = "%Y%m%d") 
-str(station1)
-
-station1$MONTH = as.numeric(format(station1$Ymd, "%m"))
-station1$YEAR = as.numeric(format(station1$Ymd, "%Y"))
-station1.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-                   data = subset(station1, ELEMENT == "TMAX"), mean)
-
-# create baseline (normals) dataset
-station1.normals = subset(station1, 
-                           Ymd >= "1961-01-01" & Ymd <= "1990-12-31") 
-station1.normals.monthly = aggregate(VALUE ~ MONTH, 
-                   data = subset(station1.normals, ELEMENT == "TMAX"), mean)
-names(station1.normals.monthly) <- c("MONTH", "NORMALS")
-
-station1.anomaly = merge(station1.monthly, 
-                         station1.normals.monthly, by = "MONTH")
-station1.anomaly$ANOMALY = 
-  station1.anomaly$VALUE - station1.anomaly$NORMALS
-
-@
-
-
-<<cleandataframe.fun, echo=TRUE, eval=FALSE>>=
-x=station1
-cleandataframe.fun <- function(x){
-  #x$VALUE = x$VALUE/10
-  x$Ymd = as.Date(as.character(x$DATE), format = "%Y%m%d")
-  x$MONTH = as.numeric(format(x$Ymd, "%m"))
-  x$YEAR = as.numeric(format(x$Ymd, "%Y"))
-
-  x.TMAX.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-            data = subset(x, ELEMENT == "TMAX"), mean)
-  names(x.TMAX.monthly) <- c("MONTH", "YEAR", "TMAX")
-  x.TMIN.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-            data = subset(x, ELEMENT == "TMIN"), mean)
-  names(x.TMIN.monthly) <- c("MONTH", "YEAR", "TMIN")
-  x.PRCP.monthly = aggregate(VALUE ~ MONTH + YEAR, 
-            data = subset(x, ELEMENT == "PRCP"), sum)
-  names(x.PRCP.monthly) <- c("MONTH", "YEAR", "PRCP")
-  
-  x.normals = subset(x, Ymd >= "1961-01-01" & Ymd <= "1990-12-31")  
-  x.TMAX.normals.monthly = aggregate(VALUE ~ MONTH, 
-            data = subset(x.normals, ELEMENT == "TMAX"), mean)
-  names(x.TMAX.normals.monthly) <- c("MONTH", "NORMALS")
-  x.TMIN.normals.monthly = aggregate(VALUE ~ MONTH, 
-            data = subset(x.normals, ELEMENT == "TMIN"), mean)
-  names(x.TMIN.normals.monthly) <- c("MONTH", "NORMALS")
-  x.PRCP.normals.monthly = aggregate(VALUE ~ MONTH, 
-            data = subset(x.normals, ELEMENT == "PRCP"), sum)
-  names(x.PRCP.normals.monthly) <- c("MONTH", "NORMALS")
-  
-  
-  x.TMAX.anomaly = merge(x.TMAX.monthly, x.TMAX.normals.monthly, by = "MONTH")
-  x.TMAX.anomaly$TMAX.anomaly = x.TMAX.anomaly$TMAX - x.TMAX.anomaly$NORMALS
-  
-  x.TMIN.anomaly = merge(x.TMIN.monthly, x.TMIN.normals.monthly, by = "MONTH")
-  x.TMIN.anomaly$TMIN.anomaly = x.TMIN.anomaly$TMIN - x.TMIN.anomaly$NORMALS
-  
-  x.PRCP.anomaly = merge(x.PRCP.monthly, x.PRCP.normals.monthly, by = "MONTH")
-  x.PRCP.anomaly$PRCP.anomaly = x.PRCP.anomaly$PRCP - x.PRCP.anomaly$NORMALS
-  
-  TEMP <- merge(x.TMAX.anomaly, x.TMIN.anomaly, by = c("MONTH", "YEAR") )
-  x.anomaly <- merge(TEMP, x.PRCP.anomaly, by = c("MONTH", "YEAR"))[,c(1:3, 5:6, 8:9, 11)]
-  library(lubridate)
-  #x.anomaly$Ym1 = as.Date(paste(x.anomaly$YEAR, x.anomaly$MONTH), format="%Y %m")
-  x.anomaly$Ym1 =  lubridate::myd(paste(x.anomaly$MONTH, x.anomaly$YEAR, "1"))
-  str(x.anomaly)
-  return(x.anomaly)
-}
-@
-
-\subsection{Apply Function to All Stations}
-
-So far, I have only run function for 1 station, but I suspect you can figure out how to run it for each one!
-
-<<eval=FALSE>>=
-station1.clean= cleandataframe.fun(station1)
-@
-
-\subsection{Plot Anomaly}
+\subsubsection{Plot Anomaly}
 
 Graphic has lots of issues. more next time!  But here's a start.
 
@@ -384,19 +302,30 @@ abline(coef(temp.lm), col = "red")
 
 @
 
-\section{QA/QC}
+We can see huge periods of time where no data was collecged. Yikes! I don't think I can use this station.
 
-\subsection{Missing Data}
+My custom functions are probably sensitive to missing values, need to work on that!
 
-TBD...
+\subsection{Work Arounds}
+
+TBD!
 
 
 \section{Next Steps}
 
+\subsection{Apply Function to All Stations}
+
+So far, I have only run function for 1 station, but I suspect you can figure out how to run it for each one!
+
 This is all we need to do so far. Next week, we'll look at different way to visualize the data! 
 
-I'll save all the station data into csv files, then use them in the next guide to clean, process, and visualize data.
+\subsection{Clean Up R Environment}
 
+I'll save all the station data into csv files, then use them in the next guide to clean, process, and visualize data. I don't think the function is all that useful, so I can show you better ways of doing thin is class.
+
+<<eval=FALSE>>=
+station1.clean=cleandataframe.fun(station1)
+@
 
 
 
