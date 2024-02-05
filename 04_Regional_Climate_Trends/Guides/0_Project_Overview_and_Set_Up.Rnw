@@ -5,7 +5,7 @@
 
 \title{Preparing Regional Weather Data Analysis Project}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.7)} % without \date command, current date is supplied
+\date{\today~(ver. 0.73)} % without \date command, current date is supplied
 
 \begin{document}
 \maketitle
@@ -129,11 +129,12 @@ Stations = read.fwf("https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-station
 str(Stations) # Missing State Name
 
 # Now we'll get the state names for the states.
+State_names = c("STATE", #         1-2    Character 2
+                "STATE_NAME") #         4-50    Character 46
 States = read.fwf("https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-states.txt", 
                   col.names=State_names, fill=2, 
                   widths=c(2, -1, 46))
-State_names = c("STATE", #         1-2    Character 2
-                "STATE_NAME") #         4-50    Character 46
+
 str(States)
 
 # Merge the two datasets
@@ -156,18 +157,21 @@ str(stations.active)
 nrow(stations.active)
 @
 
-\subsection{Select Upto 5 Stations for Each State}
+\subsection{Select Upto 15 Stations for Each State}
 
 To accomplish this, I need to do a loop to select the first 5 stations for each state.
 
 <<>>=
-# Loop to select 5 stations for each state
+# Loop to select 15 stations for each state
 #stations.active.oldest = subset(stations.active, subset=FIRSTYEAR==min(FIRSTYEAR))
-
+i=10
 for(i in 1:nrow(States)) {
   state.df = subset(stations.active, subset=STATE==States$STATE[i])
-  if(nrow(state.df) > 5) {
-    state.df = state.df[order(state.df$FIRSTYEAR),][1:5,]
+  if(nrow(state.df) >= 15) {
+    state.df = state.df[order(state.df$FIRSTYEAR),][1:15,]
+  }
+  if(nrow(state.df) < 15){
+    state.df = state.df[order(state.df$FIRSTYEAR),][1:nrow(state.df),]
   }
   if(i==1) {
     stations.active.oldest = state.df
@@ -181,7 +185,8 @@ for(i in 1:nrow(States)) {
 \section{Plot Results}
 
 <<>>=
-plot(stations.active.oldest$LONGITUDE, stations.active.oldest$LATITUDE, pch=20, cex=.4, xlab="Long", ylab="Lat", las=1)
+plot(stations.active.oldest$LONGITUDE, stations.active.oldest$LATITUDE, 
+     pch=20, cex=.4, xlab="Long", ylab="Lat", las=1)
 @
 
 \subsection{Next Steps}
@@ -189,7 +194,9 @@ plot(stations.active.oldest$LONGITUDE, stations.active.oldest$LATITUDE, pch=20, 
 In Guide \#1, we'll use the stations.active.oldest dataset to download the daily temperature and precipitation data for the ``oldest, active stations".
 <<>>=
 # export file to csv
-write.csv(stations.active.oldest, here("04_Regional_Climate_Trends", "stations.active.oldest.csv"))
+write.csv(stations.active.oldest, 
+    here("04_Regional_Climate_Trends", "Data", "SP24", 
+    "stations.active.oldest.csv"))
 @
 
 
