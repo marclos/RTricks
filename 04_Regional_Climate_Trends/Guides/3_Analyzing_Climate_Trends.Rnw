@@ -78,6 +78,8 @@ print(read_and_load_data.fun)
 
 \section{Analyzing Monthly Trends}
 
+\subsection{Linear Regression: TMAX, TMIN, and PRCP ~ YEAR, by=YEAR}
+
 In this section, we'll discuss how we might analyze the trends in the data by month. In other words, is there a trend in January, February, March, etc. Moreover, we might find the trends differ dramatically between months. 
 
 \begin{description}
@@ -109,9 +111,9 @@ xtable(USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",], caption = "TMAX 
 #, type="latex", comment=FALSE, caption="TMAX Trends by Month", label = "tab:TMAXtrends")
 @
 
-\subsubsection{Example of Loop Code from Provious Interation}
+\subsubsection{Deprecated Loop Code}
 
-In case your data downloaded as Montly data, here's the code I used two years ago before the rNOAA library started failing. 
+In case your data downloaded as Montly data, here's the code I created two years ago before the rNOAA library started failing and I had to spend all week redoing the code!
 
 Station data frames were called GSOM (Monthly data). See if you can interpret each of the steps. Evaluate both TMAX and TMIN in GSOM by Year using MonthEvalStats() function. 
 
@@ -122,7 +124,9 @@ print(MonthEvalStats.fun)
 
 \subsection{Filtering Seasonal Effect}
 
-There are several ways to filter out seasonal effects. The easiest way is subtract the mean value for each date, but that's tricky because every four years there is an extra day in Februrary -- although there are ways to deal with this, a more straight forward way is to use mean monthly values to capture the seasonality for each month. With 12 months, this is a pretty good approach because there is pretty good resolution. 
+Since we are looking at trends over years, it might be useful to filter out the seasonal effects.
+
+There are several ways to filter out seasonal effects. The easiest way is subtract the mean value for each date, but that's tricky because every four years there is an extra day in February -- although there are ways to deal with this, a more straight forward way is to use mean monthly values to capture the seasonality for each month. With 12 months, this is a pretty good approach because the pretty good resolution is pretty good when the station has complete records. 
 
 \subsubsection{Method 1: Filtering by Monthly Mean} 
 
@@ -148,67 +152,6 @@ GSOM2$PPT.anom = GSOM2$PPT - GSOM2$PPTmean
 GSOM2 <- GSOM2[order(GSOM2$Date),]
 @
 
-<<eval=FALSE, echo=FALSE>>=
-GSOM_anomaly_1975.png = paste0(fips$State2, "_", stid, "_GSOM_anomaly_1975.png")
-
-png(paste0(png_private, GSOM_anomaly_1975.png), 
-    width = 480, height = 320, units = "px",
-    pointsize = 12, bg = "white")
-par(las=1, mfrow=c(1,1))
-
-GSOM.lm = lm(TMAX.anom~Date, GSOM2)
-
-plot(TMAX.anom~Date, GSOM2, pch=20, cex=.5, 
-     col="grey", ylab="Max. Temp (anomaly) °F",
-     main=paste0("Seasonally Filtered -- ", fips$State, " (", stid, ") ",
-         report_prob3(GSOM.lm)[3]))
-
-pred_dates <-data.frame(Date = GSOM2$Date); 
-nrow(pred_dates); #pred_dates
-#Predits the values with confidence interval 
-ci <- predict(GSOM.lm, newdata = pred_dates, 
-              interval = 'confidence')
-lines(pred_dates$Date, as.numeric(ci[,1]), col="gray50")
-
-ymax=max(GSOM2$TMAX.anom) - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.3
-ymax2 <- ymax - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.1
-
-location_index = round(length(GSOM2[GSOM2$Year>1975,]$Date) * 0.99,3)
-text(pred_dates$Date[location_index], ymax, 
-     paste(report_prob3(GSOM.lm))[1], pos=2, cex=.9)
-text(pred_dates$Date[location_index], ymax2, 
-     paste(report_prob3(GSOM.lm))[2], pos=2, cex=.9)
-
-# Post 1975
-GSOM.lm = lm(TMAX.anom~Date, GSOM2[GSOM2$Year>1975,])
-pred_dates <-data.frame(Date = GSOM2$Date[GSOM2$Year>1975]); 
-nrow(pred_dates); #pred_dates
-#Predits the values with confidence interval 
-ci <- predict(GSOM.lm, newdata = pred_dates, 
-              interval = 'confidence')
-lines(pred_dates$Date, as.numeric(ci[,1]), col="red")
-lines(pred_dates$Date, as.numeric(ci[,2]), col="darkorange")
-lines(pred_dates$Date, ci[,3], col="darkorange")
-
-ymax=max(GSOM2$TMAX.anom) - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.7
-ymax2 <- ymax - (max(GSOM2$TMAX.anom)-min(GSOM2$TMAX.anom))*.1
-
-location_index = round(length(GSOM2[GSOM2$Year>1975,]$Date) * 0.99,0)
-text(pred_dates$Date[location_index], ymax, 
-     paste(report_prob3(GSOM.lm))[1], pos=2, cex=.9, col="red")
-text(pred_dates$Date[location_index], ymax2, 
-     paste(report_prob3(GSOM.lm))[2], pos=2, cex=.9, col="red")
-dev.off()
-@
-
-%And to see what we created, see Figure~\ref{fig:GSOM-anomaly}.
-
-%\begin{figure}
-%\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, GSOM_anomaly_1975.png)}}
-%\caption{The changing in monthly temperature data.}
-%\label{fig:GSOM-anomaly}
-%\end{figure}
-
 \subsubsection{Method 2: Polynomial Filter}
 
 Another method is to use a polynomial filter. Perhaps, someday, I'll work on this. Great student project to be followed up with.
@@ -227,7 +170,6 @@ Another method is to use a polynomial filter. Perhaps, someday, I'll work on thi
 
 @
 
-
 \section{Extreme Events--Using Daily Records}
 
 \subsection{Complicated Nature of Rainfall Patterns}
@@ -237,7 +179,6 @@ Rainfall trends are tough. Exteme events can occur in 24 hours or over long peri
 We can look for trends in monthly averages, number of days without rain (important in tropics), and/or extreme events based on daily or hourly data. 
 
 In addition, the definition of extreme events is highly regionaally specific. Thus, if this is of interest, let us know and we'll help you develop code!
-
 
 <<eval=FALSE, echo=FALSE>>=
 PRCP.Total = aggregate(PRCP~Year, data=CHCND, sum, na.rm=T)
@@ -263,9 +204,8 @@ ggplot( ) +
 
 Days without rain...within a calendar year... bleed over between years isn't captured.. This is screwed up, Drought.run needs work.
 
-I am working on this the first week of Feb. More soon!
-
-
+\subsubsection{Days in a Row without Rain}
+One proxy for drought is a long period without rain. This is a bit tricky because it's not just the number of days without rain, but the number of days without rain in a row. So, I found a function call rle() that counts the number of days in a row without rain.
 
 <<show_droughtCount.fun, echo=FALSE>>=
 print(droughtCount.fun)
@@ -274,7 +214,7 @@ print(droughtCount.fun)
 
 \begin{description}
 
-\item[Example of how to use the function] Here's an example using the list of station dataframes anomalies.
+\item[Example of how to use the function] Here's an example using the station dataframe.
 
 <<echo=TRUE, eval=FALSE, results='hide'>>=
 USC00040693.drought <- droughtCount.fun(USC00040693, threshold=0.1)
@@ -308,25 +248,45 @@ text(min(Drought.run$Year, na.rm=T), max(Drought.run$lengths, na.rm=T),
 
 @
 
-Rainfall Probability Distributions by decade... to be developed.
+\subsubsection{Rainfall Probability Distributions over Time}
 
-<<eval=FALSE, echo=FALSE>>=
-CHCND$Decade <- floor_decade(CHCND$Year)
+<<eval=TRUE, echo=FALSE>>=
+#library(lubridate)
+load("USC00042294b.RData")
+station = USC00042294b
 
-PRCP.Decade <- aggregate(PRCP~Month+Decade, data=CHCND, sum)
-head(PRCP.Decade)
+#floor_decade  = function(value){ return(value - value %% 10) } 
+floor_decade  = function(value){ return(as.integer(value/10)*10) } 
+#floor_score   = function(value){ return(value - value %% 20) }
 
-x <- PRCP.Decade$PRCP[PRCP.Decade$Decade==1900]
-df <- approxfun(density(x))
-plot(1:12, density(x))
-xnew <- c(0.45,1.84,2.3)
-points(xnew,df(xnew),col=2)
+station$Decade <- floor_decade(station$YEAR)
+station[sample(1:nrow(station), 10), c(9, 1,3,4,10, 11, 12)]
+#station$Score <- floor_score(station$YEAR)
+names(station)
+station$Season <- ifelse(station$MONTH %in% c(3,4,5), "Spring", 
+                  ifelse(station$MONTH %in% c(6,7,8), "Summer", 
+                  ifelse(station$MONTH %in% c(9,10,11), "Fall", 
+                  "Winter")))
+PRCP.Decade.mean <- aggregate(VALUE ~ Season + Decade, 
+          data =  subset(station, subset=ELEMENT=="PRCP"), mean, na.rm=T)
+PRCP.Decade.sd <- aggregate(VALUE ~ Season + Decade, 
+          data =  subset(station, subset=ELEMENT=="PRCP"), sd, na.rm=T)
+#dnorm(x, mean=PRCP.Decade.mean$VALUE[1], sd=PRCP.Decade.sd$VALUE[1])
+#x <- PRCP.Decade$PRCP[PRCP.Decade$Decade==1900]
+#df <- approxfun(density(x))
+#plot(1:12, density(x))
+#xnew <- c(0.45,1.84,2.3)
+#points(xnew,df(xnew),col=2)
 
+# Mutate PRCP.Decade.mean season in columns
+library(tidyr)
+PRCP.Decade.mean <- spread(PRCP.Decade.mean, Season, VALUE)
 @
 
-<<eval=FALSE, echo=FALSE>>=
-CHCND$Score <- floor_score(CHCND$Year)
+<<echo=FALSE, results='asis'>>=
+xtable(PRCP.Decade.mean)
 @
+I don't see a pattern!  But maybe we need to use a statistical approach!
 
 \subsection{Record Setting Temperature Records}
 
@@ -557,6 +517,27 @@ with(sumstats[sumstats$Param=="TMAX",], text(Month, symbol.y, Symbol, col="red",
 
 To test the code, I have created graphics that can then be used in the animation process, i.e. try to create code that doesn't get too complicated and then fail! 
 
+The four plots are: 
+
+\begin{enumerate}
+\item The first plot is the TMIN Trend Line (month of X?)
+
+<<echo=TRUE, eval=TRUE>>=
+TMIN in the March, at station USC00040693
+station = subset(USC00040693.anomamly, subset(MONTH==3, ELEMENT=="TMIN")
+                 
+plot(TMIN.a ~ YEAR, data= station, type="p", col="grey", pch=19, 
+     xlab="Year", ylab="Temperature Anomaly (C)", main="TMIN Data")
+
+TMIN.March.lm = lm(TMIN.a ~ YEAR, data= station)
+
+
+\item Box Plot of TMAX.
+\item The third plot is the TMIN and TMAX for the month of the minimum TMIN.
+\item The fourth plot is the TMIN and TMAX for the month of the minimum TMAX.
+\end{enumerate}
+
+
 <<static_template, eval=FALSE, echo=FALSE>>=
 panel4.png = paste0(fips$State2, "_", stid, "_4panel.png")
               
@@ -674,11 +655,11 @@ barplot(height = R1$TMIN, space=0, add = TRUE, axes = FALSE, col="blue")
 dev.off()
 @
 
-\begin{figure}
+%\begin{figure}
 %\includegraphics[width=1.00\textwidth]{\Sexpr{paste0(png_private, panel4.png)}}
-\caption{Climate can be analyzed using several types of lenses. In this case, we have analyzed show the months with the greatest changes. The first figure is monthly average of TMINs (daily low temperatures) with a best fit line. The second figure shows the monthly TMAX range and asterisks indicate singificant changes over the station record and the third figure is the trend for these TMAXs over time and includes the best fit line. The final figure shows the daily temperatures that have been the highest on record (in red) and the lowest minimum temperatures (in blue). In some cases, climate change has created more records in the recent decades, while other stations seem don't show that trend.}
-\label{fig:4panel}
-\end{figure}
+%\caption{Climate can be analyzed using several types of lenses. In this case, we have analyzed show the months with the greatest changes. The first figure is monthly average of TMINs (daily low temperatures) with a best fit line. The second figure shows the monthly TMAX range and asterisks indicate singificant changes over the station record and the third figure is the trend for these TMAXs over time and includes the best fit line. The final figure shows the daily temperatures that have been the highest on record (in red) and the lowest minimum temperatures (in blue). In some cases, climate change has created more records in the recent decades, while other stations seem don't show that trend.}
+%\label{fig:4panel}
+%\end{figure}
 
 \subsection{KISS}
 
