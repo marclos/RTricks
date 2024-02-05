@@ -1,0 +1,30 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}
+\contentsline {subsection}{\numberline {1.1}Goals}{2}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Weather vs. Climate}{2}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Approach}{2}{subsection.1.3}
+\contentsline {subsection}{\numberline {1.4}R Code with Custom Functions}{2}{subsection.1.4}
+\contentsline {subsection}{\numberline {1.5}Before Starting the Process}{3}{subsection.1.5}
+\contentsline {subsubsection}{\numberline {1.5.1}Reading csv and loading R.data}{3}{subsubsection.1.5.1}
+\contentsline {section}{\numberline {2}Analyzing Monthly Trends}{3}{section.2}
+\contentsline {subsubsection}{\numberline {2.0.1}Example of Loop Code from Provious Interation}{4}{subsubsection.2.0.1}
+\contentsline {subsection}{\numberline {2.1}Filtering Seasonal Effect}{6}{subsection.2.1}
+\contentsline {subsubsection}{\numberline {2.1.1}Method 1: Filtering by Monthly Mean}{6}{subsubsection.2.1.1}
+\contentsline {subsubsection}{\numberline {2.1.2}Method 2: Polynomial Filter}{6}{subsubsection.2.1.2}
+\contentsline {section}{\numberline {3}Extreme Events--Using Daily Records}{6}{section.3}
+\contentsline {subsection}{\numberline {3.1}Complicated Nature of Rainfall Patterns}{6}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Drought}{7}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Record Setting Temperature Records}{8}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Iterate TMAX vs. Month Boxplots}{8}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.5}Four Plots Compelling Figures}{8}{subsection.3.5}
+\contentsline {subsection}{\numberline {3.6}KISS}{9}{subsection.3.6}
+\contentsline {subsubsection}{\numberline {3.6.1}Change Point Analysis}{9}{subsubsection.3.6.1}
+\contentsline {subsection}{\numberline {3.7}Temp \& Precipitation Probability}{9}{subsection.3.7}
+\contentsline {subsection}{\numberline {3.8}Using library densEstBayes}{9}{subsection.3.8}
+\contentsline {subsection}{\numberline {3.9}Probability Distributions}{10}{subsection.3.9}
+\contentsline {subsection}{\numberline {3.10}4 Weather Trend Plots}{10}{subsection.3.10}
+\contentsline {subsection}{\numberline {3.11}Evaluating Records}{10}{subsection.3.11}
+\contentsline {subsection}{\numberline {3.12}Export Options}{10}{subsection.3.12}
+\contentsline {section}{\numberline {4}Sea Surface Temperature Data -- SURP PROJECT WAITING TO HAPPEN}{10}{section.4}
+\contentsline {section}{\numberline {5}Satellite Data}{10}{section.5}
+\contentsline {section}{\numberline {6}Ice-Core Data}{10}{section.6}
+\contentsline {section}{\numberline {7}Conclusions}{11}{section.7}
