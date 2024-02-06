@@ -195,7 +195,7 @@ In Guide \#1, we'll use the stations.active.oldest dataset to download the daily
 <<>>=
 # export file to csv
 write.csv(stations.active.oldest, 
-    here("04_Regional_Climate_Trends", "Data", "SP24", 
+    here("04_Regional_Climate_Trends", 
     "stations.active.oldest.csv"))
 @
 
