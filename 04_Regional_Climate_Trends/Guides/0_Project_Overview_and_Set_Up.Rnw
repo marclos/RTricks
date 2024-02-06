@@ -33,7 +33,7 @@ At this point, I have created a DRAFT visual flow chart that displays each stage
 \begin{figure}
   \caption{A flow chart of the project stages.}
   \label{fig:flow-chart}
-  \includegraphics[width=1\textwidth]{figure/flow-chart.pdf}
+  \includegraphics[width=1.4\textwidth]{figure/flow-chart.pdf}
 \end{figure}
 
 
@@ -200,6 +200,39 @@ write.csv(stations.active.oldest,
 @
 
 
+Here's a Table of Task for the Project:
+
+We use Table~\ref{tab:task} to estimate the time and resources needed to complete the project.
+
+\begin{table}[h]
+\centering
+\caption{Probably Tasks and Time Estimates for the Project. Time is based on our estimate (x) and post project evaluation of time required (y) (Source: EA30 2024).}
+\label{tab:tasks}
+\begin{tabular}{|l|l|p{3cm}|l|}
+\hline
+\textbf{Task}       & \textbf{Time} & \textbf{Resources} & \textbf{Notes} \\ \hline \hline
+Select State    &     x (y) & Rstudio, R code and NOAA website & Guide 1 \\ \hline
+Download Station Data & x (y) & Rstudio, R code and NOAA website & Guide 1  \\ \hline
+Read Station Data into R & 5 (y) & Rstudio, R code & Guide 1 \\ \hline
+Fix Dates & x (y) & Rstudio, R code &  \\ Guide 2 \\ \hline
+Transform Data & x (y) & Rstudio, R code &  Guide 2 \\ \hline
+Subset for TMAX & x (y) & Rstudio, R code & Guide 3 \\ \hline
+Linear Model for TMAX & x (y) & Rstudio, R code & Guide 3 \\ \hline
+Evaluation of Model & x (y) & Rstudio, R code & Guide 3 \\ \hline
+Subset for TMIN & x (y) & Rstudio, R code & Guide 3 \\ \hline
+Linear Model for TMIN & x (y) & Rstudio, R code & Guide 3 \\ \hline
+Evaluation of Model & x (y) & Rstudio, R code & Guide 3 \\ \hline
+Subset for PRCP & ? (y) & Rstudio, R code & Guide 3 \\ \hline
+Linear Model for PRCP & ? (y) & Rstudio, R code & Guide 3 \\ \hline
+Evaluation of Model & ? (y) & Rstudio, R code & Guide 3\\ \hline
+Read EPA State Impact Report & ? (y) & EPA website & Canvas Link  \\ \hline
+Explore Other Analysis Options & ?0 (y) & Rstudio, R code & Guide 3 \\ \hline
+Create Presentation Ready Graphics & ?0 (y) & Rstudio, R code & Guide 4 \\ \hline
+Scripting for Video & ?0 (y) & Rstudio, R code & Guide 4 \\ \hline
+Make Video & ?0 (y) & Rstudio, R code & Guide 4 \\ \hline
+Upload Video & ? (y) & Rstudio, R code & Guide 4 \\ \hline
+\end{tabular}
+\end{table}
 
 
 
