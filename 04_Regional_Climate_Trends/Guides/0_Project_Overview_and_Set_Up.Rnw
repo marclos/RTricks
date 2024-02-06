@@ -5,7 +5,7 @@
 
 \title{Preparing Regional Weather Data Analysis Project}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.73)} % without \date command, current date is supplied
+\date{\today~(ver. 0.74)} % without \date command, current date is supplied
 
 \begin{document}
 \maketitle
@@ -33,7 +33,7 @@ At this point, I have created a DRAFT visual flow chart that displays each stage
 \begin{figure}
   \caption{A flow chart of the project stages.}
   \label{fig:flow-chart}
-  \includegraphics[width=1.4\textwidth]{figure/flow-chart.pdf}
+  \includegraphics[width=1.3\textwidth]{figure/flow-chart.pdf}
 \end{figure}
 
 
@@ -230,7 +230,8 @@ Explore Other Analysis Options & ?0 (y) & Rstudio, R code & Guide 3 \\ \hline
 Create Presentation Ready Graphics & ?0 (y) & Rstudio, R code & Guide 4 \\ \hline
 Scripting for Video & ?0 (y) & Rstudio, R code & Guide 4 \\ \hline
 Make Video & ?0 (y) & Rstudio, R code & Guide 4 \\ \hline
-Upload Video & ? (y) & Rstudio, R code & Guide 4 \\ \hline
+Upload Video & ? (y) & Rstudio, R code & Guide 4 \\ \hline\hline
+Total         & X (Y) & & \\ \hline
 \end{tabular}
 \end{table}
 

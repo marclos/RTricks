@@ -51,3 +51,46 @@ xtable(cbind(replicates, a, b, c, d))
 
 The null hypothesis is that the means of the three species are equal. The alternative hypothesis is that the means of the three species are not equal. The ANOVA test is used to test the null hypothesis. 
 
+## Compost Maturity
+
+The second test is the paired t-test. This test is used to compare the means of two groups. 
+
+```{r}
+medium = c(4, 2, 3.25, 3.25, 2.55, 2.34, 3.7, 3.7, 2.69, 2.77, 4.3, 5.2, 7.63, 7.68, 6, 6, 4.7, 4.5)
+mature = c(2, 1, 2.65, 2.95, 2.26, 2.12, 5, 5.2, 2.85, 2.69, 3.1, 2.8, 7.64, 7.61, 3, 2.9)
+
+par(mfrow=c(1,2), las=1)
+hist(medium, main="Medium", xlab="Compost Maturity", col="lightblue")
+hist(mature, main="Mature", xlab="Compost Maturity", col="lightgreen")
+```
+
+## showing these in a density distribution
+
+```{r}
+par(mfrow=c(1,2), las=1)
+plot(density(medium), main="Medium", xlab="Compost Maturity", col="lightblue")
+plot(density(mature), main="Mature", xlab="Compost Maturity", col="lightgreen")
+```
+
+```{r}
+  t.test(medium, mature, paired=FALSE)
+```
+
+
+# Ploting the data using a normal distribution
+```{r}
+par(mfrow=c(1,2), las=1)
+plot(dnorm(x=1:7, mean=mean(medium), sd=sd(medium)), main="Medium", xlab="Compost Maturity", ty="l", col="lightblue")
+plot(dnorm(x=1:7, mean=mean(mature), sd=sd(medium)), main="Mature", xlab="Compost Maturity", ty="l", col="lightblue")
+
+qqnorm(medium, main="Medium", col="lightblue")
+qqline(medium, col="red")
+qqnorm(mature, main="Mature", col="lightgreen")
+qqline(mature, col="red")
+
+```
+
+Test of Association
+
+
+

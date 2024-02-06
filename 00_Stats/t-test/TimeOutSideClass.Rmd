@@ -21,6 +21,7 @@ In general, I get worried if a class requires more than 8 hours outside of class
 
 week2 <- c(1.5, 1, 15, 40, 3, 2, 10, 1.5, 
            0, 20, 2, 45, 7, 10, 2, 0, 2, 2, 2.5, 5, 0)
+week3 <- c(0.5, 4, 2, 1.5, 6, 5, 3, 5, 3, 5, 3, 6, 2, 5, 5, 3, 3, 4.5, 5, 8)
 
 ```
 
@@ -33,27 +34,44 @@ This is an R Markdown presentation. But code can be added just like the PDFs we 
 - Data Entry Mistakes, maybe?
 - Excessive Readings, likely!
 ```{r}
+par(mfrow=c(1,2), las=1)
 hist(week2, breaks=20, col="lightblue", border="black", xlim=c(0,50), xlab="Time (hours)", main="Time spent outside in a week", ylab="Frequency")
+hist(week3, breaks=20, col="lightblue", border="black", xlim=c(0,10), xlab="Time (hours)", main="Time spent outside in a week", ylab="Frequency")
+
 ```
 
 ## t-test a hypothesis: Different than 6 hours
 
-```{r test, echo = TRUE}
+```{r ttest2, echo = TRUE}
 t.test(week2, mu=6)
+```
+
+## t-test a hypothesis: Different than 6 hours (Week 3)
+
+```{r test, echo = TRUE}
+t.test(week3, mu=6)
 ```
 
 
 ## t-test: Greater than 6 hours
 
-```{r testgreater, echo = TRUE}
-t.test(week2, mu=6, alternative="greater" )
+```{r testcompare, echo = TRUE}
+week2.ttest =t.test(week2, mu=6, alternative="greater")
+week3.ttest = t.test(week3, mu=6, alternative="less" )
+# str(week2.ttest)
+
+print(paste0("Week 2: ", round(week2.ttest$p.value,3), " (", week2.ttest$method, " Greater than mu)")
+)
+print(paste0("Week 3: ", round(week3.ttest$p.value,5), " (", week2.ttest$method, " (Less than mu)")
+)
 ```
 
 ## Marc's Conclusions
 
 - Make sure the quiz directions are clear.
-- Reduced Readings starting next week.
-- Offer additional support: If you find the readings to take more than 6-8 hours, I can help you decipher the readings more efficiently.
+- Reduced readings are working, perhaps too well!
+- Offer additional support: If you find the readings to take more than 6-8 hours.
+- Determine how lab work might be used to augment weekly hour workload. Project will take up more time. Will gauge next week.
 
 
 

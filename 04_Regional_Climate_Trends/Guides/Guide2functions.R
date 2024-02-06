@@ -147,4 +147,4 @@ CleanUp.fun <- function(datapath, stationdf, stationID){
 }
 
 
-# save(USC00042294.anomalies, file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
+#save(USC00042294.anomalies, file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
