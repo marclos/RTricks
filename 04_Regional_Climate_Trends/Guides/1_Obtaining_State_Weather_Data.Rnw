@@ -57,7 +57,7 @@ I will use these data to select for a station with a long record for each state 
 
 \subsubsection{R Programming Language}
 
-R is an open source programming environment that has become one of the most popular tools for statiticians and data scientists. Capitalizing on the open source framework, a wide range of libraries or packages have been developed to faciliate data processing, analysis, and graphical displays. 
+R is an open source programming environment that has become one of the most popular tools for statiticians and data scientists. Capitalizing on the open source framework, a wide range of libraries or packages have been developed to facilitate data processing, analysis, and graphical displays. 
 
 %For the project we'll use a few packages that need to be installed and loaded. Using the lower right panel, you can install the packages by clicking on the "Packages" tab and then "Install" and then type in the package name and click "Install".
 
@@ -78,7 +78,11 @@ source(here("04_Regional_Climate_Trends", "Guides", "Guide1.R"))
 
 \subsection{R Code with Custom Functions}
 
-Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1.R}{Guide1.R} code and the functions will be loaded into your environment automatically.
+From the Canvas page, go to the Guide1functions.R file and download the file to your computer. Then uplaod the file to a directory in Rstudio. I suggest you create a new directory called ``Regional\_Climate\_Trends'' and then upload the file to that directory.
+
+Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
+
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1.R}{Guide1functions.R} code and the functions will be loaded into your environment automatically.
 
 \subsection{Function Descriptions and Use}
 
@@ -128,6 +132,9 @@ downloadStations.fun(datapath, my.inventory)
 This will download the data from the NOAA website and read it into R then written as csv files in your data folder.
 
 \end{description}
+
+
+Your are done with this guide, now go to Guide 2!
 
 \section{Explaining the Code TBD!!}
 
