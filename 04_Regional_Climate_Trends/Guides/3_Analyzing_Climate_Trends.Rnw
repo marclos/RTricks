@@ -16,7 +16,7 @@
 
 \title{Analyzing Climate Trends}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.42)} 
+\date{\today~(ver. 0.44)} 
 
 \begin{document}
 \maketitle
@@ -57,6 +57,10 @@ Moreover, I haven't completed every time of analysis yet, but I tried to post th
 
 \subsection{R Code with Custom Functions}
 
+From the Canvas page, go to the Guide3functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project.
+
+Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
+
 Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide3functions.R}{Guide3functions.R} code and the functions will be loaded into your environment automatically and are designed to help you analyze your statio data. 
 
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
@@ -76,7 +80,7 @@ Before you begin, make sure you have the stations to read into R. Look at the R 
 
 \begin{description}
 
-\item[Read and Load Data] This function will read the csv files and load the data into R. The function will also return a list of dataframes.
+\item[Read and Load Data] This function will read the csv files and load the data into R. The function will also return a list of dataframes. If you clean up the environment, you might need to read.csv data into the R environment again. Again, check the environment to see if the objects are there.
   
 <<read_and_load_data.fun, echo=FALSE>>=
 print(read_and_load_data.fun)
