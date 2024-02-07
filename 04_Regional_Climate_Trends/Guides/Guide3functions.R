@@ -79,10 +79,10 @@ monthlyTrend.fun <- function(station) {
 # Testing the trend since 1975, where evidence suggest global
 # warming has been more pronounced or even accerating
 
-USC00042294.1975 <- lapply(USC00042294.anomalies, function(x) subset(x, YEAR >= 1975))
+# USC00042294.1975 <- lapply(USC00042294.anomalies, function(x) subset(x, YEAR >= 1975))
 
 # test function
-USC00042294.trends <- monthlyTrend.fun(USC00042294.1975)
+# USC00042294.trends <- monthlyTrend.fun(USC00042294.1975)
 
 
 # Plot the results

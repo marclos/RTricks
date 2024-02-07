@@ -3,12 +3,15 @@
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
-    hyperindex=true,
     linkcolor=red,
     filecolor=magenta,
     urlcolor=purple,
     citecolor=violet
 }
+
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!100}
+\definecolor{mypink2}{RGB}{219, 48, 122}
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
@@ -51,7 +54,7 @@ We need to address several things that might get in the way of our analysis:
 
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
 library(here)
-source(here("04_Regional_Climate_Trends", "Guides", "Guide2.R"))
+source(here("04_Regional_Climate_Trends", "Guides", "Guide2functions.R"))
 @
 
 \subsection{Before Starting the Process}
@@ -60,11 +63,15 @@ Before you begin, make sure you have the stations to read into R. Got to the ``F
 
 \subsection{R Code with Custom Functions}
 
-Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide2.R}{Guide2.R} code and the functions will be loaded into your environment automatically.
+From the Canvas page, go to the Guide1functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project.
+
+Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
+
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide2functions.R}{Guide2functions.R} code and the functions will be loaded into your environment automatically.
 
 \subsection{Function Descriptions and Use}
 
-The following functions are used to read the weather stations data into R, clean and pre-process data so we can analyze the data with the next guide.
+The following custom functions are used to read the weather stations data into R, clean and pre-process data so we can analyze the data with the next guide.
 
 \subsection{Reading csv and Checking dataframe objects}
 
@@ -257,18 +264,17 @@ plot(PRCP.a ~ Ymd, data=USC00042294.anomalies[[3]], type="p", col="green", pch=1
 
 I tend to avoid having lots of objects in my R environment. I like to clean up after myself. 
 
-Also, I like to move the final products into csv files. Here's the function to do that: 
+Also, I like to move the final products into csv files. Here's the function to do that. However, I noticed that it' deleting needed files. YIKES! It's also clunky, but not that important at this point, nevertheless, I'll work on it later.So, I suggest you don't run this code until I fix it.
 
 <<cleanup, echo=TRUE, eval=FALSE>>=
 CleanUp.fun(datafolder, USC00042294.anomalies, "USC00042294")
 @
 
-It's clunky, but not that imporant at this point, so I'll work on it later.
+\Large\textcolor{LightRubineRed}{Your are done with this guide, now take a break, a walk, and enjoy some downtime without looking at a computer. Next, go to Guide 3!}
 
 \clearpage
 
 \section{Explaining the Code, TBD!}
-
 
 
 

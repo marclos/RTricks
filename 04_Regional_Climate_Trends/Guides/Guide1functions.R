@@ -1,4 +1,4 @@
-# Guide1.R
+# Guide1functions.R
 
 # function to read(inventory.active.oldest) and subset criteria (my.state)
 readInventory.fun<-function(filename, my.state){

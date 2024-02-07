@@ -1,4 +1,4 @@
-\documentclass{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+\documentclass{article}\usepackage[]{graphicx}\usepackage[dvipsnames]{xcolor}
 % maxwidth is the original width if it is less than linewidth
 % otherwise use linewidth (to make sure the graphics do not exceed the margin)
 \makeatletter
@@ -60,9 +60,13 @@
     citecolor=violet
 }
 
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!100}
+\definecolor{mypink2}{RGB}{219, 48, 122}
+
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.89)}
+\date{\today~(ver. 0.90)}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 \maketitle
@@ -117,7 +121,7 @@ Based on some feedback in the last week, I have re-orgnaized the document with b
 
 There are two weaknesses with this approach that I can see. First, if the code does not work, you will have a really hard time figuring out why, since you have no idea what the code is supposed to do. Second, if the code works, you will not really be learning any R coding. Just how to copy and paste.
 
-I have created a bunch of functions, which can then be used to collect Let's try this and see how it works! Please download and run the code called Guide1.R, which has the functions for this handout.
+I have created a bunch of functions, which can then be used to collect Let's try this and see how it works! Please download and run the code called Guide1functions.R, which has the functions for this handout.
 
 
 
@@ -125,11 +129,11 @@ I have created a bunch of functions, which can then be used to collect Let's try
 
 \subsection{R Code with Custom Functions}
 
-From the Canvas page, go to the Guide1functions.R file and download the file to your computer. Then uplaod the file to a directory in Rstudio. I suggest you create a new directory called ``Regional\_Climate\_Trends'' and then upload the file to that directory.
+From the Canvas page, go to the Guide1functions.R file and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a new directory called ``Regional\_Climate\_Trends'' and then upload the file to that directory.
 
 Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
 
-Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1.R}{Guide1.R} code and the functions will be loaded into your environment automatically.
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and the functions will be loaded into your environment automatically.
 
 \subsection{Function Descriptions and Use}
 
@@ -255,7 +259,8 @@ This will download the data from the NOAA website and read it into R then writte
 \end{description}
 
 
-Your are done with this guide, now go to Guide 2!
+
+\Large\textcolor{LightRubineRed}{Your are done with this guide, now go to Guide 2!}
 
 \section{Explaining the Code TBD!!}
 
