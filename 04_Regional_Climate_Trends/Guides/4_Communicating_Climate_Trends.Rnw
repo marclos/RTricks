@@ -10,9 +10,13 @@
 }
 %\usepackage{comment}
 
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!100}
+\definecolor{mypink2}{RGB}{219, 48, 122}
+
 \title{Communicating Climate Trends}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.07)} 
+\date{\today~(ver. 0.08)} 
 
 \begin{document}
 \maketitle
@@ -23,7 +27,34 @@ Developing the skills to communicate climate trends is an important skill for sc
 
 \subsection{Goals}
 
-Create a compelling story... 
+Create a compelling story\dots 
+
+\subsection{Approach}
+
+\subsubsection{R Code with Custom Functions}
+
+From the Canvas page, go to the Guide2functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project.
+
+Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
+
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide4functions.R}{Guide4functions.R} code and the functions will be loaded into your environment automatically.
+
+
+<<setup, echo=FALSE, results='hide', message=FALSE>>=
+datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+library(xtable)
+library(here)
+source(here("04_Regional_Climate_Trends", "Guides", "Guide4functions.R"))
+@
+
+As we get further into the project, these code chunks may require tweaking because of the questions you are interested for your location falls outside the design of the custom functions. Please let Marc or the mentors know to get assistance tweaking the code!
+
+\section{Mapping (GIS) and Weather Stations}
+
+\subsection{Simple Mapping of Stations}
+
+\subsection{More Complex Mapping of Stations}
+
 
 
 <<eval=FALSE>>=
