@@ -15,7 +15,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.86)} 
+\date{\today~(ver. 0.87)} 
 
 \begin{document}
 \maketitle
@@ -63,7 +63,7 @@ Before you begin, make sure you have the stations to read into R. Got to the ``F
 
 \subsection{R Code with Custom Functions}
 
-From the Canvas page, go to the Guide1functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project.
+From the Canvas page, go to the Guide2functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project.
 
 Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
 
