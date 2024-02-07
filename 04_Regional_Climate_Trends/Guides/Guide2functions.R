@@ -1,4 +1,4 @@
-# Guide2.R
+# Guide2functions.R
 # 2/4/2024 Converting all station referenced to GNCNd ID
 
 # Function to Read CSV Files into R
@@ -138,13 +138,16 @@ for(i in seq_along(station.monthly)){
 ## Write Anomaly Data to CSV
 ## Remove functions from Guide 1 and 2 from environment
 ## Remove station data, except anomaly data from environment
+
+## doesn't work yet
 CleanUp.fun <- function(datapath, stationdf, stationID){
   lapply(1:length(stationdf), function(i) write.csv(stationdf[[i]], 
       file = paste0(datapath, stationID, "-", names(stationdf[i]), ".csv"),
             row.names = FALSE))
       station.obj = ls(pattern=stationID, envir = parent.frame())
-      rm(list = station.obj, envir = parent.frame())
+
+      #rm(list = station.obj, envir = parent.frame())
 }
 
-
+# Function to Save Anomaly Data
 #save(USC00042294.anomalies, file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
