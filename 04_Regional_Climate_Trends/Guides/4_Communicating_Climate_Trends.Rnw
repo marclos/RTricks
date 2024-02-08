@@ -146,9 +146,32 @@ mainland +
 
 \section{Communicating Long-term Weather Records}
 
+\subsection{Creating A Basic Trend Plot}
+
+begin{description}
+
+\item[Creating a Basic Trend Plot] The first step in analyzing the data is to create a basic trend plot. This plot will show the long-term trend in the data.
+
+The function requires two inputs, the station and the data element (e.g., temperature, precipitation, etc.). The function will then create a basic trend plot for the station and data element.
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{BasicTrend.fun()}}
+\end{center}
+
+
+Example of how to use the function:
+
+<<echo=TRUE, results='hide'>>=
+station = "USW00013739.anomalies"
+month = 6
+element = "TMAX"
+BasicTrendPlot.fun(station, month, element)
+@
+
 \subsection{Complete Records vs. Post 1975 Trends}
 
 Communicating climate change based on station records is tricky. The long-term record would on the surface to be the most robust, but several issues arise with a naive analytical approach -- my favorite!
+
 
 <<trend1975, eval=FALSE>>=
 

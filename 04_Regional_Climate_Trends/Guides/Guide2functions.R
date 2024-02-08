@@ -161,17 +161,15 @@ for(i in seq_along(station.monthly)){
 ## Remove station data, except anomaly data from environment
 
 ## doesn't work yet
-CleanUp.fun <- function(datapath, stationdf, stationID){
-  lapply(1:length(stationdf), function(i) write.csv(stationdf[[i]], 
-      file = paste0(datapath, stationID, "-", names(stationdf[i]), ".csv"),
-            row.names = FALSE))
-      anamalies.ls = ls(pattern="*.anomalies", envir = parent.frame())
-      save(anomalies, file=paste0(datafolder, "anomalies", ".RData"))      
+SaveCleanUp.fun <- function(datapath){
+      anamolies.ls = ls(pattern="*.anomalies", envir = parent.frame())
+      save(list = anamolies.ls, file=paste0(datafolder, "anamolies", ".RData"))      
       #rm(list = ls(pattern="fun"), envir = parent.frame())
-      station.obj = ls(pattern=stationID, envir = parent.frame())
-
       #rm(list = station.obj, envir = parent.frame())
 }
+
+# test function
+# SaveCleanUp.fun(datafolder)
 
 #-------------------------------------------------------------------------------
 # Function to Save Anomaly Data
