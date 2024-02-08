@@ -1,0 +1,39 @@
+---
+title: "Climate Change Project"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Guide 1
+
+## Chunk 1
+
+```{r cars}
+source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R")
+```
+
+## Chunk 2
+```{r}
+my.state = "VT"
+filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
+my.inventory <- readInventory.fun(filename.csv, my.state)
+```
+
+## Chunk 3
+```{r, results='hide'}}
+datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+downloadStations.fun(datapath, my.inventory)
+```
+
+# Guide 2
+
+## Chunk 1
+
+```{r}
+```
+

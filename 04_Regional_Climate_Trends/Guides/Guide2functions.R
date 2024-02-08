@@ -144,10 +144,13 @@ CleanUp.fun <- function(datapath, stationdf, stationID){
   lapply(1:length(stationdf), function(i) write.csv(stationdf[[i]], 
       file = paste0(datapath, stationID, "-", names(stationdf[i]), ".csv"),
             row.names = FALSE))
+      anamalies.ls = ls(pattern="*.anomalies", envir = parent.frame())
+      save(anomalies, file=paste0(datafolder, "anomalies", ".RData"))      
+      #rm(list = ls(pattern="fun"), envir = parent.frame())
       station.obj = ls(pattern=stationID, envir = parent.frame())
 
       #rm(list = station.obj, envir = parent.frame())
 }
 
 # Function to Save Anomaly Data
-#save(USC00042294.anomalies, file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
+#save(USC00042294.anomalies, file=paste0(datafolder, "anomalies", ".RData"))

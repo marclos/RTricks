@@ -36,7 +36,11 @@ At this point, I have created a DRAFT visual flow chart that displays each stage
   \includegraphics[width=1.3\textwidth]{figure/flow-chart.pdf}
 \end{figure}
 
+\subsection{Approach}
 
+I have created several Guides 1 through 4. Each guide is a Rmarkdown document that explains the steps to complete the guide. The guides are designed to be completed in order, but it is possible to skip a guide if the data is already available.
+
+This particular document has NO code for you to run, but document the process that I used to obtain the data and create a list of stations from you to select from. So, please read this as an informational document and not something to follow. However, there are some insights here about how to find the data and the code that I used to prepare for the project for the class. 
 \section{Selecting US Weather Station with Robust Records}
 
 \subsection{Global Weather Station Data}
@@ -211,13 +215,13 @@ We use Table~\ref{tab:task} to estimate the time and resources needed to complet
 \begin{tabular}{|l|l|p{3cm}|l|}
 \hline
 \textbf{Task}       & \textbf{Time} & \textbf{Resources} & \textbf{Notes} \\ \hline \hline
-Select State    &     x (y) & Rstudio, R code and NOAA website & Guide 1 \\ \hline
-Download Station Data & x (y) & Rstudio, R code and NOAA website & Guide 1  \\ \hline
-Read Station Data into R & 5 (y) & Rstudio, R code & Guide 1 \\ \hline
-Fix Dates & x (y) & Rstudio, R code &  \\ Guide 2 \\ \hline
-Transform Data & x (y) & Rstudio, R code &  Guide 2 \\ \hline
-Subset for TMAX & x (y) & Rstudio, R code & Guide 3 \\ \hline
-Linear Model for TMAX & x (y) & Rstudio, R code & Guide 3 \\ \hline
+1. Select State    &     x (y) & Rstudio, R code and NOAA website & Guide 1 \\ \hline
+2. Download Station Data & x (y) & Rstudio, R code and NOAA website & Guide 1  \\ \hline
+3. Read Station Data into R & 5 (y) & Rstudio, R code & Guide 1 \\ \hline
+4. Fix Dates & x (y) & Rstudio, R code &  \\ Guide 2 \\ \hline
+5. Transform Data & x (y) & Rstudio, R code &  Guide 2 \\ \hline
+6. Subset for TMAX & x (y) & Rstudio, R code & Guide 3 \\ \hline
+7. Linear Model for TMAX & x (y) & Rstudio, R code & Guide 3 \\ \hline
 Evaluation of Model & x (y) & Rstudio, R code & Guide 3 \\ \hline
 Subset for TMIN & x (y) & Rstudio, R code & Guide 3 \\ \hline
 Linear Model for TMIN & x (y) & Rstudio, R code & Guide 3 \\ \hline
