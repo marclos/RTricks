@@ -25,7 +25,7 @@ my.inventory <- readInventory.fun(filename.csv, my.state)
 ```
 
 ## Chunk 3
-```{r, results='hide'}}
+```{r, results='hide'}
 datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 downloadStations.fun(datapath, my.inventory)
 ```

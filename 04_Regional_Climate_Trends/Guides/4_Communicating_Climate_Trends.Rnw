@@ -9,7 +9,7 @@
     citecolor=violet
 }
 %\usepackage{comment}
-
+\usepackage{xurl}
 \usepackage[dvipsnames]{xcolor}
 \colorlet{LightRubineRed}{RubineRed!100}
 \definecolor{mypink2}{RGB}{219, 48, 122}

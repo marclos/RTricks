@@ -10,6 +10,7 @@ readInventory.fun<-function(filename, my.state){
 
 # Download All Weather Station Data and Read Into R
 downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
+  # Loop through all stations and download data
   for(i in 1:nrow(my.inventory)){
     url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", 
       my.inventory$ID[i], ".csv.gz")
@@ -17,15 +18,15 @@ downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
   download.file(url, paste0(datafolder, my.inventory$ID[i], ".csv.gz"), 
     quiet = FALSE, mode = "w", cacheOK = TRUE)
   
-#  assign(paste0("station", i), 
-#    read.csv(gzfile(paste0(datafolder,my.inventory$ID[i], ".csv.gz")), 
-#      header=FALSE))
-  
   print(paste("Index (Loop) ", i, " Completed.")) # Print Index Number 
   print("Think about something you are grateful for today!")  
   
 } # LOOP END
-
+  # Recursive function to read all files into R
+    # Seems to be unreliable at this stage
+    # Perhaps a path problem with misnamed files
+    # e.g director/filename is is concantenated with the wrong name.
+    # then the remaining function seems to fail. 
   StationList.df <- lapply( # Read All Files into R
       list.files(datafolder, full.names=TRUE, pattern = "\\.gz$"), 
         read.csv, header=FALSE)
@@ -33,7 +34,7 @@ downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
   colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
                 "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
   lapply(StationList.df, setNames, colnames)
-  
+  # Loop to write all files to .csv
   for (i in seq_along(StationList.df)) {
     filename = paste0(datafolder, my.inventory$ID[i], ".csv")
     write.csv(StationList.df[[i]], filename, row.names = FALSE)
