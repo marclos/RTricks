@@ -1,6 +1,8 @@
 # Guide2functions.R
-# 2/4/2024 Converting all station referenced to GNCNd ID
+# Updated: 2024-02-07
 
+
+#-------------------------------------------------------------------------------
 # Function to Read CSV Files into R
 ReadStations.fun <- function(datafolder){
   StationList <- list.files(datafolder, full.names=TRUE, pattern = "\\.csv$")
@@ -18,7 +20,8 @@ ReadStations.fun <- function(datafolder){
   return(paste0("station", i))
   }
 }
-  
+
+#-------------------------------------------------------------------------------
 ReadStations2.fun <- function(datafolder){
   my.stations = read.csv(paste0(datafolder, "my.inventory.csv"))
 # Fix Variable Names based on NOAA Documentation
@@ -30,18 +33,27 @@ for (i in 1:nrow(my.stations)){
 }
 }
 
-# i = 1
-# ReadStations2.fun(datafolder)
+#-------------------------------------------------------------------------------
+# number of observations for each dataframe
+# 2/8/2024 Not working yet.
+sortStations.fun <- function(my.inventory){
+  for(i in 1:nrow(my.inventory)){
+    x[i] <- nrow(my.inventory$ID[i])
+    print(x[i])
+    return(x)
+  }}
 
+
+#-------------------------------------------------------------------------------
 # function to fix date formats, etc.
-fixdates.fun <- function(station){
+fixDates.fun <- function(station){
   station$Ymd = as.Date(as.character(station$DATE), format = "%Y%m%d")
   station$MONTH = as.numeric(format(station$Ymd, "%m"))
   station$YEAR = as.numeric(format(station$Ymd, "%Y"))
   return(station)
 }
 
-
+#-------------------------------------------------------------------------------
 # Data Coverage Function --Determine percent missing
 coverage.fun <- function(station, element="TMAX"){
   Dates.all = data.frame(Ymd=seq.Date(from=min(station$Ymd), 
@@ -53,15 +65,18 @@ coverage.fun <- function(station, element="TMAX"){
   return(round(station.coverage,2))
   }
 
-# Function to Convert Units
-ConvertUnits.fun <- function(station){
+
+#-------------------------------------------------------------------------------
+# Function to Convert/Transform Units
+fixValues.fun <- function(station){
     station$VALUE = station$VALUE/10
   return(station)
 }
 
+#-------------------------------------------------------------------------------
 # QA/QC Function
 QAQC.fun <- function(station){
-  par(mfrow=c(3,1))
+  par(mfrow=c(1,1)) # chnaged this from 3 to 1 because of window size issues
   plot(VALUE ~ Ymd, data = subset(station, 
       subset=ELEMENT=="PRCP"), type = "l", col = "blue", 
     main = "Time Series of Daily PRCP", xlab = "Date", ylab = "PRCP (mm)")
@@ -76,6 +91,8 @@ QAQC.fun <- function(station){
   station = subset(station, S.FLAG != "")
   return(station)
 }
+
+#-------------------------------------------------------------------------------
 # Create Monthly Averages/Sums
 MonthlyValues.fun <- function(x){
   x.TMAX.monthly = aggregate(VALUE ~ MONTH + YEAR, 
@@ -90,6 +107,8 @@ MonthlyValues.fun <- function(x){
   return(list(x.TMAX.monthly, x.TMIN.monthly, x.PRCP.monthly))
 }
 
+
+#-------------------------------------------------------------------------------
 # Function to Create Monthly Normals
 MonthlyNormals.fun <- function(x){
   x.normals = subset(x, 
@@ -110,13 +129,15 @@ MonthlyNormals.fun <- function(x){
               x.PRCP.normals.monthly))
 }
 
+#-------------------------------------------------------------------------------
 # Check on PRCP Values!
 #par(mfrow=c(1,1))
 #plot(VALUE ~ Ymd, data = subset(station1a, subset=ELEMENT=="PRCP"), type = "p", col = "blue", main = "Time Series of Daily PRCP", xlab = "Date", ylab = "PRCP (mm)", pch=20, cex=.2)
 #plot(NORMALS ~ MONTH, data = station1.normals[[3]], type = "p", col = "blue", main = "NORMALS PRCP", xlab = "MONTH", ylab = "PRCP (mm)") 
 #plot(PRCP ~ YEAR + MONTH, data = station1.monthly[[3]], type = "p", col = "blue",  main = "MONTHLY PRCP", xlab = "MONTH", ylab = "PRCP (mm)")
 
-#---------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # Function to Calculate Monthly Anomalies
 MonthlyAnomalies.fun <- function(station.monthly, station.normals){
 for(i in seq_along(station.monthly)){
@@ -133,7 +154,7 @@ for(i in seq_along(station.monthly)){
   }
 }
 
-#-----------------------------------------------------------------------------=
+#-------------------------------------------------------------------------------
 # Function to Up R Environment
 ## Write Anomaly Data to CSV
 ## Remove functions from Guide 1 and 2 from environment
@@ -152,5 +173,10 @@ CleanUp.fun <- function(datapath, stationdf, stationID){
       #rm(list = station.obj, envir = parent.frame())
 }
 
+#-------------------------------------------------------------------------------
 # Function to Save Anomaly Data
+
+# I think this is a good idea, but the path issues are complicated, so 
+# I haven't implemented it yet. 
+
 #save(USC00042294.anomalies, file=paste0(datafolder, "anomalies", ".RData"))
