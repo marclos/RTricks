@@ -13,12 +13,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Chunk 1
 
-```{r}
+```{r, chunk1_1}
 source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R")
 ```
 
 ## Chunk 2
-```{r}
+```{r, chunk1_2}
 my.state = "CA"
 filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
@@ -112,7 +112,7 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions
 
 ```
 
-
+almost done!
 
 
 
