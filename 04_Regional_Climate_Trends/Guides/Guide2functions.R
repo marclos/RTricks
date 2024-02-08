@@ -162,7 +162,7 @@ for(i in seq_along(station.monthly)){
 
 ## doesn't work yet
 SaveCleanUp.fun <- function(datapath){
-      anamolies.ls = ls(pattern="*.anomalies", envir = parent.frame())
+      anamolies.ls = ls(pattern="*.anamolies", envir = parent.frame())
       save(list = anamolies.ls, file=paste0(datafolder, "anamolies", ".RData"))      
       #rm(list = ls(pattern="fun"), envir = parent.frame())
       #rm(list = station.obj, envir = parent.frame())

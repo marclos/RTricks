@@ -168,6 +168,26 @@ element = "TMAX"
 BasicTrendPlot.fun(station, month, element)
 @
 
+
+<<>>=
+par(mar=c(5,5,5,5), las=1)
+      
+plot(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies$TMAX, 
+    MONTH==6), las=1, pch=20, cex=.5, col="grey", 
+    ylab="Temp Anamoly (°C) ", 
+    main="", 
+    #sub="For Station USC00042294, 1893-2012, slope = 0.001,  p-value < 0.001, r2 = 0.02", 
+    xlab="Year", xlim=c(as.Date("1850-01-01"), as.Date("2050-01-01")), 
+    frame.plot=FALSE)
+mtext("Maximum Daily Temperature Trend for June", cex=1.3, side=3, line=2)
+mtext("Trend Line: 0.001/100 yrs; p-value < 0.001, r2 = 0.02", side=3, line=1, cex=1.0, col="red")
+
+USC00042294.lm = lm(TMAX.a ~ Ymd, 
+          data=subset(USC00042294.anomalies$TMAX, MONTH==6))
+
+abline(coef(USC00042294.lm), col="red")
+@
+
 \subsection{Complete Records vs. Post 1975 Trends}
 
 Communicating climate change based on station records is tricky. The long-term record would on the surface to be the most robust, but several issues arise with a naive analytical approach -- my favorite!

@@ -152,6 +152,7 @@ Example of how to use the function (Note: the new dataframe name change):
 
 <<fixdates, echo=TRUE, results='hide'>>=
 USC00042294a <- fixDates.fun(USC00042294)
+USC00040693a <- fixDates.fun(USC00040693)
 @
 
 \item[Evaluation Data Coverage]
@@ -166,6 +167,7 @@ Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
 coverage.fun(USC00042294a)
+coverage.fun(USC00040693a)
 @
 
 In general, we want something like 95\% coverage for the period of record. If you don't have that, please let us know and we'll help you get additional stations with better coverage!
@@ -189,6 +191,7 @@ Example of how to use the function (Note: the new dataframe name change):
 
 <<echo=TRUE, results='hide'>>=
 USC00042294b <- fixValues.fun(USC00042294a)
+USC00040693b <- fixValues.fun(USC00040693a)
 @
 
 \item[Checking for Outliers]
@@ -212,6 +215,7 @@ Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
 QAQC.fun(USC00042294b)
+QAQC.fun(USC00040693b)
 @
 
 If you have any hints of data problems, let's sort them out together!
@@ -233,6 +237,8 @@ Example of how to use the functions:
 <<echo=TRUE, results='hide'>>=
 USC00042294.monthly <- MonthlyValues.fun(USC00042294b)
 USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
+USC00040693.monthly <- MonthlyValues.fun(USC00040693b)
+USC00040693.normals <- MonthlyNormals.fun(USC00040693b)
 @
 
 \item[Function to Create Anomalies]
@@ -242,6 +248,8 @@ Example of how to use the function:
 <<echo=TRUE, results='hide'>>=
 USC00042294.anamolies <- 
   MonthlyAnamolies.fun(USC00042294.monthly, USC00042294.normals)
+USC00040693.anamolies <- 
+  MonthlyAnamolies.fun(USC00040693.monthly, USC00040693.normals)
 @
 
 \end{description}
@@ -272,6 +280,10 @@ plot(PRCP.a ~ Ymd, data=USC00042294.anamolies[[3]], type="p", col="green", pch=1
 @
 \end{figure}
 
+
+
+\Large\textcolor{Magenta}{Your are done with this guide, now take a break, a walk, and enjoy some screen free downtime. Next, go to Guide 3!}
+
 \subsection{Clean Up R Environment}
 
 I tend to avoid having lots of objects in my R environment. I like to clean up after myself. 
@@ -279,10 +291,14 @@ I tend to avoid having lots of objects in my R environment. I like to clean up a
 Also, I like to move the final products into csv files. Here's the function to do that. However, I noticed that it' deleting needed files. YIKES! It's also clunky, but not that important at this point, nevertheless, I'll work on it later.So, I suggest you don't run this code until I fix it.
 
 <<cleanup, echo=TRUE, eval=FALSE>>=
-CleanUp.fun(datafolder, USC00042294.anomalies, "USC00042294")
+CleanUp.fun(datafolder, USC00042294.anamolies, "USC00042294")
 @
 
-\Large\textcolor{Magenta}{Your are done with this guide, now take a break, a walk, and enjoy some screen free downtime. Next, go to Guide 3!}
+For now, I am just saving the anamolies data into an RData file that I can use in other Rmd Guides. I doubt you'll need to do that.
+
+<<>>=
+SaveCleanUp.fun(datafolder)
+@
 
 \clearpage
 
@@ -293,6 +309,17 @@ CleanUp.fun(datafolder, USC00042294.anomalies, "USC00042294")
 <<show_ReadStation.fun, echo=FALSE>>=
 print(ReadStations2.fun)
 @
+
+\subsubsection{Troube Shooting}
+
+The function fails to read some csv files into the R environment for a variety of reasons that I haven't been able to solve. 
+
+To work around the issues, we'll have to read the csv filed directly. Here's how an example of how we might do it:
+
+\begin{verbatim}
+USC00042294 <- read.csv("data/USC00042294.csv")
+\end{verbatim}
+
 
 \subsection{fixdates.fun}
 
@@ -330,6 +357,10 @@ If you have too many stations that don't have enough data, we'll need to downloa
 \subsubsection{Missing Data}
 
 Similar to the problem above, missing data can be a problem. The real issue that I can see is that rainfall is so central because we use the data to calculate monthly totals, but if the month is missing data, then we have a severe bias. Same issue in temperature, but because we are looking at averages, it's less likely to be a major source of bias. But we should should check!
+
+\subsection{Failure to Read csv files}
+
+I noticed that the read 
 
 \subsubsection{Plot Anamoly}
 
