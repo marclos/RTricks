@@ -1,6 +1,7 @@
 # Guide1functions.R
-# Updated: 2020-07-01
+# Updated: 2020-02-07
 
+#-------------------------------------------------------------------------------
 # function to read(inventory.active.oldest) and subset criteria (my.state)
 readInventory.fun<-function(filename, my.state){
   inventory.active.oldest <- read.csv(filename)
@@ -8,7 +9,9 @@ readInventory.fun<-function(filename, my.state){
   return(my.inventory)
 }
 
+#-------------------------------------------------------------------------------
 # Download All Weather Station Data and Read Into R
+# datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
   # Loop through all stations and download data
   for(i in 1:nrow(my.inventory)){
@@ -33,7 +36,7 @@ downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
   # Fix Variable Names based on NOAA Documentation
   colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
                 "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
-  lapply(StationList.df, setNames, colnames)
+  StationList.df <- lapply(StationList.df, setNames, colnames)
   # Loop to write all files to .csv
   for (i in seq_along(StationList.df)) {
     filename = paste0(datafolder, my.inventory$ID[i], ".csv")
