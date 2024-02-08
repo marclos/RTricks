@@ -136,37 +136,40 @@ I suggest you do the following to prepare:
 
 \section{R Functions for Getting Weather Station Data}
 
-\subsection{Guide1functions.R: Custom Functions}
+\subsection{Marc's Custom Functions: Guide1functions.R}
 
 
 
+These functions are designed so you don't have to type all the code! But check to see if they work for you, because they can (apparently) break really easily. 
 
-From the Canvas page, go to the\href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a new directory called ``Regional\_Climate\_Trends'' and then upload the file to that directory. Please note, avoid spaces in your directory names.
+From the Canvas page, go to the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a new directory called ``Regional\_Climate\_Trends'' and then upload the file to that directory. Please note, avoid spaces in your directory names.
 
 Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor window (Figure~\ref{fig:source_code}).
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=1.0\textwidth]{figure/Guide1Source.png}
-\caption{The source action item is located in the upper right of the editor window.}
+\caption{The "source" action item is located in the upper right of the editor window. This will run the entire code with all the functions into the R environment.}
 \label{fig:source_code}
 \end{figure}
 
 The function have been written to the R Environment and you can close Guide1.functions.R file. We don't need any more. However, if you'd like to see the functions, I have been written out in this document. 
 
-\subsection{Function Descriptions and Use}
-
-The following functions are used to select the weather stations, download data, and write weather station data csv files.
-
 \subsection{Creating a Record of Your Commands}
 
 Use the Rmd file to record your R code and comments. This will help you remember what you did and why. See MarcsTemplate.Rmd as a skeleton file. 
+
+\subsection{Function Descriptions and Use}
+
+The following functions are used to select the weather stations, download data, and write weather station data csv files.
 
 \begin{description}
 
 \item[Subset Inventory Data with my.state]  The inventory data is a list of all the weather stations in the USA, US Territories, and Canada. This function will subset the data to only include the stations in the state of interest.
 
-\noindent Function: \textbf{readInventory.fun()}
+\begin{center}
+\textbf{Function: \textcolor{Plum}{readInventory.fun()}}
+\end{center}
 
 This function requires two parameters to be set: filename and my.state. See Section~\ref{subsec:readInventory} for more details.
 
@@ -178,17 +181,19 @@ Example of how to use the function:
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{my.state} \hlkwb{<-} \hlstr{"CA"}
-\hlstd{filename.csv} \hlkwb{<-} \hlstr{"/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"}
+\hlstd{filename.csv} \hlkwb{<-} \hlstr{"/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"}
 \hlstd{my.inventory} \hlkwb{<-} \hlkwd{readInventory.fun}\hlstd{(filename.csv, my.state)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
-Creates a dataframe called my.inventory that contains the inventory data for the state/territory of interest. You should see that in the R environment.
+Creates a dataframe called my.inventory that contains the inventory data for the state/territory of interest. You should see that in the R environment. Note: The file name is cut off because my path is too long!
 
 \item[Download and Read Selected Weather Station Data into R] This function will download the weather station data from the NOAA website and read it into R.
 
-\noindent Function: \textbf{downloadStations.fun()} 
+\begin{center}
+\textbf{Function: \textcolor{Plum}{downloadStations.fun()}}
+\end{center}
 
 This functions requires two parameters: data path and name of inventory dataframe (my.inventory). The data path is a folder that you can always get your station data from if you need it. For example, if you need to update the data, you can just download the data from the NOAA website and then read it into R. For more information on this function see Section~\ref{subsec:downloadStations}.
 
@@ -202,38 +207,6 @@ An example of how to use the function:
 \hlstd{datapath} \hlkwb{=} \hlstr{"/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"}
 \hlkwd{downloadStations.fun}\hlstd{(datapath, my.inventory)}
 \end{alltt}
-\begin{verbatim}
-## [1] "Index (Loop)  1  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  2  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  3  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  4  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  5  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  6  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  7  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  8  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  9  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  10  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  11  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  12  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  13  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  14  Completed."
-## [1] "Think about something you are grateful for today!"
-## [1] "Index (Loop)  15  Completed."
-## [1] "Think about something you are grateful for today!"
-\end{verbatim}
 \end{kframe}
 \end{knitrout}
 
@@ -241,7 +214,7 @@ This will download the data from the NOAA website and read it into R then writte
 
 \end{description}
 
-\LARGE\textcolor{LightRubineRed}{Your are done with this guide, now go to Guide 2!}
+\noindent {\Large\textcolor{LightRubineRed}{You're are done with this guide, go to Guide 2!}}
 
 \section{Explaining the Process and Code}
 
@@ -317,7 +290,7 @@ Here's the function:
 ##     write.csv(my.inventory, paste0(datafolder, "my.inventory.csv"), 
 ##         row.names = FALSE)
 ## }
-## <bytecode: 0x2554f00>
+## <bytecode: 0x2c5a088>
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -325,19 +298,6 @@ Here's the function:
 \section{Trouble Shooting and Workarounds}
 
 I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
-
-\subsection{Selecting Weather Records by State}
-
-There are numerous ways to analyze temperature records, where stations can be analyzed individually or records could be sampled and analyzed in spatially in grids. Each of these are valid approaches depending on the question to be addressed. 
-
-Here are the questions we will address: 
-
-\begin{itemize}
-  \item What stations have the longest meterological records in the USA?
-  \item Can we determine the reliability of these stations?
-  \item Finally, is there a temperature trend?
-\end{itemize}
-
 
 %\subsubsection{Identify List of State IDs (FIPS)}
 
@@ -359,23 +319,53 @@ Here are the questions we will address:
 
 First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``04\_Regional\_Climate\_Trends") and then used the function here() to get the working directory and read the csv into R. This might be easier than the file.choose() option, but you can use that if you prefer.
 
+The first option: 
+
+Use this code to select the file from the console:
+
+\begin{verbatim}
+> file.choose()
+\end{verbatim}
+
+Then paste the result in the Rmd file to track the results to define the file name:
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
+\hlstd{filename} \hlkwb{=} \hlstr{"home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"}
+
+
+\hlcom{# OR what I use! }
 \hlkwd{library}\hlstd{(here)}
-\hlkwd{library}\hlstd{(xtable)}
-
-\hlstd{stations.active.oldest} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}
-  \hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{))}
-
-\hlcom{# OR}
-\hlcom{# use file.choose() to select the file}
-\hlcom{# filename = "MY.PATH/04_Regional_Climate_Trends/stations.active.oldest.csv"}
-\hlcom{# stations.active.oldest = read.csv(filename)}
+\hlstd{filename} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}
+  \hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"Data"}\hlstd{,} \hlstr{"SP24"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{))}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
+\subsection{NA.csv as a duplicate?}
+
+I am not sure why, but in the downloadStations.fun, the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv.
+
+%suggest you change the name of the file to something more descriptive.
+
+\subsection{Download gz files with folder concantentated names}
+
+I don't know what causes this problem yet. But 5 students had this issue on Wedesday, but no one on Tuesday. That less than half the students had this issue is perplexing and I am continuing to work on this. More soon, I hope. 
+
+\section{Text that needs to be editted}
+
+\subsection{Selecting Weather Records by State}
+
+There are numerous ways to analyze temperature records, where stations can be analyzed individually or records could be sampled and analyzed in spatially in grids. Each of these are valid approaches depending on the question to be addressed. 
+
+Here are the questions we will address: 
+
+\begin{itemize}
+  \item What stations have the longest meterological records in the USA?
+  \item Can we determine the reliability of these stations?
+  \item Finally, is there a temperature trend?
+\end{itemize}
 
 \subsection{Map US Weather Stations}
 
@@ -390,8 +380,9 @@ Here's a map of the weather stations in the dataset. Pretty lame map!  We'll mak
      \hlkwc{pch}\hlstd{=}\hlnum{20}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{0.3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{'gray60'}\hlstd{,} \hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,}
      \hlkwc{main} \hlstd{=} \hlstr{"US Weather Stations"}\hlstd{)}
 \end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-4-1} 
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(stations.active.oldest\$LONGITUDE, stations.active.oldest\$LATITUDE, : object 'stations.active.oldest' not found}}\end{kframe}
 \end{knitrout}
 \subsection{Select and Evaluate State Data}
 
@@ -400,10 +391,15 @@ Here's a map of the weather stations in the dataset. Pretty lame map!  We'll mak
 \begin{alltt}
 \hlstd{stations.unique} \hlkwb{=}
   \hlkwd{unique}\hlstd{(stations.active.oldest[,}\hlkwd{c}\hlstd{(}\hlstr{"STATE"}\hlstd{,} \hlstr{"STATE_NAME"}\hlstd{)])}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in unique(stations.active.oldest[, c("{}STATE"{}, "{}STATE\_NAME"{})]): object 'stations.active.oldest' not found}}\begin{alltt}
 \hlstd{xtab} \hlkwb{=} \hlkwd{xtable}\hlstd{(stations.unique)}
 \end{alltt}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in xtable(stations.unique): could not find function "{}xtable"{}}}\end{kframe}
 \end{knitrout}
 
 The each of you will select a state -- see the Google Sheet sign up so we have a diverse set of states.
@@ -428,15 +424,17 @@ The URL for the data is: \url{https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/s
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{my.stations} \hlkwb{=} \hlkwd{subset}\hlstd{(stations.active.oldest, STATE} \hlopt{==} \hlstd{my.state)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in subset(stations.active.oldest, STATE == my.state): object 'stations.active.oldest' not found}}\begin{alltt}
 \hlcom{# Download Updated Station Data}
 \hlstd{i}\hlkwb{=}\hlnum{1}
 \hlstd{here}\hlopt{::}\hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{, my.stations}\hlopt{$}\hlstd{ID[i])}
 \end{alltt}
-\begin{verbatim}
-## [1] "/home/mwl04747/RTricks/04_Regional_Climate_Trends/USC00043157"
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in path("{}/home/mwl04747/RTricks"{}, ...): object 'my.stations' not found}}\end{kframe}
 \end{knitrout}
 
 
