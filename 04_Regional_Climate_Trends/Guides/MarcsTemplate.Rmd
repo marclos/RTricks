@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Chunk 1
 
-```{r cars}
+```{r}
 source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R")
 ```
 
@@ -25,7 +25,7 @@ my.inventory <- readInventory.fun(filename.csv, my.state)
 ```
 
 ## Chunk 3
-```{r, results='hide'}
+```{r, chunk1_3, results='hide'}
 datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 downloadStations.fun(datapath, my.inventory)
 ```
@@ -34,12 +34,12 @@ downloadStations.fun(datapath, my.inventory)
 
 ## Chunk 1
 
-```{r cars}
+```{r chunk2_1}
 source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R")
 ```
 
 ## Chunk 2
-```{r}
+```{r, chunk2_2}
 datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 ReadStations2.fun(datafolder)
 ```
@@ -50,35 +50,35 @@ ReadStations2.fun(datafolder)
 ```
 
 ## Chunk 4
-```{r}
+```{r, chunk2_4}
 USC00042294a <- fixDates.fun(USC00042294)
 
 ```
 
 ## Chunk 5
-```{r}
+```{r, chunk2_5}
 coverage.fun(USC00042294a)
 ```
 
 ## Chunk 6
-```{r}
+```{r, chunk2_6}
 USC00042294b <- fixValues.fun(USC00042294a)
 ```
 
 ## Chunk 7
-```{r}
+```{r, chunk2_7}
 QAQC.fun(USC00042294b)
 ```
 
 ## Chunk 8
-```{r}
+```{r, chunk2_8}
 USC00042294.monthly <- MonthlyValues.fun(USC00042294b)
 USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
 ```
 
 
 ## Chunk 9
-```{r}
+```{r, chunk2_9}
 USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
 ```
 
@@ -86,7 +86,7 @@ USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.n
 # Guide 3
 
 ## Chunk 1
-```{r}
+```{r, chunk3_1}
 source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R")
 ```
 
@@ -103,7 +103,7 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions
 # Guide 4
 
 ## Chunk 1
-```{r}
+```{r, chunk4_1}
 source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R")
 ```
 

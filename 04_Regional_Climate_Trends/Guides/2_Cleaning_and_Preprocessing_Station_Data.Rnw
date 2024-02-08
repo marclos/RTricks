@@ -15,7 +15,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.87)} 
+\date{\today~(ver. 0.88)} 
 
 \begin{document}
 \maketitle
@@ -28,7 +28,7 @@ The goal of this guide is to provide a step-by-step process for cleaning and pre
 
 \subsection{Background}
 
-\subsubsection{What is GHCN-Daily?}
+\subsubsection{What is GHCN-Daily (GNCNd)?}
 
 The new dataset is referred to as GHCN-Daily, version 3. The new dataset has a number of improvements over the older dataset, including a more comprehensive and robust quality assurance process. The new dataset also includes more station records and is updated more frequently than the older dataset. 
 
@@ -36,17 +36,16 @@ The new dataset is also available in a more user-friendly format, including a se
 
 In 2011, there was a major update to the daily updates to the GHCN dataset: \ref{https://www.ncei.noaa.gov/pub/data/ghcn/daily/COOPDaily_announcement_042011.pdf}{IMMEDIATE -- Changes to COOP Daily Form Access}. It's a useful history.
 
-
 \subsection{Approach}
 
 We need to address several things that might get in the way of our analysis: 
 
 \begin{enumerate}
-  \item read station data into R
-  \item date format (convert to POSIXct, adding month and year as varibles)
-  \item evaluate missing data
-  \item units conversion
-  \item outliers
+  \item Read csv files into R (from station.csv files)
+  \item Fix date format (convert to POSIXct, adding month and year as variables)
+  \item Convert units (VALUE: PRCP = 0.1 mm, TMAX/TMIN = 0.1 C)
+  \item Evaluate missing data (Coverage.fun)
+  \item Evalutae for Outliers (QACQ.fun)
   \item Other stuff??
 \end{enumerate}
 
@@ -67,7 +66,7 @@ From the Canvas page, go to the Guide2functions.R file and download the file to 
 
 Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
 
-Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide2functions.R}{Guide2functions.R} code and the functions will be loaded into your environment automatically.
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide2functions.R}{Guide2functions.R} code and the functions will be loaded into your environment automatically. Be sure the function has been updated to 2024-02-07!
 
 \subsection{Function Descriptions and Use}
 
@@ -79,11 +78,12 @@ The following custom functions are used to read the weather stations data into R
 
 \item[Read all csv files into R]
 
-The If the data are not in the R environment, you can read them in using the following but you have the uncompressed files, you can read them in using the following function:
+The data are now ready to be read into R environment, we will read them in using the following function: 
+\begin{center}
+\textbf{Function: \textcolor{Plum}{ReadStations2.fun()}}
+\end{center}
 
-<<show_ReadStation.fun, echo=FALSE>>=
-print(ReadStations2.fun)
-@
+Use this function read the stations in the R Environment. %In some sense, this is a work around for a bug at end end of Guide 1 that I can't figure out how to fix. Be patient, try this and let me know if you have to resort to this, which will help me find the pattern if the Guide 1 bug. 
 
 Example of how to use the function:
 
@@ -100,7 +100,7 @@ You can do this by running the following code:
 ls()
 @
 
-%You should see object named after the stations you read in. For example, if you read in the station data (e.g. \Sexpr{my.inventory$ID[1]}, you should see an object named station1 in your environment.
+You should see objects named after the stations you read in. For example, if you read in the station data (e.g. %\Sexpr{my.inventory$ID[1]}, you should see an object named that way into your R environment.
 
 \item[Check the structure of the dataframes]
 
@@ -112,8 +112,27 @@ For example:
 str(USC00042294)
 @
 
+What to look for?  Is the object a data.frame?  Doee it have the right number of obsertations? Are the expected variable names present?  Are the data types correct?  Are values in each variable reasonable?
+
 \end{description}
 
+\item[Sorting Stations by Number of Observations]
+
+In theory, the stations with the greatest numbrer of observations are the the ones we will want to evaluate. However, we may also want to evaluate stations to cover a geographic range. 
+
+For now, let use this function to sort the stations by the number of observations and use this to focus are attention. 
+
+THIS IS A BRAND NEW IDEA FROM WEDNESDAY'S LAB, SO i AM GOING BE DEVELOPING THIS NOW, BUT DONT' USE THIS NOW. Instead look at the number of observation in the R environment to select 3 stations with the highest number of observations. 
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{sortstations.fun()}}
+\end{center}
+
+Example of how to use the function:
+
+<<sortstations, echo=TRUE, results='hide'>>=
+# sortstations.fun() Nor working yet. 
+@
 
 \subsection{Clean Data}
 
@@ -123,24 +142,23 @@ Next we'll ``clean'' the dataset by fixing the date format and preparing it for 
 
 \item[Function to Fix Dates]
 
-<<show_fixdates.fun, echo=FALSE>>=
-print(fixdates.fun)
-@
+\begin{center}
+\textbf{Function: \textcolor{Plum}{fixDates.fun()}}
+\end{center}
 
 Example of how to use the function (Note: the new dataframe name change): 
 
 <<fixdates, echo=TRUE, results='hide'>>=
-USC00042294a <- fixdates.fun(USC00042294)
+USC00042294a <- fixDates.fun(USC00042294)
 @
 
 \item[Evaluation Data Coverage]
 
 We need to know how much data we have for each station. This is important for the next steps in the process.
 
-<<show_datacoverage.fun, echo=FALSE>>=
-print(coverage.fun)
-@
-
+\begin{center}
+\textbf{Function: \textcolor{Plum}{coverage.fun()}}
+\end{center}
 
 Example of how to use the function: 
 
@@ -161,15 +179,14 @@ According the the NOAA website, the csv.gz files have  five core elements includ
   \item[TMIN =] Minimum temperature (tenths of degrees C) $\rightarrow$ degrees C
 \end{description}
 
-<<show_ConvertUnits.fun, echo=FALSE>>=
-print(ConvertUnits.fun)
-@
-
+\begin{center}
+\textbf{Function: \textcolor{Plum}{fixValues.fun()}}
+\end{center}
 
 Example of how to use the function (Note: the new dataframe name change):
 
 <<echo=TRUE, results='hide'>>=
-USC00042294b <- ConvertUnits.fun(USC00042294a)
+USC00042294b <- fixValues.fun(USC00042294a)
 @
 
 \item[Checking for Outliers]
@@ -185,10 +202,9 @@ Here are some stuff we'll look for:
 
 Yes, I am still working on this. QA/QC is a big deal and I want to make I can explain it AND make sure the code works.
 
-<<show_QAQC.fun, echo=FALSE>>=
-print(QAQC.fun)
-@
-
+\begin{center}
+\textbf{Function: \textcolor{Plum}{QAQC.fun()}}
+\end{center}
 
 Example of how to use the function:
 
@@ -202,17 +218,13 @@ If you have any hints of data problems, let's sort them out together!
 
 For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly totals.\footnote{Brody/Evyln: We need code to exclue months with missing data, these might not be represenative of the month if missing, especically for PRCP!}
 
-Here's the function for Monthly Values: 
+\begin{center}
+\textbf{Function: \textcolor{Plum}{MonthlyValues.fun()}}
+\end{center}
 
-<<echo=FALSE>>=
-print(MonthlyValues.fun)
-@
-
-Here's the function for Monthly Normals:
-
-<<echo=FALSE>>=
-print(MonthlyNormals.fun)
-@
+\begin{center}
+\textbf{Function: \textcolor{Plum}{NormalValues.fun()}}
+\end{center}
 
 
 Example of how to use the functions:
@@ -224,11 +236,6 @@ USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
 
 \item[Function to Create Anomalies]
 
-Here's the function: 
-
-<<echo=FALSE>>=
-print(MonthlyAnomalies.fun)
-@
 
 Example of how to use the function:
 
@@ -274,15 +281,44 @@ CleanUp.fun(datafolder, USC00042294.anomalies, "USC00042294")
 
 \clearpage
 
-\section{Explaining the Code, TBD!}
+\section{Explaining the Marc's Custom Functions}
+
+\subsection{ReadStations2.fun}
+
+<<show_ReadStation.fun, echo=FALSE>>=
+print(ReadStations2.fun)
+@
+
+\subsection{fixdates.fun}
+
+<<show_fixdates.fun, echo=FALSE>>=
+print(fixdates.fun)
+@
+
+\subsection{ConvertUnits.fun}
+
+<<show_ConvertUnits.fun, echo=FALSE>>=
+print(ConvertUnits.fun)
+@
 
 
+\subsection{QAQC.fun}
 
-\subsection{QA/QC: Troubleshooting}
+<<show_QAQC.fun, echo=FALSE>>=
+print(QAQC.fun)
+@
+
+\subsubsection{How to Evaluate QA/QC Problems}
+
+\subsubsection{QA/QC Trouble Shooting}
 
 I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
 
 \subsubsection{Coverage Problems ($<$95\%)}
+
+<<show_datacoverage.fun, echo=FALSE>>=
+print(coverage.fun)
+@
 
 If you have too many stations that don't have enough data, we'll need to download additional stations. I can show you a way to decipher that ahead of time if you'd like to know. Otherwise, I suggest you double the number of stations selected in the code that generated my.inventory. I have increase the number of stations per state to 15, so perhaps that will give you enough to work with.
 
@@ -312,7 +348,32 @@ We can see huge periods of time where no data was collecged. Yikes! I don't thin
 
 My custom functions are probably sensitive to missing values, need to work on that!
 
-\subsection{Work Arounds}
+\subsection{MonthlyValues.fun}
+
+Here's the function for Monthly Normals:
+
+<<echo=FALSE>>=
+print(MonthlyNormals.fun)
+@
+
+Here's the function for Monthly Values: 
+
+<<echo=FALSE>>=
+print(MonthlyValues.fun)
+@
+
+
+\subsection{MonthlyAnomalies.fun}
+
+Here's the function: 
+
+<<echo=FALSE>>=
+print(MonthlyAnomalies.fun)
+@
+
+
+
+\section{Trouble Shooting and Work Arounds}
 
 TBD!
 
