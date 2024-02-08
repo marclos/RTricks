@@ -1,14 +1,15 @@
 \documentclass{article}
+\usepackage{graphicx}
 \usepackage{natbib}
-\usepackage{hyperref}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
-    hyperindex=true,
     linkcolor=red,
     filecolor=magenta,
     urlcolor=purple,
     citecolor=violet
 }
+
 
 \usepackage[dvipsnames]{xcolor}
 \colorlet{LightRubineRed}{RubineRed!100}
@@ -16,7 +17,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.90)} 
+\date{\today~(ver. 0.91)} 
 
 \begin{document}
 \maketitle
@@ -26,8 +27,6 @@
 \subsection{Goals}
 
 Using a list of active weather stations in the United States, you  will download the data from five stations and write weather station data csv files. 
-
-%\section{Evaluating Terrestrial Meteorological Data}
 
 \subsection{Selected History of Climate Science}
 
@@ -61,7 +60,7 @@ I will use these data to select for a station with a long record for each state 
 
 \subsubsection{R Programming Language}
 
-R is an open source programming environment that has become one of the most popular tools for statiticians and data scientists. Capitalizing on the open source framework, a wide range of libraries or packages have been developed to facilitate data processing, analysis, and graphical displays. 
+R is an open source programming environment that has become one of the most popular tools for statisticians and data scientists. Capitalizing on the open source framework, a wide range of libraries or packages have been developed to facilitate data processing, analysis, and graphical displays. 
 
 %For the project we'll use a few packages that need to be installed and loaded. Using the lower right panel, you can install the packages by clicking on the "Packages" tab and then "Install" and then type in the package name and click "Install".
 
@@ -71,40 +70,60 @@ Based on some feedback in the last week, I have re-orgnaized the document with b
 
 There are two weaknesses with this approach that I can see. First, if the code does not work, you will have a really hard time figuring out why, since you have no idea what the code is supposed to do. Second, if the code works, you will not really be learning any R coding. Just how to copy and paste.
 
-I have created a bunch of functions, which can then be used to collect Let's try this and see how it works! Please download and run the code called Guide1functions.R, which has the functions for this handout.
+I have created a bunch of functions, which can then be used to collect Let's try this and see how it works! 
+
+\subsection{Preparing R for the Project}
+
+I suggest you do the following to prepare: 
+
+\begin{enumerate}
+  \item Create a folder for the project, I suggest ``Regional\_Climate\_Trends''. Note that there are no spaces in the folder name. 
+  \item Next create a new R markdown file to write your code. Name and save it in your project folder. (For details see Section~\ref{subsec:RMarkdown})
+  \item Download the file oldest.activestation.csv from the Canvas page and upload it to the directory you created in the previous step.
+  \item Download the file called Guide1functions.R from the Canvas page and upload it to the directory you created in the previous step. 
+  \item Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor window.
+\end{enumerate}
+
+\section{R Functions for Getting Weather Station Data}
+
+\subsection{Guide1functions.R: Custom Functions}
 
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
 library(here)
 source(here("04_Regional_Climate_Trends", "Guides", "Guide1functions.R"))
 @
 
-\section{R Functions for Getting Weather Station Data}
 
-\subsection{R Code with Custom Functions}
+From the Canvas page, go to the\href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a new directory called ``Regional\_Climate\_Trends'' and then upload the file to that directory. Please note, avoid spaces in your directory names.
 
-From the Canvas page, go to the Guide1functions.R file and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a new directory called ``Regional\_Climate\_Trends'' and then upload the file to that directory.
+Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor window (Figure~\ref{fig:source_code}).
 
-Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
+\begin{figure}[h]
+\centering
+\includegraphics[width=1.0\textwidth]{figure/Guide1Source.png}
+\caption{The source action item is located in the upper right of the editor window.}
+\label{fig:source_code}
+\end{figure}
 
-Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and the functions will be loaded into your environment automatically.
+The function have been written to the R Environment and you can close Guide1.functions.R file. We don't need any more. However, if you'd like to see the functions, I have been written out in this document. 
 
 \subsection{Function Descriptions and Use}
 
 The following functions are used to select the weather stations, download data, and write weather station data csv files.
 
+\subsection{Creating a Record of Your Commands}
+
+Use the Rmd file to record your R code and comments. This will help you remember what you did and why. See MarcsTemplate.Rmd as a skeleton file. 
+
 \begin{description}
 
 \item[Subset Inventory Data with my.state]  The inventory data is a list of all the weather stations in the USA, US Territories, and Canada. This function will subset the data to only include the stations in the state of interest.
 
-This function requires two parameters to be set: filename and my.state. 
+\noindent Function: \textbf{readInventory.fun()}
 
-Here's the function:
+This function requires two parameters to be set: filename and my.state. See Section~\ref{subsec:readInventory} for more details.
 
-<<show_readInventory.fun, echo=FALSE>>=
-print(readInventory.fun)
-@
-
-I suggest you use file.choose() and assign filename.csv to the path and name of the csv file. 
+I suggest you use file.choose() and assign filename.csv to the path and name of the csv file in your project directory.  
 
 Example of how to use the function:
 
@@ -114,15 +133,13 @@ filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.acti
 my.inventory <- readInventory.fun(filename.csv, my.state)
 @
 
-Creates a dataframe called my.inventory that contains the inventory data for the state/territory of interest.
+Creates a dataframe called my.inventory that contains the inventory data for the state/territory of interest. You should see that in the R environment.
 
-\item[Download and Read Selected Weather Station Data into R]  This function will download the weather station data from the NOAA website and read it into R.
+\item[Download and Read Selected Weather Station Data into R] This function will download the weather station data from the NOAA website and read it into R.
 
-This functions requires two parameters: data path and name of inventory dataframe (my.inventory). The data path is a folder that you can always get your station data from if you need it. For example, if you need to update the data, you can just download the data from the NOAA website and then read it into R. 
+\noindent Function: \textbf{downloadStations.fun()} 
 
-<<show_downloadStation.fun, echo=FALSE>>=
-print(downloadStations.fun)
-@
+This functions requires two parameters: data path and name of inventory dataframe (my.inventory). The data path is a folder that you can always get your station data from if you need it. For example, if you need to update the data, you can just download the data from the NOAA website and then read it into R. For more information on this function see Section~\ref{subsec:downloadStations}.
 
 The path to your data folder will be different, I created a directory to separate my data by class year, you don't need that! But it is nice to keep the data in a separate folder so things don't get to hectic.
 
@@ -133,17 +150,57 @@ datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 downloadStations.fun(datapath, my.inventory)
 @ 
 
-This will download the data from the NOAA website and read it into R then written as csv files in your data folder.
+This will download the data from the NOAA website and read it into R then written as csv files in your data folder. Check to see that you have both csv.gz and .csv files in your data folder.
 
 \end{description}
 
+\LARGE\textcolor{LightRubineRed}{Your are done with this guide, now go to Guide 2!}
+
+\section{Explaining the Process and Code}
+
+\subsection{Working with a R Markdown File}\label{subsec:RMarkdown}
+
+To record your history of R code, I suggest use an Rmarkdown file to keep your code handy. 
+
+To do this open a new file and select R Markdown -- Define a title, author, and output format as PDF. Then save the file (Figure~\ref{fig:RMarkdown}). 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=1.0\textwidth]{/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/figure/Guide1NewRMarkdown.png}
+\caption{Creating a new R Markdown file.}
+\label{fig:RMarkdown}
+\end{figure}
 
 
-\Large\textcolor{LightRubineRed}{Your are done with this guide, now go to Guide 2!}
+Then save the file in your project folder and knit the file to create a PDF. Look at the PDF to see how various parts of the Rmd file were knitted. Notice that there are generally two sections: text and R chunks. As you write th R code, you will can record your code in the R chunks AND develop the output into a document for future reference.
 
-\section{Explaining the Code TBD!!}
+Look carefully at the Rmd file and take note of the following: First, there are chunks of R code separated from the text by a line of three backticks. Second, the R code is written in the chunks and the output is written below the code. Finally, there is a set of backticks at the end of the code chunk. This section is gray and is where you can record your Rcode. I suggest you delete existing the one line of R code inside the existing template chuck.  
 
-\subsection{Trouble Shooting and Workarounds}
+\subsubsection{R Environment and knitr}
+
+When you knit, R starts a new environment and runs the code in the chunks. But that means the new environment doesn't have the data you have created in your current environment. So, I suggest you use the R markdown to double check that everything is working well. 
+
+I have created an R Markdown file for you to use. It is called MarcsTemplate.Rmd. As a template, you can use and change the code as you go. 
+
+\section{Function Descriptions}
+
+\subsection{readInventory.fun}\label{subsec:readInventory}
+
+Here's the function:
+
+<<show_readInventory.fun, echo=FALSE>>=
+print(readInventory.fun)
+@
+
+\subsection{downloadStations.fun}\label{subsec:downloadStations}
+
+Here's the function:
+
+<<show_downloadStation.fun, echo=FALSE>>=
+print(downloadStations.fun)
+@
+
+\section{Trouble Shooting and Workarounds}
 
 I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
 

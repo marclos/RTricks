@@ -10,46 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(xtable)
 ```
 
-## R Markdown and this assignment
-
-For this assignment, you will using the following data sets to analyze and interpret the results of four statistical tests and four statistical frameworks.
-
-## Testing if Treatment Means are Equal
-
-The first test is the Analysis of Variances (ANOVA) test. This test is used to compare the means of three or more groups. 
-
-```{r}
-treatments = c("A", "B", "C", "D")
-
-```
-
-### Creating a Dataset
-
-The data set that you will be using is XXX and 10 replicated measurements for each treatment. 
-
-To create the data set, use the following code that defines the treatments and generates the data for each treatment. The data is generated using the `rnorm` function. The `rnorm` function generates random numbers from a normal distribution. The `mean` and `sd` parameters are used to specify the mean and standard deviation of the normal distribution. The `rnorm` function is used to generate 10 random numbers for each treatment. The mean and standard deviation of the normal distribution are set to 10 and 2, respectively. 
-
-```{r, echo=FALSE}
-set.seed(4454)
-a = round(rnorm(10, mean = 8, sd = 2), 1)
-b = round(rnorm(10, mean = 9, sd = 2), 1)
-c = round(rnorm(10, mean = 10, sd = 2), 1)
-d = round(rnorm(10, mean = 11, sd = 2), 1)
-```
-
-```{r, echo=FALSE}
-values = c(a, b, c, d)
-treatments = rep(treatments, each = 10)
-replicates = rep(1:10, 4)
-data = data.frame(Treatment = treatments, Replicate = replicates, Value = values)
-```
-
-```{r}
-xtable(cbind(replicates, a, b, c, d))
-```
-
-
-The null hypothesis is that the means of the three species are equal. The alternative hypothesis is that the means of the three species are not equal. The ANOVA test is used to test the null hypothesis. 
+# t-test
 
 ## Compost Maturity
 
@@ -90,7 +51,144 @@ qqline(mature, col="red")
 
 ```
 
-Test of Association
+# ANOVA
+
+For this assignment, you will using the following data sets to analyze and interpret the results of four statistical tests and four statistical frameworks.
+
+## Testing if Treatment Means are Equal
+
+The first test is the Analysis of Variances (ANOVA) test. This test is used to compare the means of three or more groups. 
+
+```{r}
+treatments = c("A", "B", "C", "D")
+
+```
+
+### Creating a Dataset
+
+The data set that you will be using is XXX and 10 replicated measurements for each treatment. 
+
+To create the data set, use the following code that defines the treatments and generates the data for each treatment. The data is generated using the `rnorm` function. The `rnorm` function generates random numbers from a normal distribution. The `mean` and `sd` parameters are used to specify the mean and standard deviation of the normal distribution. The `rnorm` function is used to generate 10 random numbers for each treatment. The mean and standard deviation of the normal distribution are set to 10 and 2, respectively. 
+
+```{r, echo=FALSE}
+set.seed(4454)
+rounding = 2
+standarddeviation = 20
+a = round(rnorm(10, mean = 9.3, sd = standarddeviation), rounding)
+b = round(rnorm(10, mean = 8.5, sd = standarddeviation), rounding)
+c = round(rnorm(10, mean = 9.0, sd = standarddeviation), rounding)
+d = round(rnorm(10, mean = 9, sd = standarddeviation), rounding)
+```
+
+```{r, echo=FALSE}
+values = c(a, b, c, d)
+Treatments = rep(treatments, each = 10)
+replicates = rep(1:10, 4)
+anovadata = data.frame(Treatment = Treatments, Replicate = replicates, Value = values)
+```
+
+```{r, results='markup'}
+print(xtable(cbind(replicates, a, b, c, d)), type="latex")
+```
+
+### Boxplot
+
+The boxplot is used to visualize the data
+
+```{r}
+boxplot(Value ~ Treatment, data = anovadata, col = "lightblue", main = "Boxplot of Treatment Means", xlab = "Treatment", ylab = "Value")
+```
+
+### Testing the Assumptions of ANOVA
+  
+The first step in the ANOVA test is to test the assumptions of the test. The assumptions of the ANOVA test are that the data is normally distributed and that the variances of the groups are equal.
+  
+The normality of the data is tested using the Shapiro-Wilk test. The Shapiro-Wilk test is used to test the null hypothesis that the data is normally distributed. The alternative hypothesis is that the data is not normally distributed. 
+
+```{r}
+summary(aov(Value ~ Treatment, data = anovadata))
+```
+
+```{r}
+```
+
+
+
+The null hypothesis is that the means of the three species are equal. The alternative hypothesis is that the means of the three species are not equal. The ANOVA test is used to test the null hypothesis. 
+
+# Test of Association
+
+## Polluters and Mobility
+
+The third test is the Pearson correlation test. This test is used to test the association between two or more categories of count data. 
+
+```{r}
+set.seed(78889)
+# 2 x 2 contigency table
+frequency = round(c(c(105+119)/2, c(93+150+97+179)/4, c(60+35+51)/3, 85), 0) #down, then over
+dimnames = list(c( "Non-mobile", "Mobile"), c("Polluter", "Non-polluter"))
+bubbles = as.table(matrix(frequency, nrow=2, dimnames=dimnames))
+bubbles
+```
+
+```{r}
+chisq.test(bubbles)
+```
+
+
+# Logistic Regression
+
+The third test is the logistic regression test. This test is used to test the association between a binary response variable and one or more predictor variables. 
+
+
+## Distance and Success
+
+Small square in tape on floor, 10x10 cm, between 20-300 cm, try to get in the square, by rolling or sliding the socket extension.
+
+```{r}
+set.seed(78889)
+Distance = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10) + rnorm(20, 2, 1.5) 
+Success = c(0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
+
+group1 = c(95, 80, 55, 105, 200, 45, 305)
+success1 = c(1, 1, 0, 0, 1,1, 1)
+group2 = c(10, 20, 40, 100, 150, 250)
+success2 = c(1, 1, 1, 1 , 1 , 0)
+group3 = c(130, 65, 100, 120, 185, 240)
+success3 = c(1, 1, 1, 0, 1, 1)
+group4 = c(152, 92, 90, 95, 92, 215)
+success4 = c(1, 1, 0, 1, 1, 0)
+group5 = c(25, 33, 44, 105, 200, 222, 133, 243, 310)
+success5 = c(1, 1, 1, 0, 0,0, 0, 0, 0)
+
+mydata = data.frame(Distance = c(group1,group2, group3, group4, group5), Success = c(success1, success2, success3, success4, success5))
+
+#mydata = data.frame(Distance, out)
+mydata <- mydata[order(mydata$Distance),]
+mydata$logical <- as.logical(mydata$Success)
+head(mydata)
+```
+
+```{r}
+str(mydata)
+
+plot(mydata$Distance, mydata$Success, col="lightblue", pch=19, ylab="Success", xlab="Distance")
+abline(coef(lm(Success ~ Distance, data = mydata)), col="red", lwd=2)
+```
+
+
+
+```{r}
+mylogit <- glm(logical ~ Distance, data = mydata, family = "binomial")
+summary(mylogit)
+
+```
+Plot Results
+```{r}
+plot(mydata$Distance, mydata$logical, col="lightblue", pch=19, ylab=c("Success"), xlab=c("Distance"), ylim=c(0,1),)
+lines(mydata$Distance, fitted(mylogit), col="red", lwd=2)
+
+```
 
 
 
