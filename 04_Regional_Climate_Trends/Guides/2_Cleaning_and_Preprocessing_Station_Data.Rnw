@@ -79,6 +79,7 @@ The following custom functions are used to read the weather stations data into R
 \item[Read all csv files into R]
 
 The data are now ready to be read into R environment, we will read them in using the following function: 
+
 \begin{center}
 \textbf{Function: \textcolor{Plum}{ReadStations2.fun()}}
 \end{center}
@@ -100,7 +101,7 @@ You can do this by running the following code:
 ls()
 @
 
-You should see objects named after the stations you read in. For example, if you read in the station data (e.g. %\Sexpr{my.inventory$ID[1]}, you should see an object named that way into your R environment.
+%You should see objects named after the stations you read in. For example, if you read in the station data (e.g. %\Sexpr{my.inventory$ID[1]}, you should see an object named that way into your R environment.
 
 \item[Check the structure of the dataframes]
 
@@ -112,9 +113,7 @@ For example:
 str(USC00042294)
 @
 
-What to look for?  Is the object a data.frame?  Doee it have the right number of obsertations? Are the expected variable names present?  Are the data types correct?  Are values in each variable reasonable?
-
-\end{description}
+What to look for?  Is the object a data.frame?  Doee it have the right number of observations? Are the expected variable names present?  Are the data types correct?  Are values in each variable reasonable?
 
 \item[Sorting Stations by Number of Observations]
 
@@ -133,6 +132,9 @@ Example of how to use the function:
 <<sortstations, echo=TRUE, results='hide'>>=
 # sortstations.fun() Nor working yet. 
 @
+
+\end{description}
+
 
 \subsection{Clean Data}
 
@@ -168,7 +170,7 @@ coverage.fun(USC00042294a)
 
 In general, we want something like 95\% coverage for the period of record. If you don't have that, please let us know and we'll help you get additional stations with better coverage!
 
-\item[Function to Convert Units]
+\item[Function to Fix Values (by order of magnitude)]
 
 According the the NOAA website, the csv.gz files have  five core elements include the following units, which we will convert:
 \begin{description}
@@ -226,7 +228,6 @@ For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly total
 \textbf{Function: \textcolor{Plum}{NormalValues.fun()}}
 \end{center}
 
-
 Example of how to use the functions:
 
 <<echo=TRUE, results='hide'>>=
@@ -235,7 +236,6 @@ USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
 @
 
 \item[Function to Create Anomalies]
-
 
 Example of how to use the function:
 
@@ -292,13 +292,13 @@ print(ReadStations2.fun)
 \subsection{fixdates.fun}
 
 <<show_fixdates.fun, echo=FALSE>>=
-print(fixdates.fun)
+print(fixDates.fun)
 @
 
 \subsection{ConvertUnits.fun}
 
 <<show_ConvertUnits.fun, echo=FALSE>>=
-print(ConvertUnits.fun)
+print(fixValues.fun)
 @
 
 
