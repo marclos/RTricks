@@ -16,6 +16,21 @@ read_and_load_data.fun <- function(x){
   print("This function might not be needed, waiting to see how the class does")
 }
 
+LoadData.fun <- function(datafolder){
+  if (file.exists(paste0(datafolder, "anamolies.RData" ))) {
+    load(file=paste0(datafolder, "anamolies.RData"))
+    return
+    print("RData file found and loaded")
+  } else {
+    print("RData file does not exist.")
+}
+}
+
+# test function
+# rm(USC00042294.anomalies)
+# datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+# LoadData.fun(datapath)
+
 
 #load("C:/Users/Owner/Documents/Georgetown/Analytics/Analytics Programming/Week 3/USC00042294.RData")
 
