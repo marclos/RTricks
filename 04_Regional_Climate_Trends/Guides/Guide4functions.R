@@ -1,6 +1,7 @@
-# Guide4.R
+# Guide4functions.R
+# Updated: 2024-02-08
 
-load(file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
+#load(file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
 
 
 png1975.fun <- function(x){

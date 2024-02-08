@@ -1,4 +1,5 @@
-# Guide3.R
+# Guide3functions.R
+# Updated: 2024-02-07
 
 # Function to Determine Trends for Each Month
 
@@ -9,7 +10,7 @@
 # this from the discussion board after years of some minor 
 # frustration.
 
-load(file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
+#load(file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
 
 read_and_load_data.fun <- function(x){
   print("This function might not be needed, waiting to see how the class does")

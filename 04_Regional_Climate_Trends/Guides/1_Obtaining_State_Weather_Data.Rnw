@@ -155,7 +155,7 @@ datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 downloadStations.fun(datapath, my.inventory)
 @ 
 
-This will download the data from the NOAA website and read it into R then written as csv files in your data folder. Check to see that you have both csv.gz and .csv files in your data folder.
+This will download the data from the NOAA website and read it into R then written as compresseed gz and uncompressed czv files in your data folder. Check to see that you have both csv.gz and .csv files in your data folder.
 
 \end{description}
 
@@ -252,7 +252,7 @@ filename = read.csv(
 
 \subsection{NA.csv as a duplicate?}
 
-I am not sure why, but in the downloadStations.fun, the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv.
+I am not sure why, but in the downloadStations.fun(), the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv.
 
 %suggest you change the name of the file to something more descriptive.
 
