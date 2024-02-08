@@ -1,5 +1,5 @@
 # Guide3functions.R
-# Updated: 2024-02-07
+# Updated: 2024-02-08
 
 # Function to Determine Trends for Each Month
 
@@ -26,7 +26,7 @@ LoadData.fun <- function(datafolder){
 }
 
 if (file.exists(paste0(datapath, "anamolies.RData" ))) {
-  load(file="/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/anamolies.RData")
+  load(file=paste0(datapath, "anamolies.RData"))
   print("RData file found and loaded")
 } else {
   print("RData file does not exist.")
