@@ -97,16 +97,6 @@ DOESN'T WORK YET!
 LoadData.fun(datapath)
 @ 
 
-Brute for method: 
-<<eval=FALSE>>=
-if (file.exists(paste0(datapath, "anamolies.RData" ))) {
-    load(file="/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/anamolies.RData")
-    print("RData file found and loaded")
-} else {
-    print("RData file does not exist.")
-}
-@
-
 
 <<>>=
 ls()
@@ -328,24 +318,24 @@ In this example, we could either use rnorm or a kernel density estimate, for eac
 <<eval=TRUE, echo=FALSE>>=
 #library(lubridate)
 #load("USC00042294b.RData")
-station = USC00042294b
+station = subset(USC00040693.anamolies$PRCP)
 
 #floor_decade  = function(value){ return(value - value %% 10) } 
 floor_decade  = function(value){ return(as.integer(value/10)*10) } 
 #floor_score   = function(value){ return(value - value %% 20) }
 
 station$Decade <- floor_decade(station$YEAR)
-station[sample(1:nrow(station), 10), c(9, 1,3,4,10, 11, 12)]
+station[sample(1:nrow(station), 10), c( 6, 7, 2, 3, 4, 5)]
 #station$Score <- floor_score(station$YEAR)
 #names(station)
 station$Season <- ifelse(station$MONTH %in% c(3,4,5), "Spring", 
                   ifelse(station$MONTH %in% c(6,7,8), "Summer", 
                   ifelse(station$MONTH %in% c(9,10,11), "Fall", 
                   "Winter")))
-PRCP.Decade.mean <- aggregate(VALUE ~ Season + Decade, 
-          data =  subset(station, subset=ELEMENT=="PRCP"), mean, na.rm=T)
-PRCP.Decade.sd <- aggregate(VALUE ~ Season + Decade, 
-          data =  subset(station, subset=ELEMENT=="PRCP"), sd, na.rm=T)
+PRCP.Decade.mean <- aggregate(PRCP ~ Season + Decade, 
+          data =  station, mean, na.rm=T)
+PRCP.Decade.sd <- aggregate(PRCP ~ Season + Decade, 
+          data =  station, sd, na.rm=T)
 #dnorm(x, mean=PRCP.Decade.mean$VALUE[1], sd=PRCP.Decade.sd$VALUE[1])
 #x <- PRCP.Decade$PRCP[PRCP.Decade$Decade==1900]
 #df <- approxfun(density(x))
@@ -355,7 +345,7 @@ PRCP.Decade.sd <- aggregate(VALUE ~ Season + Decade,
 
 # Mutate PRCP.Decade.mean season in columns
 library(tidyr)
-PRCP.Decade.mean <- spread(PRCP.Decade.mean, Season, VALUE)
+PRCP.Decade.mean <- spread(PRCP.Decade.mean, Season, PRCP)
 @
 
 <<echo=FALSE, results='asis'>>=
