@@ -139,7 +139,7 @@ MonthlyNormals.fun <- function(x){
 
 #-------------------------------------------------------------------------------
 # Function to Calculate Monthly Anomalies
-MonthlyAnomalies.fun <- function(station.monthly, station.normals){
+MonthlyAnamolies.fun <- function(station.monthly, station.normals){
 for(i in seq_along(station.monthly)){
   TMAX <- merge(station.monthly[[1]], station.normals[[1]], by = "MONTH")
   TMAX$TMAX.a = TMAX$TMAX - TMAX$NORMALS
