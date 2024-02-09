@@ -162,7 +162,7 @@ Example of how to use the function:
 
 
 
-<<echo=TRUE, results='hide'>>=
+<<echo=TRUE, results='hide', eval=FALSE>>=
 station = "USW00013739.anomalies"
 month = 6
 element = "TMAX"
@@ -177,7 +177,7 @@ plotTrend.fun(USC00042294.anomalies, "PRCP", 1)
 
 
 
-<<>>=
+<<echo=FALSE>>=
 par(mar=c(5,5,5,5), las=1)
       
 plot(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies$TMAX, 
@@ -255,6 +255,8 @@ We can look for trends in monthly averages, number of days without rain (importa
 I don't know of a robust way to look at this for the entire globe. 
 
 Rainfall totals by season might be a useful way to think about changes, because the rainfall is often seasonal, I wonder if we can see pattners by season. 
+
+On ggplot -- TBD
 
 <<ggplot, warning=FALSE, eval=FALSE>>=
 ggplot( ) +

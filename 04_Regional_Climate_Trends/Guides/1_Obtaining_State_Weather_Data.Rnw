@@ -17,7 +17,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.91)} 
+\date{\today~(ver. 0.96)} 
 
 \begin{document}
 \maketitle
@@ -132,7 +132,8 @@ Example of how to use the function:
 
 <<echo=TRUE, eval=TRUE>>=
 my.state <- "CA"
-filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"
+filename.csv <- 
+  "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
 @
 

@@ -15,8 +15,9 @@ par(mfrow=c(1,1))
 # Create Basic Trend Line plot by month for one element
 BasicTrendPlot.fun <- function(station, month, element){
   # Create Basic Trend Line plot by month for one element
-plot(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies$TMAX, MONTH==6), las=1, pch=20, cex=.5, col="grey", ylab="°C Anomaly", main="Maximum Daily Temperature Anamolies for June", sub="For Station USC00042294, 1893-2012, slope = 0.001, p-value < 0.001, r2 = 0.02", xlab="Year")
-  abline(lm(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies$TMAX, MONTH==month)), col="red")
+ # plot(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies$TMAX, MONTH==6), las=1, pch=20, cex=.5, col="grey", ylab="°C Anomaly", main="Maximum Daily Temperature Anamolies for June", sub="For Station USC00042294, 1893-2012, slope = 0.001, p-value < 0.001, r2 = 0.02", xlab="Year")
+#   abline(lm(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies$TMAX, MONTH==month)), col="red")
+  print("BasicTrendPlot.fun doesn't work, use plotTrend.fun instead")
 } 
   
 # Testing Function
@@ -55,7 +56,7 @@ plotTrend.fun <- function(station, element, month) {
 
 station.lm <- lm(formula, data=temp)
 
-  sub=paste0("Trend: ", round(coef(station.lm)[2]*100, 4), "~degree~C/100 Year; R-squared: ", round(summary(station.lm)$r.squared, 3), "; p-value: ", round(summary(station.lm)$coefficients[2,4], 2))
+  sub=paste0("Trend: ", round(coef(station.lm)[2]*100, 4), " C/100 Year; R-squared: ", round(summary(station.lm)$r.squared, 3), "; p-value: ", round(summary(station.lm)$coefficients[2,4], 2))
 
 main=paste0(main1, " Anomaly (", month.name[month], ") at ", sub("\\..*", "", deparse(substitute(station))))
   
@@ -63,7 +64,6 @@ par(mfrow=c(1,1), mar=c(4,4,2,2), oma=c(0,0,2,0))
 plot(formula, data=temp, pch=19, 
        ylab=ylab, xlab="Year", col="gray", cex=.5, 
        main="")
-°
   mtext(main, side=3, line=2, cex=1.1)
   mtext(sub, side=3, line=1, cex=.8)
   abline(coef(station.lm), col="red")

@@ -67,7 +67,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.91)}
+\date{\today~(ver. 0.96)}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 \maketitle
@@ -181,7 +181,8 @@ Example of how to use the function:
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{my.state} \hlkwb{<-} \hlstr{"CA"}
-\hlstd{filename.csv} \hlkwb{<-} \hlstr{"/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"}
+\hlstd{filename.csv} \hlkwb{<-}
+  \hlstr{"/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"}
 \hlstd{my.inventory} \hlkwb{<-} \hlkwd{readInventory.fun}\hlstd{(filename.csv, my.state)}
 \end{alltt}
 \end{kframe}
@@ -210,7 +211,7 @@ An example of how to use the function:
 \end{kframe}
 \end{knitrout}
 
-This will download the data from the NOAA website and read it into R then written as csv files in your data folder. Check to see that you have both csv.gz and .csv files in your data folder.
+This will download the data from the NOAA website and read it into R then written as compresseed gz and uncompressed czv files in your data folder. Check to see that you have both csv.gz and .csv files in your data folder.
 
 \end{description}
 
@@ -282,7 +283,7 @@ Here's the function:
 ##         pattern = "\\.gz$"), read.csv, header = FALSE)
 ##     colnames <- c("ID", "DATE", "ELEMENT", "VALUE", "M-FLAG", 
 ##         "Q-FLAG", "S-FLAG", "OBS-TIME")
-##     lapply(StationList.df, setNames, colnames)
+##     StationList.df <- lapply(StationList.df, setNames, colnames)
 ##     for (i in seq_along(StationList.df)) {
 ##         filename = paste0(datafolder, my.inventory$ID[i], ".csv")
 ##         write.csv(StationList.df[[i]], filename, row.names = FALSE)
@@ -290,7 +291,7 @@ Here's the function:
 ##     write.csv(my.inventory, paste0(datafolder, "my.inventory.csv"), 
 ##         row.names = FALSE)
 ## }
-## <bytecode: 0x2c5a088>
+## <bytecode: 0x395dc08>
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -345,7 +346,7 @@ Then paste the result in the Rmd file to track the results to define the file na
 
 \subsection{NA.csv as a duplicate?}
 
-I am not sure why, but in the downloadStations.fun, the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv.
+I am not sure why, but in the downloadStations.fun(), the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv.
 
 %suggest you change the name of the file to something more descriptive.
 
