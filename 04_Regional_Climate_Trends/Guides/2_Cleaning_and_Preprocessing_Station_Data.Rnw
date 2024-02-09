@@ -246,10 +246,10 @@ USC00040693.normals <- MonthlyNormals.fun(USC00040693b)
 Example of how to use the function:
 
 <<echo=TRUE, results='hide'>>=
-USC00042294.anamolies <- 
-  MonthlyAnamolies.fun(USC00042294.monthly, USC00042294.normals)
-USC00040693.anamolies <- 
-  MonthlyAnamolies.fun(USC00040693.monthly, USC00040693.normals)
+USC00042294.anomalies <- 
+  MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
+USC00040693.anomalies <- 
+  MonthlyAnomalies.fun(USC00040693.monthly, USC00040693.normals)
 @
 
 \end{description}
@@ -265,18 +265,18 @@ Getting into the data is a bit tricky. The datasets is a list of dataframes. Eac
 The get access to each you use the following code:
 
 \begin{itemize}
-  \item \verb|USC00042294.anamolies[[1]]| for TMAX
-  \item \verb|USC00042294.anamolies[[2]]| for TMIN
-  \item \verb|USC00042294.anamolies[[3]]| for PRCP
+  \item \verb|USC00042294.anomalies[[1]]| for TMAX
+  \item \verb|USC00042294.anomalies[[2]]| for TMIN
+  \item \verb|USC00042294.anomalies[[3]]| for PRCP
 \end{itemize}
 
 \begin{figure}
 <<echo=FALSE>>=
 # plot the data
 par(mfrow=c(3,1), mar=c(4,5,3,2))
-plot(TMAX.a ~ Ymd, data=USC00042294.anamolies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Maximum Temperature Change")
-plot(TMIN.a ~ Ymd, data=USC00042294.anamolies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Minimum Temperature Change")
-plot(PRCP.a ~ Ymd, data=USC00042294.anamolies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anamoly (C)", main="Monthly Precipiation Change")
+plot(TMAX.a ~ Ymd, data=USC00042294.anomalies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Maximum Temperature Change")
+plot(TMIN.a ~ Ymd, data=USC00042294.anomalies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Minimum Temperature Change")
+plot(PRCP.a ~ Ymd, data=USC00042294.anomalies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anamoly (C)", main="Monthly Precipiation Change")
 @
 \end{figure}
 
@@ -362,7 +362,7 @@ Similar to the problem above, missing data can be a problem. The real issue that
 
 I noticed that the read 
 
-\subsubsection{Plot Anamoly}
+\subsubsection{Plot Anomaly}
 
 Graphic has lots of issues. more next time!  But here's a start.
 
@@ -399,12 +399,12 @@ print(MonthlyValues.fun)
 @
 
 
-\subsection{MonthlyAnamolies.fun}
+\subsection{MonthlyAnomalies.fun}
 
 Here's the function: 
 
 <<echo=FALSE>>=
-print(MonthlyAamolies.fun)
+print(MonthlyAnomalies.fun)
 @
 
 
@@ -433,7 +433,6 @@ SaveCleanUp.fun(datafolder)
 <<eval=FALSE>>=
 station1.clean=cleandataframe.fun(station1)
 @
-
 
 
 \end{document}

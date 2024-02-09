@@ -1,5 +1,5 @@
 # Guide2functions.R
-# Updated: 2024-02-07
+# Updated: 2024-02-09
 
 
 #-------------------------------------------------------------------------------
@@ -163,7 +163,7 @@ for(i in seq_along(station.monthly)){
 ## doesn't work yet
 SaveCleanUp.fun <- function(datapath){
       anomalies.ls = ls(pattern="*.anomalies", envir = parent.frame())
-      save(list = anamolies.ls, file=paste0(datafolder, "anomalies", ".RData"))      
+      save(list = anomalies.ls, file=paste0(datafolder, "anomalies", ".RData"))      
       #rm(list = ls(pattern="fun"), envir = parent.frame())
       #rm(list = station.obj, envir = parent.frame())
 }
