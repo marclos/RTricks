@@ -90,6 +90,8 @@ USC00042294.anamolies <- MonthlyAnamolies.fun(USC00042294.monthly, USC00042294.n
 # Guide 3
 
 ## Chunk 1
+
+You might see a note about file note found, this is for Marc, you can ignore.
 ```{r, chunk3_1}
 source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R")
 ```
@@ -107,6 +109,8 @@ USC00042294.trends <- monthlyTrend.fun(USC00042294.anamolies)
 # Guide 4
 
 ## Chunk 1
+
+You might see a note about file note found, this is for Marc, you can ignore.
 ```{r, chunk4_1}
 source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R")
 ```
@@ -118,6 +122,19 @@ plotTrend.fun(USC00042294.anamolies, "TMIN", 7)
 
 almost done!
 
+
+Zip Files for Marc!
+```{r}
+zip(zipfile = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guidefunctions.zip", 
+    files = c("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guide1functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guide2functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guide3functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guide4functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"))
+```
+
+```{r}
+```
 
 
 
