@@ -83,7 +83,7 @@ USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
 
 ## Chunk 9
 ```{r, chunk2_9}
-USC00042294.anamolies <- MonthlyAnamolies.fun(USC00042294.monthly, USC00042294.normals)
+USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
 ```
 
 
@@ -98,7 +98,7 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions
 
 ## Chunk 2
 ```{r}
-USC00042294.trends <- monthlyTrend.fun(USC00042294.anamolies)
+USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
 ```
 
 ## Chunk 3
@@ -117,7 +117,7 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions
 
 ## Chunk 2
 ```{r}
-plotTrend.fun(USC00042294.anamolies, "TMIN", 7)
+plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
 ```
 
 almost done!
@@ -125,11 +125,12 @@ almost done!
 
 Zip Files for Marc!
 ```{r}
-zip(zipfile = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guidefunctions.zip", 
-    files = c("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guide1functions.R",
-              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guide2functions.R",
-              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guide3functions.R",
-              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guide4functions.R",
+zip(zipfile = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guidefunctions.zip", 
+    files = c("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/MarcsTemplate.Rmd",
               "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"))
 ```
 

@@ -1,5 +1,5 @@
 # Guide1functions.R
-# Updated: 2020-02-07
+# Updated: 2020-02-09
 
 #-------------------------------------------------------------------------------
 # function to read(inventory.active.oldest) and subset criteria (my.state)
