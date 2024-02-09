@@ -1,5 +1,5 @@
 # Guide4functions.R
-# Updated: 2024-02-08
+# Updated: 2024-02-09
 
 # Load RData for knit Enviornment
 datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
