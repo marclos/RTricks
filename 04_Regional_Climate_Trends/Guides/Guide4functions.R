@@ -1,7 +1,15 @@
 # Guide4functions.R
 # Updated: 2024-02-08
 
-#load(file=paste0(datafolder, "USC00042294.anomalies", ".RData"))
+# Load RData for knit Enviornment
+datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+if (file.exists(paste0(datapath, "anamolies.RData" ))) {
+  load(file=paste0(datapath, "anamolies.RData"))
+  print("RData file found and loaded")
+} else {
+  print("RData file does not exist.")
+}
+
 par(mfrow=c(1,1))
 #-------------------------------------------------------------------------------
 # Create Basic Trend Line plot by month for one element
@@ -16,6 +24,57 @@ station = "USC00042294.anomalies"
 month = 6
 element = 
 BasicTrendPlot.fun(station, month, elemengt)
+
+
+#-------------------------------------------------------------------------------
+# Plot the Trend
+
+plotTrend.fun <- function(station, element, month) {
+  if(element == "TMAX"){
+    list = 1
+    temp = subset(station[[list]], subset=MONTH==month)
+    daterange = range(temp$Ymd)
+    formula = as.formula("TMAX.a ~ Ymd")
+    ylab="Temperature Anamoly (C)"
+    main1="Maximum Temperature"
+  } else if(element == "TMIN"){
+    list = 2
+    temp = subset(station[[list]], subset=MONTH==month)
+    daterange = range(temp$Ymd)
+    formula = as.formula("TMIN.a ~ Ymd") 
+    ylab="Temperature Anamoly (C)"
+    main1="Minumum Temperature"
+  } else if(element == "PRCP"){
+    list = 3
+    temp = subset(station[[list]], subset=MONTH==month)
+    daterange = range(temp$Ymd)
+    formula = as.formula("PRCP.a ~ Ymd")
+    main1="Precipitation"
+    ylab="Precipitation Anamoly (mm)"
+  }
+
+station.lm <- lm(formula, data=temp)
+
+  sub=paste0("Trend: ", round(coef(station.lm)[2]*100, 4), " C/100 Year; R-squared: ", round(summary(station.lm)$r.squared, 3), "; p-value: ", round(summary(station.lm)$coefficients[2,4], 2))
+
+main=paste0(main1, " Anamoly (", month.name[month], ") at ", sub("\\..*", "", deparse(substitute(station))))
+  
+par(mfrow=c(1,1), mar=c(4,4,2,2), oma=c(0,0,2,0))
+plot(formula, data=temp, pch=19, 
+       ylab=ylab, xlab="Year", col="gray", cex=.5, 
+       main="")
+  
+  mtext(main, side=3, line=2, cex=1.1)
+  mtext(sub, side=3, line=1, cex=.8)
+  abline(coef(station.lm), col="red")
+}
+
+# test function
+# plotTrend.fun(USC00042294.anomalies, "TMAX", 6)
+# plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
+# plotTrend.fun(USC00042294.anomalies, "PRCP", 1)
+
+
   
 #-------------------------------------------------------------------------------
 png1975.fun <- function(x){

@@ -1,0 +1,145 @@
+Group,Task,Time
+TuesG1,Select_State,5
+TuesG1,Download_Station_Data,10
+TuesG1,Read CSV,5
+TuesG1,Fix Date,5
+TuesG1,Transform,5
+TuesG1,Check_coverage,5
+TuesG1,Subset_TMAX,2
+TuesG1,lm_TMAX,5
+TuesG1,Subset_TMIN,2
+TuesG1,lm_MIN,2
+TuesG1,Subset_PRCP,2
+TuesG1,lm_PRCP,5
+TuesG1,Explore_EPA_Docs,20
+TuesG1,Alternative_Analyses,20
+TuesG1,Decide_on_Graphics,30
+TuesG1,Create Presentation Graphics,30
+TuesG1,Script Video (A/B rolls),30
+TuesG1,Make Video,20
+TuesG2,Select_State,5
+TuesG2,Download_Station_Data,5
+TuesG2,Read CSV,5
+TuesG2,Fix Date,15
+TuesG2,Transform,5
+TuesG2,Check_coverage,5
+TuesG2,Subset_TMAX,5
+TuesG2,lm_TMAX,5
+TuesG2,Subset_TMIN,2
+TuesG2,lm_MIN,3
+TuesG2,Subset_PRCP,15
+TuesG2,lm_PRCP,2
+TuesG2,Explore_EPA_Docs,45
+TuesG2,Alternative_Analyses,20
+TuesG2,Decide_on_Graphics,20
+TuesG2,Create Presentation Graphics,120
+TuesG2,Script Video (A/B rolls),60
+TuesG2,Make Video,60
+TuesG3,Select_State,5
+TuesG3,Download_Station_Data,5
+TuesG3,Read CSV,5
+TuesG3,Fix Date,30
+TuesG3,Transform,5
+TuesG3,Check_coverage,5
+TuesG3,Subset_TMAX,15
+TuesG3,lm_TMAX,30
+TuesG3,Subset_TMIN,5
+TuesG3,lm_MIN,5
+TuesG3,Subset_PRCP,5
+TuesG3,lm_PRCP,5
+TuesG3,Explore_EPA_Docs,25
+TuesG3,Alternative_Analyses,15
+TuesG3,Decide_on_Graphics,15
+TuesG3,Create Presentation Graphics,120
+TuesG3,Script Video (A/B rolls),60
+TuesG3,Make Video,60
+TuesG4,Select_State,5
+TuesG4,Download_Station_Data,5
+TuesG4,Read CSV,20
+TuesG4,Fix Date,5
+TuesG4,Transform,5
+TuesG4,Check_coverage,15
+TuesG4,Subset_TMAX,30
+TuesG4,lm_TMAX,5
+TuesG4,Subset_TMIN,5
+TuesG4,lm_MIN,5
+TuesG4,Subset_PRCP,5
+TuesG4,lm_PRCP,5
+TuesG4,Explore_EPA_Docs,25
+TuesG4,Alternative_Analyses,15
+TuesG4,Decide_on_Graphics,15
+TuesG4,Create Presentation Graphics,120
+TuesG4,Script Video (A/B rolls),60
+TuesG4,Make Video,60
+WedG1,Select_State,5
+WedG1,Download_Station_Data,10
+WedG1,Read CSV,10
+WedG1,Fix Date,20
+WedG1,Transform,25
+WedG1,Check_coverage,30
+WedG1,Subset_TMAX,15
+WedG1,lm_TMAX,25
+WedG1,Subset_TMIN,15
+WedG1,lm_MIN,15
+WedG1,Subset_PRCP,20
+WedG1,lm_PRCP,25
+WedG1,Explore_EPA_Docs,30
+WedG1,Alternative_Analyses,45
+WedG1,Decide_on_Graphics,15
+WedG1,Create Presentation Graphics,120
+WedG1,Script Video (A/B rolls),120
+WedG1,Make Video,240
+WedG2,Select_State,2
+WedG2,Download_Station_Data,20
+WedG2,Read CSV,10
+WedG2,Fix Date,20
+WedG2,Transform,25
+WedG2,Check_coverage,30
+WedG2,Subset_TMAX,12
+WedG2,lm_TMAX,45
+WedG2,Subset_TMIN,15
+WedG2,lm_MIN,15
+WedG2,Subset_PRCP,20
+WedG2,lm_PRCP,25
+WedG2,Explore_EPA_Docs,40
+WedG2,Alternative_Analyses,45
+WedG2,Decide_on_Graphics,30
+WedG2,Create Presentation Graphics,120
+WedG2,Script Video (A/B rolls),100
+WedG2,Make Video,200
+WedG3,Select_State,2
+WedG3,Download_Station_Data,10
+WedG3,Read CSV,15
+WedG3,Fix Date,30
+WedG3,Transform,30
+WedG3,Check_coverage,35
+WedG3,Subset_TMAX,20
+WedG3,lm_TMAX,35
+WedG3,Subset_TMIN,10
+WedG3,lm_MIN,15
+WedG3,Subset_PRCP,10
+WedG3,lm_PRCP,15
+WedG3,Explore_EPA_Docs,45
+WedG3,Alternative_Analyses,45
+WedG3,Decide_on_Graphics,15
+WedG3,Create Presentation Graphics,120
+WedG3,Script Video (A/B rolls),90
+WedG3,Make Video,120
+WedG4,Select_State,1
+WedG4,Download_Station_Data,5
+WedG4,Read CSV,5
+WedG4,Fix Date,10
+WedG4,Transform,20
+WedG4,Check_coverage,20
+WedG4,Subset_TMAX,5
+WedG4,lm_TMAX,15
+WedG4,Subset_TMIN,10
+WedG4,lm_MIN,10
+WedG4,Subset_PRCP,10
+WedG4,lm_PRCP,10
+WedG4,Explore_EPA_Docs,30
+WedG4,Alternative_Analyses,45
+WedG4,Decide_on_Graphics,10
+WedG4,Create Presentation Graphics,100
+WedG4,Script Video (A/B rolls),60
+WedG4,Make Video,180

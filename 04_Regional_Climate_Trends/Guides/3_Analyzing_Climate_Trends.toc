@@ -5,28 +5,30 @@
 \contentsline {subsection}{\numberline {1.4}R Code with Custom Functions}{3}{subsection.1.4}
 \contentsline {subsection}{\numberline {1.5}Before Starting the Process}{3}{subsection.1.5}
 \contentsline {subsubsection}{\numberline {1.5.1}Reading csv and loading R.data}{3}{subsubsection.1.5.1}
-\contentsline {section}{\numberline {2}Analyzing Monthly Trends}{4}{section.2}
-\contentsline {subsection}{\numberline {2.1}Linear Regression: TMAX, TMIN, and PRCP \nobreakspace {} YEAR, by=YEAR}{4}{subsection.2.1}
+\contentsline {section}{\numberline {2}Analyzing Monthly Trends}{3}{section.2}
+\contentsline {subsection}{\numberline {2.1}Linear Regression: TMAX, TMIN, and PRCP \nobreakspace {} YEAR, by=YEAR}{3}{subsection.2.1}
 \contentsline {subsubsection}{\numberline {2.1.1}Deprecated Loop Code}{5}{subsubsection.2.1.1}
 \contentsline {subsection}{\numberline {2.2}Plotting a Simple Trend Line}{6}{subsection.2.2}
-\contentsline {subsection}{\numberline {2.3}Filtering Seasonal Effect}{8}{subsection.2.3}
-\contentsline {subsubsection}{\numberline {2.3.1}Method 1: Filtering by Monthly Mean}{9}{subsubsection.2.3.1}
-\contentsline {subsubsection}{\numberline {2.3.2}Method 2: Polynomial Filter}{9}{subsubsection.2.3.2}
-\contentsline {section}{\numberline {3}Extreme Events--Using Daily Records}{9}{section.3}
-\contentsline {subsection}{\numberline {3.1}Complicated Nature of Rainfall Patterns}{9}{subsection.3.1}
-\contentsline {subsection}{\numberline {3.2}Drought}{9}{subsection.3.2}
-\contentsline {subsection}{\numberline {3.3}Standardized Precipitation Evapotranspiration Index (SPEI)}{9}{subsection.3.3}
-\contentsline {subsubsection}{\numberline {3.3.1}Days in a Row without Rain}{10}{subsubsection.3.3.1}
-\contentsline {subsubsection}{\numberline {3.3.2}Changes in the Rainfall Probability Distributions}{11}{subsubsection.3.3.2}
-\contentsline {subsection}{\numberline {3.4}Record Setting Temperature Records}{11}{subsection.3.4}
-\contentsline {subsection}{\numberline {3.5}KISS}{13}{subsection.3.5}
-\contentsline {subsubsection}{\numberline {3.5.1}Change Point Analysis}{13}{subsubsection.3.5.1}
-\contentsline {subsection}{\numberline {3.6}Temp \& Precipitation Probability}{13}{subsection.3.6}
-\contentsline {subsection}{\numberline {3.7}Using library densEstBayes}{13}{subsection.3.7}
-\contentsline {subsection}{\numberline {3.8}Probability Distributions}{13}{subsection.3.8}
-\contentsline {subsection}{\numberline {3.9}Evaluating Records}{14}{subsection.3.9}
-\contentsline {subsection}{\numberline {3.10}Export Options}{14}{subsection.3.10}
-\contentsline {section}{\numberline {4}Sea Surface Temperature Data -- SURP PROJECT WAITING TO HAPPEN}{14}{section.4}
-\contentsline {section}{\numberline {5}Satellite Data}{14}{section.5}
-\contentsline {section}{\numberline {6}Ice-Core Data}{14}{section.6}
-\contentsline {section}{\numberline {7}Conclusions}{14}{section.7}
+\contentsline {subsection}{\numberline {2.3}Filtering Seasonal Effect}{7}{subsection.2.3}
+\contentsline {subsubsection}{\numberline {2.3.1}Method 1: Filtering by Monthly Mean}{8}{subsubsection.2.3.1}
+\contentsline {subsubsection}{\numberline {2.3.2}Method 2: Polynomial Filter}{8}{subsubsection.2.3.2}
+\contentsline {section}{\numberline {3}Extreme Events--Using Daily Records}{8}{section.3}
+\contentsline {subsection}{\numberline {3.1}Complicated Nature of Rainfall Patterns}{8}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Drought}{8}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Standardized Precipitation Evapotranspiration Index (SPEI)}{8}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {3.3.1}Days in a Row without Rain}{9}{subsubsection.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.2}Changes in the Rainfall Probability Distributions}{10}{subsubsection.3.3.2}
+\contentsline {subsection}{\numberline {3.4}Record Setting Temperature Records}{10}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.5}KISS}{12}{subsection.3.5}
+\contentsline {subsubsection}{\numberline {3.5.1}Change Point Analysis}{12}{subsubsection.3.5.1}
+\contentsline {subsection}{\numberline {3.6}Temp \& Precipitation Probability}{12}{subsection.3.6}
+\contentsline {subsection}{\numberline {3.7}Using library densEstBayes}{12}{subsection.3.7}
+\contentsline {subsection}{\numberline {3.8}Probability Distributions}{12}{subsection.3.8}
+\contentsline {subsection}{\numberline {3.9}Evaluating Records}{13}{subsection.3.9}
+\contentsline {subsection}{\numberline {3.10}Export Options}{13}{subsection.3.10}
+\contentsline {section}{\numberline {4}Sea Surface Temperature Data -- SURP PROJECT WAITING TO HAPPEN}{13}{section.4}
+\contentsline {section}{\numberline {5}Satellite Data}{13}{section.5}
+\contentsline {section}{\numberline {6}Ice-Core Data}{13}{section.6}
+\contentsline {section}{\numberline {7}Troubleshooting}{13}{section.7}
+\contentsline {subsection}{\numberline {7.1}Loading and Reading Data into the Knit Environment}{13}{subsection.7.1}
+\contentsline {section}{\numberline {8}Conclusions}{14}{section.8}
