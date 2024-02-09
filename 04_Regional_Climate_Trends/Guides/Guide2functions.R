@@ -139,7 +139,7 @@ MonthlyNormals.fun <- function(x){
 
 #-------------------------------------------------------------------------------
 # Function to Calculate Monthly Anomalies
-MonthlyAnamolies.fun <- function(station.monthly, station.normals){
+MonthlyAnomalies.fun <- function(station.monthly, station.normals){
 for(i in seq_along(station.monthly)){
   TMAX <- merge(station.monthly[[1]], station.normals[[1]], by = "MONTH")
   TMAX$TMAX.a = TMAX$TMAX - TMAX$NORMALS
@@ -162,8 +162,8 @@ for(i in seq_along(station.monthly)){
 
 ## doesn't work yet
 SaveCleanUp.fun <- function(datapath){
-      anamolies.ls = ls(pattern="*.anamolies", envir = parent.frame())
-      save(list = anamolies.ls, file=paste0(datafolder, "anamolies", ".RData"))      
+      anomalies.ls = ls(pattern="*.anomalies", envir = parent.frame())
+      save(list = anamolies.ls, file=paste0(datafolder, "anomalies", ".RData"))      
       #rm(list = ls(pattern="fun"), envir = parent.frame())
       #rm(list = station.obj, envir = parent.frame())
 }
@@ -172,7 +172,7 @@ SaveCleanUp.fun <- function(datapath){
 # SaveCleanUp.fun(datafolder)
 
 #-------------------------------------------------------------------------------
-# Function to Save Anomaly Data
+# Function to Save Anamoly Data
 
 # I think this is a good idea, but the path issues are complicated, so 
 # I haven't implemented it yet. 

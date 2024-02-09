@@ -25,8 +25,8 @@ LoadData.fun <- function(datafolder){
 }
 }
 
-if (file.exists(paste0(datapath, "anamolies.RData" ))) {
-  load(file=paste0(datapath, "anamolies.RData"))
+if (file.exists(paste0(datapath, "anomalies.RData" ))) {
+  load(file=paste0(datapath, "anomalies.RData"))
   print("RData file found and loaded")
 } else {
   print("RData file does not exist.")
