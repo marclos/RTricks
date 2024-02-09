@@ -9,7 +9,6 @@
     citecolor=violet
 }
 %\usepackage{comment}
-\usepackage{xurl}
 \usepackage[dvipsnames]{xcolor}
 \colorlet{LightRubineRed}{RubineRed!100}
 \definecolor{mypink2}{RGB}{219, 48, 122}
@@ -54,8 +53,6 @@ As we get further into the project, these code chunks may require tweaking becau
 \subsection{Simple Mapping of Stations}
 
 \subsection{More Complex Mapping of Stations}
-
-
 
 <<eval=FALSE>>=
 library(geodata)
@@ -148,18 +145,22 @@ mainland +
 
 \subsection{Creating A Basic Trend Plot}
 
-begin{description}
+\begin{description}
 
 \item[Creating a Basic Trend Plot] The first step in analyzing the data is to create a basic trend plot. This plot will show the long-term trend in the data.
+
+\end{description}
 
 The function requires two inputs, the station and the data element (e.g., temperature, precipitation, etc.). The function will then create a basic trend plot for the station and data element.
 
 \begin{center}
-\textbf{Function: \textcolor{Plum}{BasicTrend.fun()}}
+\textbf{Function: \textcolor{Plum}{plotTrend.fun()}}
 \end{center}
 
 
 Example of how to use the function:
+
+
 
 <<echo=TRUE, results='hide'>>=
 station = "USW00013739.anomalies"
@@ -167,6 +168,13 @@ month = 6
 element = "TMAX"
 BasicTrendPlot.fun(station, month, element)
 @
+
+<<>>=
+plotTrend.fun(USC00042294.anomalies, "TMAX", 6)
+plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
+plotTrend.fun(USC00042294.anomalies, "PRCP", 1)
+@
+
 
 
 <<>>=

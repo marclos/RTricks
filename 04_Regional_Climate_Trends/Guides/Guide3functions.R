@@ -106,10 +106,10 @@ monthlyTrend.fun <- function(station) {
 # test function
 # USC00042294.trends <- monthlyTrend.fun(USC00042294.1975)
 
+#subset(station[element][[list]], subset=MONTH==month)
 
-# Plot the results
+#TMIN.lm <- lm(TMIN.a ~ YEAR, data=subset(USC00042294.anamolies[[2]], MONTH==1))
 
-#TMAX.lm <- lm(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1))
 #coef(TMAX.lm)
 #summary(TMAX.lm)
 #plot(TMAX.a ~ YEAR, data=subset(USC00042294TMAX, MONTH==1), pch=19, col="gray", cex=.5)
