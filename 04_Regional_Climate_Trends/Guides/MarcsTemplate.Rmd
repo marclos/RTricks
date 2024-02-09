@@ -9,6 +9,10 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+Updated: 2024-02-09
+
+
 # Guide 1
 
 ## Chunk 1
@@ -79,7 +83,7 @@ USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
 
 ## Chunk 9
 ```{r, chunk2_9}
-USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
+USC00042294.anamolies <- MonthlyAnamolies.fun(USC00042294.monthly, USC00042294.normals)
 ```
 
 
@@ -109,7 +113,7 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions
 
 ## Chunk 2
 ```{r}
-plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
+plotTrend.fun(USC00042294.anamolies, "TMIN", 7)
 ```
 
 almost done!
