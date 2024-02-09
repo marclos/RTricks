@@ -92,12 +92,12 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions
 
 ## Chunk 2
 ```{r}
-
-
+USC00042294.trends <- monthlyTrend.fun(USC00042294.anamolies)
 ```
 
 ## Chunk 3
 ```{r}
+
 ```
 
 # Guide 4
@@ -109,7 +109,7 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions
 
 ## Chunk 2
 ```{r}
-
+plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
 ```
 
 almost done!
