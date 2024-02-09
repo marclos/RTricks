@@ -15,15 +15,15 @@ par(mfrow=c(1,1))
 # Create Basic Trend Line plot by month for one element
 BasicTrendPlot.fun <- function(station, month, element){
   # Create Basic Trend Line plot by month for one element
-plot(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies$TMAX, MONTH==6), las=1, pch=20, cex=.5, col="grey", ylab="°C Anomaly", main="Maximum Daily Temperature Anomalies for June", sub="For Station USC00042294, 1893-2012, slope = 0.001, p-value < 0.001, r2 = 0.02", xlab="Year")
-  abline(lm(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies$TMAX, MONTH==month)), col="red")
+plot(TMAX.a ~ Ymd, data=subset(USC00042294.anamolies$TMAX, MONTH==6), las=1, pch=20, cex=.5, col="grey", ylab="°C Anomaly", main="Maximum Daily Temperature Anamolies for June", sub="For Station USC00042294, 1893-2012, slope = 0.001, p-value < 0.001, r2 = 0.02", xlab="Year")
+  abline(lm(TMAX.a ~ Ymd, data=subset(USC00042294.anamolies$TMAX, MONTH==month)), col="red")
 } 
   
 # Testing Function
-station = "USC00042294.anomalies"
+station = "USC00042294.anamolies"
 month = 6
 element = 
-BasicTrendPlot.fun(station, month, elemengt)
+#BasicTrendPlot.fun(station, month, element)
 
 
 #-------------------------------------------------------------------------------
