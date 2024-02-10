@@ -12,7 +12,7 @@ readInventory.fun<-function(filename, my.state){
 #-------------------------------------------------------------------------------
 # Download All Weather Station Data and Read Into R
 # datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
-downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
+downloadStationsOLD.fun <- function(datafolder, my.inventory=my.inventory){
   # Loop through all stations and download data
   for(i in 1:nrow(my.inventory)){
     url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", 
@@ -46,10 +46,32 @@ downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
   write.csv(my.inventory, paste0(datafolder, "my.inventory.csv"), row.names = FALSE)
 }
 
+#-------------------------------------------------------------------------------
+# Download All Weather Station Data and Read Into R -- Correcting Bug!
+# datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/test/"
+downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
+  colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
+                "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
+  # Loop through all stations and download, read/write csv data
+  for(i in 1:nrow(my.inventory)){
+    url = paste0("https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_station/", 
+                 my.inventory$ID[i], ".csv.gz")
+    
+    download.file(url, paste0(datafolder, my.inventory$ID[i], ".csv.gz"), 
+                  quiet = FALSE, mode = "w", cacheOK = TRUE)
+    station.temp <- read.csv(paste0(datafolder, my.inventory$ID[i], ".csv.gz"), header=FALSE)
+    names(station.temp) <- colnames
+    filename = paste0(datafolder, my.inventory$ID[i], ".csv")
+    write.csv(station.temp, filename, row.names = FALSE)
+    print(paste("Index (Loop) ", i, " Completed.")) # Print Index Number 
+    print("NOAA site can stall -- if the loop errors out, try again.")  
+  } # LOOP END
+  print("Think about something you are grateful for today!") 
+  #write.csv(my.inventory, paste0(datafolder, "my.inventory.csv"), row.names = FALSE)
+}
 
-
-
-
+# Test Function
+# downloadStations.fun("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/test/", my.inventory)
 
 
 

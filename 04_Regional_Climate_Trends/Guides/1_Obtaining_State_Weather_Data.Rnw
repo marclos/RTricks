@@ -17,7 +17,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.96)} 
+\date{\today~(ver. 0.97)} 
 
 \begin{document}
 \maketitle
@@ -160,7 +160,7 @@ This will download the data from the NOAA website and read it into R then writte
 
 \end{description}
 
-\noindent {\Large\textcolor{LightRubineRed}{You're are done with this guide, go to Guide 2!}}
+\noindent {\Large\textcolor{ForestGreen}{You're are done with this guide, go to Guide 2!}}
 
 \section{Explaining the Process and Code}
 
@@ -188,44 +188,6 @@ When you knit, R starts a new environment and runs the code in the chunks. But t
 
 I have created an R Markdown file for you to use. It is called MarcsTemplate.Rmd. As a template, you can use and change the code as you go. 
 
-\section{Function Descriptions}
-
-\subsection{readInventory.fun}\label{subsec:readInventory}
-
-Here's the function:
-
-<<show_readInventory.fun, echo=FALSE>>=
-print(readInventory.fun)
-@
-
-\subsection{downloadStations.fun}\label{subsec:downloadStations}
-
-Here's the function:
-
-<<show_downloadStation.fun, echo=FALSE>>=
-print(downloadStations.fun)
-@
-
-\section{Trouble Shooting and Workarounds}
-
-I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
-
-%\subsubsection{Identify List of State IDs (FIPS)}
-
-%Using the rNOAA library in R, we can query NOAA's database to identify station codes (FIPS) by state. With the states and some territories, there are 55 FIPS for US weather stations. Althogh these include the District of Columbia, they do not include US Territories, sich as Guam, Puerto Rico, Marshall Islands, etc. We'll have to use a different search code for these.
-
-%rNOAA has a simple function to list for each of the states and the weather stations in each. I use ncdc\_locs() functions to select each state and ncdc\_station() to obtain the station ids with the longest records. 
-
-%The function queries the NOAA website and retrieves state codes, ``FIPS:XX''. Each state has a number of weather stations,\footnote{Project Idea: It would be nice to make a map of how concentrated the stations spatially.} some with a long record, some with a short record, and some with numerous interruptions. Our goal is to select a long record with few missing data. 
-
-%\subsubsection{Selection Stations}
-
-%With the state ids, we can evaluate the metadata for all the weather stations, which will work to get the longest records, using \texttt{ncdc\_stations()}. 
-
-%First, we subset the data for stations that actively collecting data. Then we'll sort to the active stations to find the one with the longest records. We will use these stations for our analysis. 
-
-%There were some records that didn't have robust TMAX/TMIN records, so there are some states that I had to manually select an alternative stations. 
-
 \subsection{Defining Path \& Read Data}
 
 First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``04\_Regional\_Climate\_Trends") and then used the function here() to get the working directory and read the csv into R. This might be easier than the file.choose() option, but you can use that if you prefer.
@@ -246,79 +208,105 @@ filename = "home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.
 
 # OR what I use! 
 library(here)
-filename = read.csv(
-  here("04_Regional_Climate_Trends", "Data", "SP24", "stations.active.oldest.csv"))
-
+filename = here("04_Regional_Climate_Trends", "Data", "SP24", "stations.active.oldest.csv")
 @ 
 
-\subsection{NA.csv as a duplicate?}
-
-I am not sure why, but in the downloadStations.fun(), the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv.
 
 %suggest you change the name of the file to something more descriptive.
 
-\subsection{Download gz files with folder concantentated names}
-
-I don't know what causes this problem yet. But 5 students had this issue on Wedesday, but no one on Tuesday. That less than half the students had this issue is perplexing and I am continuing to work on this. More soon, I hope. 
-
-\section{Text that needs to be editted}
-
 \subsection{Selecting Weather Records by State}
 
-There are numerous ways to analyze temperature records, where stations can be analyzed individually or records could be sampled and analyzed in spatially in grids. Each of these are valid approaches depending on the question to be addressed. 
-
-Here are the questions we will address: 
-
-\begin{itemize}
-  \item What stations have the longest meterological records in the USA?
-  \item Can we determine the reliability of these stations?
-  \item Finally, is there a temperature trend?
-\end{itemize}
-
-\subsection{Map US Weather Stations}
+\subsubsection{Map US Weather Stations}
 
 Here's a map of the weather stations in the dataset. Pretty lame map!  We'll make a better one later.\footnote{Evelyn/Brody: This is a good change to see how to use R for map making! First we need to transform that data.}
 
 <<>>=
+stations.active.oldest = read.csv(paste0(here(), "/04_Regional_Climate_Trends/", "Data/", "SP24/", "stations.active.oldest.csv"))
 plot(stations.active.oldest$LONGITUDE, 
      stations.active.oldest$LATITUDE, 
      xlab = "Longitude",ylab = "Latitude", 
      pch=20, cex=0.3, col='gray60', las=1,
      main = "US Weather Stations")
 @
-\subsection{Select and Evaluate State Data}
 
-<<>>=
-stations.unique = 
-  unique(stations.active.oldest[,c("STATE", "STATE_NAME")])
+There are numerous ways to analyze temperature records, where stations can be analyzed individually or records could be sampled and analyzed in spatially in grids. Each of these are valid approaches depending on the question to be addressed. 
 
-xtab = xtable(stations.unique)
-@
+Here are the questions we will address: 
 
-The each of you will select a state -- see the Google Sheet sign up so we have a diverse set of states.
+\begin{itemize}
+  \item What stations have the longest meteorological records in the USA?
+  \item Can we determine the reliability of these stations?
+  \item Finally, is there a temperature trend?
+\end{itemize}
 
-<<>>=
-my.state = "CA" # change the "CA" to your state
-@
-
-\section{Download Data from NOAA}
-
-\subsection{Subset Station Data by State}
+\subsection{Subset Station Inventory by State}
 
 This uses the stations.active.oldest file to download the data from the NOAA website based on the state you have choose.
 
 The URL for the data is: \url{https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USW00023230/detail}.
 
-<<>>=# Select Stations in State
-my.stations = subset(stations.active.oldest, STATE == my.state)
+\section{Function Descriptions}
 
-# Download Updated Station Data
-i=1
-here::here("04_Regional_Climate_Trends", my.stations$ID[i])
+
+
+\subsection{readInventory.fun}\label{subsec:readInventory}
+
+Here's the function:
+
+<<show_readInventory.fun, echo=FALSE>>=
+print(readInventory.fun)
 @
 
+\subsection{downloadStations.fun}\label{subsec:downloadStations}\section{Download Data from NOAA}
 
-% bibilography section here-------------------------------------------
+
+
+
+
+Here's the function:
+
+<<show_downloadStation.fun, echo=FALSE>>=
+print(downloadStations.fun)
+@
+
+\section{Trouble Shooting and Workarounds}
+
+I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
+
+\subsection{NA.csv as a duplicate?}
+
+I am not sure why, but in the downloadStations.fun(), the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv.
+
+\subsection{Download gz files with folder concantentated names}
+
+Five students had this issue on Wednesday, but no one on Tuesday. That less than half the students had this issue is perplexing and I figured out that some students were using old functions, so I updated the functions and changed the Guide fuction file to reflect this change. 
+
+
+
+
+\section{rNOAA}
+
+The rNOAA package has been deprecated, so all the 2000-2022 code is no longer working. I have commented out the text -- but should I need to re-run the code, I have some of the description in the Rmd file. 
+
+%\subsubsection{Identify List of State IDs (FIPS)}
+
+%Using the rNOAA library in R, we can query NOAA's database to identify station codes (FIPS) by state. With the states and some territories, there are 55 FIPS for US weather stations. Althogh these include the District of Columbia, they do not include US Territories, sich as Guam, Puerto Rico, Marshall Islands, etc. We'll have to use a different search code for these.
+
+%rNOAA has a simple function to list for each of the states and the weather stations in each. I use ncdc\_locs() functions to select each state and ncdc\_station() to obtain the station ids with the longest records. 
+
+%The function queries the NOAA website and retrieves state codes, ``FIPS:XX''. Each state has a number of weather stations,\footnote{Project Idea: It would be nice to make a map of how concentrated the stations spatially.} some with a long record, some with a short record, and some with numerous interruptions. Our goal is to select a long record with few missing data. 
+
+%\subsubsection{Selection Stations}
+
+%With the state ids, we can evaluate the metadata for all the weather stations, which will work to get the longest records, using \texttt{ncdc\_stations()}. 
+
+%First, we subset the data for stations that actively collecting data. Then we'll sort to the active stations to find the one with the longest records. We will use these stations for our analysis. 
+
+%There were some records that didn't have robust TMAX/TMIN records, so there are some states that I had to manually select an alternative stations. 
+
+
+
+% bibiliography section here-------------------------------------------
 %\clearpage
 
 \bibliographystyle{apalike}
