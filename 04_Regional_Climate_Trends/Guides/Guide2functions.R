@@ -1,17 +1,15 @@
 # Guide2functions.R
 # Updated: 2024-02-09
 
-
 #-------------------------------------------------------------------------------
 # Function to Read CSV Files into R
-ReadStations.fun <- function(datafolder){
+ReadStationsOLD.fun <- function(datafolder){
   StationList <- list.files(datafolder, full.names=TRUE, pattern = "\\.csv$")
    # exclude unfinished stuff
-  StationList <- StationList[!grepl("\\-TMAX.csv$", StationList)]
-  StationList <- StationList[!grepl("\\-TMIN.csv$", StationList)]
-  StationList <- StationList[!grepl("\\-PRCP.csv$", StationList)]
+  #StationList <- StationList[!grepl("\\-TMAX.csv$", StationList)]
+  #StationList <- StationList[!grepl("\\-TMIN.csv$", StationList)]
+  #StationList <- StationList[!grepl("\\-PRCP.csv$", StationList)]
   #CHCNd_ID = read.csv(my.inventory.csv))
-  # Fix Variable Names based on NOAA Documentation
   colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
                 "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
   for (i in 1:length(StationList)){
@@ -153,6 +151,36 @@ for(i in seq_along(station.monthly)){
   return(list(TMAX = TMAX, TMIN = TMIN, PRCP = PRCP))  
   }
 }
+
+
+#-------------------------------------------------------------------------------
+##
+# Trouble Shooting Fuctions
+
+# Function to see if dataframe exists
+df_exists = function(name){
+  exists(name, envir = parent.frame())
+}
+
+# Function to see if specific df exists in dataframe list
+df_list_df = function(df, list){
+  df %in% names(list)
+}
+
+# Function to ensure parameters are found inside dataframe list
+df_list_params = function(df, list){
+  df %in% names(list)
+}
+
+#names(list("USW00054797"))
+#USC00042294b[[1]]
+#str(USC00042294b)
+
+# Test Trouble Shooting Functions
+# df_exists("USC00042294b")
+# df_list_df(USC00042294b, "Ymd")
+# df_list_params("TMAX", station1.monthly)
+
 
 #-------------------------------------------------------------------------------
 # Function to Up R Environment

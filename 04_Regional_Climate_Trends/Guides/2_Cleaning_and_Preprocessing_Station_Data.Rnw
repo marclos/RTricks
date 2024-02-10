@@ -282,9 +282,7 @@ plot(PRCP.a ~ Ymd, data=USC00042294.anomalies[[3]], type="p", col="green", pch=1
 @
 \end{figure}
 
-
-
-\Large\textcolor{Magenta}{Your are done with this guide, now take a break, a walk, and enjoy some screen free downtime. Next, go to Guide 3!}
+\textcolor{Periwinkle}{\Large Your are done with this guide, now take a break, a walk, and enjoy some screen free downtime. Next, go to Guide 3!}
 
 \subsection{Clean Up R Environment}
 
@@ -312,7 +310,7 @@ SaveCleanUp.fun(datafolder)
 print(ReadStations2.fun)
 @
 
-\subsubsection{Troube Shooting}
+\subsubsection{Trouble Shooting}
 
 The function fails to read some csv files into the R environment for a variety of reasons that I haven't been able to solve. 
 
