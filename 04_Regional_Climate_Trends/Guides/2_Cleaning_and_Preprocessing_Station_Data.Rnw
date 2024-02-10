@@ -172,6 +172,8 @@ coverage.fun(USC00040693a)
 
 In general, we want something like 95\% coverage for the period of record. If you don't have that, please let us know and we'll help you get additional stations with better coverage!
 
+See Section~\ref{subsec:coverage} for more information on how to evaluate the coverage of the data.
+
 \item[Function to Fix Values (by order of magnitude)]
 
 According the the NOAA website, the csv.gz files have  five core elements include the following units, which we will convert:
@@ -346,13 +348,15 @@ print(QAQC.fun)
 
 I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
 
-\subsubsection{Coverage Problems ($<$95\%)}
+\subsubsection{Coverage Problems ($<$95\%)}\label{subsubsec:coverage}
 
 <<show_datacoverage.fun, echo=FALSE>>=
 print(coverage.fun)
 @
 
 If you have too many stations that don't have enough data, we'll need to download additional stations. I can show you a way to decipher that ahead of time if you'd like to know. Otherwise, I suggest you double the number of stations selected in the code that generated my.inventory. I have increase the number of stations per state to 15, so perhaps that will give you enough to work with.
+
+If you get an error with this function, be sure you are using the correct file -- in our case, it should end with an "a". If you are using the wrong file, you'll get an error.
 
 \subsubsection{Missing Data}
 
@@ -392,12 +396,15 @@ Here's the function for Monthly Normals:
 print(MonthlyNormals.fun)
 @
 
+If you try to submit the wrong station file, e.g. `USC00042294`, you'll get an error. You need to submit the file that ends with an "b".
+
 Here's the function for Monthly Values: 
 
 <<echo=FALSE>>=
 print(MonthlyValues.fun)
 @
 
+If you try to submit the wrong station file, e.g. `USC00042294`, you'll get an error. You need to submit the file that ends with an "b".
 
 \subsection{MonthlyAnomalies.fun}
 
@@ -407,6 +414,8 @@ Here's the function:
 print(MonthlyAnomalies.fun)
 @
 
+If this function fails, it's likely because the products from the 
+MonthlyNormals.fun or MonthlyValues.fun functions did not work or the products of these functions are not in the R environment and correctly specified in the function call. 
 
 
 \section{Trouble Shooting and Work Arounds}

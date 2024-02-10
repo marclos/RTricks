@@ -1,8 +1,8 @@
 # Guide4functions.R
 # Updated: 2024-02-09
 
-# Load RData for knit Enviornment
-datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+# Load RData for knit Environment
+# datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 if (file.exists(paste0(datapath, "anomalies.RData" ))) {
   load(file=paste0(datapath, "anomalies.RData"))
   print("RData file found and loaded")
@@ -10,7 +10,7 @@ if (file.exists(paste0(datapath, "anomalies.RData" ))) {
   print("RData file does not exist.")
 }
 
-par(mfrow=c(1,1))
+#par(mfrow=c(1,1))
 #-------------------------------------------------------------------------------
 # Create Basic Trend Line plot by month for one element
 BasicTrendPlot.fun <- function(station, month, element){
@@ -21,9 +21,9 @@ BasicTrendPlot.fun <- function(station, month, element){
 } 
   
 # Testing Function
-station = "USC00042294.anomalies"
-month = 6
-element = 
+#station = "USC00042294.anomalies"
+#month = 6
+#element = 
 #BasicTrendPlot.fun(station, month, element)
 
 
@@ -44,7 +44,7 @@ plotTrend.fun <- function(station, element, month) {
     daterange = range(temp$Ymd)
     formula = as.formula("TMIN.a ~ Ymd") 
     ylab="Temperature Anamoly (C)"
-    main1="Minumum Temperature"
+    main1="Minimum Temperature"
   } else if(element == "PRCP"){
     list = 3
     temp = subset(station[[list]], subset=MONTH==month)
@@ -54,19 +54,19 @@ plotTrend.fun <- function(station, element, month) {
     ylab="Precipitation Anamoly (mm)"
   }
 
-station.lm <- lm(formula, data=temp)
+temp.lm <- lm(formula, data=temp)
 
-  sub=paste0("Trend: ", round(coef(station.lm)[2]*100, 4), " C/100 Year; R-squared: ", round(summary(station.lm)$r.squared, 3), "; p-value: ", round(summary(station.lm)$coefficients[2,4], 2))
-
-main=paste0(main1, " Anomaly (", month.name[month], ") at ", sub("\\..*", "", deparse(substitute(station))))
+  sub=paste0("Trend: ", round(coef(temp.lm)[2]*365.25*100, 4), " C/100 Year; R-squared: ", round(summary(temp.lm)$r.squared, 3), "; p-value: ", round(summary(temp.lm)$coefficients[2,4], 3))
+#stations.active.oldest[stations.active.oldest$ID==stationID]$STATE_NAME
+main=paste0(main1, " Anomaly (", month.name[month], ") at ", sub("\\..*", "", deparse(substitute())))
   
-par(mfrow=c(1,1), mar=c(4,4,2,2), oma=c(0,0,2,0))
+par(mfrow=c(1,1), mar=c(4,4,2,2), oma=c(0,0,2,0), las=1)
 plot(formula, data=temp, pch=19, 
        ylab=ylab, xlab="Year", col="gray", cex=.5, 
        main="")
   mtext(main, side=3, line=2, cex=1.1)
   mtext(sub, side=3, line=1, cex=.8)
-  abline(coef(station.lm), col="red")
+  abline(coef(temp.lm), col="red")
 }
 
 # test function
@@ -618,9 +618,9 @@ lines(pred_dates$Date, ci[,3], col="darkorange")
 text(pred_dates$Date[location_index], ci[location_index,3], 
      paste(report_prob2(GSOM.lm)), pos=2, cex=1.6)
 }
-
-# STOP
 dev.off()
+# STOP
+# 
 
 #-------------------------------------------------------------------------------
 # Temp and Probablility Functions
@@ -726,6 +726,7 @@ text(PPT.anomaly.list$PPT.anom[i,1], Anom.y*.96,
 dev.off()
 
 }
+
 }
 
 
