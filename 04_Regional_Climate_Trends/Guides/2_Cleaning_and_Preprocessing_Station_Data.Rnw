@@ -418,8 +418,32 @@ MonthlyNormals.fun or MonthlyValues.fun functions did not work or the products o
 
 \section{Trouble Shooting and Work Arounds}
 
-TBD!
+\subsection{Checking Results Step by Step}
 
+I generally check every step of the way to make sure the function is working. You can look the "Global Environment" in RStudio to see if the obects are there. 
+
+In addition, I have written some custom functions to evaluate the dataframes we have (hopefully) created!
+
+\begin{itemize}
+
+\item Does these object exist?
+
+<<eval=TRUE>>=
+df_exists("USC00042294b")
+@
+
+\item What are the names within the dataframe?
+<<>>=
+df_names(USC00042294b)
+@
+
+\item What are the first few rows of the dataframe?
+<<>>=
+df_head(USC00042294.anomalies)
+@
+
+
+\end{itemize}
 
 \section{Next Steps}
 
@@ -433,7 +457,7 @@ This is all we need to do so far. Next week, we'll look at different way to visu
 
 I'll save all the station data into csv files, then use them in the next guide to clean, process, and visualize data. I don't think the function is all that useful, so I can show you better ways of doing thin is class.
 
-<<>>=
+<<echo=TRUE>>=
 SaveCleanUp.fun(datafolder)
 @
 

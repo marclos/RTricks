@@ -1,0 +1,71 @@
+\documentclass{article}
+\usepackage{natbib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=red,
+    filecolor=magenta,
+    urlcolor=purple,
+    citecolor=violet
+}
+%\usepackage{comment}
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!100}
+\definecolor{mypink2}{RGB}{219, 48, 122}
+
+\title{Broader Impacts of Climate Science}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.08)} 
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+The broader impacts of climate science are far reaching and include the potential to inform policy, improve our understanding of the natural world, and to provide information to the public that can help them make informed decisions. This document is a guide to help you explore the broader impacts of climate science using the R programming language.
+
+\subsection{Goals}
+
+Create a compelling story\dots 
+
+\subsection{Approach}
+
+\subsubsection{US EPA Climate Change State Summaries}
+
+
+
+<<>>=
+library(here)
+library(xtable)
+
+@ 
+
+
+\subsection{State Policy}
+
+\section{Communicating to a Specific Public}
+
+\subsection{What is the Ask?}
+
+\subsection{Social Media}
+
+\subsubsection{Tictok}
+
+
+
+\section{Conclusions}
+
+Developing a robust method to analyze weather stations is both time consuming and difficult to justify the outcome. In part because the data suggest that each station (region) requires different types of analysis, based on the expected patterns of temperature and rainfall. As climate scientists have known for decades, the terminology of global warming is not very useful. Not because scientists are trying to hide something or promote some biased agenda, but that even as warming of the global average is well documented, the impacts of climate change on each region is highly specific, requiring specificity in the analysis. 
+
+Hopefully, this little analysis has created some mechanism for others to appreciate this compexity. 
+
+
+
+% bibliography section here-------------------------------------------
+%\clearpage
+
+\bibliographystyle{apalike}
+%\renewcommand\bibname{References}{}
+\bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
+
+\end{document}
