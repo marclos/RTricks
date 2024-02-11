@@ -10,6 +10,41 @@ if (file.exists(paste0(datapath, "anomalies.RData" ))) {
   print("RData file does not exist.")
 }
 
+#-------------------------------------------------------------------------------
+# Get Station Information, e.g. State Name, etc.
+station_names = c("ID",             #  1-11   Character   11
+                  "LATITUDE",       # 13-20   Real        8
+                  "LONGITUDE",      # 22-30   Real        9
+                  "ELEVATION",      # 32-37   Real        6
+                  "STATE",          # 39-40   Character   2
+                  "NAME",           # 42-71   Character
+                  "GSN FLAG",       # 73-75   Character
+                  "HCN/CRN FLAG",   # 77-79   Character
+                  "WMO ID"          # 81-85   Character
+)
+
+# Read ghcnd-stations.txt with fixed width format
+Stations = read.fwf("https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt", 
+                    col.names=station_names, fill=2,
+                    widths=c(11, -1, 8, -1, 9, -1, 6, -1, 2, -1, 30, -1, 3, -1, 3, -1, 5 ))
+
+# NOTE: Got to be a better way to get these data!
+
+# str(Stations) # Missing State Name
+
+# Now we'll get the state names for the states.
+State_names = c("STATE", #         1-2    Character 2
+                "STATE_NAME") #         4-50    Character 46
+States = read.fwf("https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-states.txt", 
+                  col.names=State_names, fill=2, 
+                  widths=c(2, -1, 46))
+
+# str(States)
+# Merge the two datasets
+StateIDs = subset(Stations, select=c("ID", "STATE", "LATITUDE", "LONGITUDE", "ELEVATION", "NAME"))
+StateIDs = merge(StateIDs, States, by="STATE") # Add State Names
+
+
 #par(mfrow=c(1,1))
 #-------------------------------------------------------------------------------
 # Create Basic Trend Line plot by month for one element
@@ -57,8 +92,11 @@ plotTrend.fun <- function(station, element, month) {
 temp.lm <- lm(formula, data=temp)
 
   sub=paste0("Trend: ", round(coef(temp.lm)[2]*365.25*100, 4), " C/100 Year; R-squared: ", round(summary(temp.lm)$r.squared, 3), "; p-value: ", round(summary(temp.lm)$coefficients[2,4], 3))
-#stations.active.oldest[stations.active.oldest$ID==stationID]$STATE_NAME
-main=paste0(main1, " Anomaly (", month.name[month], ") at ", sub("\\..*", "", deparse(substitute())))
+
+station.text = sub("\\..*", "", deparse(substitute(USC00042294.anomalies)))
+citystate = paste0(trimws(subset(StateIDs, subset = ID == substr(station.text,1,11))$NAME, which = "right"), ", ", subset(StateIDs, subset = ID == substr(station.text,1,11))$STATE)
+                                    
+main=paste0(main1, " Anomaly (", month.name[month], ") at ", sub("\\..*", "", citystate))
   
 par(mfrow=c(1,1), mar=c(4,4,2,2), oma=c(0,0,2,0), las=1)
 plot(formula, data=temp, pch=19, 
@@ -70,12 +108,12 @@ plot(formula, data=temp, pch=19,
 }
 
 # test function
+# extracting name of station from the object name
+# sub("\\..*", "", deparse(substitute(USC00042294.anomalies)))
 # plotTrend.fun(USC00042294.anomalies, "TMAX", 6)
 # plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
 # plotTrend.fun(USC00042294.anomalies, "PRCP", 1)
 
-
-  
 #-------------------------------------------------------------------------------
 png1975.fun <- function(x){
 GSOM_1975.png = paste0(fips$State2, "_", stid, "_GSOM_1975.png")

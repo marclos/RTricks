@@ -162,24 +162,23 @@ df_exists = function(name){
   exists(name, envir = parent.frame())
 }
 
-# Function to see if specific df exists in dataframe list
-df_list_df = function(df, list){
-  df %in% names(list)
+# Function to see what dataframe names are in list
+df_names = function(df){
+  attr(df, "names")
 }
 
-# Function to ensure parameters are found inside dataframe list
-df_list_params = function(df, list){
-  df %in% names(list)
+# Function see dataframe head
+df_head = function(df){
+  lapply(df, head, 6)
 }
-
-#names(list("USW00054797"))
-#USC00042294b[[1]]
-#str(USC00042294b)
 
 # Test Trouble Shooting Functions
 # df_exists("USC00042294b")
-# df_list_df(USC00042294b, "Ymd")
-# df_list_params("TMAX", station1.monthly)
+# df_names(USC00042294b)
+# df_head(USC00042294.anomalies)
+
+
+
 
 
 #-------------------------------------------------------------------------------
