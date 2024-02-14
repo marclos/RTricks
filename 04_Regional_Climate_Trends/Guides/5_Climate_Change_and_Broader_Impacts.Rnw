@@ -106,6 +106,28 @@ The role of social media in communicating the impacts of climate change is an im
 
 \end{description}
 
+\subsection{Lessions Learned}
+
+The research on social media trends and efficacy is a mixed bag. Some studies suggest that the public is not interested in the science of climate change, but rather the impacts of climate change on their lives. Others suggest that the public is interested in the science of climate change, but that the impacts of climate change on their lives are not well communicated.
+
+\subsection{Critique of Marc's Channel}
+
+There exists a tension between professionalism and amature content. The professional content is often over produced, while the amature content is might be retain some of the personality of the content producer and relatability. 
+
+\begin{itemize}
+
+\item Slower fuew words
+\item Text is too static and rushed
+\item Use Logo/State identifiers
+\item Tagline / jingle
+\item Here's how to get involved
+\item Station information more friendly
+\item Less wordiness, more oral communication
+\item Face on video
+\item better use of hashtags
+\item more information on state policy/activities
+\end{itemize}
+
 \subsubsection{Practicalities of the Tiktok Platform}
 
 In spite of the controversies and issues of privacy, Tictok is a powerful tool for communicating the impacts of climate change. We will load the our video on \href{https://www.tiktok.com/@nor_socal}{my TicTok account} to avoid the privacy issues that might arise from using the Tictok API by students.

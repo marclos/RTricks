@@ -87,16 +87,18 @@ replicates = rep(1:10, 4)
 anovadata = data.frame(Treatment = Treatments, Replicate = replicates, Value = values)
 ```
 
-```{r, results='markup'}
+```{r, results='asis'}
 print(xtable(cbind(replicates, a, b, c, d)), type="latex")
 ```
 
 ### Boxplot
 
-The boxplot is used to visualize the data
+The boxplot is used to visualize the data (simulated data).
 
 ```{r}
-boxplot(Value ~ Treatment, data = anovadata, col = "lightblue", main = "Boxplot of Treatment Means", xlab = "Treatment", ylab = "Value")
+boxplot(Value ~ Treatment, data = anovadata, col = "lightblue", 
+        main = "Boxplot of Treatment Means", 
+        xlab = "Treatment", ylab = "Value")
 ```
 
 ### Testing the Assumptions of ANOVA
@@ -122,7 +124,7 @@ The null hypothesis is that the means of the three species are equal. The altern
 
 The third test is the Pearson correlation test. This test is used to test the association between two or more categories of count data. 
 
-```{r}
+```{r, echo=FALSE}
 set.seed(78889)
 # 2 x 2 contigency table
 frequency = round(c(c(105+119)/2, c(93+150+97+179)/4, c(60+35+51)/3, 85), 0) #down, then over
@@ -145,7 +147,7 @@ The third test is the logistic regression test. This test is used to test the as
 
 Small square in tape on floor, 10x10 cm, between 20-300 cm, try to get in the square, by rolling or sliding the socket extension.
 
-```{r}
+```{r, echo=FALSE}
 set.seed(78889)
 Distance = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10) + rnorm(20, 2, 1.5) 
 Success = c(0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
