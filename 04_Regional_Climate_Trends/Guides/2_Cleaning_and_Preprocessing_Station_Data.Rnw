@@ -1,0 +1,469 @@
+\documentclass{article}
+\usepackage{natbib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=red,
+    filecolor=magenta,
+    urlcolor=purple,
+    citecolor=violet
+}
+
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!100}
+\definecolor{mypink2}{RGB}{219, 48, 122}
+
+\title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.88)} 
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+\subsection{Goals}
+
+The goal of this guide is to provide a step-by-step process for cleaning and pre-processing weather station data. The data is from the Global Historical Climatology Network (GHCN) Daily dataset. The data is available from the National Oceanic and Atmospheric Administration (NOAA) and is available from the National Centers for Environmental Information (NCEI) at \url{https://www.ncdc.noaa.gov/data-access/land-based-station-data/land-based-datasets/global-historical-climatology-network-ghcn}.
+
+\subsection{Background}
+
+\subsubsection{What is GHCN-Daily (GNCNd)?}
+
+The new dataset is referred to as GHCN-Daily, version 3. The new dataset has a number of improvements over the older dataset, including a more comprehensive and robust quality assurance process. The new dataset also includes more station records and is updated more frequently than the older dataset. 
+
+The new dataset is also available in a more user-friendly format, including a set of pre-packaged data files that are available for download from the NCEI website. However, devoloping instructions to interact with their website is way to time consuming! So, we'll use the R file transfer protocol, via https, to download the data. 
+
+In 2011, there was a major update to the daily updates to the GHCN dataset: \ref{https://www.ncei.noaa.gov/pub/data/ghcn/daily/COOPDaily_announcement_042011.pdf}{IMMEDIATE -- Changes to COOP Daily Form Access}. It's a useful history.
+
+\subsection{Approach}
+
+We need to address several things that might get in the way of our analysis: 
+
+\begin{enumerate}
+  \item Read csv files into R (from station.csv files)
+  \item Fix date format (convert to POSIXct, adding month and year as variables)
+  \item Convert units (VALUE: PRCP = 0.1 mm, TMAX/TMIN = 0.1 C)
+  \item Evaluate missing data (Coverage.fun)
+  \item Evalutae for Outliers (QACQ.fun)
+  \item Other stuff??
+\end{enumerate}
+
+\section{Cleaning and Pre-Processing Functions}
+
+<<setup, echo=FALSE, results='hide', message=FALSE>>=
+library(here)
+source(here("04_Regional_Climate_Trends", "Guides", "Guide2functions.R"))
+@
+
+\subsection{Before Starting the Process}
+
+Before you begin, make sure you have the stations to read into R. Got to the ``Files" tab in RStudio and make sure you see the station csv files in your data folder. If not, please Slack Marc and mentors, so we can troubleshoot the issue!
+
+\subsection{R Code with Custom Functions}
+
+From the Canvas page, go to the Guide2functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project.
+
+Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
+
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide2functions.R}{Guide2functions.R} code and the functions will be loaded into your environment automatically. Be sure the function has been updated to 2024-02-07!
+
+\subsection{Function Descriptions and Use}
+
+The following custom functions are used to read the weather stations data into R, clean and pre-process data so we can analyze the data with the next guide.
+
+\subsection{Reading csv and Checking dataframe objects}
+
+\begin{description}
+
+\item[Read all csv files into R]
+
+The data are now ready to be read into R environment, we will read them in using the following function: 
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{ReadStations2.fun()}}
+\end{center}
+
+Use this function read the stations in the R Environment. %In some sense, this is a work around for a bug at end end of Guide 1 that I can't figure out how to fix. Be patient, try this and let me know if you have to resort to this, which will help me find the pattern if the Guide 1 bug. 
+
+Example of how to use the function:
+
+<<echo=TRUE, results='hide'>>=
+datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+ReadStations2.fun(datafolder)
+@
+
+\item[Check the dataframes in the environment]
+
+You can do this by running the following code:
+
+<<listfunction, echo=TRUE>>=
+ls()
+@
+
+%You should see objects named after the stations you read in. For example, if you read in the station data (e.g. %\Sexpr{my.inventory$ID[1]}, you should see an object named that way into your R environment.
+
+\item[Check the structure of the dataframes]
+
+Using str(), make sure the datasets look right!
+
+For example: 
+
+<<echo=FALSE, results='markup'>>=
+str(USC00042294)
+@
+
+What to look for?  Is the object a data.frame?  Doee it have the right number of observations? Are the expected variable names present?  Are the data types correct?  Are values in each variable reasonable?
+
+\item[Sorting Stations by Number of Observations]
+
+In theory, the stations with the greatest numbrer of observations are the the ones we will want to evaluate. However, we may also want to evaluate stations to cover a geographic range. 
+
+For now, let use this function to sort the stations by the number of observations and use this to focus are attention. 
+
+THIS IS A BRAND NEW IDEA FROM WEDNESDAY'S LAB, SO i AM GOING BE DEVELOPING THIS NOW, BUT DONT' USE THIS NOW. Instead look at the number of observation in the R environment to select 3 stations with the highest number of observations. 
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{sortstations.fun()}}
+\end{center}
+
+Example of how to use the function:
+
+<<sortstations, echo=TRUE, results='hide'>>=
+# sortstations.fun() Nor working yet. 
+@
+
+\end{description}
+
+
+\subsection{Clean Data}
+
+Next we'll ``clean'' the dataset by fixing the date format and preparing it for the analysis stages.
+
+\begin{description}
+
+\item[Function to Fix Dates]
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{fixDates.fun()}}
+\end{center}
+
+Example of how to use the function (Note: the new dataframe name change): 
+
+<<fixdates, echo=TRUE, results='hide'>>=
+USC00042294a <- fixDates.fun(USC00042294)
+USC00040693a <- fixDates.fun(USC00040693)
+@
+
+\item[Evaluation Data Coverage]
+
+We need to know how much data we have for each station. This is important for the next steps in the process.
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{coverage.fun()}}
+\end{center}
+
+Example of how to use the function: 
+
+<<echo=TRUE, results='hide'>>=
+coverage.fun(USC00042294a)
+coverage.fun(USC00040693a)
+@
+
+In general, we want something like 95\% coverage for the period of record. If you don't have that, please let us know and we'll help you get additional stations with better coverage!
+
+See Section~\ref{subsec:coverage} for more information on how to evaluate the coverage of the data.
+
+\item[Function to Fix Values (by order of magnitude)]
+
+According the the NOAA website, the csv.gz files have  five core elements include the following units, which we will convert:
+\begin{description}
+  \item[PRCP =] Precipitation (tenths of mm) $\rightarrow$ mm
+  \item[SNOW =] Snowfall (mm)  $\rightarrow$ cm
+	\item[SNWD =] Snow depth (mm) $\rightarrow$ cm
+  \item[TMAX =] Maximum temperature (tenths of degrees C) $\rightarrow$ degrees C
+  \item[TMIN =] Minimum temperature (tenths of degrees C) $\rightarrow$ degrees C
+\end{description}
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{fixValues.fun()}}
+\end{center}
+
+Example of how to use the function (Note: the new dataframe name change):
+
+<<echo=TRUE, results='hide'>>=
+USC00042294b <- fixValues.fun(USC00042294a)
+USC00040693b <- fixValues.fun(USC00040693a)
+@
+
+\item[Checking for Outliers]
+
+NOAA website conducts a very rudimentary data quality check, but every year, we find stations with wacky numbers. Hopefully this function will find them. But if you do have some, let Marc and mentors know so we can figure out how to address them!
+
+Here are some stuff we'll look for: 
+\begin{description}
+  \item[Extreme Values] Plot values with time, is the scale crazy with just a few observations at the extreme?
+  \item[Sudden Shift] ???
+  \item[Note QA/QC Flags] TBD
+\end{description}
+
+Yes, I am still working on this. QA/QC is a big deal and I want to make I can explain it AND make sure the code works.
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{QAQC.fun()}}
+\end{center}
+
+Example of how to use the function:
+
+<<echo=TRUE, results='hide'>>=
+QAQC.fun(USC00042294b)
+QAQC.fun(USC00040693b)
+@
+
+If you have any hints of data problems, let's sort them out together!
+
+\item[Function to Create Monthly Values and Normals]
+
+For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly totals.\footnote{Brody/Evyln: We need code to exclue months with missing data, these might not be represenative of the month if missing, especically for PRCP!}
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{MonthlyValues.fun()}}
+\end{center}
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{NormalValues.fun()}}
+\end{center}
+
+Example of how to use the functions:
+
+<<echo=TRUE, results='hide'>>=
+USC00042294.monthly <- MonthlyValues.fun(USC00042294b)
+USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
+USC00040693.monthly <- MonthlyValues.fun(USC00040693b)
+USC00040693.normals <- MonthlyNormals.fun(USC00040693b)
+@
+
+\item[Function to Create Anomalies]
+
+Example of how to use the function:
+
+<<echo=TRUE, results='hide'>>=
+USC00042294.anomalies <- 
+  MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
+USC00040693.anomalies <- 
+  MonthlyAnomalies.fun(USC00040693.monthly, USC00040693.normals)
+@
+
+\end{description}
+
+\subsection{Checking on the Results}
+
+<<>>=
+ls()
+@
+
+Getting into the data is a bit tricky. The datasets is a list of dataframes. Each dataframe is a different variable, where 1 is TMAX, 2 is TMIN, and 3 is PRCP.
+
+The get access to each you use the following code:
+
+\begin{itemize}
+  \item \verb|USC00042294.anomalies[[1]]| for TMAX
+  \item \verb|USC00042294.anomalies[[2]]| for TMIN
+  \item \verb|USC00042294.anomalies[[3]]| for PRCP
+\end{itemize}
+
+\begin{figure}
+<<echo=FALSE>>=
+# plot the data
+par(mfrow=c(3,1), mar=c(4,5,3,2))
+plot(TMAX.a ~ Ymd, data=USC00042294.anomalies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Maximum Temperature Change")
+plot(TMIN.a ~ Ymd, data=USC00042294.anomalies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Minimum Temperature Change")
+plot(PRCP.a ~ Ymd, data=USC00042294.anomalies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anamoly (C)", main="Monthly Precipiation Change")
+@
+\end{figure}
+
+\textcolor{Periwinkle}{\Large Your are done with this guide, now take a break, a walk, and enjoy some screen free downtime. Next, go to Guide 3!}
+
+\subsection{Clean Up R Environment}
+
+I tend to avoid having lots of objects in my R environment. I like to clean up after myself. 
+
+Also, I like to move the final products into csv files. Here's the function to do that. However, I noticed that it' deleting needed files. YIKES! It's also clunky, but not that important at this point, nevertheless, I'll work on it later.So, I suggest you don't run this code until I fix it.
+
+<<cleanup, echo=TRUE, eval=FALSE>>=
+CleanUp.fun(datafolder, USC00042294.anamolies, "USC00042294")
+@
+
+For now, I am just saving the anamolies data into an RData file that I can use in other Rmd Guides. I doubt you'll need to do that.
+
+<<>>=
+SaveCleanUp.fun(datafolder)
+@
+
+\clearpage
+
+\section{Explaining the Marc's Custom Functions}
+
+\subsection{ReadStations2.fun}
+
+<<show_ReadStation.fun, echo=FALSE>>=
+print(ReadStations2.fun)
+@
+
+\subsubsection{Trouble Shooting}
+
+The function fails to read some csv files into the R environment for a variety of reasons that I haven't been able to solve. 
+
+To work around the issues, we'll have to read the csv filed directly. Here's how an example of how we might do it:
+
+\begin{verbatim}
+USC00042294 <- read.csv("data/USC00042294.csv")
+\end{verbatim}
+
+
+\subsection{fixdates.fun}
+
+<<show_fixdates.fun, echo=FALSE>>=
+print(fixDates.fun)
+@
+
+\subsection{ConvertUnits.fun}
+
+<<show_ConvertUnits.fun, echo=FALSE>>=
+print(fixValues.fun)
+@
+
+
+\subsection{QAQC.fun}
+
+<<show_QAQC.fun, echo=FALSE>>=
+print(QAQC.fun)
+@
+
+\subsubsection{How to Evaluate QA/QC Problems}
+
+\subsubsection{QA/QC Trouble Shooting}
+
+I will be getting all the guides working before working on this! But if there are errors with the custom function, this is where workarounds will be described! Please Slack me and mentors if you have any problems!
+
+\subsubsection{Coverage Problems ($<$95\%)}\label{subsubsec:coverage}
+
+<<show_datacoverage.fun, echo=FALSE>>=
+print(coverage.fun)
+@
+
+If you have too many stations that don't have enough data, we'll need to download additional stations. I can show you a way to decipher that ahead of time if you'd like to know. Otherwise, I suggest you double the number of stations selected in the code that generated my.inventory. I have increase the number of stations per state to 15, so perhaps that will give you enough to work with.
+
+If you get an error with this function, be sure you are using the correct file -- in our case, it should end with an "a". If you are using the wrong file, you'll get an error.
+
+\subsubsection{Missing Data}
+
+Similar to the problem above, missing data can be a problem. The real issue that I can see is that rainfall is so central because we use the data to calculate monthly totals, but if the month is missing data, then we have a severe bias. Same issue in temperature, but because we are looking at averages, it's less likely to be a major source of bias. But we should should check!
+
+\subsection{Failure to Read csv files}
+
+I noticed that the read 
+
+\subsubsection{Plot Anomaly}
+
+Graphic has lots of issues. more next time!  But here's a start.
+
+<<eval=FALSE>>=
+options(scipen=5)
+par(mar=c(4,6,2,5))
+
+plot(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1), 
+     las=1, pch=19, col = "blue", cex=.5, #xlab = "Year", 
+     ylab = "Maximum Temp Anomaly (C)",
+     main="January Maximum Temp Anomaly")
+mtext("Maximum Temp Anomaly (C)", side = 2, line = 3)
+temp.lm = lm(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1))
+abline(coef(temp.lm), col = "red")
+
+@
+
+We can see huge periods of time where no data was collecged. Yikes! I don't think I can use this station.
+
+My custom functions are probably sensitive to missing values, need to work on that!
+
+\subsection{MonthlyValues.fun}
+
+Here's the function for Monthly Normals:
+
+<<echo=FALSE>>=
+print(MonthlyNormals.fun)
+@
+
+If you try to submit the wrong station file, e.g. `USC00042294`, you'll get an error. You need to submit the file that ends with an "b".
+
+Here's the function for Monthly Values: 
+
+<<echo=FALSE>>=
+print(MonthlyValues.fun)
+@
+
+If you try to submit the wrong station file, e.g. `USC00042294`, you'll get an error. You need to submit the file that ends with an "b".
+
+\subsection{MonthlyAnomalies.fun}
+
+Here's the function: 
+
+<<echo=FALSE>>=
+print(MonthlyAnomalies.fun)
+@
+
+If this function fails, it's likely because the products from the 
+MonthlyNormals.fun or MonthlyValues.fun functions did not work or the products of these functions are not in the R environment and correctly specified in the function call. 
+
+
+\section{Trouble Shooting and Work Arounds}
+
+\subsection{Checking Results Step by Step}
+
+I generally check every step of the way to make sure the function is working. You can look the "Global Environment" in RStudio to see if the obects are there. 
+
+In addition, I have written some custom functions to evaluate the dataframes we have (hopefully) created!
+
+\begin{itemize}
+
+\item Does these object exist?
+
+<<eval=TRUE>>=
+df_exists("USC00042294b")
+@
+
+\item What are the names within the dataframe?
+<<>>=
+df_names(USC00042294b)
+@
+
+\item What are the first few rows of the dataframe?
+<<>>=
+df_head(USC00042294.anomalies)
+@
+
+
+\end{itemize}
+
+\section{Next Steps}
+
+\subsection{Apply Function to All Stations}
+
+So far, I have only run function for 1 station, but I suspect you can figure out how to run it for each one!
+
+This is all we need to do so far. Next week, we'll look at different way to visualize the data! 
+
+\subsection{Save and Clean Up R Environment}
+
+I'll save all the station data into csv files, then use them in the next guide to clean, process, and visualize data. I don't think the function is all that useful, so I can show you better ways of doing thin is class.
+
+<<echo=TRUE>>=
+SaveCleanUp.fun(datafolder)
+@
+
+<<eval=FALSE>>=
+station1.clean=cleandataframe.fun(station1)
+@
+
+
+\end{document}

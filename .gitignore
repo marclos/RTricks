@@ -26,9 +26,13 @@ vignettes/*.pdf
 00_resources/
 DRAFT/
 OLD/
-04_Regional_Climate_Trends/Data
-04_Regional_Climate_Trends/Guides/OLD
-
+04_Regional_Climate_Trends/Data/
+04_Regional_Climate_Trends/Guides/OLD/
+04_Regional_Climate_Trends/Guides/*.log
+04_Regional_Climate_Trends/Guides/*.tex
+04_Regional_Climate_Trends/Guides/*.concordance.tex
+04_Regional_Climate_Trends/Guides/*.synctex.gz
+04_Regional_Climate_Trends/Guides/figure
 # Guides
 # 01_Introduction_to_R/*.log
 
