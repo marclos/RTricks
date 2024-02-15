@@ -310,6 +310,8 @@ SaveCleanUp.fun(datafolder)
 print(ReadStations2.fun)
 @
 
+This is a paragraph. Take 2?
+
 \subsubsection{Trouble Shooting}
 
 The function fails to read some csv files into the R environment for a variety of reasons that I haven't been able to solve. 
