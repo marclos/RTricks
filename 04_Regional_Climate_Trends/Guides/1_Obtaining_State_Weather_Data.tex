@@ -182,13 +182,13 @@ Example of how to use the function:
 \begin{alltt}
 \hlstd{my.state} \hlkwb{<-} \hlstr{"CA"}
 \hlstd{filename.csv} \hlkwb{<-}
-  \hlstr{"/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"}
+  \hlstr{"/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"}
 \hlstd{my.inventory} \hlkwb{<-} \hlkwd{readInventory.fun}\hlstd{(filename.csv, my.state)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
-Creates a dataframe called my.inventory that contains the inventory data for the state/territory of interest. You should see that in the R environment. Note: The file name is cut off because my path is too long!
+Creates a dataframe called my.inventory that contains the inventory data for the state/territory of interest. You should see that in the R environment. Note: The filename is cut off because my path is too long!
 
 \item[Download and Read Selected Weather Station Data into R] This function will download the weather station data from the NOAA website and read it into R.
 
@@ -245,31 +245,26 @@ I have created an R Markdown file for you to use. It is called MarcsTemplate.Rmd
 
 \subsection{Defining Path \& Read Data}
 
-First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``04\_Regional\_Climate\_Trends") and then used the function here() to get the working directory and read the csv into R. This might be easier than the file.choose() option, but you can use that if you prefer.
-
-The first option: 
-
-Use this code to select the file from the console:
+First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``04\_Regional\_Climate\_Trends").  To get the working directory and filename, we can use the file.choose() function from the console:
 
 \begin{verbatim}
 > file.choose()
 \end{verbatim}
 
-Then paste the result in the Rmd file to track the results to define the file name:
+Then paste the result in the Rmd file to track the results to define the file name:\footnote{I use a function here() from the ``here library'', but it's a bit tricky to use and you can use that if you prefer.}
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{filename} \hlkwb{=} \hlstr{"home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"}
+\hlstd{filename} \hlkwb{=} \hlstr{"home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"}
 
 
-\hlcom{# OR what I use! }
+\hlcom{# OR what I use! see the footnote.}
 \hlkwd{library}\hlstd{(here)}
-\hlstd{filename} \hlkwb{=} \hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"Data"}\hlstd{,} \hlstr{"SP24"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{)}
+\hlstd{filename} \hlkwb{=} \hlkwd{here}\hlstd{(}\hlstr{"04_Regional_Climate_Trends"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-
 
 %suggest you change the name of the file to something more descriptive.
 
@@ -282,7 +277,8 @@ Here's a map of the weather stations in the dataset. Pretty lame map!  We'll mak
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{stations.active.oldest} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlkwd{paste0}\hlstd{(}\hlkwd{here}\hlstd{(),} \hlstr{"/04_Regional_Climate_Trends/"}\hlstd{,} \hlstr{"Data/"}\hlstd{,} \hlstr{"SP24/"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{))}
+\hlstd{stations.active.oldest} \hlkwb{=}
+  \hlkwd{read.csv}\hlstd{(}\hlkwd{paste0}\hlstd{(}\hlkwd{here}\hlstd{(),} \hlstr{"/04_Regional_Climate_Trends/"}\hlstd{,} \hlstr{"stations.active.oldest.csv"}\hlstd{))}
 \hlkwd{plot}\hlstd{(stations.active.oldest}\hlopt{$}\hlstd{LONGITUDE,}
      \hlstd{stations.active.oldest}\hlopt{$}\hlstd{LATITUDE,}
      \hlkwc{xlab} \hlstd{=} \hlstr{"Longitude"}\hlstd{,}\hlkwc{ylab} \hlstd{=} \hlstr{"Latitude"}\hlstd{,}
@@ -360,7 +356,7 @@ Here's the function:
 ##     }
 ##     print("Think about something you are grateful for today!")
 ## }
-## <bytecode: 0x3b0d298>
+## <bytecode: 0x42bceb8>
 \end{verbatim}
 \end{kframe}
 \end{knitrout}

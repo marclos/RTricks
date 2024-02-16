@@ -133,11 +133,11 @@ Example of how to use the function:
 <<echo=TRUE, eval=TRUE>>=
 my.state <- "CA"
 filename.csv <- 
-  "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"
+  "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
 @
 
-Creates a dataframe called my.inventory that contains the inventory data for the state/territory of interest. You should see that in the R environment. Note: The file name is cut off because my path is too long!
+Creates a dataframe called my.inventory that contains the inventory data for the state/territory of interest. You should see that in the R environment. Note: The filename is cut off because my path is too long!
 
 \item[Download and Read Selected Weather Station Data into R] This function will download the weather station data from the NOAA website and read it into R.
 
@@ -190,27 +190,22 @@ I have created an R Markdown file for you to use. It is called MarcsTemplate.Rmd
 
 \subsection{Defining Path \& Read Data}
 
-First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``04\_Regional\_Climate\_Trends") and then used the function here() to get the working directory and read the csv into R. This might be easier than the file.choose() option, but you can use that if you prefer.
-
-The first option: 
-
-Use this code to select the file from the console:
+First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``04\_Regional\_Climate\_Trends").  To get the working directory and filename, we can use the file.choose() function from the console:
 
 \begin{verbatim}
 > file.choose()
 \end{verbatim}
 
-Then paste the result in the Rmd file to track the results to define the file name:
+Then paste the result in the Rmd file to track the results to define the file name:\footnote{I use a function here() from the ``here library'', but it's a bit tricky to use and you can use that if you prefer.}
 
 <<>>=
-filename = "home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/stations.active.oldest.csv"
+filename = "home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
 
 
-# OR what I use! 
+# OR what I use! see the footnote.
 library(here)
-filename = here("04_Regional_Climate_Trends", "Data", "SP24", "stations.active.oldest.csv")
+filename = here("04_Regional_Climate_Trends", "stations.active.oldest.csv")
 @ 
-
 
 %suggest you change the name of the file to something more descriptive.
 
@@ -221,7 +216,8 @@ filename = here("04_Regional_Climate_Trends", "Data", "SP24", "stations.active.o
 Here's a map of the weather stations in the dataset. Pretty lame map!  We'll make a better one later.\footnote{Evelyn/Brody: This is a good change to see how to use R for map making! First we need to transform that data.}
 
 <<>>=
-stations.active.oldest = read.csv(paste0(here(), "/04_Regional_Climate_Trends/", "Data/", "SP24/", "stations.active.oldest.csv"))
+stations.active.oldest = 
+  read.csv(paste0(here(), "/04_Regional_Climate_Trends/", "stations.active.oldest.csv"))
 plot(stations.active.oldest$LONGITUDE, 
      stations.active.oldest$LATITUDE, 
      xlab = "Longitude",ylab = "Latitude", 
