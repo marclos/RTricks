@@ -14,7 +14,7 @@
 \colorlet{LightRubineRed}{RubineRed!100}
 \definecolor{mypink2}{RGB}{219, 48, 122}
 
-\title{Guide 3: Analyzing Climate Trends}
+\title{Guide 3: Analyzing \& Visual Display of Climate Trends}
 \author{Marc Los Huertos}
 \date{\today~(ver. 0.55)} 
 
@@ -37,6 +37,8 @@ In general, understanding the climate is a question of averages and ranges, of s
 
 \subsection{Approach}
 
+After Feb 13, I realized that I needed to provide a different structure to help you analyze and display the data. Instead of two separate documents, I have combined the code to analyze and display data in one document. Guide 4 is not completely focused on the script and video process. 
+
 Here's how I might start: Read the EPA summaries and see what stands out as compelling types of analyses. Then read news articles on the region and see what qualifies as "weather" news in the region. 
 
 I suggest you consider 3-5 questions that you think are interesting and then we can work together to see if we can answer those questions using the station data. 
@@ -53,6 +55,11 @@ We need to address several things that might get in the way of our analysis:
 In contrast to Guide 1 and 2, I couldn't separate the explanation of code from the code and statistical analysis. If you have suggestions of how to stream line this, I am all ears!
 
 Moreover, I haven't completed every possible analysis yet, but I tried to post the potential ones that I could think of. If you have some idea that is missing, let me know and we can figure out how to create an analysis for it!
+
+\begin{enumerate}
+  \item Explore various methods to display climate data
+  \item Use the following \href{https://docs.google.com/document/d/1GMsAxapAsnqdWhQVDylUcAq3n8MHJtf8hoZwNwessb8/edit?usp=sharing}{Google Doc} to suggest code and/or some functions that can be used to analyze your data. Marc and mentors will meet to see if we can help you with your code.
+\end{enumerate}
 
 
 \subsection{R Code with Custom Functions}
@@ -122,7 +129,6 @@ xtable(USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",], caption = "TMAX 
 #, type="latex", comment=FALSE, caption="TMAX Trends by Month", label = "tab:TMAXtrends")
 @
 
-
 \subsection{Plotting a Simple Trend Line}
 
 Here's an example of how to plot a simple trend line for TMIN for January. We are getting ahead of ourselves here, but it's a good example of how to plot a trend line and some of the back and forth we'll need to do between analysis and presentation. 
@@ -146,6 +152,34 @@ USC00042294.lm = lm(TMIN.a ~ Ymd, data=subset(USC00042294.anomalies$TMIN,
     MONTH==1))
 
 abline(coef(USC00042294.lm), col="red", lwd=1.5)
+@
+
+\subsection{Marc's Custom Function for Plotting Trends}
+
+I have a custom function that will plot the trend line for you. It's a bit more complicated than the simple example, but it has a bug that I am still working to fix.
+
+\begin{description}
+
+\item[Plot Trends by Month] I have created a basic function template, but we'll develop this together when we have a chance. This function will take the list of creates a plot based on three inputs: list of station dataframes, the element, and the month.
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{Function: plotTrend.fun()}}
+\end{center}
+
+\item[Example of how to use the function] Here's an example using the list of station dataframes anomalies. Note: I have often spelled the word anomaly wrong!
+
+<<echo=TRUE, results='hide'>>=
+plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
+@
+
+\item[Explore Results] I suggest you look carefully at the plots for hidden trends. In this case, look how the temperature really starts warming after the 1960s. I don't know that that means, but seems important!
+
+\end{description}
+
+<<>>=
+plotTrend.fun(USC00042294.anomalies, "TMAX", 6)
+plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
+plotTrend.fun(USC00042294.anomalies, "PRCP", 1)
 @
 
   
@@ -1593,6 +1627,129 @@ rm(dbase)
 @
 
 The document took %Sexpr{round(totaltime,1)} minutes to process and compile. My next goal will be to optimize the process and streamline the time to analyze. 
+
+
+
+\section{Mapping (GIS) and Weather Stations}
+
+\subsection{Simple Mapping of Stations}
+
+\subsection{More Complex Mapping of Stations}
+
+<<eval=FALSE>>=
+library(geodata)
+d <- worldclim_country(country = "USA", var = "tmin",
+                       path = tempdir())
+terra::plot(mean(d), plg = list(title = "Min. temperature (C)"))
+@
+
+<<>>=
+library(here)
+library(xtable)
+
+stations.active.oldest = read.csv(
+  here("04_Regional_Climate_Trends", "stations.active.oldest.csv"))
+
+# OR
+# use file.choose() to select the file
+# filename = "MY.PATH/04_Regional_Climate_Trends/stations.active.oldest.csv"
+# stations.active.oldest = read.csv(filename)
+@ 
+
+
+\subsection{Map US Weather Stations}
+
+Here's map that has been transformed using a bunch of libraries that I don't really know how to use, but I found webpage that told me how to make this!
+
+It would be nice to add Canada and Mexico so the USA is not floating in space. I'll work on that later.
+
+<<>>=
+library(usmap)
+library(ggplot2)
+library(sf)
+library(tidyverse)
+library("rnaturalearth")
+library("rnaturalearthdata")
+library(usmap)
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+
+usa <- subset(world, admin == "United States of America")
+
+(mainland <- ggplot(data = usa) +
+     geom_sf(fill = "cornsilk") +
+     #geom_sf(data = subset(sites), size = 3, shape = 21, fill = "gray70") +
+     geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
+    coord_sf(crs = st_crs(2163), xlim = c(-2500000, 2500000), ylim = c(-2300000, 
+         730000)))
+
+(alaska <- ggplot(data = usa) +
+     geom_sf(fill = "cornsilk") +
+    geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
+     coord_sf(crs = st_crs(3467), xlim = c(-2400000, 1600000), ylim = c(200000, 
+         2500000), expand = FALSE, datum = NA))
+
+(hawaii  <- ggplot(data = usa) +
+     geom_sf(fill = "cornsilk") +
+     geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
+     coord_sf(crs = st_crs(4135), xlim = c(-161, -154), ylim = c(18, 
+         23), expand = FALSE, datum = NA))
+
+(world.sf <- ggplot(data =world) +
+     geom_sf() +
+     #geom_sf(data = subset(sites), size = 3, shape = 21, fill = "gray70") +
+     geom_sf(data = subset(sites.2163), size = 1, shape = 21, fill = "red") +
+    coord_sf(crs = st_crs(2163), xlim = c(-2500000, 2500000), ylim = c(-2300000, 
+         730000)))
+
+
+mainland +
+ annotation_custom(
+      grob = ggplotGrob(alaska),
+      xmin = -2750000,
+      xmax = -2750000 + (1600000 - (-2400000))/2.5,
+      ymin = -2450000,
+      ymax = -2450000 + (2500000 - 200000)/2.5
+  ) +
+  annotation_custom(
+      grob = ggplotGrob(hawaii),
+      xmin = -1250000,
+      xmax = -1250000 + (-154 - (-161))*120000,
+      ymin = -2450000,
+      ymax = -2450000 + (23 - 18)*120000
+  )
+
+@
+
+
+\section{Mapping Long-term Weather Records}
+
+\subsection{Creating A Basic Trend Plot}
+
+\begin{description}
+
+\item[Plot Trends by Month] I have created a basic function template, but we'll develop this together when we have a chance. This function will take the list of creates a plot based on the following inputs: list of station dataframes, the element, and the month.
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{Function: plotTrend2.fun()}}
+\end{center}
+
+\item[Example of how to use the function] Here's an example using the list of station dataframes anomalies. Note: I have often spelled the word anomaly wrong!
+
+<<echo=TRUE, results='hide'>>=
+plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
+@
+
+\item[Explore Results] I suggest you look carefully at the plots for hidden trends. In this case, look how the temperature really starts warming after teh 1960s. I don't know that that means, but seems important!
+
+\end{description}
+
+
+
+\section{Extreme Events--Using Daily Records}
+
+
 
 % bibilography section here-------------------------------------------
 %\clearpage

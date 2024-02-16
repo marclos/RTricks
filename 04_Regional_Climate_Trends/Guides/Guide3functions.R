@@ -1,7 +1,5 @@
 # Guide3functions.R
-# Updated: 2024-02-09
-
-# Function to Determine Trends for Each Month
+# Updated: 2024-02-15
 
 # Read Data into List of Dataframes
 # This method of using data required when I Rstudio to knit code
@@ -21,7 +19,7 @@ LoadData.fun <- function(datafolder){
     load(file=paste0(datafolder, "anamolies.RData"))
     print("RData file found and loaded")
   } else {
-    print("RData file does not exist.")
+    print("RData file does not exist (Not if you have all functions in one Rmd file!).")
 }
 }
 
@@ -37,8 +35,39 @@ if (file.exists(paste0(datapath, "anomalies.RData" ))) {
 # datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 # LoadData.fun(datapath)
 
+#-------------------------------------------------------------------------------
+# Get Station Information, e.g. State Name, etc.
+station_names = c("ID",             #  1-11   Character   11
+                  "LATITUDE",       # 13-20   Real        8
+                  "LONGITUDE",      # 22-30   Real        9
+                  "ELEVATION",      # 32-37   Real        6
+                  "STATE",          # 39-40   Character   2
+                  "NAME",           # 42-71   Character
+                  "GSN FLAG",       # 73-75   Character
+                  "HCN/CRN FLAG",   # 77-79   Character
+                  "WMO ID"          # 81-85   Character
+)
 
-#load("C:/Users/Owner/Documents/Georgetown/Analytics/Analytics Programming/Week 3/USC00042294.RData")
+# Read ghcnd-stations.txt with fixed width format
+Stations = read.fwf("https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt", 
+                    col.names=station_names, fill=2,
+                    widths=c(11, -1, 8, -1, 9, -1, 6, -1, 2, -1, 30, -1, 3, -1, 3, -1, 5 ))
+
+# NOTE: Got to be a better way to get these data!
+
+# str(Stations) # Missing State Name
+
+# Now we'll get the state names for the states.
+State_names = c("STATE", #         1-2    Character 2
+                "STATE_NAME") #         4-50    Character 46
+States = read.fwf("https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-states.txt", 
+                  col.names=State_names, fill=2, 
+                  widths=c(2, -1, 46))
+
+# str(States)
+# Merge the two datasets
+StateIDs = subset(Stations, select=c("ID", "STATE", "LATITUDE", "LONGITUDE", "ELEVATION", "NAME"))
+StateIDs = merge(StateIDs, States, by="STATE") # Add State Names
 
 # Look at the data
 
@@ -97,6 +126,59 @@ monthlyTrend.fun <- function(station) {
 
 # test function
 # USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Function to Plot the Trend, for a given month and element
+plotTrend2.fun <- function(station, element, month) {
+  if(element == "TMAX"){
+    list = 1
+    temp = subset(station[[list]], subset=MONTH==month)
+    daterange = range(temp$Ymd)
+    formula = as.formula("TMAX.a ~ Ymd")
+    ylab="Temperature Anamoly (C)"
+    main1="Maximum Temperature"
+  } else if(element == "TMIN"){
+    list = 2
+    temp = subset(station[[list]], subset=MONTH==month)
+    daterange = range(temp$Ymd)
+    formula = as.formula("TMIN.a ~ Ymd") 
+    ylab="Temperature Anamoly (C)"
+    main1="Minimum Temperature"
+  } else if(element == "PRCP"){
+    list = 3
+    temp = subset(station[[list]], subset=MONTH==month)
+    daterange = range(temp$Ymd)
+    formula = as.formula("PRCP.a ~ Ymd")
+    main1="Precipitation"
+    ylab="Precipitation Anamoly (mm)"
+  }
+  
+  temp.lm <- lm(formula, data=temp)
+  
+  sub=paste0("Trend: ", round(coef(temp.lm)[2]*365.25*100, 4), " C/100 Year; R-squared: ", round(summary(temp.lm)$r.squared, 3), "; p-value: ", round(summary(temp.lm)$coefficients[2,4], 3))
+  
+  station.text = sub("\\..*", "", deparse(substitute(station)))
+  citystate = paste0(trimws(subset(StateIDs, subset = ID == substr(station.text,1,11))$NAME, which = "right"), ", ", subset(StateIDs, subset = ID == substr(station.text,1,11))$STATE)
+  
+  main=paste0(main1, " Anomaly (", month.name[month], ") at ", sub("\\..*", "", citystate))
+  
+  par(mfrow=c(1,1), mar=c(4,4,2,2), oma=c(0,0,2,0), las=1)
+  plot(formula, data=temp, pch=19, 
+       ylab=ylab, xlab="Year", col="gray", cex=.5, 
+       main="")
+  mtext(main, side=3, line=2, cex=1.1)
+  mtext(sub, side=3, line=1, cex=.8)
+  abline(coef(temp.lm), col="red")
+}
+
+# test function
+# station = "USC00042294"
+# extracting name of station from the object name
+# sub("\\..*", "", deparse(substitute(USC00042294.anomalies)))
+# plotTrend.fun(USC00042294.anomalies, "TMAX", 6)
+# plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
+# plotTrend.fun(USC00042294.anomalies, "PRCP", 1)
+
 
 # Testing the trend since 1975, where evidence suggest global
 # warming has been more pronounced or even accerating
