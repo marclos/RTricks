@@ -61,6 +61,12 @@ Moreover, I haven't completed every possible analysis yet, but I tried to post t
   \item Use the following \href{https://docs.google.com/document/d/1GMsAxapAsnqdWhQVDylUcAq3n8MHJtf8hoZwNwessb8/edit?usp=sharing}{Google Doc} to suggest code and/or some functions that can be used to analyze your data. Marc and mentors will meet to see if we can help you with your code.
 \end{enumerate}
 
+<<setup, echo=FALSE, results='hide', message=FALSE>>=
+datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+library(xtable)
+library(here)
+source(here("04_Regional_Climate_Trends", "Guides", "Guide3functions.R"))
+@
 
 \subsection{R Code with Custom Functions}
 
@@ -68,14 +74,9 @@ From the Canvas page, go to the Guide3functions.R file and download the file to 
 
 Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
 
-Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide3functions.R}{Guide3functions.R} code and the functions will be loaded into your environment automatically and are designed to help you analyze your statio data. 
+Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide3functions.R}{Guide3functions.R} code and the functions will be loaded into your environment automatically and are designed to help you analyze your station data.
 
-<<setup, echo=FALSE, results='hide', message=FALSE>>=
-datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
-library(xtable)
-library(here)
-source(here("04_Regional_Climate_Trends", "Guides", "Guide3functions.R"))
-@
+the Guide3functions.R file is living file -- so I suggest you check on the updates to the file every few days to see if there have been improvments. 
 
 As we get further into the project, these code chunks may require tweaking because of the questions you are interested for your location falls outside the design of the custom functions. Please let Marc or the mentors know to get assistance tweaking the code!
 
@@ -93,7 +94,7 @@ If not, please Slack Marc and mentors, so we help you get these files into the R
 
 If you decide to use the knitting function in R, it turns out that the R environment that the console has is not availabe for the knitting function. So, I had to create a way to bring the data into the knitted environment. If you would like to do this, see Section~\ref{subsec:load_data}.
 
-\section{Analyzing Monthly Trends}
+\section{Analyzing and Visualizing Monthly Trends}
 
 \subsection{Linear Regression: TMAX, TMIN, and PRCP ~ YEAR, by=YEAR}
 
@@ -154,7 +155,7 @@ USC00042294.lm = lm(TMIN.a ~ Ymd, data=subset(USC00042294.anomalies$TMIN,
 abline(coef(USC00042294.lm), col="red", lwd=1.5)
 @
 
-\subsection{Marc's Custom Function for Plotting Trends}
+\subsection{Marc's Custom Function to Plot a Station Trend}
 
 I have a custom function that will plot the trend line for you. It's a bit more complicated than the simple example, but it has a bug that I am still working to fix.
 
@@ -177,12 +178,42 @@ plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
 \end{description}
 
 <<>>=
-plotTrend.fun(USC00042294.anomalies, "TMAX", 6)
-plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
-plotTrend.fun(USC00042294.anomalies, "PRCP", 1)
+plotTrend2.fun(USC00042294.anomalies, "TMAX", 6)
+plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
+plotTrend2.fun(USC00042294.anomalies, "PRCP", 1)
 @
 
+\subsection{Acceleraation of Trend in 1975}
+
+For this analysis, we compare the slope, p-value, and r-squared between the station's entire record and the record starting in January 1, 1975. 
+
+For this we'll plot the entire record, with trend line and then overlay another trend line for the record starting in 1975.
+
+This is code for TMAX ([[1]] and June. I need to use "predict" to get the trend line for the second model that only includes the data after 1975.
+
+<<post1974>>=
+USC00042294.lm = lm(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies[[1]], subset=MONTH==6))
+
+USC00042294.post1975 = subset(USC00042294.anomalies[[1]], subset= YEAR > 1974)
+USC00042294.post1975.lm = lm(TMAX.a ~ Ymd, data=subset(USC00042294.post1975, subset=MONTH==6))
+
+plot(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies[[1]], subset=MONTH==6), pch=20, cex=.5, col="grey", ylab="Temp Anamoly (°C) ",  main="", xlab="Year", frame.plot=TRUE)
+     
+abline(coef(USC00042294.lm), col="black", lwd=1.5)
+
+points(TMAX.a ~ Ymd, data=subset(USC00042294.post1975, subset=MONTH==6), pch=20, cex=.5, col="red")
+
+new = seq.Date(from=as.Date("1975-01-01"), to=as.Date("2024-12-31"), by="month")
+new
+
+predict.lm(USC00042294.post1975.lm, interval="confidence")
+
+
+lines(USC00042294.post1975$Ymd, USC00042294.post1975.lm$fitted.values, col="red", lwd=1.5)
+
+abline(coef(USC00042294.post1975.lm), col="red", lwd=1.5)
   
+@
 \subsection{Filtering Seasonal Effect}
 
 Since we are looking at trends over years, it might be useful to filter out the seasonal effects.
@@ -760,8 +791,6 @@ Keeping it simple is critical in communicating scientific information. In this s
 
 \subsubsection{Change Point Analysis}
 First, TMIN and TMAX and change point analysis, I need to do some background in this, but I used this method in a recent paper with co-author, but I didn't do that part of the analysis, so more reading is needed (\url{https://cran.r-project.org/web/packages/mcp/readme/README.html}).
-
-
 
 <<echo=FALSE, eval=FALSE>>=
 
@@ -1587,11 +1616,7 @@ ls()
 \end{description}
 
 
-\section{Conclusions}
 
-Developing a robust method to analyze weather stations is both time consuming and difficult to justify the outcome. In part because the data suggest that each station (region) requires different types of analysis, based on the expected patterns of temperature and rainfall. As climate scientists have known for decades, the terminology of global warming is not very useful. Not because scientists are trying to hide something or promote some biased agenda, but that even as warming of the global average is well documented, the impacts of climate change on each region is highly specific, requiring specificity in the analysis. 
-
-Hopefully, this little analysis has created some mechanism for others to appreciate this compexity. 
 
 <<endtime, echo=FALSE, warning=FALSE, eval=FALSE>>=
 
@@ -1632,16 +1657,7 @@ The document took %Sexpr{round(totaltime,1)} minutes to process and compile. My 
 
 \section{Mapping (GIS) and Weather Stations}
 
-\subsection{Simple Mapping of Stations}
-
-\subsection{More Complex Mapping of Stations}
-
-<<eval=FALSE>>=
-library(geodata)
-d <- worldclim_country(country = "USA", var = "tmin",
-                       path = tempdir())
-terra::plot(mean(d), plg = list(title = "Min. temperature (C)"))
-@
+\subsection{Simple Mapping of All US and Canada Weather Stations}
 
 <<>>=
 library(here)
@@ -1650,10 +1666,6 @@ library(xtable)
 stations.active.oldest = read.csv(
   here("04_Regional_Climate_Trends", "stations.active.oldest.csv"))
 
-# OR
-# use file.choose() to select the file
-# filename = "MY.PATH/04_Regional_Climate_Trends/stations.active.oldest.csv"
-# stations.active.oldest = read.csv(filename)
 @ 
 
 
@@ -1722,6 +1734,30 @@ mainland +
 
 @
 
+\subsection{Simple Mapping of Selected State's 15 oldest, active Weather Stations}
+
+Since, we have a simple list of 15 stations in each state/territory, we can easily map them. 
+
+<<>>=
+plot(my.inventory$LONGITUDE, my.inventory$LATITUDE, pch = 19, col = "red", cex = 1.5)
+
+@
+
+
+\subsection{More Complex Mapping of Stations}
+
+<<eval=FALSE>>=
+library(geodata)
+d <- worldclim_country(country = "USA", var = "tmin",
+                       path = tempdir())
+terra::plot(mean(d), plg = list(title = "Min. temperature (C)"))
+@
+
+
+
+
+
+
 
 \section{Mapping Long-term Weather Records}
 
@@ -1750,6 +1786,11 @@ plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
 \section{Extreme Events--Using Daily Records}
 
 
+\section{Conclusions}
+
+Developing a robust method to analyze weather stations is both time consuming and difficult to justify the outcome. In part because the data suggest that each station (region) requires different types of analysis, based on the expected patterns of temperature and rainfall. As climate scientists have known for decades, the terminology of global warming is not very useful. Not because scientists are trying to hide something or promote some biased agenda, but that even as warming of the global average is well documented, the impacts of climate change on each region is highly specific, requiring specificity in the analysis. 
+
+Hopefully, this little analysis has created some mechanism for others to appreciate this complexity. 
 
 % bibilography section here-------------------------------------------
 %\clearpage

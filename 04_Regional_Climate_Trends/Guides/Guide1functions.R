@@ -68,7 +68,7 @@ downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
     print("NOAA site can stall -- if the loop errors out, try again.")  
   } # LOOP END
   print("Think about something you are grateful for today!") 
-  #write.csv(my.inventory, paste0(datafolder, "my.inventory.csv"), row.names = FALSE)
+  write.csv(my.inventory, paste0(datafolder, "my.inventory.csv"), row.names = FALSE)
 }
 
 # Test Function
