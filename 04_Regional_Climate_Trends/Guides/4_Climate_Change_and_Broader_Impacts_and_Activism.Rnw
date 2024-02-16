@@ -1,0 +1,148 @@
+\documentclass{article}
+\usepackage{natbib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=red,
+    filecolor=magenta,
+    urlcolor=purple,
+    citecolor=violet
+}
+%\usepackage{comment}
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!100}
+\definecolor{mypink2}{RGB}{219, 48, 122}
+
+\title{Guide 4: Climate Science, State Policy, and Local Activism}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.49)} 
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+The broader impacts of climate science are far reaching and include the potential to inform policy, improve our understanding of the natural world, and to provide information to the public that can help them make informed decisions. This document is a guide to help you explore the broader impacts of climate science.
+
+\subsection{Goals}
+
+Create a compelling story for a social media audience. 
+
+Our goal is to provide information to the public that can help them make informed decisions based on the trustworthy analysis of weather data. Using station data analysis from a state of your choosing, along with the EPA Climate Change Status Documents, we describe climate change trends, it's potential impacts on the local community, and what local activists groups are doing to mitigate the impacts of climate change.
+
+\subsection{Approach}
+
+\subsubsection{US EPA Climate Change State Summaries}
+
+The US EPA provides a summary of climate change impacts on each state. This is a good place to start to understand the potential impacts of climate change on the local community. Here's a link to the \href{https://19january2017snapshot.epa.gov/climate-impacts/climate-change-impacts-state_.html}{US EPA 2017 Climate Change State Snapshots}. More recent are the \href{https://statesummaries.ncics.org/}{EPA State 2022 Climate Summaries}.
+
+<<echo=FALSE, results='hide', message=FALSE>>=
+library(here)
+library(xtable)
+
+@ 
+
+
+How do these summaries align with our data analysis process?  Is there a way to use the EPA summaries to inform our data analysis process? And how does both of these sources help use develop a compelling story for a social media audience?
+
+\subsection{State Policy}
+
+There are several ways that climate science can inform state policy. For example, the California Climate Change Center provides a wealth of information on the impacts of climate change on the state of California. But finding these resources for each state can be a challenge. I found a few resources that might help you get started.
+
+\begin{description}
+
+\item[\href{https://www.c2es.org/document/climate-action-plans/}{US State Action Plans}] 33 states have released a climate action plan or are in the process of revising or developing one. This includes 32 states that have released plans and 1 state that is updating its plan. Climate action plans generally include greenhouse gas (GHG) emissions reduction targets and detail actions the state can take to help meet those goals. The plans may also include additional components such as resilience strategies, clean energy targets, and economic and social goals. The individual characteristics of each state's economy, resource base, and political structure provide different opportunities for addressing climate change.
+
+\item[\href{https://climate-xchange.org/dashboard/map/}{Climate XChange}] is a non-profit organization that provides information on state climate policy. The State Climate Policy Dashboard tracks only passed policy, not policy under consideration. It is not intended to evaluate the quality of state policy or rank states. For the purpose of this map, some policies are weighted corresponding to their importance. The map data provided on this page is purely illustrative. Nothing on this page constitutes legal advice.
+
+All information contained in this database is derived from information in the public domain. All information is collected by Climate XChange and subsequently reviewed by partner organizations and members of the State Climate Policy Network.
+
+\end{description}
+
+\section{Communicating to a Specific Public}
+
+\subsection{Potential Narrative Characteristics}
+
+\begin{description}
+
+\item[Trustworthy Source] In my mind, we need to demonstrate that the information we are providing is trustworthy. This is a challenge on social media, but we can provide links to the data sources and the analysis we used to develop our story.
+\item[Simple, clear messages] In some circles, scientists talk about "K.I.S.S." as a general principle to communicate science: Keep It Simple, Stupid. This is not to say that the audience is stupid, but rather that simple, clear messages are more likely to be understood and remembered.
+\item[Behaviors easy, fun, and popular] This is a challenge! Using a critique of the market forces does not empower many, thus, we need to create a mechanism for social change that is actionable and realistic. 
+
+\end{description}
+
+\subsection{What is the Message?}
+
+Developing a robust method to analyze weather stations is both time consuming and difficult to justify the outcome. In part because the data suggest that each station (region) requires different types of analysis, based on the expected patterns of temperature and rainfall. As climate scientists have known for decades, the terminology of global warming is not very useful. Not because scientists are trying to hide something or promote some biased agenda, but that even as warming of the global average is well documented, the impacts of climate change on each region is highly specific, requiring specificity in the analysis.
+
+\begin{enumerate}
+\item To improve public understanding, \citet{maibach2023harnessing} recommend simple, clear messages, repeated often, by a variety of trusted and caring messengers.
+
+\item To encourage uptake of useful behaviors, \citet{maibach2023harnessing} recommend making the behaviors easy, fun, and popular.
+
+\end{enumerate}
+
+These seem like good guiding principles for developing a compelling story for a social media audience. I suggest we ask the audience to take or make an active thought process: consider the potential impacts of climate change and how one might participate in local communities as a response. 
+
+
+\section{Research on Social Media Trends and Efficacy}
+
+The role of social media in communicating the impacts of climate change is an important part of the broader impacts of climate science. I have found a few sources that might help us, but these are just a start and haven't been thorouhgly evaluated: 
+
+\begin{description}
+
+\item[\citet{scannell2013personally}] %argue that the public is not interested in the science of climate change, but rather the impacts of climate change on their lives. Is there a way to develop a story that is compelling while being scientifically accurate?
+
+\item[\citet{maibach2023harnessing}]% suggest two guiding heuristics to enhance society's response to climate change:
+
+\item[\citet{makela2024climate}]
+
+\item[\citet{kresin2024students}]
+
+\item[\citet{nieto2024communicating}] %found %Theresultsshowasignificant reductioninthenumberofCC-related videos published during Sharm el-Sheikh COP27 compared to GlasgowCOP26.VideosaddressingCC-relatedissuesarenotamajority. . 
+%both influencers and the media are the ones who published the most, and men are more likely communicating CC onthe platform. . Influencers and TikTok users no longer communicate environmental or socio-cultural issues at COP27. They create a discourse that revolves solely around informationon political issues. . In general terms, there search reflectsthe lack of an educational and informative functionofthe climateissueon TikTok.
+
+\item[\citet{nguyen2023tiktok}]% llustratetheplatform’saffordances:In communicating toabroadaudience,youthtakeonagencyandprosocialstancesandexpressemotionstorelatetoviewersandsituate theircontent.Findingssuggesttheutilityoflearninganalyticsto exploreyouth’sperspectivesandprovideinsightstoframeclimate changeeducationinwaysthatelevatelivedexperiences.]
+
+\end{description}
+
+\subsection{Lessions Learned}
+
+The research on social media trends and efficacy is a mixed bag. Some studies suggest that the public is not interested in the science of climate change, but rather the impacts of climate change on their lives. Others suggest that the public is interested in the science of climate change, but that the impacts of climate change on their lives are not well communicated.
+
+\subsection{Critique of Marc's Channel}
+
+There exists a tension between professionalism and amature content. The professional content is often over produced, while the amature content is might be retain some of the personality of the content producer and relatability. 
+
+\begin{itemize}
+
+\item Slower fuew words
+\item Text is too static and rushed
+\item Use Logo/State identifiers
+\item Tagline / jingle
+\item Here's how to get involved
+\item Station information more friendly
+\item Less wordiness, more oral communication
+\item Face on video
+\item better use of hashtags
+\item more information on state policy/activities
+\end{itemize}
+
+\subsubsection{Practicalities of the Tiktok Platform}
+
+In spite of the controversies and issues of privacy, Tictok is a powerful tool for communicating the impacts of climate change. We will load the our video on \href{https://www.tiktok.com/@nor_socal}{my TicTok account} to avoid the privacy issues that might arise from using the Tictok API by students.
+
+%\section{Conclusions}
+
+%Hopefully, this little project has created some mechanisms to appreciate this complexity. 
+
+
+
+% bibliography section here-------------------------------------------
+%\clearpage
+
+\bibliographystyle{apalike}
+%\renewcommand\bibname{References}{}
+\bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
+
+\end{document}

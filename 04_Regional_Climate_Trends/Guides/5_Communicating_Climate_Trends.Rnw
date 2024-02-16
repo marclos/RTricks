@@ -1,7 +1,5 @@
 \documentclass{article}
 \usepackage{natbib}
-\usepackage{fullpage}  % Makes the page margins smaller to a predefined one.
-\usepackage{multicol} % Added a few parameters to play around with
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
@@ -15,13 +13,9 @@
 \colorlet{LightRubineRed}{RubineRed!100}
 \definecolor{mypink2}{RGB}{219, 48, 122}
 
-\columnseprule=0.4pt % Adds a rule for aesthetics.
-\columnsep=2cm       % Increases the width that separates the column.
-\renewcommand{\columnseprulecolor}{\color{red}} % Changes the default \normalcolor of the column separation rule.
-
-\title{Communicating Climate Trends -- Combining Imagery and Audio}
+\title{Guide 5: Communicating Climate Trends -- Combining Imagery and Audio}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.18)} 
+\date{\today~(ver. 0.28)} 
 
 \begin{document}
 \maketitle
