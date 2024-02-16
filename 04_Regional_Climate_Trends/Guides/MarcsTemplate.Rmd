@@ -23,7 +23,7 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions
 
 ## Chunk 2 Read Inventory
 ```{r, chunk1_2}
-my.state = "CA"
+my.state = "MT"
 filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
 ```
@@ -139,7 +139,7 @@ zip(zipfile = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guidefun
 
 
 # Putting it together 
-```{r}
+```{r, eval=FALSE}
 # Guide 1
 
 my.state = "RI"

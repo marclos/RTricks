@@ -95,9 +95,9 @@ source(here("04_Regional_Climate_Trends", "Guides", "Guide1functions.R"))
 
 These functions are designed so you don't have to type all the code! But check to see if they work for you, because they can (apparently) break really easily. 
 
-From the Canvas page, go to the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a new directory called ``Regional\_Climate\_Trends'' and then upload the file to that directory. Please note, avoid spaces in your directory names.
+From the Canvas page, go to the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a project called ``Regional\_Climate\_Trends'' and then upload the file to that directory. Please note, avoid spaces in your directory names.
 
-Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor window (Figure~\ref{fig:source_code}).
+Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor pane (Figure~\ref{fig:source_code}).
 
 \begin{figure}[h]
 \centering
@@ -217,11 +217,12 @@ Here's a map of the weather stations in the dataset. Pretty lame map!  We'll mak
 
 <<>>=
 stations.active.oldest = 
-  read.csv(paste0(here(), "/04_Regional_Climate_Trends/", "stations.active.oldest.csv"))
+  read.csv(paste0(here(), "/04_Regional_Climate_Trends/", 
+                  "stations.active.oldest.csv"))
 plot(stations.active.oldest$LONGITUDE, 
      stations.active.oldest$LATITUDE, 
      xlab = "Longitude",ylab = "Latitude", 
-     pch=20, cex=0.3, col='gray60', las=1,
+     pch=20, cex=0.2, col='gray40', las=1,
      main = "US Weather Stations")
 @
 
@@ -239,13 +240,13 @@ Here are the questions we will address:
 
 This uses the stations.active.oldest file to download the data from the NOAA website based on the state you have choose.
 
-The URL for the data is: \url{https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USW00023230/detail}.
+The URL for a description of the data is: \url{https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USW00023230/detail}.
 
-\section{Function Descriptions}
-
-
+\section{Function Details}
 
 \subsection{readInventory.fun}\label{subsec:readInventory}
+
+This function...
 
 Here's the function:
 
@@ -272,15 +273,13 @@ I will be getting all the guides working before working on this! But if there ar
 \subsection{NA.csv as a duplicate?}
 
 I am not sure why, but in the downloadStations.fun(), the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv.
+If you find a NA.csv in your folder, please let marc or mentors know and we will try to figure out what is going on.
 
 \subsection{Download gz files with folder concantentated names}
 
 Five students had this issue on Wednesday, but no one on Tuesday. That less than half the students had this issue is perplexing and I figured out that some students were using old functions, so I updated the functions and changed the Guide fuction file to reflect this change. 
 
-
-
-
-\section{rNOAA}
+\section{rNOAA -- Unsupported and Deprecated Library}
 
 The rNOAA package has been deprecated, so all the 2000-2022 code is no longer working. I have commented out the text -- but should I need to re-run the code, I have some of the description in the Rmd file. 
 
