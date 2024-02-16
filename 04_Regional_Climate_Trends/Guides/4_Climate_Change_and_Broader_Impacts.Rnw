@@ -132,6 +132,66 @@ There exists a tension between professionalism and amature content. The professi
 
 In spite of the controversies and issues of privacy, Tictok is a powerful tool for communicating the impacts of climate change. We will load the our video on \href{https://www.tiktok.com/@nor_socal}{my TicTok account} to avoid the privacy issues that might arise from using the Tictok API by students.
 
+\section{Social Change: Activism and Democratic Institutions}
+
+\subsection{What is Bowling Alone in America and Why Does it Matter?} 
+
+\citet{putnam2000bowling} argues that the decline of social capital in the United States is a result of the decline of civic engagement. This is a problem because social capital is a key ingredient in the functioning of democratic institutions.
+
+\subsection{What is the Role of Social Media in Social Change?}
+
+Social media is a powerful tool for social change. It can be used to organize protests, raise awareness, and mobilize people to take action. It can also be used to spread misinformation and hate speech.
+
+\subsection{What is the Role of Democratic Institutions in Social Change?}
+
+Democratic institutions are essential for social change. They provide a framework for people to express their views, organize, and take action. They also provide a mechanism for resolving conflicts and making decisions.
+
+\subsection{What is the Role of Activism in Social Change?}
+
+Activism is a key driver of social change. It can take many forms, from peaceful protests to civil disobedience. It can also be a powerful tool for raising awareness and mobilizing people to take action.
+
+\subsection{What is the Role of Science in Social Change?}
+
+Science can play a key role in social change. It can provide evidence to support social change efforts, and it can also help to inform policy decisions. However, science can also be used to spread misinformation and undermine social change efforts.
+
+\subsection{What is the Role of the Media in Social Change?}
+
+The media can play a key role in social change. It can help to raise awareness of social issues, and it can also help to shape public opinion. However, the media can also be used to spread misinformation and undermine social change efforts.
+
+\subsection{What is the Role of Education in Social Change?}
+
+Education is a key driver of social change. It can help to raise awareness of social issues, and it can also help to empower people to take action. However, education can also be used to spread misinformation and undermine social change efforts.
+
+\subsection{What is the Role of the Private Sector in Social Change?}
+
+The private sector can play a key role in social change. It can help to raise awareness of social issues, and it can also help to drive innovation and change. However, the private sector can also be driven by profit motives, which can sometimes conflict with social change efforts.
+
+\subsection{What is the Role of the Public Sector in Social Change?}
+
+The public sector can play a key role in social change. It can help to raise awareness of social issues, and it can also help to drive policy change. However, the public sector can also be driven by political motives, which can sometimes conflict with social change efforts.
+
+\subsection{What is the Role of Non-Governmental Organizations in Social Change?}
+
+Non-governmental organizations can play a key role in social change. They can help to raise awareness of social issues, and they can also help to drive policy change. However, non-governmental organizations can also be driven by political motives, which can sometimes conflict with social change efforts.
+
+\subsection{What is the Role of International Organizations in Social Change?}
+
+International organizations can play a key role in social change. They can help to raise awareness of social issues, and they can also help to drive policy change. However, international organizations can also be driven by political motives, which can sometimes conflict with social change efforts.
+
+\subsection{What is the Role of the Individual in Social Change?}
+
+Individuals can play a key role in social change. They can help to raise awareness of social issues, and they can also help to drive policy change. However, individuals can also be driven by personal motives, which can sometimes conflict with social change efforts.
+
+\subsection{What is the Role of Social Movements in Social Change?}
+
+Social movements can play a key role in social change. They can help to raise awareness of social issues, and they can also help to drive policy change. However, social movements can also be driven by political motives, which can sometimes conflict with social change efforts.
+
+
+
+
+
+
+
 %\section{Conclusions}
 
 %Hopefully, this little project has created some mechanisms to appreciate this complexity. 
