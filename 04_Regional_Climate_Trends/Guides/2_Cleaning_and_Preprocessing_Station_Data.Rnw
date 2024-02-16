@@ -15,7 +15,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.88)} 
+\date{\today~(ver. 0.92)} 
 
 \begin{document}
 \maketitle
@@ -50,7 +50,6 @@ We need to address several things that might get in the way of our analysis:
 \end{enumerate}
 
 \section{Cleaning and Pre-Processing Functions}
-
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
 library(here)
 source(here("04_Regional_Climate_Trends", "Guides", "Guide2functions.R"))
@@ -88,20 +87,20 @@ Use this function read the stations in the R Environment. %In some sense, this i
 
 Example of how to use the function:
 
-<<echo=TRUE, results='hide'>>=
+<<readstations, echo=TRUE, results='hide'>>=
 datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 ReadStations2.fun(datafolder)
 @
 
-\item[Check the dataframes in the environment]
+\item[List the objects in the R environment] The ls() function will list the objects in the R environment. Use this in the console.
 
-You can do this by running the following code:
-
-<<listfunction, echo=TRUE>>=
+<<echo=TRUE>>=
 ls()
 @
 
-%You should see objects named after the stations you read in. For example, if you read in the station data (e.g. %\Sexpr{my.inventory$ID[1]}, you should see an object named that way into your R environment.
+\noindent What do you see? Your list of objects should include several things like mine: some weather stations,  You should see objects named after the stations that have been read into R. In addition, you should see several functions (.fun) and other miscilenous objects. If so, you have been making progress. If you don't see something parallel to my list, let me or mentors know so we can trouble shoot, or look at section~\ref{sec:troubleshooting}. 
+
+% (e.g. %\Sexpr{my.inventory$ID[1]}, you should see an object named that way into your R environment.
 
 \item[Check the structure of the dataframes]
 
@@ -109,7 +108,7 @@ Using str(), make sure the datasets look right!
 
 For example: 
 
-<<echo=FALSE, results='markup'>>=
+<<stationstructure, echo=FALSE, results='markup'>>=
 str(USC00042294)
 @
 
@@ -119,9 +118,9 @@ What to look for?  Is the object a data.frame?  Doee it have the right number of
 
 In theory, the stations with the greatest numbrer of observations are the the ones we will want to evaluate. However, we may also want to evaluate stations to cover a geographic range. 
 
-For now, let use this function to sort the stations by the number of observations and use this to focus are attention. 
+%For now, let use this function to sort the stations by the number of observations and use this to focus are attention. 
 
-THIS IS A BRAND NEW IDEA FROM WEDNESDAY'S LAB, SO i AM GOING BE DEVELOPING THIS NOW, BUT DONT' USE THIS NOW. Instead look at the number of observation in the R environment to select 3 stations with the highest number of observations. 
+THIS IS A BRAND NEW IDEA FROM WEDNESDAY'S LAB, AND WILL WORK ON THIS FOR NEXT SEMESTER.  Instead look at the number of observation in the R environment to select 3 stations with the highest number of observations. 
 
 \begin{center}
 \textbf{Function: \textcolor{Plum}{sortstations.fun()}}
@@ -135,20 +134,19 @@ Example of how to use the function:
 
 \end{description}
 
-
 \subsection{Clean Data}
 
-Next we'll ``clean'' the dataset by fixing the date format and preparing it for the analysis stages.
+Next we'll ``clean'' the dataset by fixing the date format and preparing it for the analysis stages. I suggest you select two stations with the highest number of observations to work with. We will know if this is a problem soon enough and if it is, we can use one of the 13 remaining stations, if your state/terriborty has that many to choose from. 
 
 \begin{description}
 
-\item[Function to Fix Dates]
+\item[Function to Fix Dates] This function converts date values to a format that R can understand as a date, so we can, among other things, create montly means.
 
 \begin{center}
 \textbf{Function: \textcolor{Plum}{fixDates.fun()}}
 \end{center}
 
-Example of how to use the function (Note: the new dataframe name change): 
+Example of how to use the function (Note: the new dataframe name change with an a following the station.): 
 
 <<fixdates, echo=TRUE, results='hide'>>=
 USC00042294a <- fixDates.fun(USC00042294)
@@ -165,7 +163,7 @@ We need to know how much data we have for each station. This is important for th
 
 Example of how to use the function: 
 
-<<echo=TRUE, results='hide'>>=
+<<checkcoverage, echo=TRUE, results='hide'>>=
 coverage.fun(USC00042294a)
 coverage.fun(USC00040693a)
 @
@@ -191,7 +189,7 @@ According the the NOAA website, the csv.gz files have  five core elements includ
 
 Example of how to use the function (Note: the new dataframe name change):
 
-<<echo=TRUE, results='hide'>>=
+<<fixValues, echo=TRUE, results='hide'>>=
 USC00042294b <- fixValues.fun(USC00042294a)
 USC00040693b <- fixValues.fun(USC00040693a)
 @
@@ -220,7 +218,7 @@ QAQC.fun(USC00042294b)
 QAQC.fun(USC00040693b)
 @
 
-If you have any hints of data problems, let's sort them out together!
+If you have any hints of data problems (wacky values, odd patterns), let's sort them out together!
 
 \item[Function to Create Monthly Values and Normals]
 
@@ -236,7 +234,7 @@ For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly total
 
 Example of how to use the functions:
 
-<<echo=TRUE, results='hide'>>=
+<<monthymeans_normals, echo=TRUE, results='hide'>>=
 USC00042294.monthly <- MonthlyValues.fun(USC00042294b)
 USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
 USC00040693.monthly <- MonthlyValues.fun(USC00040693b)
@@ -247,7 +245,7 @@ USC00040693.normals <- MonthlyNormals.fun(USC00040693b)
 
 Example of how to use the function:
 
-<<echo=TRUE, results='hide'>>=
+<<anomalies, echo=TRUE, results='hide'>>=
 USC00042294.anomalies <- 
   MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
 USC00040693.anomalies <- 
@@ -258,7 +256,9 @@ USC00040693.anomalies <-
 
 \subsection{Checking on the Results}
 
-<<>>=
+You can double check that the dataframes you have been making are actually present by using the ls() function the console again. 
+
+<<listnewdataframes>>=
 ls()
 @
 
@@ -273,16 +273,21 @@ The get access to each you use the following code:
 \end{itemize}
 
 \begin{figure}
-<<echo=FALSE>>=
+<<plotanomalies, echo=FALSE>>=
 # plot the data
 par(mfrow=c(3,1), mar=c(4,5,3,2))
 plot(TMAX.a ~ Ymd, data=USC00042294.anomalies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Maximum Temperature Change")
 plot(TMIN.a ~ Ymd, data=USC00042294.anomalies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Minimum Temperature Change")
 plot(PRCP.a ~ Ymd, data=USC00042294.anomalies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anamoly (C)", main="Monthly Precipiation Change")
 @
+\caption{Here's a quick test to see if my data are coming out as expected and as a preview.}
+
+%You can think of this as simply \verb plot(y~x, data=station)and build from there if you are interested.}
 \end{figure}
 
 \textcolor{Periwinkle}{\Large Your are done with this guide, now take a break, a walk, and enjoy some screen free downtime. Next, go to Guide 3!}
+
+\clearpage
 
 \subsection{Clean Up R Environment}
 
@@ -294,15 +299,15 @@ Also, I like to move the final products into csv files. Here's the function to d
 CleanUp.fun(datafolder, USC00042294.anamolies, "USC00042294")
 @
 
-For now, I am just saving the anamolies data into an RData file that I can use in other Rmd Guides. I doubt you'll need to do that.
+For now, I am just saving the anamolies data into an RData file that I can use in other Rmd Guides by loading. I doubt you'll need to do that if you use only one Rmd file to knit all the functions together.
 
-<<>>=
+<<saveRdata>>=
 SaveCleanUp.fun(datafolder)
 @
 
 \clearpage
 
-\section{Explaining the Marc's Custom Functions}
+\section{Describing Marc's Custom Functions}
 
 \subsection{ReadStations2.fun}
 
@@ -370,18 +375,17 @@ I noticed that the read
 
 Graphic has lots of issues. more next time!  But here's a start.
 
-<<eval=FALSE>>=
+<<quickplotcheck, eval=FALSE>>=
 options(scipen=5)
 par(mar=c(4,6,2,5))
 
-plot(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1), 
+plot(TMAX.a ~ YEAR, data = subset(, MONTH == 1), 
      las=1, pch=19, col = "blue", cex=.5, #xlab = "Year", 
      ylab = "Maximum Temp Anomaly (C)",
      main="January Maximum Temp Anomaly")
 mtext("Maximum Temp Anomaly (C)", side = 2, line = 3)
 temp.lm = lm(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1))
 abline(coef(temp.lm), col = "red")
-
 @
 
 We can see huge periods of time where no data was collecged. Yikes! I don't think I can use this station.
@@ -392,7 +396,7 @@ My custom functions are probably sensitive to missing values, need to work on th
 
 Here's the function for Monthly Normals:
 
-<<echo=FALSE>>=
+<<pringMonthlyNormals.fun, echo=FALSE>>=
 print(MonthlyNormals.fun)
 @
 
@@ -400,7 +404,7 @@ If you try to submit the wrong station file, e.g. `USC00042294`, you'll get an e
 
 Here's the function for Monthly Values: 
 
-<<echo=FALSE>>=
+<<printMonthlyValues.fun, echo=FALSE>>=
 print(MonthlyValues.fun)
 @
 
@@ -410,7 +414,7 @@ If you try to submit the wrong station file, e.g. `USC00042294`, you'll get an e
 
 Here's the function: 
 
-<<echo=FALSE>>=
+<<printMonthlyAnomalies.fun, echo=FALSE>>=
 print(MonthlyAnomalies.fun)
 @
 
@@ -418,11 +422,11 @@ If this function fails, it's likely because the products from the
 MonthlyNormals.fun or MonthlyValues.fun functions did not work or the products of these functions are not in the R environment and correctly specified in the function call. 
 
 
-\section{Trouble Shooting and Work Arounds}
+\section{Trouble Shooting and Work Arounds}\label{sec:troubleshooting}
 
 \subsection{Checking Results Step by Step}
 
-I generally check every step of the way to make sure the function is working. You can look the "Global Environment" in RStudio to see if the obects are there. 
+I generally check every step of the way to make sure the function is working. You can look the ``Global Environment" in RStudio to see if the obects are there. 
 
 In addition, I have written some custom functions to evaluate the dataframes we have (hopefully) created!
 
@@ -430,17 +434,17 @@ In addition, I have written some custom functions to evaluate the dataframes we 
 
 \item Does these object exist?
 
-<<eval=TRUE>>=
+<<dfexists, eval=TRUE>>=
 df_exists("USC00042294b")
 @
 
 \item What are the names within the dataframe?
-<<>>=
+<<df_names, echo=TRUE>>=
 df_names(USC00042294b)
 @
 
 \item What are the first few rows of the dataframe?
-<<>>=
+<<df_head, echo=TRUE>>=
 df_head(USC00042294.anomalies)
 @
 
@@ -459,11 +463,11 @@ This is all we need to do so far. Next week, we'll look at different way to visu
 
 I'll save all the station data into csv files, then use them in the next guide to clean, process, and visualize data. I don't think the function is all that useful, so I can show you better ways of doing thin is class.
 
-<<echo=TRUE>>=
+<<saveclieanup, echo=TRUE>>=
 SaveCleanUp.fun(datafolder)
 @
 
-<<eval=FALSE>>=
+<<cleandataframe, eval=FALSE>>=
 station1.clean=cleandataframe.fun(station1)
 @
 
