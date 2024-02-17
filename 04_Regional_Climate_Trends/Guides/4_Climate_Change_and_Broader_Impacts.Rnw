@@ -15,7 +15,7 @@
 
 \title{Guide 4: Climate Science and Broader Impacts, and Democratic Engagement}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.49)} 
+\date{\today~(ver. 0.70)} 
 
 \begin{document}
 \maketitle

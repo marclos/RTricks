@@ -16,7 +16,7 @@
 
 \title{Guide 3: Analyzing \& Visual Display of Climate Trends}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.55)} 
+\date{\today~(ver. 0.71)} 
 
 \begin{document}
 \maketitle

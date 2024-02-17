@@ -61,7 +61,7 @@
 \maketitle
 
 \begin{abstract}
-The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complecated examples.
+The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
 
 %\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
 \end{abstract}
@@ -76,14 +76,15 @@ Advection is the transport of a substance by bulk motion. Convection is the tran
 
 \subsection{Session Goals}
 
-After this sesson, I hope you can do the following:
+We will not become experts in advection-diffusion-reaction modeling, but we will become familiar with the processes and the equations that describe them. Moreover, we'll see a bit more about how R can be used to model these processes. After this session, I hope you can do the following:
+
 \begin{enumerate}
 	\item Describe the physical processes of advection and dispersion and reactions
 	\item Describe the equations used to model A-D-R. 
-	\item Analyze 1-dimensional movement using advection equations
-	\item Describe Diffusions mathematically
-	\item Analyze 1-dimensional movement using Fick's Law.
-	\item Two dimensional analysis of advection
+	\item Analyze 1-dimensional movement using advection equations in R.
+	\item Describe diffusion mathematically
+	\item Analyze 1-dimensional adveecton-diffusion using R.
+	\item Appreciate how two-dimensional analysis of advection-diffusion can be modeled in R.
 \end{enumerate}
 
 \subsection{The Processes and the Equations to Describe Them}
@@ -324,15 +325,15 @@ We can use R to solve the advection-diffusion-reaction equation. The following c
 ## $y
 ##  [1] 0.90909091 0.82644628 0.75131480 0.68301346 0.62092132 0.56447393
 ##  [7] 0.51315812 0.46650738 0.42409762 0.38554329 0.35049390 0.31863082
-## [13] 0.28966438 0.26333125 0.23939205 0.21762914 0.19784468 0.17985880
-## [19] 0.16350800 0.14864363 0.13513058 0.12284598 0.11167816 0.10152561
+## [13] 0.28966438 0.26333126 0.23939206 0.21762914 0.19784467 0.17985879
+## [19] 0.16350800 0.14864363 0.13513058 0.12284598 0.11167817 0.10152560
 ## [25] 0.09229601
 ## 
 ## $Consumption
 ##  [1] 0.090909091 0.082644628 0.075131480 0.068301346 0.062092132 0.056447393
 ##  [7] 0.051315812 0.046650738 0.042409762 0.038554329 0.035049390 0.031863082
-## [13] 0.028966438 0.026333125 0.023939205 0.021762914 0.019784468 0.017985880
-## [19] 0.016350800 0.014864363 0.013513058 0.012284598 0.011167816 0.010152561
+## [13] 0.028966438 0.026333126 0.023939206 0.021762914 0.019784467 0.017985879
+## [19] 0.016350800 0.014864363 0.013513058 0.012284598 0.011167817 0.010152560
 ## [25] 0.009229601
 ## 
 ## $flux.up
@@ -342,7 +343,7 @@ We can use R to solve the advection-diffusion-reaction equation. The following c
 ## [1] 0.09229601
 ## 
 ## attr(,"precis")
-## [1] 3.806766e-01 2.201006e-09
+## [1] 4.110145e-01 2.941674e-09
 ## attr(,"steady")
 ## [1] TRUE
 ## attr(,"class")
@@ -551,7 +552,7 @@ It takes about 0.5 second to solve this 10000 state variable model.
 \end{alltt}
 \begin{verbatim}
 ##    user  system elapsed 
-##   0.261   0.026   0.287
+##   0.217   0.022   0.240
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
