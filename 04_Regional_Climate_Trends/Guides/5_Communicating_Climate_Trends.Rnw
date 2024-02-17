@@ -15,7 +15,7 @@
 
 \title{Guide 5: Communicating Climate Trends -- Combining Imagery and Audio}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.28)} 
+\date{\today~(ver. 0.58)} 
 
 \begin{document}
 \maketitle
