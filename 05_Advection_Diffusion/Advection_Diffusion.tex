@@ -1,4 +1,4 @@
-\documentclass{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
 % maxwidth is the original width if it is less than linewidth
 % otherwise use linewidth (to make sure the graphics do not exceed the margin)
 \makeatletter
@@ -49,39 +49,99 @@
 \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
+
+%\geometry{showframe}% for debugging purposes -- displays the margins
+
 \usepackage{amsmath}
+\usepackage{graphicx}
 \usepackage{natbib}
 
-\newcommand{\mumolspercm}{$\mu$mols/cm$^{-3}$}
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\begin{document}
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+\bibfont{\small} % Doesn't see to work...
+
+\graphicspath{{graphics/}}
+
+\newcommand{\numolspercm}{$\nu$mols/cm$^{-3}$}
 
 \title{DRAFT ! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.4 don't read until I get to v .8!)}
+\date{\today~(ver. 0.47 Wait to read until I get to v .8!)}
 
-\maketitle
+\setsidenotefont{\color{blue}}
+% \setcaptionfont{hfont commandsi}
+% \setmarginnotefont{\color{blue}}
+% \setcitationfont{\color{gray}}
 
+% The following package makes prettier tables.  We're all about the bling!
+\usepackage{booktabs}
+
+% Small sections of multiple columns
+\usepackage{multicol}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle% this prints the handout title, author, and date
 \begin{abstract}
-The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
+The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples. The compounds are also subject to transformations or reactions. Thus, to understand the fate and transport of compounds in the environment, we need to understand the processes of advection, diffusion, and reaction. We'll begin with simple examples and then consider more complicated examples. We'll also consider the implications of these processes on the environment and human health.
 
 %\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
 \end{abstract}
 
 \section{Introduction}
 
+\subsection{The Problem}
+
+The fate and transport of compounds in the environment is subject to a complex array of processes (Figure~\ref{fig:dioxaneplume}). However, we can simplify these processes into three subprocesses: 
+advection, diffusion, and reaction. Of course, these processes occur in three dimensions. 
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.8\textwidth]{graphics/Dioxane_plume.png}
+\caption{A diagram of the major processes that influence the fate and transport of a dioxane plume from a ce in the environment (Source: \url{https://14d-1.itrcweb.org/environmental-fate-transport-and-investigative-strategies/}). 1,4-Dioxane is often referred to as a "forever" compound.}
+\label{fig:dioxaneplume}
+\end{figure*}
+
+The implications of these three processes is profound -- they provide the basic framework to understand the fate and transport of pollutants in the environment, the movement of nutrients in the soil, and the movement of solutes in the human body. Our understanding of these processes is critical to understanding issues of environmental quality and justice for human and non-humans alike. Moreover, we often use our understanding of these processes to develop of environmental policy, regulation, and mitigation.
+
+Because these processes are complex and are often difficult to measure, we often rely on models to help us understand the movement of solutes in the environment. These models are based on the fundamental mathemicial equations to describe advection, diffusion, and reaction.
+
+\subsection{The Processes}
+
 Advection and diffusion are two fundamental processes that govern the transport of solutes in the environment. Advection is the process of transport of a solute by the bulk motion of the fluid. Diffusion is the process of transport of a solute by random molecular motion.
 
-\subsection{Advection and Convection: Material and Heat}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{graphics/Diagram-advection-diffusion.png}
+\caption{A simple diagram of advection and diffusion that inclues how "solutes" might be deposited downwind of a stationary source if air pollution. At the scale analyzed there, the term turbulant diffusion is different than molecular diffusion, but might be modelled in a similar way.}
+\label{fig:advection-diffusion}
+\end{figure}
 
-Advection is the transport of a substance by bulk motion. Convection is the transfer of heat by the actual movement of the warmed matter. The equation that are used to describe advection and convection are similar, but the physical processes are different.
+In a simple example, if we have a dose of a solute, like a dye in the center of some media, we'll see it spread out by diffusion (Figure~\ref{fig:diffusion}). If the media is moving, we'll see the dye move with the bulk motion of the media. If the dye reacts with the media, we'll see the dye disappear.
+
+\begin{marginfigure}
+\caption{A simple diagram of 2D diffusion.}
+\label{fig:diffusion}
+\includegraphics[width=1.0\textwidth]{graphics/2D_diffusion.png}
+\end{marginfigure}
+
+
+Besides examples we often see with respect to air pollution sources (Figure~\ref{fig:advection-diffusion}), we might think about solutes as pollutants or nutrients. For example, the movement of a nutrient in a river is driven by the bulk motion of the water (advection) and the random motion of the molecules (diffusion) and the reactions that might occur in the water column and sediments (Figure\ref{fig:nutrientspiraling}).
+
+\begin{figure}[h]
+\caption{A simple diagram of advection and nutrient reactions (organic substances and inorganic substances) in a river. Although not shown, you might also think about how diffusion might influence the movement of nutrients in the river and in the sediments.  
+The zone where water moves into the sediment bed is called the hyperreic zone. The porosity of the sediments will allow more advective flow that might influence the reaction capacity of solutes in the sediments.}
+\label{fig:nutrientspiraling}
+\centering
+\includegraphics[width=0.7\textwidth]{graphics/NutrientSpiraling.jpg}
+\end{figure}
+
 
 \subsection{Session Goals}
 
 We will not become experts in advection-diffusion-reaction modeling, but we will become familiar with the processes and the equations that describe them. Moreover, we'll see a bit more about how R can be used to model these processes. After this session, I hope you can do the following:
 
 \begin{enumerate}
-	\item Describe the physical processes of advection and dispersion and reactions
+	\item Describe the physical processes of advection and diffusion and solute reaction
 	\item Describe the equations used to model A-D-R. 
 	\item Analyze 1-dimensional movement using advection equations in R.
 	\item Describe diffusion mathematically
@@ -89,8 +149,26 @@ We will not become experts in advection-diffusion-reaction modeling, but we will
 	\item Appreciate how two-dimensional analysis of advection-diffusion can be modeled in R.
 \end{enumerate}
 
-\subsection{The Processes and the Equations to Describe Them}
+In this session, we'll want to think about the movement of solutes in the porous media, i.e. a soil with air space, sediments with water between the particles. We will refer to the porousity as $\xi$, which is a proportion between 0 and 1. 
 
+\begin{marginfigure}
+\centering
+\includegraphics[width=0.8\textwidth]{graphics/Darcy_permeability.jpg}
+\end{marginfigure}
+
+%We'll start with one-dimensional systems and then move to two-dimensional systems. We'll also consider the effects of reactions on the movement of solutes.
+
+\section{The Processes and the Equations to Describe Them}
+
+\subsection{Advection and Convection: Material and Heat}
+
+Advection is the transport of a substance by bulk motion. Convection is the transfer of heat by the actual movement of the warmed matter. The equation that are used to describe advection and convection are similar, but the physical processes are different.
+
+
+\newthought{An Equation to Create Anxiety}
+
+
+The advection equation is a partial differential equation that describes the movement of a substance in a fluid. The equation is derived from the conservation of mass. The equation is:
 
 %− 1 Axξx ·( ∂ ∂xAx·(−D· ∂ξxC ∂x )− ∂ ∂x(Ax·v·ξxC)) 
 
@@ -98,14 +176,13 @@ We will not become experts in advection-diffusion-reaction modeling, but we will
 - \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot \frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
 \end{equation}
 
-
 Here $D$ is the ``diffusion coefficient'', $v$ is the ``advection rate'', and $A_x$ and $\xi$ are the surface area and volume fraction, respectively. 
 
 Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a more general form: 
 
 %D∂2C ∂x2−u∂C ∂x
 \begin{equation}
-D \frac{\partial^2 C}{\partial x^2} - \mu \frac{\partial C}{\partial x}
+D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x}
 \end{equation}
 
 where $u = v/A_x \xi_x$ is the ``velocity'' of the fluid.
@@ -115,23 +192,22 @@ The movement of compounds in the environment is driven by two processes, advecti
 Nevertheless, let's look at the 3-D advection-diffusion-reacton equation in three dimensions:
 
 \begin{equation}
-\frac{\partial C}{\partial t} = \nabla \cdot (D\nabla C - \mu C) + R
+\frac{\partial C}{\partial t} = \nabla \cdot (D\nabla C - \nu C) + R
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, $\mu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
 
 Ok, what what is $\nabla$? It's the gradient operator, which is a vector operator that operates on a scalar function to produce a vector whose magnitude is the maximum rate of change of the function at the point of the gradient and that points in the direction of that maximum rate of change. $\nabla \cdot$ represents divergence. In this equation, $\nabla C$ represents concentration gradient.
 
-
-\subsubsection{Advection}
+\subsection{Advection}
 
 Advection is the process of transport of a solute by the bulk motion of the fluid. The rate of advection is proportional to the velocity of the fluid and the concentration of the solute. The rate of advection is given by the equation:
 
 \begin{equation}
-\frac{\partial C}{\partial t} + \nabla \cdot (u C) = 0
+\frac{\partial C}{\partial t} + \nabla \cdot (\nu C) = 0
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, and $u$ is the velocity of the fluid. 
+where $C$ is the concentration of the solute, $t$ is time, and $\nu$ is the velocity of the fluid. 
 
 For one dimensional systems, the equation can be written as:
 
@@ -139,12 +215,18 @@ For one dimensional systems, the equation can be written as:
 \frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} = 0
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, and $x$ is the spatial coordinate.
+or
+
+\begin{equation}
+\frac{\partial C}{\partial t} + \nu_x \frac{\partial C}{\partial x}
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, and $x$ is the spatial coordinate.
 
 The advection equation is not simple to solve numerically: the system is a hyperbolic partial differential equation, and interest typically centers on discontinuous "shock" solutions (which are notoriously difficult for numerical schemes to handle).
 
 
-\subsubsection{Diffusion}
+\subsection{Diffusion}
 
 Diffusion is the process of transport of a solute by random molecular motion. The rate of diffusion is proportional to the concentration gradient of the solute. The rate of diffusion is given by the equation:
 
@@ -154,93 +236,76 @@ Diffusion is the process of transport of a solute by random molecular motion. Th
 
 where $D$ is the diffusion coefficient.
 
-\subsubsection{Advection-Diffusion Equation}
+\subsection{Advection-Diffusion Equation}
 
 The advection-diffusion equation is a combination of the advection and diffusion equations. The advection-diffusion equation is given by the equation:
 
 \begin{equation}
-\frac{\partial C}{\partial t} + \nabla \cdot (u C) = D \nabla^2 C
+\frac{\partial C}{\partial t} + \nabla \cdot (\nu C) = D \nabla^2 C
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, and $D$ is the diffusion coefficient.
+or 
 
-\subsubsection{Advection-Difffusion-Reaction Equation}
+\begin{equation}
+\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} = D \frac{\partial^2 C}{\partial x^2}
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, and $D$ is the diffusion coefficient.
+
+\subsection{Advection-Difffusion-Reaction Equation}
 
 The advection-diffusion-reaction equation is a combination the advection, diffusion, and reaction equations. The advection-diffusion-reaction equation is given by the equation:
 
 \begin{equation}
-\frac{\partial C}{\partial t} + \nabla \cdot (u C) = D \nabla^2 C + R
+\frac{\partial C}{\partial t} + \nabla \cdot (\nu C) = D \nabla^2 C + R
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+or in one-dimension:
+
+\begin{equation}
+\frac{\partial C}{\partial t} = \nu \frac{\partial C}{\partial x} = D \frac{\partial^2 C}{\partial x^2} + R
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
   
-\subsubsection{Advenction-Difffusion-Reaction in multi-phase systems and for shapes with variable geometry}
+\subsection{Advenction-Difffusion-Reaction in multi-phase systems and for shapes with variable geometry}
 
 The advection-diffusion-reaction equation can be extended to multi-phase systems and to shapes with variable geometry. The advection-diffusion-reaction equation for multi-phase systems and for shapes with variable geometry is given by the equation:
 
 \begin{equation}
-\frac{\partial C}{\partial t} + \nabla \cdot (u C) = D \nabla^2 C + R
+\frac{\partial C}{\partial t} + \nabla \cdot (\nu C) = D \nabla^2 C + R
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
-
-\subsection{ReacTran Package}
-
-\citet{soetaert2017package}
+where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
   
 \section{Applications using R}
 
-\subsection{R as a Calculator and Modeling Environment}
+\subsection{ReacTran Package}
+
+\citet{soetaert2017package} have developed a nice library in R that solves these equations using finite-difference solutions. 
+
+The ReacTran package is a collection of functions for modeling solute transport in 1D, 2D, and 3D. The package includes functions for solving the advection-diffusion equation, the advection-diffusion-reaction equation, and the advection-diffusion-reaction equation for multi-phase systems. 
+
+The package also includes functions for solving
+
+\begin{itemize}
+\item Advection-diffusion equations in 1D, 2D, and 3D 
+\item Advection-diffusion-reaction equations in 1D, 2D, and 3D
+\item Advection-diffusion-reaction equations for multi-phase systems
+\end{itemize}
 
 
+\subsection{Using R as a Modelling Environment to Solve PDEs and ODEs}
 
-
-We can use R to solve the advection-diffusion equation. The following code uses the `deSolve` package to solve the advection-diffusion equation for a simple one-dimensional case.
-
-\begin{verbatim}
-# Load the deSolve package
-library(deSolve)
-
-# Define the advection-diffusion equation
-advection_diffusion <- function(t, C, parms) {
-  with(as.list(parms), {
-    dC <- D * (diff(C, lag = 2) - 2 * diff(C, lag = 1) + diff(C, lag = 0)) / dx^2
-    dC[1] <- 0
-    dC[n] <- 0
-    list(dC)
-  })
-}
-
-# Set the parameters
-parms <- list(
-  D = 0.1,  # Diffusion coefficient
-  dx = 0.1  # Spatial step
-)
-
-# Set the initial conditions
-C0 <- c(0, rep(0, 98), 1, rep(0, 98), 0)
-  
-# Set the times at which to evaluate the solution
-times <- seq(0, 100, by = 1)
-
-# Solve the advection-diffusion equation
-
-out <- ode(y = C0, times = times, func = advection_diffusion, parms = parms)
-
-# Plot the solution
-
-plot(out, xlab = "Distance", ylab = "Concentration", type = "l")
-\end{verbatim}
-
-\subsection{1D Transportion Model}
-
-The `ReacTran` package provides a function to solve the advection-diffusion-reaction equation for a simple one-dimensional case.
+We can use R to solve the advection-diffusion equation. The `deSolve` package to solve the ReacTran library functions decomposing the partial differential equatation (PDE) into a descretized by space and solving be ordinary differential equations (ODE). 
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlcom{# Load the ReacTran package}
-\hlkwd{library}\hlstd{(ReacTran)}
+\hlkwd{library}\hlstd{(ReacTran)} \hlcom{# Load the ReacTran package}
 \end{alltt}
 
 
@@ -248,8 +313,15 @@ The `ReacTran` package provides a function to solve the advection-diffusion-reac
 
 {\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: deSolve}}
 
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: shape}}\end{kframe}
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: shape}}\begin{alltt}
+\hlkwd{library}\hlstd{(deSolve)} \hlcom{# Load the deSolve package}
+\end{alltt}
+\end{kframe}
 \end{knitrout}
+
+\subsection{1D Transportion Model}
+
+The `ReacTran` package provides a function to solve the advection-diffusion-reaction equation for a simple one-dimensional case.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -340,8 +412,6 @@ We can use R to solve the advection-diffusion-reaction equation. The following c
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{library}\hlstd{(ReacTran)}
-
 \hlstd{parms} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwc{F0} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{v}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{k} \hlstd{=} \hlnum{0.1}\hlstd{,} \hlkwc{D} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{dx} \hlstd{=} \hlnum{1}\hlstd{)}
 
 \hlstd{advModel} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{t}\hlstd{,} \hlkwc{C}\hlstd{,} \hlkwc{parms}\hlstd{) \{}
@@ -365,6 +435,7 @@ We can use R to solve the advection-diffusion-reaction equation. The following c
 \end{kframe}
 \end{knitrout}
 
+We can look at the output, using a simple call of the object, but without more information, it's not clear what we are looking at. 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -372,27 +443,26 @@ We can use R to solve the advection-diffusion-reaction equation. The following c
 \end{alltt}
 \begin{verbatim}
 ## $y
-##  [1] 0.90909091 0.82644629 0.75131481 0.68301346 0.62092133 0.56447394
-##  [7] 0.51315812 0.46650739 0.42409762 0.38554329 0.35049391 0.31863082
-## [13] 0.28966439 0.26333126 0.23939206 0.21762914 0.19784467 0.17985879
-## [19] 0.16350799 0.14864363 0.13513057 0.12284599 0.11167817 0.10152561
-## [25] 0.09229601
+##  [1] 0.9090909 0.8264463 0.7513148 0.6830135 0.6209213 0.5644739 0.5131581
+##  [8] 0.4665074 0.4240976 0.3855433 0.3504939 0.3186308 0.2896644 0.2633313
+## [15] 0.2393921 0.2176291 0.1978447 0.1798588 0.1635080 0.1486436 0.1351306
+## [22] 0.1228460 0.1116782 0.1015256 0.0922960
 ## 
 ## $Consumption
-##  [1] 0.090909091 0.082644629 0.075131481 0.068301346 0.062092133 0.056447394
-##  [7] 0.051315812 0.046650739 0.042409762 0.038554329 0.035049391 0.031863082
-## [13] 0.028966439 0.026333126 0.023939206 0.021762914 0.019784467 0.017985879
-## [19] 0.016350799 0.014864363 0.013513057 0.012284599 0.011167817 0.010152561
-## [25] 0.009229601
+##  [1] 0.09090909 0.08264463 0.07513148 0.06830135 0.06209213 0.05644739
+##  [7] 0.05131581 0.04665074 0.04240976 0.03855433 0.03504939 0.03186308
+## [13] 0.02896644 0.02633313 0.02393921 0.02176291 0.01978447 0.01798588
+## [19] 0.01635080 0.01486436 0.01351306 0.01228460 0.01116782 0.01015256
+## [25] 0.00922960
 ## 
 ## $flux.up
 ## [1] 1
 ## 
 ## $flux.down
-## [1] 0.09229601
+## [1] 0.092296
 ## 
 ## attr(,"precis")
-## [1] 3.309670e-01 2.257957e-09
+## [1] 4.537303e-01 2.595270e-09
 ## attr(,"steady")
 ## [1] TRUE
 ## attr(,"class")
@@ -405,6 +475,9 @@ We can use R to solve the advection-diffusion-reaction equation. The following c
 \end{kframe}
 \end{knitrout}
 
+Thus, we might be better off plotting the output. I am not sure why the plot functions are ignoring my par() call, perhaps this will be fixed by version 0.9!
+
+\begin{figure*}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -424,6 +497,7 @@ We can use R to solve the advection-diffusion-reaction equation. The following c
 \end{kframe}
 \includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-3} 
 \end{knitrout}
+\end{figure*}
 
 \subsection{Oxygen Consumption Porous Spherical Particle}
 
@@ -474,13 +548,13 @@ Finally, we need to define the O2 concentration at the surface of the particle a
 \centering
 \begin{tabular}{|l|l|c|c|} \hline
 Parameter & Description & Typical Range &  Modelled Value \\ \hline\hline
-\( C_{ow} \) & Concentration of O2 in Water & \( 0.1 - 0.3 \) \mumolspercm &  0.25 \mumolspercm \\
-\( R_{02} \) & Rate of oxygen consumption & \( 10^5 - 10^6 \) \mumolspercm~/year &  \ensuremath{10^{6}} \mumolspercm/year \\
-\( K_s \) & O2 saturation & \( 0.001 - 0.01 \) \mumolspercm &  0.005 \mumolspercm \\ \hline
+\( C_{ow} \) & Concentration of O2 in Water & \( 0.1 - 0.3 \) \numolspercm &  0.25 \numolspercm \\
+\( R_{02} \) & Rate of oxygen consumption & \( 10^5 - 10^6 \) \numolspercm~/year &  \ensuremath{10^{6}} \numolspercm/year \\
+\( K_s \) & O2 saturation & \( 0.001 - 0.01 \) \numolspercm &  0.005 \numolspercm \\ \hline
 \end{tabular}
 \end{table}
 
-Note, we often measure oxygen using ppm (parts per million), but the model uses \mumolspercm. The conversion is 1 ppm = 0.0224 \mumolspercm, thus, we are modeling \(Ks \) within a range of 2.24 - 6.72 ppm, using Ks = 0.22 \mumolspercm.
+Note, we often measure oxygen using ppm (parts per million), but the model uses \numolspercm. The conversion is 1 ppm = 0.0224 \numolspercm, thus, we are modeling \(Ks \) within a range of 2.24 - 6.72 ppm, using Ks = 0.22 \numolspercm.
 
 
 Next we create a function to model the oxygen consumption in the, particle that relies on We will use the \texttt{tran.1D} function to solve the advection-diffusion equation and the \texttt{steady.1D} function to solve the steady state solution of the advection-diffusion-reaction equation.
@@ -601,7 +675,7 @@ It takes about 0.5 second to solve this 10000 state variable model.
 \end{alltt}
 \begin{verbatim}
 ##    user  system elapsed 
-##   0.242   0.022   0.265
+##   0.242   0.023   0.267
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -668,8 +742,6 @@ imposed by binding a column or row with 0-s.
 \bibliographystyle{apalike}
 %\renewcommand\bibname{References}{}
 \bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
-
-
 
 
 \end{document}
