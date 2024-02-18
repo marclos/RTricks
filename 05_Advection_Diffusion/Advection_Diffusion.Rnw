@@ -1,12 +1,14 @@
 \documentclass{article}
+\usepackage{amsmath}
+\usepackage{natbib}
 
 \newcommand{\mumolspercm}{$\mu$mols/cm$^{-3}$}
 
 \begin{document}
 
-\title{Advection, Diffusion \& Reaction Modeling}
+\title{DRAFT ! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.4)}
+\date{\today~(ver. 0.4 don't read until I get to v .8!)}
 
 \maketitle
 
@@ -39,6 +41,38 @@ We will not become experts in advection-diffusion-reaction modeling, but we will
 
 \subsection{The Processes and the Equations to Describe Them}
 
+
+%− 1 Axξx ·( ∂ ∂xAx·(−D· ∂ξxC ∂x )− ∂ ∂x(Ax·v·ξxC)) 
+
+\begin{equation}
+- \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot \frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
+\end{equation}
+
+
+Here $D$ is the ``diffusion coefficient'', $v$ is the ``advection rate'', and $A_x$ and $\xi$ are the surface area and volume fraction, respectively. 
+
+Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a more general form: 
+
+%D∂2C ∂x2−u∂C ∂x
+\begin{equation}
+D \frac{\partial^2 C}{\partial x^2} - \mu \frac{\partial C}{\partial x}
+\end{equation}
+
+where $u = v/A_x \xi_x$ is the ``velocity'' of the fluid.
+
+The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
+
+Nevertheless, let's look at the 3-D advection-diffusion-reacton equation in three dimensions:
+
+\begin{equation}
+\frac{\partial C}{\partial t} = \nabla \cdot (D\nabla C - \mu C) + R
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $\mu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+Ok, what what is $\nabla$? It's the gradient operator, which is a vector operator that operates on a scalar function to produce a vector whose magnitude is the maximum rate of change of the function at the point of the gradient and that points in the direction of that maximum rate of change. $\nabla \cdot$ represents divergence. In this equation, $\nabla C$ represents concentration gradient.
+
+
 \subsubsection{Advection}
 
 Advection is the process of transport of a solute by the bulk motion of the fluid. The rate of advection is proportional to the velocity of the fluid and the concentration of the solute. The rate of advection is given by the equation:
@@ -47,7 +81,18 @@ Advection is the process of transport of a solute by the bulk motion of the flui
 \frac{\partial C}{\partial t} + \nabla \cdot (u C) = 0
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, and $u$ is the velocity of the fluid.
+where $C$ is the concentration of the solute, $t$ is time, and $u$ is the velocity of the fluid. 
+
+For one dimensional systems, the equation can be written as:
+
+\begin{equation}
+\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} = 0
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, and $x$ is the spatial coordinate.
+
+The advection equation is not simple to solve numerically: the system is a hyperbolic partial differential equation, and interest typically centers on discontinuous "shock" solutions (which are notoriously difficult for numerical schemes to handle).
+
 
 \subsubsection{Diffusion}
 
@@ -88,6 +133,10 @@ The advection-diffusion-reaction equation can be extended to multi-phase systems
 \end{equation}
 
 where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+\subsection{ReacTran Package}
+
+\citet{soetaert2017package}
   
 \section{Applications using R}
 
@@ -494,6 +543,12 @@ imposed by binding a column or row with 0-s.
 \section{Conclusion}
 
 
+% bibiliography section here-------------------------------------------
+%\clearpage
+
+\bibliographystyle{apalike}
+%\renewcommand\bibname{References}{}
+\bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
 
 
 
