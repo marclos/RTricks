@@ -49,14 +49,16 @@
 \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
+\usepackage{amsmath}
+\usepackage{natbib}
 
 \newcommand{\mumolspercm}{$\mu$mols/cm$^{-3}$}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
-\title{Advection, Diffusion \& Reaction Modeling}
+\title{DRAFT ! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.4)}
+\date{\today~(ver. 0.4 don't read until I get to v .8!)}
 
 \maketitle
 
@@ -89,6 +91,38 @@ We will not become experts in advection-diffusion-reaction modeling, but we will
 
 \subsection{The Processes and the Equations to Describe Them}
 
+
+%− 1 Axξx ·( ∂ ∂xAx·(−D· ∂ξxC ∂x )− ∂ ∂x(Ax·v·ξxC)) 
+
+\begin{equation}
+- \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot \frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
+\end{equation}
+
+
+Here $D$ is the ``diffusion coefficient'', $v$ is the ``advection rate'', and $A_x$ and $\xi$ are the surface area and volume fraction, respectively. 
+
+Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a more general form: 
+
+%D∂2C ∂x2−u∂C ∂x
+\begin{equation}
+D \frac{\partial^2 C}{\partial x^2} - \mu \frac{\partial C}{\partial x}
+\end{equation}
+
+where $u = v/A_x \xi_x$ is the ``velocity'' of the fluid.
+
+The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
+
+Nevertheless, let's look at the 3-D advection-diffusion-reacton equation in three dimensions:
+
+\begin{equation}
+\frac{\partial C}{\partial t} = \nabla \cdot (D\nabla C - \mu C) + R
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $\mu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+Ok, what what is $\nabla$? It's the gradient operator, which is a vector operator that operates on a scalar function to produce a vector whose magnitude is the maximum rate of change of the function at the point of the gradient and that points in the direction of that maximum rate of change. $\nabla \cdot$ represents divergence. In this equation, $\nabla C$ represents concentration gradient.
+
+
 \subsubsection{Advection}
 
 Advection is the process of transport of a solute by the bulk motion of the fluid. The rate of advection is proportional to the velocity of the fluid and the concentration of the solute. The rate of advection is given by the equation:
@@ -97,7 +131,18 @@ Advection is the process of transport of a solute by the bulk motion of the flui
 \frac{\partial C}{\partial t} + \nabla \cdot (u C) = 0
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, and $u$ is the velocity of the fluid.
+where $C$ is the concentration of the solute, $t$ is time, and $u$ is the velocity of the fluid. 
+
+For one dimensional systems, the equation can be written as:
+
+\begin{equation}
+\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} = 0
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, and $x$ is the spatial coordinate.
+
+The advection equation is not simple to solve numerically: the system is a hyperbolic partial differential equation, and interest typically centers on discontinuous "shock" solutions (which are notoriously difficult for numerical schemes to handle).
+
 
 \subsubsection{Diffusion}
 
@@ -138,6 +183,10 @@ The advection-diffusion-reaction equation can be extended to multi-phase systems
 \end{equation}
 
 where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+\subsection{ReacTran Package}
+
+\citet{soetaert2017package}
   
 \section{Applications using R}
 
@@ -323,17 +372,17 @@ We can use R to solve the advection-diffusion-reaction equation. The following c
 \end{alltt}
 \begin{verbatim}
 ## $y
-##  [1] 0.90909091 0.82644628 0.75131480 0.68301346 0.62092132 0.56447393
-##  [7] 0.51315812 0.46650738 0.42409762 0.38554329 0.35049390 0.31863082
-## [13] 0.28966438 0.26333126 0.23939206 0.21762914 0.19784467 0.17985879
-## [19] 0.16350800 0.14864363 0.13513058 0.12284598 0.11167817 0.10152560
+##  [1] 0.90909091 0.82644629 0.75131481 0.68301346 0.62092133 0.56447394
+##  [7] 0.51315812 0.46650739 0.42409762 0.38554329 0.35049391 0.31863082
+## [13] 0.28966439 0.26333126 0.23939206 0.21762914 0.19784467 0.17985879
+## [19] 0.16350799 0.14864363 0.13513057 0.12284599 0.11167817 0.10152561
 ## [25] 0.09229601
 ## 
 ## $Consumption
-##  [1] 0.090909091 0.082644628 0.075131480 0.068301346 0.062092132 0.056447393
-##  [7] 0.051315812 0.046650738 0.042409762 0.038554329 0.035049390 0.031863082
-## [13] 0.028966438 0.026333126 0.023939206 0.021762914 0.019784467 0.017985879
-## [19] 0.016350800 0.014864363 0.013513058 0.012284598 0.011167817 0.010152560
+##  [1] 0.090909091 0.082644629 0.075131481 0.068301346 0.062092133 0.056447394
+##  [7] 0.051315812 0.046650739 0.042409762 0.038554329 0.035049391 0.031863082
+## [13] 0.028966439 0.026333126 0.023939206 0.021762914 0.019784467 0.017985879
+## [19] 0.016350799 0.014864363 0.013513057 0.012284599 0.011167817 0.010152561
 ## [25] 0.009229601
 ## 
 ## $flux.up
@@ -343,7 +392,7 @@ We can use R to solve the advection-diffusion-reaction equation. The following c
 ## [1] 0.09229601
 ## 
 ## attr(,"precis")
-## [1] 4.110145e-01 2.941674e-09
+## [1] 3.309670e-01 2.257957e-09
 ## attr(,"steady")
 ## [1] TRUE
 ## attr(,"class")
@@ -552,7 +601,7 @@ It takes about 0.5 second to solve this 10000 state variable model.
 \end{alltt}
 \begin{verbatim}
 ##    user  system elapsed 
-##   0.217   0.022   0.240
+##   0.242   0.022   0.265
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -613,6 +662,12 @@ imposed by binding a column or row with 0-s.
 \section{Conclusion}
 
 
+% bibiliography section here-------------------------------------------
+%\clearpage
+
+\bibliographystyle{apalike}
+%\renewcommand\bibname{References}{}
+\bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
 
 
 
