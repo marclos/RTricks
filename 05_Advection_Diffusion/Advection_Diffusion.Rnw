@@ -11,11 +11,29 @@
 
 \graphicspath{{graphics/}}
 
-\newcommand{\numolspercm}{$\nu$mols/cm$^{-3}$}
+\newenvironment{itemize*}%
+  {\begin{itemize}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{itemize}}
+	
+\newenvironment{enumerate*}%
+  {\begin{enumerate}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{enumerate}}
+	
+	\newenvironment{description*}%
+  {\begin{description}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{description}}
 
-\title{DRAFT ! Advection, Diffusion \& Reaction Modeling}
+\newcommand{\numolspercm}{$\mu$mols/cm$^{-3}$}
+
+\title{DRAFT! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.47 Wait to read until I get to v .8!)}
+\date{\today~(ver.~0.49 working toward v .8)}
 
 \setsidenotefont{\color{blue}}
 % \setcaptionfont{hfont commandsi}
@@ -42,11 +60,18 @@ The movement of compounds in the environment is driven by two processes, advecti
 \subsection{The Problem}
 
 The fate and transport of compounds in the environment is subject to a complex array of processes (Figure~\ref{fig:dioxaneplume}). However, we can simplify these processes into three subprocesses: 
-advection, diffusion, and reaction. Of course, these processes occur in three dimensions. 
+advection, diffusion, and reaction. Of course, these processes occur in three dimensions but we'll focus on 1D and 2D for this session. 
+
+\begin{marginfigure}
+\centering
+\includegraphics[width=1.0\textwidth]{graphics/Diagram-advection-diffusion.png}
+\caption{A simple diagram of advection and diffusion that inclues how "solutes" might be deposited downwind of a stationary source if air pollution. At the scale analyzed there, the term turbulant diffusion is different than molecular diffusion, but might be modelled in a similar way.}
+\label{fig:advection-diffusion}
+\end{marginfigure}
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.8\textwidth]{graphics/Dioxane_plume.png}
+\includegraphics[width=0.9\textwidth]{graphics/Dioxane_plume.png}
 \caption{A diagram of the major processes that influence the fate and transport of a dioxane plume from a ce in the environment (Source: \url{https://14d-1.itrcweb.org/environmental-fate-transport-and-investigative-strategies/}). 1,4-Dioxane is often referred to as a "forever" compound.}
 \label{fig:dioxaneplume}
 \end{figure*}
@@ -59,17 +84,10 @@ Because these processes are complex and are often difficult to measure, we often
 
 Advection and diffusion are two fundamental processes that govern the transport of solutes in the environment. Advection is the process of transport of a solute by the bulk motion of the fluid. Diffusion is the process of transport of a solute by random molecular motion.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.9\textwidth]{graphics/Diagram-advection-diffusion.png}
-\caption{A simple diagram of advection and diffusion that inclues how "solutes" might be deposited downwind of a stationary source if air pollution. At the scale analyzed there, the term turbulant diffusion is different than molecular diffusion, but might be modelled in a similar way.}
-\label{fig:advection-diffusion}
-\end{figure}
-
 In a simple example, if we have a dose of a solute, like a dye in the center of some media, we'll see it spread out by diffusion (Figure~\ref{fig:diffusion}). If the media is moving, we'll see the dye move with the bulk motion of the media. If the dye reacts with the media, we'll see the dye disappear.
 
 \begin{marginfigure}
-\caption{A simple diagram of 2D diffusion.}
+\caption{A simple diagram of 2D diffusion. To solve these equations, we'll use a numerical approach and descretize the media into a grid. We'll then solve the equations for each grid cell.}
 \label{fig:diffusion}
 \includegraphics[width=1.0\textwidth]{graphics/2D_diffusion.png}
 \end{marginfigure}
@@ -77,12 +95,12 @@ In a simple example, if we have a dose of a solute, like a dye in the center of 
 
 Besides examples we often see with respect to air pollution sources (Figure~\ref{fig:advection-diffusion}), we might think about solutes as pollutants or nutrients. For example, the movement of a nutrient in a river is driven by the bulk motion of the water (advection) and the random motion of the molecules (diffusion) and the reactions that might occur in the water column and sediments (Figure\ref{fig:nutrientspiraling}).
 
-\begin{figure}[h]
+\begin{figure}
 \caption{A simple diagram of advection and nutrient reactions (organic substances and inorganic substances) in a river. Although not shown, you might also think about how diffusion might influence the movement of nutrients in the river and in the sediments.  
 The zone where water moves into the sediment bed is called the hyperreic zone. The porosity of the sediments will allow more advective flow that might influence the reaction capacity of solutes in the sediments.}
 \label{fig:nutrientspiraling}
 \centering
-\includegraphics[width=0.7\textwidth]{graphics/NutrientSpiraling.jpg}
+\includegraphics[width=0.99\textwidth]{graphics/NutrientSpiraling.jpg}
 \end{figure}
 
 
@@ -90,20 +108,21 @@ The zone where water moves into the sediment bed is called the hyperreic zone. T
 
 We will not become experts in advection-diffusion-reaction modeling, but we will become familiar with the processes and the equations that describe them. Moreover, we'll see a bit more about how R can be used to model these processes. After this session, I hope you can do the following:
 
-\begin{enumerate}
+\begin{enumerate*}
 	\item Describe the physical processes of advection and diffusion and solute reaction
 	\item Describe the equations used to model A-D-R. 
 	\item Analyze 1-dimensional movement using advection equations in R.
 	\item Describe diffusion mathematically
 	\item Analyze 1-dimensional adveecton-diffusion using R.
 	\item Appreciate how two-dimensional analysis of advection-diffusion can be modeled in R.
-\end{enumerate}
+\end{enumerate*}
 
 In this session, we'll want to think about the movement of solutes in the porous media, i.e. a soil with air space, sediments with water between the particles. We will refer to the porousity as $\xi$, which is a proportion between 0 and 1. 
 
 \begin{marginfigure}
 \centering
-\includegraphics[width=0.8\textwidth]{graphics/Darcy_permeability.jpg}
+\includegraphics{graphics/Darcy_permeability.jpg}
+\caption{Notice how the porosity of the media can influence the path of the fluid. In ground water, this is measured as permeability and can be used to evaluate the flow chacterstitics in aquifers and oil fields. The permeability is a function of the porosity and the connectivity of the pores.}
 \end{marginfigure}
 
 %We'll start with one-dimensional systems and then move to two-dimensional systems. We'll also consider the effects of reactions on the movement of solutes.
@@ -114,9 +133,7 @@ In this session, we'll want to think about the movement of solutes in the porous
 
 Advection is the transport of a substance by bulk motion. Convection is the transfer of heat by the actual movement of the warmed matter. The equation that are used to describe advection and convection are similar, but the physical processes are different.
 
-
-\newthought{An Equation to Create Anxiety}
-
+\newthought{An Equation that Often Creates Anxiety}
 
 The advection equation is a partial differential equation that describes the movement of a substance in a fluid. The equation is derived from the conservation of mass. The equation is:
 
@@ -126,7 +143,7 @@ The advection equation is a partial differential equation that describes the mov
 - \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot \frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
 \end{equation}
 
-Here $D$ is the ``diffusion coefficient'', $v$ is the ``advection rate'', and $A_x$ and $\xi$ are the surface area and volume fraction, respectively. 
+Here $D$ is the ``diffusion coefficient'', $\nu$ is the ``advection rate'' (or velocity), and $A_x$ and $\xi$ are the surface area and volume fraction, respectively.\sidenote{What you look at this equation, think about how it makes you feel. It's a bit intimidating, to say the least. But that's only part of the story. I believe these equations, when put in front of is generates anxiety -- and this anxiety can be a barrier to learning. While it's easy to claim we can just put this anxiety away seems to be be a disservice and acknoweldgement of our emotional responses. Before moving forward, let's take a moment to acknowledge the anxiety and see where in your body you are feeling that. Take a deep breath and let it out several times before moving forward.} 
 
 Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a more general form: 
 
@@ -135,7 +152,7 @@ Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a m
 D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x}
 \end{equation}
 
-where $u = v/A_x \xi_x$ is the ``velocity'' of the fluid.
+where $\nu = v/A_x \xi_x$ is the ``velocity'' of the fluid.
 
 The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
 
@@ -239,14 +256,13 @@ where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity
 
 The ReacTran package is a collection of functions for modeling solute transport in 1D, 2D, and 3D. The package includes functions for solving the advection-diffusion equation, the advection-diffusion-reaction equation, and the advection-diffusion-reaction equation for multi-phase systems. 
 
-The package also includes functions for solving
+The package also includes functions for solving:
 
-\begin{itemize}
+\begin{itemize*}
 \item Advection-diffusion equations in 1D, 2D, and 3D 
 \item Advection-diffusion-reaction equations in 1D, 2D, and 3D
 \item Advection-diffusion-reaction equations for multi-phase systems
-\end{itemize}
-
+\end{itemize*}
 
 \subsection{Using R as a Modelling Environment to Solve PDEs and ODEs}
 
@@ -255,6 +271,7 @@ We can use R to solve the advection-diffusion equation. The `deSolve` package to
 <<>>=
 library(ReacTran) # Load the ReacTran package
 library(deSolve) # Load the deSolve package
+library(xtable) # Load the xtable package to help format tables outputs
 @
 
 \subsection{1D Transportion Model}
@@ -312,9 +329,20 @@ plot(out, xlab = "Distance", ylab = "Concentration", type = "l")
 @
 
 \subsection{1-D Reaction-Transport Model}
-<<>>=
-parms <- c(F0 = 1, v=1, k = 0.1, D = 0, dx = 1)
 
+For this example, we will solve the advection-diffusion-reaction equation for a simple one-dimensional case, where the reaction term is given by $R = kC$, and the initial concentration is given by $C(x,0) = 1$ for $x < ?$ and $C(x,0) = 1$ for $x \geq 0.5$. 
+
+<<echo=FALSE>>=
+parms <- c(F0 = 1, v=1, k = 0.1, D = 0, dx = 1)
+parms.mat = matrix(parms, ncol = 1, byrow = TRUE, dimnames = list(c("F0", "v", "k", "D", "dx"), c("Value")))
+@
+
+<<echo=FALSE, results='asis'>>=
+xtable(parms.mat)
+@
+
+
+<<>>=
 advModel <- function(t, C, parms) {
   with(as.list(parms), {
     Tran <- tran.1D(C = C, D = D, flux.up = F0, v = v, dx = dx)
@@ -343,11 +371,12 @@ out
 Thus, we might be better off plotting the output. I am not sure why the plot functions are ignoring my par() call, perhaps this will be fixed by version 0.9!
 
 \begin{figure*}
-<<>>=
-par(mfrow=c(1,3))
-plot(out, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction: Steady State Solution")
-plot(out2, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction: Steady State Solution")
-plot(out3, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction: Steady State Solution")
+<<1D-AdvectionReaction, echo=FALSE, out.height='5in', out.width='4in' >>=
+#par(mfrow=c(1,3))
+layout(matrix(c(1,2,3), nrow = 1, ncol = 3, byrow = TRUE))
+plot(out, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.1; D=0)", mfrow=NULL)
+plot(out2, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.5; D=0)", mfrow=NULL)
+plot(out3, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.5; D=50)", mfrow=NULL)
 @
 \end{figure*}
 
@@ -381,8 +410,8 @@ We start with defining the size and porosity of the particle and use R to create
 \centering
 \begin{tabular}{|l|l|c|c|} \hline
 Parameter & Description & Typical Range &  Modelled Value \\ \hline\hline
-\( R \) & Radius of the particle & \( 0.005 - 0.2 \) cm &  \Sexpr{R} cm \\
-Porosity & Proportion of void space & \(0.005 -- 0.7\) &  \Sexpr{por} \\ \hline
+\( R \) & Radius of the particle & \( 0.005-0.2 \) cm &  \Sexpr{R} cm \\
+Porosity & Proportion of void space & \(0.005-0.7\) &  \Sexpr{por} \\ \hline
 \end{tabular}
 \end{table}
 
@@ -391,13 +420,12 @@ We will create a grid to model the particle with Radius \( R \) and \( N \) (= \
 Although we are modeling a one-dimensional system, we will need to create a grid surface as a circle to effectively model the particle surface area changes as O2 diffuses into the particle and is consumed by the reactions in the particle.
 
 <<>>=
-grid <- setup.grid.1D(x.up=0, L = R, N = N)
+grid <- setup.grid.1D(x.up=0, L = R, N = N) # Grid definition
+por.grid <- setup.prop.1D(value=por, grid=grid) # Porosity
+D.grid <- setup.prop.1D(value=D, grid=grid) # Diffusion coefficient
 
-por.grid <- setup.prop.1D(value=por, grid=grid)
-D.grid <- setup.prop.1D(value=D, grid=grid)
-
-sphere.surf <- function(x) 4*pi*x^2
-A.grid <- setup.prop.1D(func=sphere.surf,  grid=grid)
+sphere.surf <- function(x) 4*pi*x^2 # Surface area of a sphere
+A.grid <- setup.prop.1D(func=sphere.surf,  grid=grid) # Surface area
 @
 
 Finally, we need to define the O2 concentration at the surface of the particle and the O2 consumption rate of the particle. 
