@@ -147,15 +147,16 @@ The advection equation is a partial differential equation that describes the mov
 
 %− 1 Axξx ·( ∂ ∂xAx·(−D· ∂ξxC ∂x )− ∂ ∂x(Ax·v·ξxC)) 
 
-%\begin{equation}
-%- \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot %\frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
-%\end{equation}
+\begin{equation}
+- \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot \frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
+\end{equation}
 
 \begin{equation}
-\frac{\partial C}{\partial t} = D_x \frac{\partial^2  \xi_x C}{\partial x^2} +
-D_y \frac{\partial^2  \xi_y C}{\partial y^2} +
-D_z \frac{\partial^2  \xi_z C}{\partial z^2} -
-v_x \frac{\partial  \xi_x C}{\partial x} - R
+\frac{\partial C}{\partial t} = D_x \frac{partial^2 C}{partial x^2} +
+D_y \frac{\partial^2 C}{\partial y^2} +
+D_z \frac{\partial^2 C}{\partial z^2} -
+v_x \frac{\partial C}{\partial x} -
+\lambda RC
 \end{equation}
 
 Here $D$ is the ``diffusion coefficient'', $\nu$ is the ``advection rate'' (or velocity), and $A_x$ and $\xi$ are the surface area and volume fraction, respectively.
@@ -168,7 +169,7 @@ What you look at this equation, think about how it makes you feel. It's a bit in
 
 \end{quote} 
 
-First, let's simplify this to 1-D (in one direction, x). The movement of compounds in the environment is driven by two processes, advection and diffusion -- these terms associated with $\partial x$ define movement. The third term on the right, $R$, is the reaction term.
+First, let's simplify this to 1-D (in one direction, x).
 
 \begin{equation}
 \frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x} - R
@@ -211,7 +212,7 @@ D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x} - R
 
 where $\nu = v/A_x \xi_x$ is the ``velocity'' of the fluid.
 
- Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
+The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
 
 Nevertheless, let's look at the 3-D advection-diffusion-reacton equation in three dimensions:
 
