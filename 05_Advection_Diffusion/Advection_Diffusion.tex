@@ -55,6 +55,8 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{natbib}
+\usepackage{cancel}
+%\usepackage{comment}
 
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 \bibfont{\small} % Doesn't see to work...
@@ -83,7 +85,7 @@
 
 \title{DRAFT! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver.~0.49 working toward v .8)}
+\date{\today~(ver.~0.69 working toward v .8)}
 
 \setsidenotefont{\color{blue}}
 % \setcaptionfont{hfont commandsi}
@@ -100,17 +102,18 @@
 
 \maketitle% this prints the handout title, author, and date
 \begin{abstract}
-The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples. The compounds are also subject to transformations or reactions. Thus, to understand the fate and transport of compounds in the environment, we need to understand the processes of advection, diffusion, and reaction. We'll begin with simple examples and then consider more complicated examples. We'll also consider the implications of these processes on the environment and human health.
+The movement of compounds in the environment is driven by two processes, advection and diffusion. The compounds are also subject to transformations or reactions. Thus, to monitor the fate and transport of compounds in the environment, we can capitalize on mathematical models that have been used to describe advection, diffusion, and reaction. %We'll begin with simple examples and then consider more complicated examples. We'll also consider the implications of these processes on the environment and human health.
 
 %\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
 \end{abstract}
 
 \section{Introduction}
 
-\subsection{The Problem}
+\subsection{Fate and Transport Processes}
 
-The fate and transport of compounds in the environment is subject to a complex array of processes (Figure~\ref{fig:dioxaneplume}). However, we can simplify these processes into three subprocesses: 
-advection, diffusion, and reaction. Of course, these processes occur in three dimensions but we'll focus on 1D and 2D for this session. 
+The fate and transport of compounds in the environment is subject to an array of processes. For example, pollutants might carried by the wind (advection) and spread out (dispersion or diffusion). In addition, the pollutant might be transformed into different compounds (reaction). Together, these three processes, advection, diffusion, and reaction (Figure~\ref{fig:advection-diffusion}).%, can be effectively described mathematically, which can then be tested.
+
+%. Of course, these processes occur in three dimensions but we'll focus on 1D and 2D for this session. 
 
 \begin{marginfigure}
 \centering
@@ -119,6 +122,9 @@ advection, diffusion, and reaction. Of course, these processes occur in three di
 \label{fig:advection-diffusion}
 \end{marginfigure}
 
+
+These three processes have profound  implications -- they provide the a framework to understand and quantify the fate and transport of pollutants in the environment (Figure~\ref{fig:dioxaneplume}), the movement of nutrients in the soil, and the movement of solutes in the human body. By understanding of these processes, we have tools to characterize environmental quality and its implications on human and non-human populations. Moreover, by modeling these processes, we can develop more effective policy, regulation, and mitigation strategies.
+
 \begin{figure*}
 \centering
 \includegraphics[width=0.9\textwidth]{graphics/Dioxane_plume.png}
@@ -126,13 +132,13 @@ advection, diffusion, and reaction. Of course, these processes occur in three di
 \label{fig:dioxaneplume}
 \end{figure*}
 
-The implications of these three processes is profound -- they provide the basic framework to understand the fate and transport of pollutants in the environment, the movement of nutrients in the soil, and the movement of solutes in the human body. Our understanding of these processes is critical to understanding issues of environmental quality and justice for human and non-humans alike. Moreover, we often use our understanding of these processes to develop of environmental policy, regulation, and mitigation.
-
-Because these processes are complex and are often difficult to measure, we often rely on models to help us understand the movement of solutes in the environment. These models are based on the fundamental mathemicial equations to describe advection, diffusion, and reaction.
+Because these processes are complex and are often difficult to measure, we rely on models to help us understand the movement of solutes in the environment. These models are based on the fundamental mathematical equations to describe advection, diffusion, and reaction.
 
 \subsection{The Processes}
 
-Advection and diffusion are two fundamental processes that govern the transport of solutes in the environment. Advection is the process of transport of a solute by the bulk motion of the fluid. Diffusion is the process of transport of a solute by random molecular motion.
+Advection and diffusion govern the transport of solutes in the environment. Advection is the transport of a solute by the bulk motion of the fluid. Advection depends on velocity or $\nu$ in this session. Diffusion is the transport of a solute by random molecular motion. Diffusion depends on the diffusion coefficient and concentration gradient or $\frac{\partial^2 C}{\partial x^2}$ in this session. Notice that this is the second derivative. 
+
+Reaction is the transformation of a solute into a different compound. Reaction depends on the reaction rate or $k$ in this session.
 
 In a simple example, if we have a dose of a solute, like a dye in the center of some media, we'll see it spread out by diffusion (Figure~\ref{fig:diffusion}). If the media is moving, we'll see the dye move with the bulk motion of the media. If the dye reacts with the media, we'll see the dye disappear.
 
@@ -193,13 +199,26 @@ The advection equation is a partial differential equation that describes the mov
 - \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot \frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
 \end{equation}
 
+\begin{equation}
+\frac{\partial C}{\partial t} = D_x \frac{partial^2 C}{partial x^2} +
+D_y \frac{partial^2 C}{partial y^2} +
+D_z \frac{partial^2 C}{partial z^2} -
+v_x \frac{\partial C}{\partial x} -
+\lambda RC
+\end{equation}
+
+
+
+
+
 Here $D$ is the ``diffusion coefficient'', $\nu$ is the ``advection rate'' (or velocity), and $A_x$ and $\xi$ are the surface area and volume fraction, respectively.\sidenote{What you look at this equation, think about how it makes you feel. It's a bit intimidating, to say the least. But that's only part of the story. I believe these equations, when put in front of is generates anxiety -- and this anxiety can be a barrier to learning. While it's easy to claim we can just put this anxiety away seems to be be a disservice and acknoweldgement of our emotional responses. Before moving forward, let's take a moment to acknowledge the anxiety and see where in your body you are feeling that. Take a deep breath and let it out several times before moving forward.} 
 
 Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a more general form: 
 
 %D∂2C ∂x2−u∂C ∂x
 \begin{equation}
-D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x}
+\frac{\partial C/\partial t} =
+D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x} - R
 \end{equation}
 
 where $\nu = v/A_x \xi_x$ is the ``velocity'' of the fluid.
@@ -229,7 +248,7 @@ where $C$ is the concentration of the solute, $t$ is time, and $\nu$ is the velo
 For one dimensional systems, the equation can be written as:
 
 \begin{equation}
-\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} = 0
+\frac{\partial C}{\partial t} + \nu \frac{\partial C}{\partial x} = 0
 \end{equation}
 
 or
@@ -238,9 +257,12 @@ or
 \frac{\partial C}{\partial t} + \nu_x \frac{\partial C}{\partial x}
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, and $x$ is the spatial coordinate.
+where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, and $x$ is the spatial coordinate.\sidenote{This can also be solved as a flux density -- the amount of solute that crosses a unit area per unit time, ${\displaystyle \mathbf {j} _{\text{adv}}=\mathbf {v} c}$.}
+
 
 The advection equation is not simple to solve numerically: the system is a hyperbolic partial differential equation, and interest typically centers on discontinuous "shock" solutions (which are notoriously difficult for numerical schemes to handle).
+
+T
 
 
 \subsection{Diffusion}
@@ -374,7 +396,7 @@ The `ReacTran` package provides a function to solve the advection-diffusion-reac
 \end{knitrout}
 
 
-\subsection{Solving a 1-D reaction tranport mdodel}
+\subsection{Solving a 1-D reaction tranport model}
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -432,7 +454,7 @@ For this example, we will solve the advection-diffusion-reaction equation for a 
 
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Sun Feb 18 18:13:07 2024
+% Mon Feb 19 23:30:26 2024
 \begin{table}[ht]
 \centering
 \begin{tabular}{rr}
@@ -482,27 +504,26 @@ We can look at the output, using a simple call of the object, but without more i
 \end{alltt}
 \begin{verbatim}
 ## $y
-##  [1] 0.90909091 0.82644628 0.75131480 0.68301345 0.62092132 0.56447393
-##  [7] 0.51315812 0.46650738 0.42409762 0.38554329 0.35049390 0.31863081
-## [13] 0.28966438 0.26333125 0.23939205 0.21762913 0.19784467 0.17985879
-## [19] 0.16350799 0.14864363 0.13513057 0.12284597 0.11167816 0.10152560
-## [25] 0.09229601
+##  [1] 0.9090909 0.8264463 0.7513148 0.6830134 0.6209213 0.5644739 0.5131581
+##  [8] 0.4665074 0.4240976 0.3855433 0.3504939 0.3186308 0.2896644 0.2633313
+## [15] 0.2393920 0.2176291 0.1978447 0.1798588 0.1635080 0.1486436 0.1351306
+## [22] 0.1228460 0.1116782 0.1015256 0.0922960
 ## 
 ## $Consumption
-##  [1] 0.090909091 0.082644628 0.075131480 0.068301345 0.062092132 0.056447393
-##  [7] 0.051315812 0.046650738 0.042409762 0.038554329 0.035049390 0.031863081
-## [13] 0.028966438 0.026333125 0.023939205 0.021762913 0.019784467 0.017985879
-## [19] 0.016350799 0.014864363 0.013513057 0.012284597 0.011167816 0.010152560
-## [25] 0.009229601
+##  [1] 0.09090909 0.08264463 0.07513148 0.06830134 0.06209213 0.05644739
+##  [7] 0.05131581 0.04665074 0.04240976 0.03855433 0.03504939 0.03186308
+## [13] 0.02896644 0.02633313 0.02393920 0.02176291 0.01978447 0.01798588
+## [19] 0.01635080 0.01486436 0.01351306 0.01228460 0.01116782 0.01015256
+## [25] 0.00922960
 ## 
 ## $flux.up
 ## [1] 1
 ## 
 ## $flux.down
-## [1] 0.09229601
+## [1] 0.092296
 ## 
 ## attr(,"precis")
-## [1] 3.328335e-01 1.891158e-09
+## [1] 2.642744e-01 2.028815e-09
 ## attr(,"steady")
 ## [1] TRUE
 ## attr(,"class")
@@ -523,6 +544,89 @@ Thus, we might be better off plotting the output. I am not sure why the plot fun
 \includegraphics[width=4in,height=5in]{figure/1D-AdvectionReaction-1} 
 \end{knitrout}
 \end{figure*}
+
+\subsection{asdf}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Grid}\hlkwb{<-}\hlkwd{setup.grid.1D}\hlstd{(}\hlkwc{N}\hlstd{=}\hlnum{1000}\hlstd{,}\hlkwc{L}\hlstd{=}\hlnum{10}\hlstd{)}
+\hlstd{r} \hlkwb{<-}\hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{grid}\hlstd{=Grid,}\hlkwc{func}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{r}\hlstd{)r)}
+\hlstd{r2}\hlkwb{<-}\hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{grid}\hlstd{=Grid,}\hlkwc{func}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{r}\hlstd{)r}\hlopt{^}\hlnum{2}\hlstd{)}
+
+
+\hlstd{pde1D}\hlkwb{<-}\hlkwa{function}\hlstd{(}\hlkwc{t}\hlstd{,}\hlkwc{C}\hlstd{,}\hlkwc{parms}\hlstd{,}\hlkwc{A}\hlstd{=}\hlnum{1}\hlstd{)\{}
+  \hlstd{tran}\hlkwb{<-}\hlkwd{tran.1D}\hlstd{(}\hlkwc{C}\hlstd{=C,}\hlkwc{A}\hlstd{=A,}\hlkwc{D}\hlstd{=D,}\hlkwc{C.down}\hlstd{=Cext,} \hlkwc{dx}\hlstd{=Grid)}\hlopt{$}\hlstd{dC}
+  \hlkwd{list}\hlstd{(tran}\hlopt{-}\hlstd{Q)}
+\hlstd{\}}
+
+\hlstd{D}\hlkwb{<-}\hlnum{1}
+\hlstd{Q}\hlkwb{<-}\hlnum{1}
+\hlstd{Cext}\hlkwb{<-}\hlnum{20}
+
+
+
+\hlstd{Cartesian} \hlkwb{<-}\hlkwd{steady.1D}\hlstd{(}\hlkwc{y}\hlstd{=}\hlkwd{runif}\hlstd{(Grid}\hlopt{$}\hlstd{N),} \hlkwc{func}\hlstd{=pde1D,}\hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{A}\hlstd{=}\hlnum{1}\hlstd{)}
+
+\hlstd{Cylindrical}\hlkwb{<-}\hlkwd{steady.1D}\hlstd{(}\hlkwc{y}\hlstd{=}\hlkwd{runif}\hlstd{(Grid}\hlopt{$}\hlstd{N),} \hlkwc{func}\hlstd{=pde1D,}\hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{A}\hlstd{=r)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{system.time}\hlstd{( Spherical} \hlkwb{<-}\hlkwd{steady.1D}\hlstd{(}\hlkwc{y}\hlstd{=}\hlkwd{runif}\hlstd{(Grid}\hlopt{$}\hlstd{N),} \hlkwc{func}\hlstd{=pde1D,}\hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{A}\hlstd{=r2) ))}
+\end{alltt}
+\begin{verbatim}
+##    user  system elapsed 
+##   0.001   0.000   0.002
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+user systemelapsed 0.02 0.00 0.00 Thevaluesofthestate-variables(y)areplottedagainsttheradialdistance, inthemiddleof thegridcells
+
+(Grid$x.mid). 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{1}\hlstd{))}
+\hlkwd{plot}\hlstd{(Grid}\hlopt{$}\hlstd{x.mid,Cartesian}\hlopt{$}\hlstd{y,}\hlkwc{type}\hlstd{=}\hlstr{"l"}\hlstd{,}\hlkwc{main}\hlstd{=}\hlstr{"steady-statePDE"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{xlab}\hlstd{=}\hlstr{"x"}\hlstd{,}\hlkwc{ylab}\hlstd{=}\hlstr{"C"}\hlstd{,}\hlkwc{col}\hlstd{=}\hlstr{"darkgreen"}\hlstd{,}\hlkwc{lty}\hlstd{=}\hlnum{1}\hlstd{)}
+\hlkwd{lines}\hlstd{(Grid}\hlopt{$}\hlstd{x.mid,Cylindrical}\hlopt{$}\hlstd{y,}\hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{col}\hlstd{=}\hlstr{"blue"}\hlstd{,}\hlkwc{lty}\hlstd{=}\hlnum{2}\hlstd{)}
+\hlkwd{lines}\hlstd{(Grid}\hlopt{$}\hlstd{x.mid,Spherical}\hlopt{$}\hlstd{y,}\hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,}\hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlstr{"bottomright"}\hlstd{,}\hlkwd{c}\hlstd{(}\hlstr{"cartesian"}\hlstd{,}\hlstr{"cylindrical"}\hlstd{,}\hlstr{"spherical"}\hlstd{),} \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"darkgreen"}\hlstd{,}\hlstr{"blue"}\hlstd{,}\hlstr{"red"}\hlstd{),}\hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-10-1} 
+\end{knitrout}
+
+\subsection{asdfasdf}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{times}\hlkwb{<-}\hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{100}\hlstd{,}\hlkwc{by}\hlstd{=}\hlnum{1}\hlstd{)}
+
+\hlkwd{system.time}\hlstd{(}
+  \hlstd{out}\hlkwb{<-}\hlkwd{ode.1D}\hlstd{(}\hlkwc{y}\hlstd{=}\hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,Grid}\hlopt{$}\hlstd{N),}\hlkwc{times}\hlstd{=times,}\hlkwc{func}\hlstd{=pde1D,} \hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{A}\hlstd{=r2)}
+  \hlstd{)}
+\end{alltt}
+\begin{verbatim}
+##    user  system elapsed 
+##   0.153   0.012   0.165
+\end{verbatim}
+\begin{alltt}
+\hlkwd{tail}\hlstd{(out[,}\hlnum{1}\hlopt{:}\hlnum{4}\hlstd{],}\hlkwc{n}\hlstd{=}\hlnum{3}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+##        time        1        2        3
+##  [99,]   98 3.332278 3.332303 3.332366
+## [100,]   99 3.332383 3.332408 3.332471
+## [101,]  100 3.332478 3.332503 3.332566
+\end{verbatim}
+\begin{alltt}
+\hlkwd{image}\hlstd{(out,}\hlkwc{grid}\hlstd{=Grid}\hlopt{$}\hlstd{x.mid,}\hlkwc{xlab}\hlstd{=}\hlstr{"time,days"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Distance,cm"}\hlstd{,}\hlkwc{main}\hlstd{=}\hlstr{"PDE"}\hlstd{,}\hlkwc{add.contour}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-1} 
+\end{knitrout}
+
 
 \subsection{Oxygen Consumption Porous Spherical Particle}
 
@@ -699,7 +803,7 @@ It takes about 0.5 second to solve this 10000 state variable model.
 \end{alltt}
 \begin{verbatim}
 ##    user  system elapsed 
-##   0.231   0.027   0.260
+##   0.217   0.010   0.227
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -713,7 +817,62 @@ The S3 image method is used to generate the steady-state plot.
 \hlkwd{image}\hlstd{(ST3,}\hlkwc{main}\hlstd{=}\hlstr{"2-D diffusion+production"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"x"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"y"}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-16-1} 
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-19-1} 
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{pde2D} \hlkwb{<-} \hlkwa{function} \hlstd{(}\hlkwc{t}\hlstd{,} \hlkwc{y}\hlstd{,} \hlkwc{parms}\hlstd{) \{}
+\hlstd{CONC} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{nr} \hlstd{= n,} \hlkwc{nc} \hlstd{= n, y)}
+\hlstd{Tran} \hlkwb{<-} \hlkwd{tran.2D}\hlstd{(CONC,} \hlkwc{D.x} \hlstd{= Dx,} \hlkwc{D.y} \hlstd{= Dy,} \hlkwc{dx} \hlstd{= dx,} \hlkwc{dy} \hlstd{= dy)}
+\hlstd{dCONC} \hlkwb{<-} \hlstd{Tran}\hlopt{$}\hlstd{dC} \hlopt{-} \hlstd{r} \hlopt{*} \hlstd{CONC}
+\hlstd{dCONC[ii]}\hlkwb{<-} \hlstd{dCONC[ii]} \hlopt{+} \hlstd{p}
+\hlkwd{return}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwd{as.vector}\hlstd{(dCONC)))}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Before running the model, the grid sizes (dx, dx), diffusion coefficients (Dx, Dy), 1st order
+consumption rate (r) are defined. There are 100 boxes in x- and y direction (n). Furthermore,
+we assume that the substance is produced in 50 randomly chosen cells (ii) at a constant rate
+(p):
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{n} \hlkwb{<-} \hlnum{100}
+\hlstd{dy} \hlkwb{<-} \hlstd{dx} \hlkwb{<-} \hlnum{1}
+\hlstd{Dy} \hlkwb{<-} \hlstd{Dx} \hlkwb{<-} \hlnum{2}
+\hlstd{r} \hlkwb{<-} \hlnum{0.001}
+\hlstd{p} \hlkwb{<-} \hlkwd{runif}\hlstd{(}\hlnum{50}\hlstd{)}
+\hlstd{ii} \hlkwb{<-} \hlkwd{trunc}\hlstd{(}\hlkwd{cbind}\hlstd{(}\hlkwd{runif}\hlstd{(}\hlnum{50}\hlstd{)} \hlopt{*} \hlstd{n,} \hlkwd{runif}\hlstd{(}\hlnum{50}\hlstd{)} \hlopt{*} \hlstd{n)} \hlopt{+} \hlnum{1}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Conc0} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{nr} \hlstd{= n,} \hlkwc{nc} \hlstd{= n,} \hlnum{10}\hlstd{)}
+\hlkwd{print}\hlstd{(}\hlkwd{system.time}\hlstd{(ST} \hlkwb{<-} \hlkwd{steady.2D}\hlstd{(}\hlkwc{y} \hlstd{= Conc0,} \hlkwc{func} \hlstd{= pde2D,}
+\hlkwc{parms} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{dimens} \hlstd{=} \hlkwd{c}\hlstd{(n, n),} \hlkwc{lrw} \hlstd{=} \hlnum{6e+05}\hlstd{)))}
+\end{alltt}
+\begin{verbatim}
+##    user  system elapsed 
+##   0.068   0.000   0.068
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{image}\hlstd{(ST,} \hlkwc{main} \hlstd{=} \hlstr{"steady-state 2-D PDE"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-23-1} 
 \end{knitrout}
 
 
@@ -757,11 +916,173 @@ ux gradient is then also approximated by subtracting entire matrices
 ux at the boundaries is
 imposed by binding a column or row with 0-s.
 
+
+\section{The Theory}
+
+\subsection{Solving the advection-diffusion equation}
+
+The advection-diffusion equation is a partial differential equation that describes the transport of a substance by both diffusion and advection.
+
+\subsecton{Goals of these notes}
+
+\begin{itemize}
+
+\item Introduce the advection-diffusion equation
+\item Find solution for steady-state XX transfer with a constant XX flux
+\item Find solution for steady-state solute transfer with a constant basal??
+
+\end{itemize}
+
+\subsection{Advection-diffusion equation in 1D}
+
+To show how the advection equation can be solved, we're actually going to look at a combination of the advection and diffusion equations applied to compound advection and diffusion.
+
+transfer equations in 1D, with math that is straightforward to follow.
+
+Disperson is a diffusion process caused by interactions of atoms or molecules, which can be simulated using the diffusion equation we saw in last week's notes.
+
+Mathematically, we'll start with our two equations: (1) The diffusion equation without heat production and (2) the advection equation, then combine them.
+
+\begin{equation}
+    \frac{\partial T}{\partial t} &= \kappa \frac{\partial^{2} T}{\partial z^{2}} ~~ \text{Diffusion}\\
+\end{equation}
+
+\begin{equation}
+    \frac{\partial T}{\partial t} &= v_{z}\frac{\partial T}{\partial z} ~~ \text{Advection}\\
+\end{equation}    
+\begin{equation}
+    \frac{\partial T}{\partial t} &= \kappa \frac{\partial^{2} T}{\partial z^{2}} + v_{z}\frac{\partial T}{\partial z} ~~ \text{Diffusion + Advection}
+\end{equation}
+
+In steady state, we can ignore the transient term $\partial T/\partial t$, so
+
+\begin{equation}
+    \cancel{\frac{\partial T}{\partial t}}{\frac{\partial T}{\partial t}} &= \kappa \frac{\partial^{2} T}{\partial z^{2}} + v_{z}\frac{\partial T}{\partial z} ~~ \text{ Steady-state advection-diffusion equation}\\
+    
+\end{equation}    
+\begin{equation}
+
+    \frac{\partial^{2} T}{\partial z^{2}} &= -\frac{v_{z}}{\kappa} \frac{\partial T}{\partial z} ~~ \text{ Rearranged}\\
+    
+    \end{equation}
+
+Another way to write the previous equation is
+
+\begin{equation}
+    \frac{\partial}{\partial z} \left(\frac{\partial T}{\partial z}\right) = -\frac{v_{z}}{\kappa} \frac{\partial T}{\partial z}
+    
+    \end{equation}
+
+In this case, we can make some substitutions and find something quite useful.
+Assume $f = \partial T/\partial z$ and $c = v_{z}/\kappa$.
+With this, we can say $f'(z) = -c f(z)$ .
+
+
+This is a common form of differential equation with a solution $f(z) = f(0) \mathrm{e}^{cz}$ .
+Thus, in terms of our equation we can say
+
+\begin{equation}
+
+    \frac{\partial T}{\partial z} = \left. -\frac{\partial T}{\partial z} \right|_{(z = 0)} \mathrm{e}^{-(v_{z} z/\kappa)}
+    
+    \end{equation}
+
+\subsection{Solutions to the steady-state advection-diffusion equation}
+
+The simplest solution to the previous equation is to assume a constant temperature gradient 
+\begin{equation}
+    \frac{\partial T}{\partial z} &= \left. -\frac{\partial T}{\partial z} \right|_{(z = 0)} \mathrm{e}^{-(v_{z} z/\kappa)} = g \mathrm{e}^{-(v_{z} z/\kappa)}\\
+ \end{equation}    
+\begin{equation}   
+    
+    \int \frac{\partial T}{\partial z} &= g \int \mathrm{e}^{-(v_{z} z/\kappa)} && \text{Integrate}\\
+    T(z) &= -\frac{g \kappa}{v_{z}} \mathrm{e}^{-(v_{z} z/\kappa)} + c_{1}
+    \end{equation}
+
+Assume $T(0) = 0$.
+
+\begin{equation}
+
+    T(z) &= -\frac{g \kappa}{v_{z}} \mathrm{e}^{-(v_{z} z/\kappa)} + c_{1}\\
+  \end{equation}    
+\begin{equation}  
+    0 &= -\frac{g \kappa}{v_{z}} \cancelto{1}{\mathrm{e}^{-(v_{z} 0/\kappa)}} + c_{1}\\
+    c_{1} &= \frac{g \kappa}{v_{z}}
+    
+\end{equation}
+
+Thus, we find
+
+\begin{equation}
+
+    T(z) &= -\frac{g \kappa}{v_{z}} \mathrm{e}^{-(v_{z} z/\kappa)} + \frac{g \kappa}{v_{z}}\\
+ \end{equation}    
+\begin{equation}   
+    T(z) &= \frac{g \kappa}{v_{z}}\left(1 - \mathrm{e}^{-(v_{z} z/\kappa)} \right) ~~\text{Rearranged}
+
+    What should our temperature profile look like?
+
+    At constant $z$ , what happens to $T$ if $v_{z}$ gets large?
+
+Constant temperature $T_{L}$ at $z=L$
+
+A more useful second boundary condition is to assume $T(L) = T_{L}$.
+In this case
+
+\begin{equation}
+
+    T(z) = T_{L} \left( \frac{1 - \mathrm{e}^{-(v_z z / \kappa})}{1 - \mathrm{e}^{-(v_z L / \kappa})} \right)
+\end{equation}
+
+
+%\subsecton{The Peclet number}
+
+%The Peclet number is a useful value for estimating the relative influence of advective versus diffusive heat transfer processes.
+
+%\begin{equation}
+%    \mathrm{Pe} = \frac{v_{z}L}{\kappa}
+%\end{equation}
+
+%Where $\kappa$` is a parameter known as the *thermal diffusivity*.
+
+%$\kappa$ is the rock thermal conductivity $k$ divided by the product of the density $\rho$ and heat capacity $c_{\mathrm{p}}$, or $\kappa = k / (\rho c_{\mathrm{p}})$.
+
+%If a typical rock thermal diffusivity is $\kappa = 10^{-6}$ and typical continental crust is 35 km thick, how fast does it need to erode for advection exceed the effects of diffusion?
+
+%How would this be different for erosion of the entire lithosphere?
+
+\subsection{Advection-diffusion equation take-home messages}
+
+\begin{itemize*}
+
+    \item Math gets a bit more complex, even for the 'simplest' cases; Often need numerical methods for more complex geometries
+
+    \item Behavior of the equation is strongly controlled by the boundary conditions
+
+    \item Even these simple equations can be quite useful. Advection can be a significant influence on the thermal field and these simple calculations allow you to estimate when it is a factor and its magnitude of influence.
+\end{itemize*}
+
+
+Some Caveats:
+
+\begin{itemize*}
+  \item Steady-state
+  \item 1-D
+  \item Constants assumed to be constant :)
+  \item No heat production
+  
+\end{itemize*}
+
+
 \section{Conclusion}
 
 
 % bibiliography section here-------------------------------------------
 %\clearpage
+
+\url{https://en.wikipedia.org/wiki/Convection%E2%80%93diffusion_equation}
+
+
 
 \bibliographystyle{apalike}
 %\renewcommand\bibname{References}{}

@@ -5,6 +5,8 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{natbib}
+\usepackage{cancel}
+%\usepackage{comment}
 
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 \bibfont{\small} % Doesn't see to work...
@@ -33,7 +35,7 @@
 
 \title{DRAFT! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver.~0.49 working toward v .8)}
+\date{\today~(ver.~0.69 working toward v .8)}
 
 \setsidenotefont{\color{blue}}
 % \setcaptionfont{hfont commandsi}
@@ -50,17 +52,18 @@
 
 \maketitle% this prints the handout title, author, and date
 \begin{abstract}
-The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples. The compounds are also subject to transformations or reactions. Thus, to understand the fate and transport of compounds in the environment, we need to understand the processes of advection, diffusion, and reaction. We'll begin with simple examples and then consider more complicated examples. We'll also consider the implications of these processes on the environment and human health.
+The movement of compounds in the environment is driven by two processes, advection and diffusion. The compounds are also subject to transformations or reactions. Thus, to monitor the fate and transport of compounds in the environment, we can capitalize on mathematical models that have been used to describe advection, diffusion, and reaction. %We'll begin with simple examples and then consider more complicated examples. We'll also consider the implications of these processes on the environment and human health.
 
 %\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
 \end{abstract}
 
 \section{Introduction}
 
-\subsection{The Problem}
+\subsection{Fate and Transport Processes}
 
-The fate and transport of compounds in the environment is subject to a complex array of processes (Figure~\ref{fig:dioxaneplume}). However, we can simplify these processes into three subprocesses: 
-advection, diffusion, and reaction. Of course, these processes occur in three dimensions but we'll focus on 1D and 2D for this session. 
+The fate and transport of compounds in the environment is subject to an array of processes. For example, pollutants might carried by the wind (advection) and spread out (dispersion or diffusion). In addition, the pollutant might be transformed into different compounds (reaction). Together, these three processes, advection, diffusion, and reaction (Figure~\ref{fig:advection-diffusion}).%, can be effectively described mathematically, which can then be tested.
+
+%. Of course, these processes occur in three dimensions but we'll focus on 1D and 2D for this session. 
 
 \begin{marginfigure}
 \centering
@@ -69,6 +72,9 @@ advection, diffusion, and reaction. Of course, these processes occur in three di
 \label{fig:advection-diffusion}
 \end{marginfigure}
 
+
+These three processes have profound  implications -- they provide the a framework to understand and quantify the fate and transport of pollutants in the environment (Figure~\ref{fig:dioxaneplume}), the movement of nutrients in the soil, and the movement of solutes in the human body. By understanding of these processes, we have tools to characterize environmental quality and its implications on human and non-human populations. Moreover, by modeling these processes, we can develop more effective policy, regulation, and mitigation strategies.
+
 \begin{figure*}
 \centering
 \includegraphics[width=0.9\textwidth]{graphics/Dioxane_plume.png}
@@ -76,13 +82,13 @@ advection, diffusion, and reaction. Of course, these processes occur in three di
 \label{fig:dioxaneplume}
 \end{figure*}
 
-The implications of these three processes is profound -- they provide the basic framework to understand the fate and transport of pollutants in the environment, the movement of nutrients in the soil, and the movement of solutes in the human body. Our understanding of these processes is critical to understanding issues of environmental quality and justice for human and non-humans alike. Moreover, we often use our understanding of these processes to develop of environmental policy, regulation, and mitigation.
-
-Because these processes are complex and are often difficult to measure, we often rely on models to help us understand the movement of solutes in the environment. These models are based on the fundamental mathemicial equations to describe advection, diffusion, and reaction.
+Because these processes are complex and are often difficult to measure, we rely on models to help us understand the movement of solutes in the environment. These models are based on the fundamental mathematical equations to describe advection, diffusion, and reaction.
 
 \subsection{The Processes}
 
-Advection and diffusion are two fundamental processes that govern the transport of solutes in the environment. Advection is the process of transport of a solute by the bulk motion of the fluid. Diffusion is the process of transport of a solute by random molecular motion.
+Advection and diffusion govern the transport of solutes in the environment. Advection is the transport of a solute by the bulk motion of the fluid. Advection depends on velocity or $\nu$ in this session. Diffusion is the transport of a solute by random molecular motion. Diffusion depends on the diffusion coefficient and concentration gradient or $\frac{\partial^2 C}{\partial x^2}$ in this session. Notice that this is the second derivative. 
+
+Reaction is the transformation of a solute into a different compound. Reaction depends on the reaction rate or $k$ in this session.
 
 In a simple example, if we have a dose of a solute, like a dye in the center of some media, we'll see it spread out by diffusion (Figure~\ref{fig:diffusion}). If the media is moving, we'll see the dye move with the bulk motion of the media. If the dye reacts with the media, we'll see the dye disappear.
 
@@ -143,13 +149,26 @@ The advection equation is a partial differential equation that describes the mov
 - \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot \frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
 \end{equation}
 
+\begin{equation}
+\frac{\partial C}{\partial t} = D_x \frac{partial^2 C}{partial x^2} +
+D_y \frac{partial^2 C}{partial y^2} +
+D_z \frac{partial^2 C}{partial z^2} -
+v_x \frac{\partial C}{\partial x} -
+\lambda RC
+\end{equation}
+
+
+
+
+
 Here $D$ is the ``diffusion coefficient'', $\nu$ is the ``advection rate'' (or velocity), and $A_x$ and $\xi$ are the surface area and volume fraction, respectively.\sidenote{What you look at this equation, think about how it makes you feel. It's a bit intimidating, to say the least. But that's only part of the story. I believe these equations, when put in front of is generates anxiety -- and this anxiety can be a barrier to learning. While it's easy to claim we can just put this anxiety away seems to be be a disservice and acknoweldgement of our emotional responses. Before moving forward, let's take a moment to acknowledge the anxiety and see where in your body you are feeling that. Take a deep breath and let it out several times before moving forward.} 
 
 Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a more general form: 
 
 %D∂2C ∂x2−u∂C ∂x
 \begin{equation}
-D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x}
+\frac{\partial C/\partial t} =
+D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x} - R
 \end{equation}
 
 where $\nu = v/A_x \xi_x$ is the ``velocity'' of the fluid.
@@ -179,7 +198,7 @@ where $C$ is the concentration of the solute, $t$ is time, and $\nu$ is the velo
 For one dimensional systems, the equation can be written as:
 
 \begin{equation}
-\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} = 0
+\frac{\partial C}{\partial t} + \nu \frac{\partial C}{\partial x} = 0
 \end{equation}
 
 or
@@ -188,9 +207,12 @@ or
 \frac{\partial C}{\partial t} + \nu_x \frac{\partial C}{\partial x}
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, and $x$ is the spatial coordinate.
+where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, and $x$ is the spatial coordinate.\sidenote{This can also be solved as a flux density -- the amount of solute that crosses a unit area per unit time, ${\displaystyle \mathbf {j} _{\text{adv}}=\mathbf {v} c}$.}
+
 
 The advection equation is not simple to solve numerically: the system is a hyperbolic partial differential equation, and interest typically centers on discontinuous "shock" solutions (which are notoriously difficult for numerical schemes to handle).
+
+T
 
 
 \subsection{Diffusion}
@@ -283,7 +305,7 @@ tran.1D(C = 1, D = 0, flux.up = 1, v = 5, A= 1, dx = 1, full.output = TRUE)
 @
 
 
-\subsection{Solving a 1-D reaction tranport mdodel}
+\subsection{Solving a 1-D reaction tranport model}
 
 <<eval=FALSE>>=
 library(ReacTran)
@@ -379,6 +401,61 @@ plot(out2, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (
 plot(out3, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.5; D=50)", mfrow=NULL)
 @
 \end{figure*}
+
+\subsection{asdf}
+
+<<>>=
+Grid<-setup.grid.1D(N=1000,L=10)
+r <-setup.prop.1D(grid=Grid,func=function(r)r) 
+r2<-setup.prop.1D(grid=Grid,func=function(r)r^2)
+
+
+pde1D<-function(t,C,parms,A=1){ 
+  tran<-tran.1D(C=C,A=A,D=D,C.down=Cext, dx=Grid)$dC 
+  list(tran-Q) 
+}
+
+D<-1 
+Q<-1 
+Cext<-20
+
+
+
+Cartesian <-steady.1D(y=runif(Grid$N), func=pde1D,parms=NULL,nspec=1,A=1) 
+
+Cylindrical<-steady.1D(y=runif(Grid$N), func=pde1D,parms=NULL,nspec=1,A=r) 
+
+print(system.time( Spherical <-steady.1D(y=runif(Grid$N), func=pde1D,parms=NULL,nspec=1,A=r2) )) 
+@
+
+user systemelapsed 0.02 0.00 0.00 Thevaluesofthestate-variables(y)areplottedagainsttheradialdistance, inthemiddleof thegridcells
+
+(Grid$x.mid). 
+
+<<>>=
+par(mfrow=c(1,1))
+plot(Grid$x.mid,Cartesian$y,type="l",main="steady-statePDE", lwd=3,xlab="x",ylab="C",col="darkgreen",lty=1) 
+lines(Grid$x.mid,Cylindrical$y,lwd=3,col="blue",lty=2) 
+lines(Grid$x.mid,Spherical$y,lwd=3,col="red",lty=3) 
+legend("bottomright",c("cartesian","cylindrical","spherical"), col=c("darkgreen","blue","red"),lwd=3,lty=1:3)
+@
+
+\subsection{asdfasdf}
+
+<<>>=
+
+times<-seq(0,100,by=1) 
+
+system.time( 
+  out<-ode.1D(y=rep(1,Grid$N),times=times,func=pde1D, parms=NULL,nspec=1,A=r2) 
+  )
+
+tail(out[,1:4],n=3)
+
+image(out,grid=Grid$x.mid,xlab="time,days", ylab="Distance,cm",main="PDE",add.contour=TRUE)
+
+@
+
 
 \subsection{Oxygen Consumption Porous Spherical Particle}
 
@@ -599,6 +676,41 @@ The S3 image method is used to generate the steady-state plot.
 image(ST3,main="2-D diffusion+production", xlab="x", ylab="y")
 @
 
+<<>>=
+pde2D <- function (t, y, parms) {
+CONC <- matrix(nr = n, nc = n, y)
+Tran <- tran.2D(CONC, D.x = Dx, D.y = Dy, dx = dx, dy = dy)
+dCONC <- Tran$dC - r * CONC
+dCONC[ii]<- dCONC[ii] + p
+return(list(as.vector(dCONC)))
+}
+
+@
+
+Before running the model, the grid sizes (dx, dx), diffusion coefficients (Dx, Dy), 1st order
+consumption rate (r) are defined. There are 100 boxes in x- and y direction (n). Furthermore,
+we assume that the substance is produced in 50 randomly chosen cells (ii) at a constant rate
+(p):
+
+<<>>=
+n <- 100
+dy <- dx <- 1
+Dy <- Dx <- 2
+r <- 0.001
+p <- runif(50)
+ii <- trunc(cbind(runif(50) * n, runif(50) * n) + 1)
+@
+
+<<>>=
+Conc0 <- matrix(nr = n, nc = n, 10)
+print(system.time(ST <- steady.2D(y = Conc0, func = pde2D,
+parms = NULL, dimens = c(n, n), lrw = 6e+05)))
+@
+
+<<>>=
+image(ST, main = "steady-state 2-D PDE")
+@
+
 
 \section{Considering 2D Models}
 
@@ -640,11 +752,173 @@ ux gradient is then also approximated by subtracting entire matrices
 ux at the boundaries is
 imposed by binding a column or row with 0-s.
 
+
+\section{The Theory}
+
+\subsection{Solving the advection-diffusion equation}
+
+The advection-diffusion equation is a partial differential equation that describes the transport of a substance by both diffusion and advection.
+
+\subsecton{Goals of these notes}
+
+\begin{itemize}
+
+\item Introduce the advection-diffusion equation
+\item Find solution for steady-state XX transfer with a constant XX flux
+\item Find solution for steady-state solute transfer with a constant basal??
+
+\end{itemize}
+
+\subsection{Advection-diffusion equation in 1D}
+
+To show how the advection equation can be solved, we're actually going to look at a combination of the advection and diffusion equations applied to compound advection and diffusion.
+
+transfer equations in 1D, with math that is straightforward to follow.
+
+Disperson is a diffusion process caused by interactions of atoms or molecules, which can be simulated using the diffusion equation we saw in last week's notes.
+
+Mathematically, we'll start with our two equations: (1) The diffusion equation without heat production and (2) the advection equation, then combine them.
+
+\begin{equation}
+    \frac{\partial T}{\partial t} &= \kappa \frac{\partial^{2} T}{\partial z^{2}} ~~ \text{Diffusion}\\
+\end{equation}
+
+\begin{equation}
+    \frac{\partial T}{\partial t} &= v_{z}\frac{\partial T}{\partial z} ~~ \text{Advection}\\
+\end{equation}    
+\begin{equation}
+    \frac{\partial T}{\partial t} &= \kappa \frac{\partial^{2} T}{\partial z^{2}} + v_{z}\frac{\partial T}{\partial z} ~~ \text{Diffusion + Advection}
+\end{equation}
+
+In steady state, we can ignore the transient term $\partial T/\partial t$, so
+
+\begin{equation}
+    \cancel{\frac{\partial T}{\partial t}}{\frac{\partial T}{\partial t}} &= \kappa \frac{\partial^{2} T}{\partial z^{2}} + v_{z}\frac{\partial T}{\partial z} ~~ \text{ Steady-state advection-diffusion equation}\\
+    
+\end{equation}    
+\begin{equation}
+
+    \frac{\partial^{2} T}{\partial z^{2}} &= -\frac{v_{z}}{\kappa} \frac{\partial T}{\partial z} ~~ \text{ Rearranged}\\
+    
+    \end{equation}
+
+Another way to write the previous equation is
+
+\begin{equation}
+    \frac{\partial}{\partial z} \left(\frac{\partial T}{\partial z}\right) = -\frac{v_{z}}{\kappa} \frac{\partial T}{\partial z}
+    
+    \end{equation}
+
+In this case, we can make some substitutions and find something quite useful.
+Assume $f = \partial T/\partial z$ and $c = v_{z}/\kappa$.
+With this, we can say $f'(z) = -c f(z)$ .
+
+
+This is a common form of differential equation with a solution $f(z) = f(0) \mathrm{e}^{cz}$ .
+Thus, in terms of our equation we can say
+
+\begin{equation}
+
+    \frac{\partial T}{\partial z} = \left. -\frac{\partial T}{\partial z} \right|_{(z = 0)} \mathrm{e}^{-(v_{z} z/\kappa)}
+    
+    \end{equation}
+
+\subsection{Solutions to the steady-state advection-diffusion equation}
+
+The simplest solution to the previous equation is to assume a constant temperature gradient 
+\begin{equation}
+    \frac{\partial T}{\partial z} &= \left. -\frac{\partial T}{\partial z} \right|_{(z = 0)} \mathrm{e}^{-(v_{z} z/\kappa)} = g \mathrm{e}^{-(v_{z} z/\kappa)}\\
+ \end{equation}    
+\begin{equation}   
+    
+    \int \frac{\partial T}{\partial z} &= g \int \mathrm{e}^{-(v_{z} z/\kappa)} && \text{Integrate}\\
+    T(z) &= -\frac{g \kappa}{v_{z}} \mathrm{e}^{-(v_{z} z/\kappa)} + c_{1}
+    \end{equation}
+
+Assume $T(0) = 0$.
+
+\begin{equation}
+
+    T(z) &= -\frac{g \kappa}{v_{z}} \mathrm{e}^{-(v_{z} z/\kappa)} + c_{1}\\
+  \end{equation}    
+\begin{equation}  
+    0 &= -\frac{g \kappa}{v_{z}} \cancelto{1}{\mathrm{e}^{-(v_{z} 0/\kappa)}} + c_{1}\\
+    c_{1} &= \frac{g \kappa}{v_{z}}
+    
+\end{equation}
+
+Thus, we find
+
+\begin{equation}
+
+    T(z) &= -\frac{g \kappa}{v_{z}} \mathrm{e}^{-(v_{z} z/\kappa)} + \frac{g \kappa}{v_{z}}\\
+ \end{equation}    
+\begin{equation}   
+    T(z) &= \frac{g \kappa}{v_{z}}\left(1 - \mathrm{e}^{-(v_{z} z/\kappa)} \right) ~~\text{Rearranged}
+
+    What should our temperature profile look like?
+
+    At constant $z$ , what happens to $T$ if $v_{z}$ gets large?
+
+Constant temperature $T_{L}$ at $z=L$
+
+A more useful second boundary condition is to assume $T(L) = T_{L}$.
+In this case
+
+\begin{equation}
+
+    T(z) = T_{L} \left( \frac{1 - \mathrm{e}^{-(v_z z / \kappa})}{1 - \mathrm{e}^{-(v_z L / \kappa})} \right)
+\end{equation}
+
+
+%\subsecton{The Peclet number}
+
+%The Peclet number is a useful value for estimating the relative influence of advective versus diffusive heat transfer processes.
+
+%\begin{equation}
+%    \mathrm{Pe} = \frac{v_{z}L}{\kappa}
+%\end{equation}
+
+%Where $\kappa$` is a parameter known as the *thermal diffusivity*.
+
+%$\kappa$ is the rock thermal conductivity $k$ divided by the product of the density $\rho$ and heat capacity $c_{\mathrm{p}}$, or $\kappa = k / (\rho c_{\mathrm{p}})$.
+
+%If a typical rock thermal diffusivity is $\kappa = 10^{-6}$ and typical continental crust is 35 km thick, how fast does it need to erode for advection exceed the effects of diffusion?
+
+%How would this be different for erosion of the entire lithosphere?
+
+\subsection{Advection-diffusion equation take-home messages}
+
+\begin{itemize*}
+
+    \item Math gets a bit more complex, even for the 'simplest' cases; Often need numerical methods for more complex geometries
+
+    \item Behavior of the equation is strongly controlled by the boundary conditions
+
+    \item Even these simple equations can be quite useful. Advection can be a significant influence on the thermal field and these simple calculations allow you to estimate when it is a factor and its magnitude of influence.
+\end{itemize*}
+
+
+Some Caveats:
+
+\begin{itemize*}
+  \item Steady-state
+  \item 1-D
+  \item Constants assumed to be constant :)
+  \item No heat production
+  
+\end{itemize*}
+
+
 \section{Conclusion}
 
 
 % bibiliography section here-------------------------------------------
 %\clearpage
+
+\url{https://en.wikipedia.org/wiki/Convection%E2%80%93diffusion_equation}
+
+
 
 \bibliographystyle{apalike}
 %\renewcommand\bibname{References}{}
