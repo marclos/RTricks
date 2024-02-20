@@ -56,7 +56,7 @@
 \usepackage{graphicx}
 \usepackage{natbib}
 \usepackage{cancel}
-%\usepackage{comment}
+\usepackage{comment}
 
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 \bibfont{\small} % Doesn't see to work...
@@ -85,7 +85,7 @@
 
 \title{DRAFT! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver.~0.69 working toward v .8)}
+\date{\today~(ver.~0.81)}
 
 \setsidenotefont{\color{blue}}
 % \setcaptionfont{hfont commandsi}
@@ -136,11 +136,9 @@ Because these processes are complex and are often difficult to measure, we rely 
 
 \subsection{The Processes}
 
-Advection and diffusion govern the transport of solutes in the environment. Advection is the transport of a solute by the bulk motion of the fluid. Advection depends on velocity or $\nu$ in this session. Diffusion is the transport of a solute by random molecular motion. Diffusion depends on the diffusion coefficient and concentration gradient or $\frac{\partial^2 C}{\partial x^2}$ in this session. Notice that this is the second derivative. 
+As an example of the three processes consider a droplet of dye in water as a dose in a solution. The dye will move with the bulk motion of the water (advection), spread out by random molecular motion (diffusion)(Figure~\ref{fig:diffusion}), and disappear as it reacts with the water (reaction).
 
-Reaction is the transformation of a solute into a different compound. Reaction depends on the reaction rate or $k$ in this session.
-
-In a simple example, if we have a dose of a solute, like a dye in the center of some media, we'll see it spread out by diffusion (Figure~\ref{fig:diffusion}). If the media is moving, we'll see the dye move with the bulk motion of the media. If the dye reacts with the media, we'll see the dye disappear.
+Advection and diffusion govern the transport of solutes in the environment. Advection is the transport of a solute by the bulk motion of the fluid. Advection depends on velocity or $\nu$ in this session. Diffusion is the transport of a solute by random molecular motion. Diffusion depends on the diffusion coefficient and the concentration gradient or $\frac{\partial^2 C}{\partial x^2}$ in this session. Notice that this is the second derivative. 
 
 \begin{marginfigure}
 \caption{A simple diagram of 2D diffusion. To solve these equations, we'll use a numerical approach and descretize the media into a grid. We'll then solve the equations for each grid cell.}
@@ -148,8 +146,17 @@ In a simple example, if we have a dose of a solute, like a dye in the center of 
 \includegraphics[width=1.0\textwidth]{graphics/2D_diffusion.png}
 \end{marginfigure}
 
+Reaction is the transformation of a solute into a different compound. Reaction depends on the reaction rate or $k$ in this session.
 
-Besides examples we often see with respect to air pollution sources (Figure~\ref{fig:advection-diffusion}), we might think about solutes as pollutants or nutrients. For example, the movement of a nutrient in a river is driven by the bulk motion of the water (advection) and the random motion of the molecules (diffusion) and the reactions that might occur in the water column and sediments (Figure\ref{fig:nutrientspiraling}).
+In the case of air pollution, we are interested in the pollutant in the context of the air -- or the media of air (Figure~\ref{fig:advection-diffusion}). And for air pollution, the chemical transormations are a critical part of our regulatory framework (Figure~\ref{}). In the case of water, we might think about solutes in the water as a media. For example, the movement of a nutrient in a river is driven by the bulk motion of the water (advection) through the water column and the sediments (two types of media) and the random motion of the molecules (diffusion) and the reactions that might occur in the water column and sediments (Figure\ref{fig:nutrientspiraling}).
+
+\begin{figure*}
+\caption{A simple diagram of advection and diffusion in the context of air pollution.}
+\label{fig:smog}
+\centering
+\includegraphics[width=0.99\textwidth]{graphics/sources-of-air-pollution-310314_orig.png}
+\end{figure*}
+
 
 \begin{figure}
 \caption{A simple diagram of advection and nutrient reactions (organic substances and inorganic substances) in a river. Although not shown, you might also think about how diffusion might influence the movement of nutrients in the river and in the sediments.  
@@ -158,8 +165,7 @@ The zone where water moves into the sediment bed is called the hyperreic zone. T
 \centering
 \includegraphics[width=0.99\textwidth]{graphics/NutrientSpiraling.jpg}
 \end{figure}
-
-
+jk
 \subsection{Session Goals}
 
 We will not become experts in advection-diffusion-reaction modeling, but we will become familiar with the processes and the equations that describe them. Moreover, we'll see a bit more about how R can be used to model these processes. After this session, I hope you can do the following:
@@ -183,11 +189,7 @@ In this session, we'll want to think about the movement of solutes in the porous
 
 %We'll start with one-dimensional systems and then move to two-dimensional systems. We'll also consider the effects of reactions on the movement of solutes.
 
-\section{The Processes and the Equations to Describe Them}
-
-\subsection{Advection and Convection: Material and Heat}
-
-Advection is the transport of a substance by bulk motion. Convection is the transfer of heat by the actual movement of the warmed matter. The equation that are used to describe advection and convection are similar, but the physical processes are different.
+\section{Equations to Describe Processes}
 
 \newthought{An Equation that Often Creates Anxiety}
 
@@ -201,17 +203,54 @@ The advection equation is a partial differential equation that describes the mov
 
 \begin{equation}
 \frac{\partial C}{\partial t} = D_x \frac{partial^2 C}{partial x^2} +
-D_y \frac{partial^2 C}{partial y^2} +
-D_z \frac{partial^2 C}{partial z^2} -
+D_y \frac{\partial^2 C}{\partial y^2} +
+D_z \frac{\partial^2 C}{\partial z^2} -
 v_x \frac{\partial C}{\partial x} -
 \lambda RC
 \end{equation}
 
+Here $D$ is the ``diffusion coefficient'', $\nu$ is the ``advection rate'' (or velocity), and $A_x$ and $\xi$ are the surface area and volume fraction, respectively.
+
+As you complete the first part of this handout, please do some reflecting: 
+
+\begin{quote}
+
+What you look at this equation, think about how it makes you feel. It's a bit intimidating, to say the least. But that's only part of the story. I believe these equations, when put in front of is generates anxiety -- and this anxiety can be a barrier to learning. While it's easy to claim we can just put this anxiety away seems to be be a disservice and acknoweldgement of our emotional responses. Before moving forward, let's take a moment to acknowledge the anxiety and see where in your body you are feeling that. Take a deep breath and let it out several times before moving forward.
+
+\end{quote} 
+
+First, let's simplify this to 1-D (in one direction, x).
+
+\begin{equation}
+\frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x} - R
+\end{equation}
+
+\subsection{Left side: $\frac{\partial C}{\partial t}$}
+
+The left side of the equation describes the change in concentration over time. This is the rate of change of the concentration of the solute in the fluid. In steady state, this term is zero, which will use use to model the steady state concentration of the solute in the fluid.
+
+\subsection{First term on the right side: $D \frac{\partial^2 C}{\partial x^2}$}
+
+The first term on the right side of the equation describes the movement of the solute due to diffusion. This is the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration.
+
+\subsection{Second term on the right side: $- \nu \frac{\partial C}{\partial x}$}
+
+The second term on the right side of the equation describes the movement of the solute due to advection. This is the rate of change of the concentration of the solute in the fluid due to the movement of the fluid.
+
+\subsection{Third term on the right side: $- R$}
+
+The third term on the right side of the equation describes the rate of change of the concentration of the solute in the fluid due to reactions. This is the rate of change of the concentration of the solute in the fluid due to the reaction of the solute with other compounds in the fluid.
+
+\begin{quote}
+\textbf{Pause for a moment:} Reflect on your emotional state. What are you feeling? Where are you feeling it? Take a deep breath and let it out several times. You have completed the reading for Wednesday's class. 
+\end{quote}
 
 
 
 
-Here $D$ is the ``diffusion coefficient'', $\nu$ is the ``advection rate'' (or velocity), and $A_x$ and $\xi$ are the surface area and volume fraction, respectively.\sidenote{What you look at this equation, think about how it makes you feel. It's a bit intimidating, to say the least. But that's only part of the story. I believe these equations, when put in front of is generates anxiety -- and this anxiety can be a barrier to learning. While it's easy to claim we can just put this anxiety away seems to be be a disservice and acknoweldgement of our emotional responses. Before moving forward, let's take a moment to acknowledge the anxiety and see where in your body you are feeling that. Take a deep breath and let it out several times before moving forward.} 
+\begin{comment}
+
+
 
 Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a more general form: 
 
@@ -454,7 +493,7 @@ For this example, we will solve the advection-diffusion-reaction equation for a 
 
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Mon Feb 19 23:30:26 2024
+% Tue Feb 20 08:12:30 2024
 \begin{table}[ht]
 \centering
 \begin{tabular}{rr}
@@ -504,15 +543,15 @@ We can look at the output, using a simple call of the object, but without more i
 \end{alltt}
 \begin{verbatim}
 ## $y
-##  [1] 0.9090909 0.8264463 0.7513148 0.6830134 0.6209213 0.5644739 0.5131581
+##  [1] 0.9090909 0.8264463 0.7513148 0.6830135 0.6209213 0.5644739 0.5131581
 ##  [8] 0.4665074 0.4240976 0.3855433 0.3504939 0.3186308 0.2896644 0.2633313
-## [15] 0.2393920 0.2176291 0.1978447 0.1798588 0.1635080 0.1486436 0.1351306
+## [15] 0.2393921 0.2176291 0.1978447 0.1798588 0.1635080 0.1486436 0.1351306
 ## [22] 0.1228460 0.1116782 0.1015256 0.0922960
 ## 
 ## $Consumption
-##  [1] 0.09090909 0.08264463 0.07513148 0.06830134 0.06209213 0.05644739
+##  [1] 0.09090909 0.08264463 0.07513148 0.06830135 0.06209213 0.05644739
 ##  [7] 0.05131581 0.04665074 0.04240976 0.03855433 0.03504939 0.03186308
-## [13] 0.02896644 0.02633313 0.02393920 0.02176291 0.01978447 0.01798588
+## [13] 0.02896644 0.02633313 0.02393921 0.02176291 0.01978447 0.01798588
 ## [19] 0.01635080 0.01486436 0.01351306 0.01228460 0.01116782 0.01015256
 ## [25] 0.00922960
 ## 
@@ -523,7 +562,7 @@ We can look at the output, using a simple call of the object, but without more i
 ## [1] 0.092296
 ## 
 ## attr(,"precis")
-## [1] 2.642744e-01 2.028815e-09
+## [1] 3.715027e-01 1.729137e-09
 ## attr(,"steady")
 ## [1] TRUE
 ## attr(,"class")
@@ -574,7 +613,7 @@ Thus, we might be better off plotting the output. I am not sure why the plot fun
 \end{alltt}
 \begin{verbatim}
 ##    user  system elapsed 
-##   0.001   0.000   0.002
+##   0.002   0.000   0.002
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -609,7 +648,7 @@ user systemelapsed 0.02 0.00 0.00 Thevaluesofthestate-variables(y)areplottedagai
 \end{alltt}
 \begin{verbatim}
 ##    user  system elapsed 
-##   0.153   0.012   0.165
+##   0.164   0.017   0.183
 \end{verbatim}
 \begin{alltt}
 \hlkwd{tail}\hlstd{(out[,}\hlnum{1}\hlopt{:}\hlnum{4}\hlstd{],}\hlkwc{n}\hlstd{=}\hlnum{3}\hlstd{)}
@@ -803,7 +842,7 @@ It takes about 0.5 second to solve this 10000 state variable model.
 \end{alltt}
 \begin{verbatim}
 ##    user  system elapsed 
-##   0.217   0.010   0.227
+##   0.240   0.005   0.247
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -861,7 +900,7 @@ we assume that the substance is produced in 50 randomly chosen cells (ii) at a c
 \end{alltt}
 \begin{verbatim}
 ##    user  system elapsed 
-##   0.068   0.000   0.068
+##   0.079   0.003   0.082
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -918,6 +957,10 @@ imposed by binding a column or row with 0-s.
 
 
 \section{The Theory}
+
+\subsection{Advection and Convection: Material and Heat}
+
+Advection is the transport of a substance by bulk motion. Convection is the transfer of heat by the actual movement of the warmed matter. The equation that are used to describe advection and convection are similar, but the physical processes are different.
 
 \subsection{Solving the advection-diffusion equation}
 
@@ -1076,6 +1119,11 @@ Some Caveats:
 
 \section{Conclusion}
 
+\end{comment}
+
+\newpage
+
+\section{References}
 
 % bibiliography section here-------------------------------------------
 %\clearpage
