@@ -1,0 +1,32 @@
+Group,College,Site_ID,Surface Water Name,Replicate,Replicated,Description,Results (TC) MPN,TC_Value,Results (e coli) MPN (UV light),e_coli_Value,Comments
+Tues G1,CMC,CMC1,The Cube ,?,3,?,<1/100mL ,0,<1/100mL ,0,
+Tues G1,CMC,CMC2,Hub Fountains ,1,3,?,<1/100mL ,0,<1/100mL ,0,
+Tues G1,CMC,CMC2,Hub Fountains,2,3,?,<1/100mL ,0,<1/100mL ,0,
+Tues G1,CMC,CMC3,Bower Fountain ,?,2,?,<1/100mL ,0,<1/100mL ,0,
+Tues G2,Scripps,SCR1,Seal Court Fountain,1,3,"Walk to seal court and see the fountain in the middle. The fountain is very large, with green, non-chlorinated water. There are koi fish and turtles swimming in it.",>2419.6/100mL,2419,14.6/100mL,14.6,
+Tues G2,Scripps,SCR1,Seal Court Fountain,2,3,"Walk to seal court and see the fountain in the middle. The fountain is very large, with green, non-chlorinated water. There are koi fish and turtles swimming in it.",>2419.6/100mL,2419,14.6/100mL,14.6,
+Tues G2,Scripps,SCR2,Schow Hall Fountain,1,2,"Walk to the front entrance of Schow hall, enter, and take the door on the left to enter the courtyard. The fountain is in the middle of the courtyard ",<1/100mL ,0,<1/100mL,0,
+Tues G2,Scripps,SCR3,Toll Hall Fountain,1,1,"Walk into the front entrance of Toll, and continue straight until you see a residential hallway; then turn right and open the door to the courtyard. ",<1/100mL ,0,<1/100mL,0,
+Tues G3,Pomona,POM1,Frank Fountain,,2,In front of Frank Dining Hall,<1/100mL ,0,<1/100mL ,0,
+Tues G3,Pomona,POM3,Lebus Court Fountain,,2,"In front of Lebus Court, has a statue",106.7/100mL,106.7,<1/100mL ,0,
+Tues G3,Pomona,POM7,Bioswale,1,4,"East of the soccer field parking lot, divided into sections by low stone walls",686.7/100mL,686.7,<1/100mL ,0,
+Tues G3,Pomona,POM7,Bioswale,2,4,"East of the soccer field parking lot, divided into sections by low stone walls",1732.9/100mL:,1732.9,<1/100mL ,0,
+Tues G4,HMC,HMC1,Maker Space Fountain,1,2,Walk to galileo hall and down the steps to the fountain,<1/100mL,0,<1/100mL,0,
+Tues G4,HMC,HMC1,Maker Space Fountain,2,2,Walk to galileo hall and down the steps to the fountain,<1/100mL,0,<1/100mL,0,
+Tues G4,Pitzer,PTZ1,Pitzer Geyser,?,1,Walk to McConnell Center and then go slightly north. There is a cobblestone fountain,>2419.6/100mL,2419,14.6/100mL,14.6,
+Tues G4,Pomona,POM5,Skyspace Fountain,1,,"Fountain between Lincoln Hall, ITS, and Edmunds Hall",>2419.6/100mL,2419,<1/100mL,0,
+Wed G1,Scripps,SCR1,Seal Court,1,3,"non chlorinated, saw a turtle 
+and coy fish",<1/100mL,0,<1/100mL,0,
+Wed G1,Scripps,SCR2,Humanities Building Fountain,2,2,"shallow fountain, chlorinated",<1/100mL,0,<1/100mL,0,
+Wed G1,Pomona,POM4,Sontag fountain,2,1,"series of fountains next to Sontag and Athearn field, most
+likely chlorinated",<1/100mL,0,<1/100mL,0,
+Wed G2,CMC,CMC3,Bauer Center fountain,1,2,"Walked to the fountain outside the Bauer Center at CMC. The water seemed very similar to the fountain outside the hub: clear, flowing, and not chlorinated.",<1/100mL,0,<1/100mL,0,
+Wed G2,CMC,CMC1,cmc cube,1,3,Walked to the cube at CMC. The water is very shallow and chlorinated. ,<1/100mL,0,<1/100mL,0,
+Wed G2,CMC,CMC2,Hub fountain,1,3,"Walked to the fountain outside the hub at CMC. The water is flowing, clear, and unchlorinated.",<1/100mL,0,<1/100mL,0,
+Wed G3 ,Pomona,POM3,Lebus Court,?,2,Walked to Lebus court and took a sample from the fountain. Used container meant for chlorinated water. ,<1/100mL,0,<1/100mL,0,
+Wed G3 ,Pomona,POM1,Frank Fountain,?,2,"Walked to Frank foundtain and took a sample, used the container meant for chlorinated water",<1/100mL,0,<1/100mL,0,
+Wed G3 ,Pomona,POM7,bioswale (dried),?,4,Thoroughly searched for the water but the whole area was completely dry,?,NA,N/A,NA,Dry - unable to complete
+Wed G3 ,Pomona,POM7,bioswale (dried),?,4,?,?,NA,NA,NA,Dry - unable to complete
+Wed G4,Pomona,POM2,Frary Fountain,0,1,The frary fountain had a hummingbird swimming in the water. This fountain is unchlorinated.,>1/100mL,NA,>1/100 mL,NA,
+Wed G4,CMC,CMC1,CMC Cube,2,3,"This water is chlorinated, the surface water is not very deep, so we needed to take sample water from the top of the surface. ",1.0/100 mL,1,>1/100mL,NA,
+Wed G4,Pomona,POM6,Coop Fountain,0,1,This water is unchlorinated. This fountain is deep so we were afble to take sample water from far below the surface.,>1/100mL,NA,>1/100mL,NA,
