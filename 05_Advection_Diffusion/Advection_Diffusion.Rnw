@@ -35,7 +35,7 @@
 
 \title{DRAFT! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver.~0.81)}
+\date{\today~(ver.~0.83)}
 
 \setsidenotefont{\color{blue}}
 % \setcaptionfont{hfont commandsi}
@@ -168,7 +168,7 @@ What you look at this equation, think about how it makes you feel. It's a bit in
 
 \end{quote} 
 
-First, let's simplify this to 1-D (in one direction, x). The movement of compounds in the environment is driven by two processes, advection and diffusion -- these terms associated with $\partial x$ define movement. The third term on the right, $R$, is the reaction term.
+First, let's simplify this to 1-D (in one direction, x). And assume that the volume fraction is 1 ($xi = 1$). The movement of compounds in the environment is driven by two processes, advection and diffusion -- these terms associated with $\partial x$ define movement. The third term on the right, $R$, is the reaction term.
 
 \begin{equation}
 \frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x} - R
@@ -194,120 +194,82 @@ The third term on the right side of the equation describes the rate of change of
 \textbf{Pause for a moment:} Reflect on your emotional state. What are you feeling? Where are you feeling it? Take a deep breath and let it out several times. You have completed the reading for Wednesday's class. 
 \end{quote}
 
+\section{2/21 Handout Update}
 
 
 
-\begin{comment}
-
-
-
-Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a more general form: 
-
-%D∂2C ∂x2−u∂C ∂x
-\begin{equation}
-\frac{\partial C/\partial t} =
-D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x} - R
-\end{equation}
-
-where $\nu = v/A_x \xi_x$ is the ``velocity'' of the fluid.
-
- Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
-
-Nevertheless, let's look at the 3-D advection-diffusion-reacton equation in three dimensions:
+\section{Quatifying Advective Transport}
 
 \begin{equation}
-\frac{\partial C}{\partial t} = \nabla \cdot (D\nabla C - \nu C) + R
+  J = C \cdot \nu
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+J is the ``flux density'' of the solute, which is the amount of solute that moves through a unit area in a unit time. With units of $mass / (area \cdot time)$, the equation returns the rate of movement of the solute in the fluid.
 
-Ok, what what is $\nabla$? It's the gradient operator, which is a vector operator that operates on a scalar function to produce a vector whose magnitude is the maximum rate of change of the function at the point of the gradient and that points in the direction of that maximum rate of change. $\nabla \cdot$ represents divergence. In this equation, $\nabla C$ represents concentration gradient.
 
-\subsection{Advection}
-
-Advection is the process of transport of a solute by the bulk motion of the fluid. The rate of advection is proportional to the velocity of the fluid and the concentration of the solute. The rate of advection is given by the equation:
+We can take the derivative of the flux density with respect to the distance to get the ``flux rate'' and then derive the concentration change with respect to time: \sidenote{How dows J become C??}
 
 \begin{equation}
-\frac{\partial C}{\partial t} + \nabla \cdot (\nu C) = 0
+  \frac{\partial J}{\partial x} = \nu \frac{\partial C}{\partial t}
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, and $\nu$ is the velocity of the fluid. 
 
-For one dimensional systems, the equation can be written as:
+of the solute, which is the amount of solute that moves through a unit area in a unit time. With units of $mass / (area \cdot time)$, the equation returns the rate of movement of the solute in the fluid.
+
+\section{Diffusion}
+
+\subsection{Fick's First Law and Three Types of Diffusion}
+
+There are three types of diffusion: turbulent (eddy) diffusion, dispersion and molecular diffusion. Each of the operate at different scales, but have similar effects and are describe by the same equation:
+
+\begin{equation}\label{eq:ficks-first-law}
+  J = -D \frac{d C}{dx}
+\end{equation}
+
+Equation~\ref{eq:ficks-first-law} ss known as Fick's first law. The negative sign indicates that the solute moves from areas of high concentration to areas of low concentration. The equation returns the rate of movement of the solute in the fluid.
+
+\begin{description*}
+
+\item[Turbulent or Eddy diffusion] is the movement of solutes due to the movement of the fluid. In this case, D is the ``eddy diffusion coefficient''.
+
+\item[Dispersion] is the movement of solutes due to the random movement of the solute through a porous media where D is the ``dispersion coefficient''.
+
+\item[Molecular diffusion] is the movement of solutes due to the random movement of the solute molecules where D is the ``molecular diffusion coefficient''.
+
+\end{description*}
+
+\subsection{Fick's Second Law -- Rate of Change}
+
+Fick's Second Law is based on the conservation of mass, where the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration is described by the equation:
 
 \begin{equation}
-\frac{\partial C}{\partial t} + \nu \frac{\partial C}{\partial x} = 0
+  \frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2}
 \end{equation}
 
-or
+which can be written as 
 
 \begin{equation}
-\frac{\partial C}{\partial t} + \nu_x \frac{\partial C}{\partial x}
+  \frac{\partial C}{\partial t} + D \frac{\partial^2 C}{\partial x^2} = 0
 \end{equation}
 
-where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, and $x$ is the spatial coordinate.\sidenote{This can also be solved as a flux density -- the amount of solute that crosses a unit area per unit time, ${\displaystyle \mathbf {j} _{\text{adv}}=\mathbf {v} c}$.}
 
 
-The advection equation is not simple to solve numerically: the system is a hyperbolic partial differential equation, and interest typically centers on discontinuous "shock" solutions (which are notoriously difficult for numerical schemes to handle).
-
-T
-
-
-\subsection{Diffusion}
-
-Diffusion is the process of transport of a solute by random molecular motion. The rate of diffusion is proportional to the concentration gradient of the solute. The rate of diffusion is given by the equation:
+We can rearrange Fick's first law to get the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration:
 
 \begin{equation}
-\frac{\partial C}{\partial t} = D \nabla^2 C
+  \frac{\partial C}{\partial t} + D \frac{\partial^2 C}{\partial x^2}
 \end{equation}
 
-where $D$ is the diffusion coefficient.
 
-\subsection{Advection-Diffusion Equation}
+Based on the conservation of mass, we can derive the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration:
 
-The advection-diffusion equation is a combination of the advection and diffusion equations. The advection-diffusion equation is given by the equation:
 
 \begin{equation}
-\frac{\partial C}{\partial t} + \nabla \cdot (\nu C) = D \nabla^2 C
+  \frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2}
 \end{equation}
 
-or 
+This equation is known as Fick's second law. It describes the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration.
 
-\begin{equation}
-\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} = D \frac{\partial^2 C}{\partial x^2}
-\end{equation}
-
-where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, and $D$ is the diffusion coefficient.
-
-\subsection{Advection-Difffusion-Reaction Equation}
-
-The advection-diffusion-reaction equation is a combination the advection, diffusion, and reaction equations. The advection-diffusion-reaction equation is given by the equation:
-
-\begin{equation}
-\frac{\partial C}{\partial t} + \nabla \cdot (\nu C) = D \nabla^2 C + R
-\end{equation}
-
-where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
-
-or in one-dimension:
-
-\begin{equation}
-\frac{\partial C}{\partial t} = \nu \frac{\partial C}{\partial x} = D \frac{\partial^2 C}{\partial x^2} + R
-\end{equation}
-
-where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
-
-  
-\subsection{Advenction-Difffusion-Reaction in multi-phase systems and for shapes with variable geometry}
-
-The advection-diffusion-reaction equation can be extended to multi-phase systems and to shapes with variable geometry. The advection-diffusion-reaction equation for multi-phase systems and for shapes with variable geometry is given by the equation:
-
-\begin{equation}
-\frac{\partial C}{\partial t} + \nabla \cdot (\nu C) = D \nabla^2 C + R
-\end{equation}
-
-where $C$ is the concentration of the solute, $t$ is time, $\nu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
-  
 \section{Applications using R}
 
 \subsection{ReacTran Package}
@@ -334,168 +296,28 @@ library(deSolve) # Load the deSolve package
 library(xtable) # Load the xtable package to help format tables outputs
 @
 
-\subsection{1D Transportion Model}
 
-The `ReacTran` package provides a function to solve the advection-diffusion-reaction equation for a simple one-dimensional case.
-
-<<>>=
-tran.1D(C = 1, D = 0, flux.up = 1, v = 5, A= 1, dx = 1, full.output = TRUE)
-@
+\subsection{Grid and Time Step}
 
 
-\subsection{Solving a 1-D reaction tranport model}
+\subsection{Steady-state vs. Transient State}
 
-<<eval=FALSE>>=
-library(ReacTran)
-out <- steady.1D(func = advModel, y = runif(25), params = parms, nspace= 1, positive = TRUE)
-@
+\subsection{Boundary Conditions}
 
-We can use R to solve the advection-diffusion-reaction equation. The following code uses the `deSolve` package to solve the advection-diffusion-reaction equation for a simple one-dimensional case.
+\subsection{Initial Conditions}
 
-<<eval= FALSE >>=
-# Load the deSolve package
-library(deSolve)
-
-# Define the advection-diffusion-reaction equation
-advection_diffusion_reaction <- function(t, C, parms) {
-  with(as.list(parms), {
-    dC <- D * (diff(C, lag = 2) - 2 * diff(C, lag = 1) + diff(C, lag = 0)) / dx^2 - k * C
-    dC[1] <- 0
-    dC[n] <- 0
-    list(dC)
-  })
-}
-
-# Set the parameters
-parms <- list(
-  D = 0.1,  # Diffusion coefficient
-  dx = 0.1,  # Spatial step
-  k = 0.01  # Reaction rate
-)
-
-# Set the initial conditions
-C0 <- c(0, rep(0, 98), 1, rep(0, 98), 0)
-
-# Set the times at which to evaluate the solution
-times <- seq(0, 100, by = 1)
-
-# Solve the advection-diffusion-reaction equation
-out <- ode(y = C0, times = times, func = advection_diffusion_reaction, parms = parms)
-
-# Plot the solution
-plot(out, xlab = "Distance", ylab = "Concentration", type = "l")
-
-  
-@
-
-\subsection{1-D Reaction-Transport Model}
-
-For this example, we will solve the advection-diffusion-reaction equation for a simple one-dimensional case, where the reaction term is given by $R = kC$, and the initial concentration is given by $C(x,0) = 1$ for $x < ?$ and $C(x,0) = 1$ for $x \geq 0.5$. 
-
-<<echo=FALSE>>=
-parms <- c(F0 = 1, v=1, k = 0.1, D = 0, dx = 1)
-parms.mat = matrix(parms, ncol = 1, byrow = TRUE, dimnames = list(c("F0", "v", "k", "D", "dx"), c("Value")))
-@
-
-<<echo=FALSE, results='asis'>>=
-xtable(parms.mat)
-@
-
-
-<<>>=
-advModel <- function(t, C, parms) {
-  with(as.list(parms), {
-    Tran <- tran.1D(C = C, D = D, flux.up = F0, v = v, dx = dx)
-    Consumption = k * C
-    dC <- Tran$dC - Consumption
-    
-    return(list(dC = dC, Consumption = Consumption, flux.up = Tran$flux.up, flux.down = Tran$flux.down))
-  })
-}
-
-out <- steady.1D(func = advModel, y = runif(25), parms = parms, nspec= 1, positive = TRUE)
-
-parms <- c(F0 = 1, v=1, k = 0.5, D=0, dx = 1)
-out2 <- steady.1D(func = advModel, y = runif(25), parms = parms, nspec= 1, positive = TRUE)
-
-parms <- c(F0 = 1, v=1, k = 0.5, D=50, dx = 1)
-out3 <- steady.1D(func = advModel, y = runif(25), parms = parms, nspec= 1, positive = TRUE)
-
-@
-
-We can look at the output, using a simple call of the object, but without more information, it's not clear what we are looking at. 
-<<>>=
-out
-@
-
-Thus, we might be better off plotting the output. I am not sure why the plot functions are ignoring my par() call, perhaps this will be fixed by version 0.9!
-
-\begin{figure*}
-<<1D-AdvectionReaction, echo=FALSE, out.height='5in', out.width='4in' >>=
-#par(mfrow=c(1,3))
-layout(matrix(c(1,2,3), nrow = 1, ncol = 3, byrow = TRUE))
-plot(out, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.1; D=0)", mfrow=NULL)
-plot(out2, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.5; D=0)", mfrow=NULL)
-plot(out3, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.5; D=50)", mfrow=NULL)
-@
-\end{figure*}
-
-\subsection{asdf}
-
-<<>>=
-Grid<-setup.grid.1D(N=1000,L=10)
-r <-setup.prop.1D(grid=Grid,func=function(r)r) 
-r2<-setup.prop.1D(grid=Grid,func=function(r)r^2)
-
-
-pde1D<-function(t,C,parms,A=1){ 
-  tran<-tran.1D(C=C,A=A,D=D,C.down=Cext, dx=Grid)$dC 
-  list(tran-Q) 
-}
-
-D<-1 
-Q<-1 
-Cext<-20
+\subsection{Rate of Reaction}
 
 
 
-Cartesian <-steady.1D(y=runif(Grid$N), func=pde1D,parms=NULL,nspec=1,A=1) 
+\section{Implemeting Some 1D Examples in R}
 
-Cylindrical<-steady.1D(y=runif(Grid$N), func=pde1D,parms=NULL,nspec=1,A=r) 
+\subsection{Plug Flow}
 
-print(system.time( Spherical <-steady.1D(y=runif(Grid$N), func=pde1D,parms=NULL,nspec=1,A=r2) )) 
-@
-
-user systemelapsed 0.02 0.00 0.00 Thevaluesofthestate-variables(y)areplottedagainsttheradialdistance, inthemiddleof thegridcells
-
-(Grid$x.mid). 
-
-<<>>=
-par(mfrow=c(1,1))
-plot(Grid$x.mid,Cartesian$y,type="l",main="steady-statePDE", lwd=3,xlab="x",ylab="C",col="darkgreen",lty=1) 
-lines(Grid$x.mid,Cylindrical$y,lwd=3,col="blue",lty=2) 
-lines(Grid$x.mid,Spherical$y,lwd=3,col="red",lty=3) 
-legend("bottomright",c("cartesian","cylindrical","spherical"), col=c("darkgreen","blue","red"),lwd=3,lty=1:3)
-@
-
-\subsection{asdfasdf}
-
-<<>>=
-
-times<-seq(0,100,by=1) 
-
-system.time( 
-  out<-ode.1D(y=rep(1,Grid$N),times=times,func=pde1D, parms=NULL,nspec=1,A=r2) 
-  )
-
-tail(out[,1:4],n=3)
-
-image(out,grid=Grid$x.mid,xlab="time,days", ylab="Distance,cm",main="PDE",add.contour=TRUE)
-
-@
+\subsection{Plug Flow through two media}
 
 
-\subsection{Oxygen Consumption Porous Spherical Particle}
+\subsection{Dissolved Oxygen Consumed in a Porous Media}
 
 We will be modeling the consumption of oxygen in a "sand-sized" porous spherical particle. The model is based on the following equation:
 
@@ -520,7 +342,7 @@ Ks <- 0.005 # Half saturation constant micromols/cm-3
 
 We start with defining the size and porosity of the particle and use R to create a grid to solve the advection-diffusion-reaction equation.
 
-\begin{table}[h]
+\begin{table}
 \caption{Chararacteristics of the Particle}
 \centering
 \begin{tabular}{|l|l|c|c|} \hline
@@ -545,7 +367,7 @@ A.grid <- setup.prop.1D(func=sphere.surf,  grid=grid) # Surface area
 
 Finally, we need to define the O2 concentration at the surface of the particle and the O2 consumption rate of the particle. 
 
-\begin{table}[h]
+\begin{table}
 \caption{Oxygen Consumption in the Particle}
 \centering
 \begin{tabular}{|l|l|c|c|} \hline
@@ -576,7 +398,7 @@ O2.agg <- steady.1D(y = runif(N), func=Aggregate.Model,
 @
 
 
-\begin{figure}[h]
+\begin{figure}
 \centering
 \caption{Oxygen Consumption in a Porous Sphere}
 <<plotO2agg, echo=FALSE>>=
@@ -587,7 +409,7 @@ plot(O2.agg, grid = grid$x.mid, xlab = "Distance to Center", ylab = "mmol/m3",
 
 The plot shows the oxygen concentration in the particle. The concentration is highest at the surface and decreases as it moves into the particle. The concentration is zero at the center of the particle.
 
-\begin{figure}[h]
+\begin{figure}
 <<circleplot, echo=FALSE>>=
 #R = 0.025
 t <- seq(0, 2 * pi, length = 1000)
@@ -621,6 +443,8 @@ for(i in 0:7) {
 @
 \end{figure}
 
+Next steps: figure out how to create a 3D sphere with the oxygen concentration changes as we enter the sphere... 
+
 
 <<eval=FALSE, echo=FALSE>>=
 
@@ -641,320 +465,73 @@ spheres3d(x,y,z,col="red",radius=0.02)
 
 
 
+\section{2D Examples}
 
-%\printclassoptions
-
-% Setting up the margins, etc for R
-
+Modeling vehicle pollution from cars on a freeway that does in a west to east direction, while pollution moved in a north to south direction. The cars are pollution makers, and the wind is the advection term. The diffusion term is the natural spread of the pollution. The reaction term is the removal of pollution from the air. We'll model this as a steady state, where $\frac{\partial C}{\partial t} = 0$.
 
 
 
 
-<<>>=
-diffusion2D <- function(t,conc,par){
-Conc <- matrix(nr=n,nc=n,data=conc) # vector to 2-D matrix
-dConc <- -r*Conc*Conc # consumption
-BND <- rep(1,n) # boundary concentration
 
-# constant production in certain cells
-dConc[ii]<- dConc[ii]+ p
+Where $\nu_x$  is the velocity in the x direction, $\nu_y$ is the velocity in the y direction, $D$ is the diffusion coefficient, and $R$ is the reaction term.
 
-#diffusion in X-direction; boundaries=imposed concentration
 
-Flux <- -Dx * rbind(rep(0,n),(Conc[2:n,]-Conc[1:(n-1),]),rep(0,n))/dx
-dConc <- dConc - (Flux[2:(n+1),]-Flux[1:n,])/dx
 
-#diffusion in Y-direction
-Flux <- -Dy * cbind(rep(0,n),(Conc[,2:n]-Conc[,1:(n-1)]),rep(0,n))/dy
-dConc <- dConc - (Flux[,2:(n+1)]-Flux[,1:n])/dy
+\begin{equation}
+\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} + v \frac{\partial C}{\partial y} = D \left( \frac{\partial^2 C}{\partial x^2} + \frac{\partial^2 C}{\partial y^2} \right) - R
+\end{equation}
 
-return(list(as.vector(dConc)))
+OR? with C as a fuction of y would be better!
+\begin{comment}
+\begin{equation}
+ \frac{\partial C}{\partial y} = \left D \left( \frac{\partial^2 C}{\partial x^2} + \frac{\partial^2 C}{\partial y^2} \right) - R - \nu_x \frac{\partial C}{\partial x} \right \cdot \frac{1}{\nu_y}
+\end{equation}
+\end{comment}
+Not working yet!
+
+<<eval=FALSE>>=
+
+# Create a function to model the pollution
+
+Pollution.Model <- function(time, C, pars) {
+  tran <- tran.2D(C = C, C.down = C.ow, D = D.grid, 
+          A=A.grid, VF = por.grid, dx = grid)
+    reac <- - R * (C /(Ks + C))
+    return(list(dCdt= tran$dC + reac, reac = reac, 
+                flux.up=tran$flux.up, flux.down=tran$flux.down))
 }
 
-@
+# Create a 2D grid
 
-After specifying the values of the parameters, 10 cells on the 2-D grid where there will be
-substance produced are randomly selected (ii).
+grid <- expand.grid(x = seq(0, 100, length = 100), 
+                    y = seq(0, 100, length = 100))
 
-14 Package rootSolve : roots, gradients and steady-states in R
-0.0 0.2 0.4 0.6 0.8 1.0
-0.0 0.2 0.4 0.6 0.8 1.0
-2-D diffusion+production
-x
-y
-Figure 5: Steady-state solution of the nonlinear 2-Dimensional model
-<<>>=
-# parameters
-dy <- dx <- 1 # grid size
-Dy <- Dx <- 1.5 # diffusion coeff, X- and Y-direction
-r <- 0.01 # 2-nd-order consumption rate (/time)
-p <- 20 # 0-th order production rate (CONC/t)
-n <- 100
-# 10 random cells where substance is produced at rate p
-ii <- trunc(cbind(runif(10)*n+1,runif(10)*n+1))
+# Define Initial Conditions
+???
 
-@
-The steady-state is found using function steady.2D. It takes as arguments a.o. the dimensionality
-of the problem (dimens) and lrw=1000000, the length of the work array needed by
-the solver. If this value is set too small, the solver will return with the size needed.
-It takes about 0.5 second to solve this 10000 state variable model.
-<<>>=
-Conc0 <- matrix(nr=n,nc=n,10.)
-print(system.time(
-ST3 <- steady.2D(Conc0,func=diffusion2D,parms=NULL,pos=TRUE,dimens=c(n,n),
-lrw=1000000,atol=1e-10,rtol=1e-10,ctol=1e-10)
-))
+# Create a 2D model
 
-@
-user system elapsed
-1.044 0.032 1.076
-The S3 image method is used to generate the steady-state plot.
+Pollution.2D <- steady.2D(y = runif(nrow(grid)), func=Pollution.Model, 
+                    nspec=1, positive=TRUE, atol = 1e-10)
 
-<<>>=
-image(ST3,main="2-D diffusion+production", xlab="x", ylab="y")
-@
 
-<<>>=
-pde2D <- function (t, y, parms) {
-CONC <- matrix(nr = n, nc = n, y)
-Tran <- tran.2D(CONC, D.x = Dx, D.y = Dy, dx = dx, dy = dy)
-dCONC <- Tran$dC - r * CONC
-dCONC[ii]<- dCONC[ii] + p
-return(list(as.vector(dCONC)))
-}
+# Plot the 2D model
+
+plot(Pollution.2D, grid = grid, xlab = "Distance to Center", ylab = "mmol/m3", 
+     las=1, main="Pollution in a 2D Grid")
 
 @
 
-Before running the model, the grid sizes (dx, dx), diffusion coefficients (Dx, Dy), 1st order
-consumption rate (r) are defined. There are 100 boxes in x- and y direction (n). Furthermore,
-we assume that the substance is produced in 50 randomly chosen cells (ii) at a constant rate
-(p):
 
-<<>>=
-n <- 100
-dy <- dx <- 1
-Dy <- Dx <- 2
-r <- 0.001
-p <- runif(50)
-ii <- trunc(cbind(runif(50) * n, runif(50) * n) + 1)
-@
 
-<<>>=
-Conc0 <- matrix(nr = n, nc = n, 10)
-print(system.time(ST <- steady.2D(y = Conc0, func = pde2D,
-parms = NULL, dimens = c(n, n), lrw = 6e+05)))
-@
 
-<<>>=
-image(ST, main = "steady-state 2-D PDE")
-@
 
 
-\section{Considering 2D Models}
-
-2.4. Steady-state solution of 2-D PDEs
-Function steady.2D effciently snds the steady-state of 2-dimensional problems.
-Karline Soetaert 13
-In the following model
-@C
-@t
-= Dx 
-@2C
-@x2 + Dy 
-@2C
-@y2
-.. r  C2 + pxy
-a substance C is consumed at a quadratic rate (r C2), while dispersing in X- and Y-direction.
-At certain positions (x,y) the substance is produced (rate p).
-The model is solved on a square (100*100) grid. There are zero-
-ux boundary conditions at
-the 4 boundaries.
-The term Dx  @2C
-@x2 is in fact shorthand for:
-..
-@Flux
-@x
-where
-Flux = ..Dx 
-@C
-@x
-i.e. it is the negative of the 
-ux gradient, where the 
-ux is due to diffusion.
-In the numerical approximation fo the 
-ux, the concentration gradient is approximated as the
-subtraction of two matrices, with the columns or rows shifted (e.g. Conc[2:n,]-Conc[1:(n-1),]).
-The 
-ux gradient is then also approximated by subtracting entire matrices
-(e.g. Flux[2:(n+1),]-Flux[1:(n),]). This is very fast. The zero-
-ux at the boundaries is
-imposed by binding a column or row with 0-s.
-
-
-\section{The Theory}
-
-\subsection{Advection and Convection: Material and Heat}
-
-Advection is the transport of a substance by bulk motion. Convection is the transfer of heat by the actual movement of the warmed matter. The equation that are used to describe advection and convection are similar, but the physical processes are different.
-
-\subsection{Solving the advection-diffusion equation}
-
-The advection-diffusion equation is a partial differential equation that describes the transport of a substance by both diffusion and advection.
-
-\subsecton{Goals of these notes}
-
-\begin{itemize}
-
-\item Introduce the advection-diffusion equation
-\item Find solution for steady-state XX transfer with a constant XX flux
-\item Find solution for steady-state solute transfer with a constant basal??
-
-\end{itemize}
-
-\subsection{Advection-diffusion equation in 1D}
-
-To show how the advection equation can be solved, we're actually going to look at a combination of the advection and diffusion equations applied to compound advection and diffusion.
-
-transfer equations in 1D, with math that is straightforward to follow.
-
-Disperson is a diffusion process caused by interactions of atoms or molecules, which can be simulated using the diffusion equation we saw in last week's notes.
-
-Mathematically, we'll start with our two equations: (1) The diffusion equation without heat production and (2) the advection equation, then combine them.
-
-\begin{equation}
-    \frac{\partial T}{\partial t} &= \kappa \frac{\partial^{2} T}{\partial z^{2}} ~~ \text{Diffusion}\\
-\end{equation}
-
-\begin{equation}
-    \frac{\partial T}{\partial t} &= v_{z}\frac{\partial T}{\partial z} ~~ \text{Advection}\\
-\end{equation}    
-\begin{equation}
-    \frac{\partial T}{\partial t} &= \kappa \frac{\partial^{2} T}{\partial z^{2}} + v_{z}\frac{\partial T}{\partial z} ~~ \text{Diffusion + Advection}
-\end{equation}
-
-In steady state, we can ignore the transient term $\partial T/\partial t$, so
-
-\begin{equation}
-    \cancel{\frac{\partial T}{\partial t}}{\frac{\partial T}{\partial t}} &= \kappa \frac{\partial^{2} T}{\partial z^{2}} + v_{z}\frac{\partial T}{\partial z} ~~ \text{ Steady-state advection-diffusion equation}\\
-    
-\end{equation}    
-\begin{equation}
-
-    \frac{\partial^{2} T}{\partial z^{2}} &= -\frac{v_{z}}{\kappa} \frac{\partial T}{\partial z} ~~ \text{ Rearranged}\\
-    
-    \end{equation}
-
-Another way to write the previous equation is
-
-\begin{equation}
-    \frac{\partial}{\partial z} \left(\frac{\partial T}{\partial z}\right) = -\frac{v_{z}}{\kappa} \frac{\partial T}{\partial z}
-    
-    \end{equation}
-
-In this case, we can make some substitutions and find something quite useful.
-Assume $f = \partial T/\partial z$ and $c = v_{z}/\kappa$.
-With this, we can say $f'(z) = -c f(z)$ .
-
-
-This is a common form of differential equation with a solution $f(z) = f(0) \mathrm{e}^{cz}$ .
-Thus, in terms of our equation we can say
-
-\begin{equation}
-
-    \frac{\partial T}{\partial z} = \left. -\frac{\partial T}{\partial z} \right|_{(z = 0)} \mathrm{e}^{-(v_{z} z/\kappa)}
-    
-    \end{equation}
-
-\subsection{Solutions to the steady-state advection-diffusion equation}
-
-The simplest solution to the previous equation is to assume a constant temperature gradient 
-\begin{equation}
-    \frac{\partial T}{\partial z} &= \left. -\frac{\partial T}{\partial z} \right|_{(z = 0)} \mathrm{e}^{-(v_{z} z/\kappa)} = g \mathrm{e}^{-(v_{z} z/\kappa)}\\
- \end{equation}    
-\begin{equation}   
-    
-    \int \frac{\partial T}{\partial z} &= g \int \mathrm{e}^{-(v_{z} z/\kappa)} && \text{Integrate}\\
-    T(z) &= -\frac{g \kappa}{v_{z}} \mathrm{e}^{-(v_{z} z/\kappa)} + c_{1}
-    \end{equation}
-
-Assume $T(0) = 0$.
-
-\begin{equation}
-
-    T(z) &= -\frac{g \kappa}{v_{z}} \mathrm{e}^{-(v_{z} z/\kappa)} + c_{1}\\
-  \end{equation}    
-\begin{equation}  
-    0 &= -\frac{g \kappa}{v_{z}} \cancelto{1}{\mathrm{e}^{-(v_{z} 0/\kappa)}} + c_{1}\\
-    c_{1} &= \frac{g \kappa}{v_{z}}
-    
-\end{equation}
-
-Thus, we find
-
-\begin{equation}
-
-    T(z) &= -\frac{g \kappa}{v_{z}} \mathrm{e}^{-(v_{z} z/\kappa)} + \frac{g \kappa}{v_{z}}\\
- \end{equation}    
-\begin{equation}   
-    T(z) &= \frac{g \kappa}{v_{z}}\left(1 - \mathrm{e}^{-(v_{z} z/\kappa)} \right) ~~\text{Rearranged}
-
-    What should our temperature profile look like?
-
-    At constant $z$ , what happens to $T$ if $v_{z}$ gets large?
-
-Constant temperature $T_{L}$ at $z=L$
-
-A more useful second boundary condition is to assume $T(L) = T_{L}$.
-In this case
-
-\begin{equation}
-
-    T(z) = T_{L} \left( \frac{1 - \mathrm{e}^{-(v_z z / \kappa})}{1 - \mathrm{e}^{-(v_z L / \kappa})} \right)
-\end{equation}
-
-
-%\subsecton{The Peclet number}
-
-%The Peclet number is a useful value for estimating the relative influence of advective versus diffusive heat transfer processes.
-
-%\begin{equation}
-%    \mathrm{Pe} = \frac{v_{z}L}{\kappa}
-%\end{equation}
-
-%Where $\kappa$` is a parameter known as the *thermal diffusivity*.
-
-%$\kappa$ is the rock thermal conductivity $k$ divided by the product of the density $\rho$ and heat capacity $c_{\mathrm{p}}$, or $\kappa = k / (\rho c_{\mathrm{p}})$.
-
-%If a typical rock thermal diffusivity is $\kappa = 10^{-6}$ and typical continental crust is 35 km thick, how fast does it need to erode for advection exceed the effects of diffusion?
-
-%How would this be different for erosion of the entire lithosphere?
-
-\subsection{Advection-diffusion equation take-home messages}
-
-\begin{itemize*}
-
-    \item Math gets a bit more complex, even for the 'simplest' cases; Often need numerical methods for more complex geometries
-
-    \item Behavior of the equation is strongly controlled by the boundary conditions
-
-    \item Even these simple equations can be quite useful. Advection can be a significant influence on the thermal field and these simple calculations allow you to estimate when it is a factor and its magnitude of influence.
-\end{itemize*}
-
-
-Some Caveats:
-
-\begin{itemize*}
-  \item Steady-state
-  \item 1-D
-  \item Constants assumed to be constant :)
-  \item No heat production
-  
-\end{itemize*}
-
+\section{3D Examples}
 
 \section{Conclusion}
 
-\end{comment}
+
 
 \newpage
 
