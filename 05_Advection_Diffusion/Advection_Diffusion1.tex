@@ -1,4 +1,54 @@
-\documentclass{tufte-handout}
+\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
 
 %\geometry{showframe}% for debugging purposes -- displays the margins
 
@@ -47,7 +97,7 @@
 
 % Small sections of multiple columns
 \usepackage{multicol}
-
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
 \maketitle% this prints the handout title, author, and date
@@ -306,18 +356,7 @@ where \( C \) is the concentration of oxygen, \( D \) is the diffusion coefficie
 
 At this scale the velocity will be zero. Thus, we will rely on diffusion to for the oxygen movement to where it is consumed. 
 
-<<echo=FALSE>>=
-# Grid defnitions
-R <- 0.025 # radius of particle cm
-N <- 100 # Number of grid points
 
-C.ow.02 <- 0.25 ## Concentration of O2 in Water micromols/cm-3
-por <- 0.7 # Porosity
-D <- 400 # Diffusion coefficient micromols/cm-2/year
-v <- 0
-R.02 <- 1000000 # Rate of oxygen consumption micromols/cm-3/year
-Ks <- 0.005 # Half saturation constant micromols/cm-3
-@
 
 We start with defining the size and porosity of the particle and use R to create a grid to solve the advection-diffusion-reaction equation.
 
@@ -326,23 +365,40 @@ We start with defining the size and porosity of the particle and use R to create
 \centering
 \begin{tabular}{|l|l|c|c|} \hline
 Parameter & Description & Typical Range &  Modelled Value \\ \hline\hline
-\( R \) & Radius of the particle & \( 0.005-0.2 \) cm &  \Sexpr{R} cm \\
-Porosity & Proportion of void space & \(0.005-0.7\) &  \Sexpr{por} \\ \hline
+\( R \) & Radius of the particle & \( 0.005-0.2 \) cm &  0.025 cm \\
+Porosity & Proportion of void space & \(0.005-0.7\) &  0.7 \\ \hline
 \end{tabular}
 \end{table}
 
-We will create a grid to model the particle with Radius \( R \) and \( N \) (= \Sexpr{N}) grid points. We will also define the properties of the particle such as porosity, diffusion coefficient (D = \Sexpr{D}), and the rate of oxygen consumption, R$_{02}$ = \Sexpr{R.02}.
+We will create a grid to model the particle with Radius \( R \) and \( N \) (= 100) grid points. We will also define the properties of the particle such as porosity, diffusion coefficient (D = 400), and the rate of oxygen consumption, R$_{02}$ = \ensuremath{10^{6}}.
 
 Although we are modeling a one-dimensional system, we will need to create a grid surface as a circle to effectively model the particle surface area changes as O2 diffuses into the particle and is consumed by the reactions in the particle.
 
-<<>>=
-grid <- setup.grid.1D(x.up=0, L = R, N = N) # Grid definition
-por.grid <- setup.prop.1D(value=por, grid=grid) # Porosity
-D.grid <- setup.prop.1D(value=D, grid=grid) # Diffusion coefficient
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{grid} \hlkwb{<-} \hlkwd{setup.grid.1D}\hlstd{(}\hlkwc{x.up}\hlstd{=}\hlnum{0}\hlstd{,} \hlkwc{L} \hlstd{= R,} \hlkwc{N} \hlstd{= N)} \hlcom{# Grid definition}
+\end{alltt}
 
-sphere.surf <- function(x) 4*pi*x^2 # Surface area of a sphere
-A.grid <- setup.prop.1D(func=sphere.surf,  grid=grid) # Surface area
-@
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in setup.grid.1D(x.up = 0, L = R, N = N): could not find function "{}setup.grid.1D"{}}}\begin{alltt}
+\hlstd{por.grid} \hlkwb{<-} \hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{value}\hlstd{=por,} \hlkwc{grid}\hlstd{=grid)} \hlcom{# Porosity}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in setup.prop.1D(value = por, grid = grid): could not find function "{}setup.prop.1D"{}}}\begin{alltt}
+\hlstd{D.grid} \hlkwb{<-} \hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{value}\hlstd{=D,} \hlkwc{grid}\hlstd{=grid)} \hlcom{# Diffusion coefficient}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in setup.prop.1D(value = D, grid = grid): could not find function "{}setup.prop.1D"{}}}\begin{alltt}
+\hlstd{sphere.surf} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlnum{4}\hlopt{*}\hlstd{pi}\hlopt{*}\hlstd{x}\hlopt{^}\hlnum{2} \hlcom{# Surface area of a sphere}
+\hlstd{A.grid} \hlkwb{<-} \hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{func}\hlstd{=sphere.surf,}  \hlkwc{grid}\hlstd{=grid)} \hlcom{# Surface area}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in setup.prop.1D(func = sphere.surf, grid = grid): could not find function "{}setup.prop.1D"{}}}\end{kframe}
+\end{knitrout}
 
 Finally, we need to define the O2 concentration at the surface of the particle and the O2 consumption rate of the particle. 
 
@@ -351,96 +407,73 @@ Finally, we need to define the O2 concentration at the surface of the particle a
 \centering
 \begin{tabular}{|l|l|c|c|} \hline
 Parameter & Description & Typical Range &  Modelled Value \\ \hline\hline
-\( C_{ow} \) & Concentration of O2 in Water & \( 0.1 - 0.3 \) \numolspercm &  \Sexpr{C.ow.02} \numolspercm \\
-\( R_{02} \) & Rate of oxygen consumption & \( 10^5 - 10^6 \) \numolspercm~/year &  \Sexpr{R.02} \numolspercm/year \\
-\( K_s \) & O2 saturation & \( 0.001 - 0.01 \) \numolspercm &  \Sexpr{Ks} \numolspercm \\ \hline
+\( C_{ow} \) & Concentration of O2 in Water & \( 0.1 - 0.3 \) \numolspercm &  0.25 \numolspercm \\
+\( R_{02} \) & Rate of oxygen consumption & \( 10^5 - 10^6 \) \numolspercm~/year &  \ensuremath{10^{6}} \numolspercm/year \\
+\( K_s \) & O2 saturation & \( 0.001 - 0.01 \) \numolspercm &  0.005 \numolspercm \\ \hline
 \end{tabular}
 \end{table}
 
-Note, we often measure oxygen using ppm (parts per million), but the model uses \numolspercm. The conversion is 1 ppm = 0.0224 \numolspercm, thus, we are modeling \(Ks \) within a range of 2.24 - 6.72 ppm, using Ks = \Sexpr{round(Ks/0.0224, 2)} \numolspercm.
+Note, we often measure oxygen using ppm (parts per million), but the model uses \numolspercm. The conversion is 1 ppm = 0.0224 \numolspercm, thus, we are modeling \(Ks \) within a range of 2.24 - 6.72 ppm, using Ks = 0.22 \numolspercm.
 
 
 Next we create a function to model the oxygen consumption in the, particle that relies on We will use the \texttt{tran.1D} function to solve the advection-diffusion equation and the \texttt{steady.1D} function to solve the steady state solution of the advection-diffusion-reaction equation.
 
-<<>>=
-Aggregate.Model <- function(time, O2, pars) {
-  tran <- tran.1D(C = O2, C.down = C.ow.02, D = D.grid, 
-          A=A.grid, VF = por.grid, dx = grid)
-    reac <- - R.02 * (O2 /(Ks + O2))
-    return(list(dCdt= tran$dC + reac, reac = reac, 
-                flux.up=tran$flux.up, flux.down=tran$flux.down))
-}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Aggregate.Model} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{time}\hlstd{,} \hlkwc{O2}\hlstd{,} \hlkwc{pars}\hlstd{) \{}
+  \hlstd{tran} \hlkwb{<-} \hlkwd{tran.1D}\hlstd{(}\hlkwc{C} \hlstd{= O2,} \hlkwc{C.down} \hlstd{= C.ow.02,} \hlkwc{D} \hlstd{= D.grid,}
+          \hlkwc{A}\hlstd{=A.grid,} \hlkwc{VF} \hlstd{= por.grid,} \hlkwc{dx} \hlstd{= grid)}
+    \hlstd{reac} \hlkwb{<-} \hlopt{-} \hlstd{R.02} \hlopt{*} \hlstd{(O2} \hlopt{/}\hlstd{(Ks} \hlopt{+} \hlstd{O2))}
+    \hlkwd{return}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwc{dCdt}\hlstd{= tran}\hlopt{$}\hlstd{dC} \hlopt{+} \hlstd{reac,} \hlkwc{reac} \hlstd{= reac,}
+                \hlkwc{flux.up}\hlstd{=tran}\hlopt{$}\hlstd{flux.up,} \hlkwc{flux.down}\hlstd{=tran}\hlopt{$}\hlstd{flux.down))}
+\hlstd{\}}
 
 
-O2.agg <- steady.1D(y = runif(N), func=Aggregate.Model, 
-                    nspec=1, positive=TRUE, atol = 1e-10)
-@
+\hlstd{O2.agg} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(N),} \hlkwc{func}\hlstd{=Aggregate.Model,}
+                    \hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{positive}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{atol} \hlstd{=} \hlnum{1e-10}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in steady.1D(y = runif(N), func = Aggregate.Model, nspec = 1, positive = TRUE, : could not find function "{}steady.1D"{}}}\end{kframe}
+\end{knitrout}
 
 
 \begin{figure}
 \centering
 \caption{Oxygen Consumption in a Porous Sphere}
-<<plotO2agg, echo=FALSE>>=
-plot(O2.agg, grid = grid$x.mid, xlab = "Distance to Center", ylab = "mmol/m3", 
-     las=1, main="Oxygen Consumption in a Porous Sphere")
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(O2.agg, grid = grid\$x.mid, xlab = "{}Distance to Center"{}, : object 'O2.agg' not found}}\end{kframe}
+\end{knitrout}
 \end{figure}
 
 The plot shows the oxygen concentration in the particle. The concentration is highest at the surface and decreases as it moves into the particle. The concentration is zero at the center of the particle.
 
 \begin{figure}
-<<circleplot, echo=FALSE>>=
-#R = 0.025
-t <- seq(0, 2 * pi, length = 1000)
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 
-plot(0, 0, xlim = c(-R, R), ylim = c(-R, R), las=1, ylab="", xlab="")
 
-for(i in 0:4) {
-  lines((R - (i * R/5)) * sin(t) + 0, (R - (i * R/5)) * cos(t) + 0, col= "grey")
-}
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in quantile(O2.agg\$y, probs = prob): object 'O2.agg' not found}}
 
-prob = c(0.2, 0.4, 0.6, 0.8, 1.0)
-quant = round(quantile(O2.agg$y, probs = prob),2)
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'O2.agg' not found}}
 
-len <- length(O2.agg$y)
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.list(c(n, red)): object 'len' not found}}
 
-#scale_values <- function(x){(x-min(x))/(max(x)-min(x))}
-#length(scale_values(O2.agg$y))
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in grid\$x.mid: object of type 'closure' is not subsettable}}
 
-heatcolors = colorRamps::matlab.like(len)
-
-points(grid$x.mid, rep(0, length(grid$x.mid)), 
-       col=heatcolors, pch=19, cex=0.5)
-#points(grid$x.mid, rep(0, length(grid$x.mid)), col=heatcolors)
-
-text(R*prob, .002,  quant, cex=.8, adj=c(1,1))
-
-for(i in 0:7) {
-  lines(R * sin(c(i * pi /8, i * pi / 8 + pi)) + 0,
-        R * cos(c(i * pi /8, i * pi / 8 + pi)) + 0, col="grey")
-}
-@
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in as.graphicsAnnot(labels): object 'quant' not found}}\end{kframe}
+\includegraphics[width=\maxwidth]{figure/circleplot-1} 
+\end{knitrout}
 \end{figure}
 
 Next steps: figure out how to create a 3D sphere with the oxygen concentration changes as we enter the sphere... 
 
 
-<<eval=FALSE, echo=FALSE>>=
 
-library("rgl")
-options(rgl.printRglwidget = TRUE)
-spheres3d(0,0,0,lit=FALSE,color="white")
-spheres3d(0,0,0,radius=1.01,lit=FALSE,color="black",front="lines")
-
-set.seed(10)
-n <- 50
-theta <- runif(n,0,2*pi)
-u <- runif(n,-1,1)
-x <- sqrt(1-u^2)*cos(theta)
-y <- sqrt(1-u^2)*sin(theta)
-z <- u
-spheres3d(x,y,z,col="red",radius=0.02)
-@
 
 
 
@@ -584,171 +617,292 @@ The package also includes functions for solving:
 
 We can use R to solve the advection-diffusion equation. The `deSolve` package to solve the ReacTran library functions decomposing the partial differential equatation (PDE) into a descretized by space and solving be ordinary differential equations (ODE). 
 
-<<>>=
-library(ReacTran) # Load the ReacTran package
-library(deSolve) # Load the deSolve package
-library(xtable) # Load the xtable package to help format tables outputs
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(ReacTran)} \hlcom{# Load the ReacTran package}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: rootSolve}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: deSolve}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: shape}}\begin{alltt}
+\hlkwd{library}\hlstd{(deSolve)} \hlcom{# Load the deSolve package}
+\hlkwd{library}\hlstd{(xtable)} \hlcom{# Load the xtable package to help format tables outputs}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \subsection{1D Transportion Model}
 
 The `ReacTran` package provides a function to solve the advection-diffusion-reaction equation for a simple one-dimensional case.
 
-<<>>=
-tran.1D(C = 1, D = 0, flux.up = 1, v = 5, A= 1, dx = 1, full.output = TRUE)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{tran.1D}\hlstd{(}\hlkwc{C} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{D} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{flux.up} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{v} \hlstd{=} \hlnum{5}\hlstd{,} \hlkwc{A}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{dx} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{full.output} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## $dC
+## [1] -4
+## 
+## $C.up
+## [1] 0.2
+## 
+## $C.down
+## [1] 1
+## 
+## $dif.flux
+## [1] 0 0
+## 
+## $adv.flux
+## [1] 1 5
+## 
+## $flux
+## [1] 1 5
+## 
+## $flux.up
+## [1] 1
+## 
+## $flux.down
+## [1] 5
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 
 \subsection{Solving a 1-D reaction tranport model}
 
-<<eval=FALSE>>=
-library(ReacTran)
-out <- steady.1D(func = advModel, y = runif(25), params = parms, nspace= 1, positive = TRUE)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(ReacTran)}
+\hlstd{out} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{func} \hlstd{= advModel,} \hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{25}\hlstd{),} \hlkwc{params} \hlstd{= parms,} \hlkwc{nspace}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{positive} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 We can use R to solve the advection-diffusion-reaction equation. The following code uses the `deSolve` package to solve the advection-diffusion-reaction equation for a simple one-dimensional case.
 
-<<eval= FALSE >>=
-# Load the deSolve package
-library(deSolve)
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Load the deSolve package}
+\hlkwd{library}\hlstd{(deSolve)}
 
-# Define the advection-diffusion-reaction equation
-advection_diffusion_reaction <- function(t, C, parms) {
-  with(as.list(parms), {
-    dC <- D * (diff(C, lag = 2) - 2 * diff(C, lag = 1) + diff(C, lag = 0)) / dx^2 - k * C
-    dC[1] <- 0
-    dC[n] <- 0
-    list(dC)
-  })
-}
+\hlcom{# Define the advection-diffusion-reaction equation}
+\hlstd{advection_diffusion_reaction} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{t}\hlstd{,} \hlkwc{C}\hlstd{,} \hlkwc{parms}\hlstd{) \{}
+  \hlkwd{with}\hlstd{(}\hlkwd{as.list}\hlstd{(parms), \{}
+    \hlstd{dC} \hlkwb{<-} \hlstd{D} \hlopt{*} \hlstd{(}\hlkwd{diff}\hlstd{(C,} \hlkwc{lag} \hlstd{=} \hlnum{2}\hlstd{)} \hlopt{-} \hlnum{2} \hlopt{*} \hlkwd{diff}\hlstd{(C,} \hlkwc{lag} \hlstd{=} \hlnum{1}\hlstd{)} \hlopt{+} \hlkwd{diff}\hlstd{(C,} \hlkwc{lag} \hlstd{=} \hlnum{0}\hlstd{))} \hlopt{/} \hlstd{dx}\hlopt{^}\hlnum{2} \hlopt{-} \hlstd{k} \hlopt{*} \hlstd{C}
+    \hlstd{dC[}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlnum{0}
+    \hlstd{dC[n]} \hlkwb{<-} \hlnum{0}
+    \hlkwd{list}\hlstd{(dC)}
+  \hlstd{\})}
+\hlstd{\}}
 
-# Set the parameters
-parms <- list(
-  D = 0.1,  # Diffusion coefficient
-  dx = 0.1,  # Spatial step
-  k = 0.01  # Reaction rate
-)
+\hlcom{# Set the parameters}
+\hlstd{parms} \hlkwb{<-} \hlkwd{list}\hlstd{(}
+  \hlkwc{D} \hlstd{=} \hlnum{0.1}\hlstd{,}  \hlcom{# Diffusion coefficient}
+  \hlkwc{dx} \hlstd{=} \hlnum{0.1}\hlstd{,}  \hlcom{# Spatial step}
+  \hlkwc{k} \hlstd{=} \hlnum{0.01}  \hlcom{# Reaction rate}
+\hlstd{)}
 
-# Set the initial conditions
-C0 <- c(0, rep(0, 98), 1, rep(0, 98), 0)
+\hlcom{# Set the initial conditions}
+\hlstd{C0} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{98}\hlstd{),} \hlnum{1}\hlstd{,} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{98}\hlstd{),} \hlnum{0}\hlstd{)}
 
-# Set the times at which to evaluate the solution
-times <- seq(0, 100, by = 1)
+\hlcom{# Set the times at which to evaluate the solution}
+\hlstd{times} \hlkwb{<-} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{100}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{1}\hlstd{)}
 
-# Solve the advection-diffusion-reaction equation
-out <- ode(y = C0, times = times, func = advection_diffusion_reaction, parms = parms)
+\hlcom{# Solve the advection-diffusion-reaction equation}
+\hlstd{out} \hlkwb{<-} \hlkwd{ode}\hlstd{(}\hlkwc{y} \hlstd{= C0,} \hlkwc{times} \hlstd{= times,} \hlkwc{func} \hlstd{= advection_diffusion_reaction,} \hlkwc{parms} \hlstd{= parms)}
 
-# Plot the solution
-plot(out, xlab = "Distance", ylab = "Concentration", type = "l")
-
-  
-@
+\hlcom{# Plot the solution}
+\hlkwd{plot}\hlstd{(out,} \hlkwc{xlab} \hlstd{=} \hlstr{"Distance"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Concentration"}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \subsection{1-D Reaction-Transport Model}
 
 For this example, we will solve the advection-diffusion-reaction equation for a simple one-dimensional case, where the reaction term is given by $R = kC$, and the initial concentration is given by $C(x,0) = 1$ for $x < ?$ and $C(x,0) = 1$ for $x \geq 0.5$. 
 
-<<echo=FALSE>>=
-parms <- c(F0 = 1, v=1, k = 0.1, D = 0, dx = 1)
-parms.mat = matrix(parms, ncol = 1, byrow = TRUE, dimnames = list(c("F0", "v", "k", "D", "dx"), c("Value")))
-@
-
-<<echo=FALSE, results='asis'>>=
-xtable(parms.mat)
-@
 
 
-<<>>=
-advModel <- function(t, C, parms) {
-  with(as.list(parms), {
-    Tran <- tran.1D(C = C, D = D, flux.up = F0, v = v, dx = dx)
-    Consumption = k * C
-    dC <- Tran$dC - Consumption
-    
-    return(list(dC = dC, Consumption = Consumption, flux.up = Tran$flux.up, flux.down = Tran$flux.down))
-  })
-}
+% latex table generated in R 4.2.2 by xtable 1.8-4 package
+% Wed Feb 21 07:17:12 2024
+\begin{table}[ht]
+\centering
+\begin{tabular}{rr}
+  \hline
+ & Value \\ 
+  \hline
+F0 & 1.00 \\ 
+  v & 1.00 \\ 
+  k & 0.10 \\ 
+  D & 0.00 \\ 
+  dx & 1.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
 
-out <- steady.1D(func = advModel, y = runif(25), parms = parms, nspec= 1, positive = TRUE)
 
-parms <- c(F0 = 1, v=1, k = 0.5, D=0, dx = 1)
-out2 <- steady.1D(func = advModel, y = runif(25), parms = parms, nspec= 1, positive = TRUE)
 
-parms <- c(F0 = 1, v=1, k = 0.5, D=50, dx = 1)
-out3 <- steady.1D(func = advModel, y = runif(25), parms = parms, nspec= 1, positive = TRUE)
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{advModel} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{t}\hlstd{,} \hlkwc{C}\hlstd{,} \hlkwc{parms}\hlstd{) \{}
+  \hlkwd{with}\hlstd{(}\hlkwd{as.list}\hlstd{(parms), \{}
+    \hlstd{Tran} \hlkwb{<-} \hlkwd{tran.1D}\hlstd{(}\hlkwc{C} \hlstd{= C,} \hlkwc{D} \hlstd{= D,} \hlkwc{flux.up} \hlstd{= F0,} \hlkwc{v} \hlstd{= v,} \hlkwc{dx} \hlstd{= dx)}
+    \hlstd{Consumption} \hlkwb{=} \hlstd{k} \hlopt{*} \hlstd{C}
+    \hlstd{dC} \hlkwb{<-} \hlstd{Tran}\hlopt{$}\hlstd{dC} \hlopt{-} \hlstd{Consumption}
 
-@
+    \hlkwd{return}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwc{dC} \hlstd{= dC,} \hlkwc{Consumption} \hlstd{= Consumption,} \hlkwc{flux.up} \hlstd{= Tran}\hlopt{$}\hlstd{flux.up,} \hlkwc{flux.down} \hlstd{= Tran}\hlopt{$}\hlstd{flux.down))}
+  \hlstd{\})}
+\hlstd{\}}
+
+\hlstd{out} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{func} \hlstd{= advModel,} \hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{25}\hlstd{),} \hlkwc{parms} \hlstd{= parms,} \hlkwc{nspec}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{positive} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlstd{parms} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwc{F0} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{v}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{k} \hlstd{=} \hlnum{0.5}\hlstd{,} \hlkwc{D}\hlstd{=}\hlnum{0}\hlstd{,} \hlkwc{dx} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlstd{out2} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{func} \hlstd{= advModel,} \hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{25}\hlstd{),} \hlkwc{parms} \hlstd{= parms,} \hlkwc{nspec}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{positive} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlstd{parms} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwc{F0} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{v}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{k} \hlstd{=} \hlnum{0.5}\hlstd{,} \hlkwc{D}\hlstd{=}\hlnum{50}\hlstd{,} \hlkwc{dx} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlstd{out3} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{func} \hlstd{= advModel,} \hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{25}\hlstd{),} \hlkwc{parms} \hlstd{= parms,} \hlkwc{nspec}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{positive} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 We can look at the output, using a simple call of the object, but without more information, it's not clear what we are looking at. 
-<<>>=
-out
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{out}
+\end{alltt}
+\begin{verbatim}
+## $y
+##  [1] 0.9090909 0.8264463 0.7513148 0.6830135 0.6209213 0.5644739 0.5131581
+##  [8] 0.4665074 0.4240976 0.3855433 0.3504939 0.3186308 0.2896644 0.2633313
+## [15] 0.2393921 0.2176291 0.1978447 0.1798588 0.1635080 0.1486436 0.1351306
+## [22] 0.1228460 0.1116782 0.1015256 0.0922960
+## 
+## $Consumption
+##  [1] 0.09090909 0.08264463 0.07513148 0.06830135 0.06209213 0.05644739
+##  [7] 0.05131581 0.04665074 0.04240976 0.03855433 0.03504939 0.03186308
+## [13] 0.02896644 0.02633313 0.02393921 0.02176291 0.01978447 0.01798588
+## [19] 0.01635080 0.01486436 0.01351306 0.01228460 0.01116782 0.01015256
+## [25] 0.00922960
+## 
+## $flux.up
+## [1] 1
+## 
+## $flux.down
+## [1] 0.092296
+## 
+## attr(,"precis")
+## [1] 3.372309e-01 1.305650e-09
+## attr(,"steady")
+## [1] TRUE
+## attr(,"class")
+## [1] "steady1D"  "rootSolve" "list"     
+## attr(,"dimens")
+## [1] 25
+## attr(,"nspec")
+## [1] 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Thus, we might be better off plotting the output. I am not sure why the plot functions are ignoring my par() call, perhaps this will be fixed by version 0.9!
 
 \begin{figure*}
-<<1D-AdvectionReaction, echo=FALSE, out.height='5in', out.width='4in' >>=
-#par(mfrow=c(1,3))
-layout(matrix(c(1,2,3), nrow = 1, ncol = 3, byrow = TRUE))
-plot(out, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.1; D=0)", mfrow=NULL)
-plot(out2, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.5; D=0)", mfrow=NULL)
-plot(out3, xlab = "X", ylab = "Concentration", las=1, main="Advection-Reaction (k=0.5; D=50)", mfrow=NULL)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=4in,height=5in]{figure/1D-AdvectionReaction-1} 
+\end{knitrout}
 \end{figure*}
 
 \subsection{asdf}
 
-<<>>=
-Grid<-setup.grid.1D(N=1000,L=10)
-r <-setup.prop.1D(grid=Grid,func=function(r)r) 
-r2<-setup.prop.1D(grid=Grid,func=function(r)r^2)
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Grid}\hlkwb{<-}\hlkwd{setup.grid.1D}\hlstd{(}\hlkwc{N}\hlstd{=}\hlnum{1000}\hlstd{,}\hlkwc{L}\hlstd{=}\hlnum{10}\hlstd{)}
+\hlstd{r} \hlkwb{<-}\hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{grid}\hlstd{=Grid,}\hlkwc{func}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{r}\hlstd{)r)}
+\hlstd{r2}\hlkwb{<-}\hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{grid}\hlstd{=Grid,}\hlkwc{func}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{r}\hlstd{)r}\hlopt{^}\hlnum{2}\hlstd{)}
 
 
-pde1D<-function(t,C,parms,A=1){ 
-  tran<-tran.1D(C=C,A=A,D=D,C.down=Cext, dx=Grid)$dC 
-  list(tran-Q) 
-}
+\hlstd{pde1D}\hlkwb{<-}\hlkwa{function}\hlstd{(}\hlkwc{t}\hlstd{,}\hlkwc{C}\hlstd{,}\hlkwc{parms}\hlstd{,}\hlkwc{A}\hlstd{=}\hlnum{1}\hlstd{)\{}
+  \hlstd{tran}\hlkwb{<-}\hlkwd{tran.1D}\hlstd{(}\hlkwc{C}\hlstd{=C,}\hlkwc{A}\hlstd{=A,}\hlkwc{D}\hlstd{=D,}\hlkwc{C.down}\hlstd{=Cext,} \hlkwc{dx}\hlstd{=Grid)}\hlopt{$}\hlstd{dC}
+  \hlkwd{list}\hlstd{(tran}\hlopt{-}\hlstd{Q)}
+\hlstd{\}}
 
-D<-1 
-Q<-1 
-Cext<-20
+\hlstd{D}\hlkwb{<-}\hlnum{1}
+\hlstd{Q}\hlkwb{<-}\hlnum{1}
+\hlstd{Cext}\hlkwb{<-}\hlnum{20}
 
 
 
-Cartesian <-steady.1D(y=runif(Grid$N), func=pde1D,parms=NULL,nspec=1,A=1) 
+\hlstd{Cartesian} \hlkwb{<-}\hlkwd{steady.1D}\hlstd{(}\hlkwc{y}\hlstd{=}\hlkwd{runif}\hlstd{(Grid}\hlopt{$}\hlstd{N),} \hlkwc{func}\hlstd{=pde1D,}\hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{A}\hlstd{=}\hlnum{1}\hlstd{)}
 
-Cylindrical<-steady.1D(y=runif(Grid$N), func=pde1D,parms=NULL,nspec=1,A=r) 
+\hlstd{Cylindrical}\hlkwb{<-}\hlkwd{steady.1D}\hlstd{(}\hlkwc{y}\hlstd{=}\hlkwd{runif}\hlstd{(Grid}\hlopt{$}\hlstd{N),} \hlkwc{func}\hlstd{=pde1D,}\hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{A}\hlstd{=r)}
 
-print(system.time( Spherical <-steady.1D(y=runif(Grid$N), func=pde1D,parms=NULL,nspec=1,A=r2) )) 
-@
+\hlkwd{print}\hlstd{(}\hlkwd{system.time}\hlstd{( Spherical} \hlkwb{<-}\hlkwd{steady.1D}\hlstd{(}\hlkwc{y}\hlstd{=}\hlkwd{runif}\hlstd{(Grid}\hlopt{$}\hlstd{N),} \hlkwc{func}\hlstd{=pde1D,}\hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{A}\hlstd{=r2) ))}
+\end{alltt}
+\begin{verbatim}
+##    user  system elapsed 
+##   0.002   0.000   0.002
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 user systemelapsed 0.02 0.00 0.00 Thevaluesofthestate-variables(y)areplottedagainsttheradialdistance, inthemiddleof thegridcells
 
 (Grid$x.mid). 
 
-<<>>=
-par(mfrow=c(1,1))
-plot(Grid$x.mid,Cartesian$y,type="l",main="steady-statePDE", lwd=3,xlab="x",ylab="C",col="darkgreen",lty=1) 
-lines(Grid$x.mid,Cylindrical$y,lwd=3,col="blue",lty=2) 
-lines(Grid$x.mid,Spherical$y,lwd=3,col="red",lty=3) 
-legend("bottomright",c("cartesian","cylindrical","spherical"), col=c("darkgreen","blue","red"),lwd=3,lty=1:3)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{1}\hlstd{))}
+\hlkwd{plot}\hlstd{(Grid}\hlopt{$}\hlstd{x.mid,Cartesian}\hlopt{$}\hlstd{y,}\hlkwc{type}\hlstd{=}\hlstr{"l"}\hlstd{,}\hlkwc{main}\hlstd{=}\hlstr{"steady-statePDE"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{xlab}\hlstd{=}\hlstr{"x"}\hlstd{,}\hlkwc{ylab}\hlstd{=}\hlstr{"C"}\hlstd{,}\hlkwc{col}\hlstd{=}\hlstr{"darkgreen"}\hlstd{,}\hlkwc{lty}\hlstd{=}\hlnum{1}\hlstd{)}
+\hlkwd{lines}\hlstd{(Grid}\hlopt{$}\hlstd{x.mid,Cylindrical}\hlopt{$}\hlstd{y,}\hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{col}\hlstd{=}\hlstr{"blue"}\hlstd{,}\hlkwc{lty}\hlstd{=}\hlnum{2}\hlstd{)}
+\hlkwd{lines}\hlstd{(Grid}\hlopt{$}\hlstd{x.mid,Spherical}\hlopt{$}\hlstd{y,}\hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,}\hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlstr{"bottomright"}\hlstd{,}\hlkwd{c}\hlstd{(}\hlstr{"cartesian"}\hlstd{,}\hlstr{"cylindrical"}\hlstd{,}\hlstr{"spherical"}\hlstd{),} \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"darkgreen"}\hlstd{,}\hlstr{"blue"}\hlstd{,}\hlstr{"red"}\hlstd{),}\hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{,}\hlkwc{lty}\hlstd{=}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-1} 
+\end{knitrout}
 
 \subsection{asdfasdf}
 
-<<>>=
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{times}\hlkwb{<-}\hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{100}\hlstd{,}\hlkwc{by}\hlstd{=}\hlnum{1}\hlstd{)}
 
-times<-seq(0,100,by=1) 
-
-system.time( 
-  out<-ode.1D(y=rep(1,Grid$N),times=times,func=pde1D, parms=NULL,nspec=1,A=r2) 
-  )
-
-tail(out[,1:4],n=3)
-
-image(out,grid=Grid$x.mid,xlab="time,days", ylab="Distance,cm",main="PDE",add.contour=TRUE)
-
-@
+\hlkwd{system.time}\hlstd{(}
+  \hlstd{out}\hlkwb{<-}\hlkwd{ode.1D}\hlstd{(}\hlkwc{y}\hlstd{=}\hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,Grid}\hlopt{$}\hlstd{N),}\hlkwc{times}\hlstd{=times,}\hlkwc{func}\hlstd{=pde1D,} \hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{A}\hlstd{=r2)}
+  \hlstd{)}
+\end{alltt}
+\begin{verbatim}
+##    user  system elapsed 
+##   0.157   0.008   0.165
+\end{verbatim}
+\begin{alltt}
+\hlkwd{tail}\hlstd{(out[,}\hlnum{1}\hlopt{:}\hlnum{4}\hlstd{],}\hlkwc{n}\hlstd{=}\hlnum{3}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+##        time        1        2        3
+##  [99,]   98 3.332278 3.332303 3.332366
+## [100,]   99 3.332383 3.332408 3.332471
+## [101,]  100 3.332478 3.332503 3.332566
+\end{verbatim}
+\begin{alltt}
+\hlkwd{image}\hlstd{(out,}\hlkwc{grid}\hlstd{=Grid}\hlopt{$}\hlstd{x.mid,}\hlkwc{xlab}\hlstd{=}\hlstr{"time,days"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Distance,cm"}\hlstd{,}\hlkwc{main}\hlstd{=}\hlstr{"PDE"}\hlstd{,}\hlkwc{add.contour}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-15-1} 
+\end{knitrout}
 
 
 \subsection{Oxygen Consumption Porous Spherical Particle}
@@ -763,28 +917,31 @@ image(out,grid=Grid$x.mid,xlab="time,days", ylab="Distance,cm",main="PDE",add.co
 \subsection{2 dimensional diffusion}
 
 
-<<>>=
-diffusion2D <- function(t,conc,par){
-Conc <- matrix(nr=n,nc=n,data=conc) # vector to 2-D matrix
-dConc <- -r*Conc*Conc # consumption
-BND <- rep(1,n) # boundary concentration
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{diffusion2D} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{t}\hlstd{,}\hlkwc{conc}\hlstd{,}\hlkwc{par}\hlstd{)\{}
+\hlstd{Conc} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{nr}\hlstd{=n,}\hlkwc{nc}\hlstd{=n,}\hlkwc{data}\hlstd{=conc)} \hlcom{# vector to 2-D matrix}
+\hlstd{dConc} \hlkwb{<-} \hlopt{-}\hlstd{r}\hlopt{*}\hlstd{Conc}\hlopt{*}\hlstd{Conc} \hlcom{# consumption}
+\hlstd{BND} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,n)} \hlcom{# boundary concentration}
 
-# constant production in certain cells
-dConc[ii]<- dConc[ii]+ p
+\hlcom{# constant production in certain cells}
+\hlstd{dConc[ii]}\hlkwb{<-} \hlstd{dConc[ii]}\hlopt{+} \hlstd{p}
 
-#diffusion in X-direction; boundaries=imposed concentration
+\hlcom{#diffusion in X-direction; boundaries=imposed concentration}
 
-Flux <- -Dx * rbind(rep(0,n),(Conc[2:n,]-Conc[1:(n-1),]),rep(0,n))/dx
-dConc <- dConc - (Flux[2:(n+1),]-Flux[1:n,])/dx
+\hlstd{Flux} \hlkwb{<-} \hlopt{-}\hlstd{Dx} \hlopt{*} \hlkwd{rbind}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,n),(Conc[}\hlnum{2}\hlopt{:}\hlstd{n,]}\hlopt{-}\hlstd{Conc[}\hlnum{1}\hlopt{:}\hlstd{(n}\hlopt{-}\hlnum{1}\hlstd{),]),}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,n))}\hlopt{/}\hlstd{dx}
+\hlstd{dConc} \hlkwb{<-} \hlstd{dConc} \hlopt{-} \hlstd{(Flux[}\hlnum{2}\hlopt{:}\hlstd{(n}\hlopt{+}\hlnum{1}\hlstd{),]}\hlopt{-}\hlstd{Flux[}\hlnum{1}\hlopt{:}\hlstd{n,])}\hlopt{/}\hlstd{dx}
 
-#diffusion in Y-direction
-Flux <- -Dy * cbind(rep(0,n),(Conc[,2:n]-Conc[,1:(n-1)]),rep(0,n))/dy
-dConc <- dConc - (Flux[,2:(n+1)]-Flux[,1:n])/dy
+\hlcom{#diffusion in Y-direction}
+\hlstd{Flux} \hlkwb{<-} \hlopt{-}\hlstd{Dy} \hlopt{*} \hlkwd{cbind}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,n),(Conc[,}\hlnum{2}\hlopt{:}\hlstd{n]}\hlopt{-}\hlstd{Conc[,}\hlnum{1}\hlopt{:}\hlstd{(n}\hlopt{-}\hlnum{1}\hlstd{)]),}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,n))}\hlopt{/}\hlstd{dy}
+\hlstd{dConc} \hlkwb{<-} \hlstd{dConc} \hlopt{-} \hlstd{(Flux[,}\hlnum{2}\hlopt{:}\hlstd{(n}\hlopt{+}\hlnum{1}\hlstd{)]}\hlopt{-}\hlstd{Flux[,}\hlnum{1}\hlopt{:}\hlstd{n])}\hlopt{/}\hlstd{dy}
 
-return(list(as.vector(dConc)))
-}
-
-@
+\hlkwd{return}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwd{as.vector}\hlstd{(dConc)))}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 After specifying the values of the parameters, 10 cells on the 2-D grid where there will be
 substance produced are randomly selected (ii).
@@ -796,71 +953,106 @@ substance produced are randomly selected (ii).
 x
 y
 Figure 5: Steady-state solution of the nonlinear 2-Dimensional model
-<<>>=
-# parameters
-dy <- dx <- 1 # grid size
-Dy <- Dx <- 1.5 # diffusion coeff, X- and Y-direction
-r <- 0.01 # 2-nd-order consumption rate (/time)
-p <- 20 # 0-th order production rate (CONC/t)
-n <- 100
-# 10 random cells where substance is produced at rate p
-ii <- trunc(cbind(runif(10)*n+1,runif(10)*n+1))
-
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# parameters}
+\hlstd{dy} \hlkwb{<-} \hlstd{dx} \hlkwb{<-} \hlnum{1} \hlcom{# grid size}
+\hlstd{Dy} \hlkwb{<-} \hlstd{Dx} \hlkwb{<-} \hlnum{1.5} \hlcom{# diffusion coeff, X- and Y-direction}
+\hlstd{r} \hlkwb{<-} \hlnum{0.01} \hlcom{# 2-nd-order consumption rate (/time)}
+\hlstd{p} \hlkwb{<-} \hlnum{20} \hlcom{# 0-th order production rate (CONC/t)}
+\hlstd{n} \hlkwb{<-} \hlnum{100}
+\hlcom{# 10 random cells where substance is produced at rate p}
+\hlstd{ii} \hlkwb{<-} \hlkwd{trunc}\hlstd{(}\hlkwd{cbind}\hlstd{(}\hlkwd{runif}\hlstd{(}\hlnum{10}\hlstd{)}\hlopt{*}\hlstd{n}\hlopt{+}\hlnum{1}\hlstd{,}\hlkwd{runif}\hlstd{(}\hlnum{10}\hlstd{)}\hlopt{*}\hlstd{n}\hlopt{+}\hlnum{1}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 The steady-state is found using function steady.2D. It takes as arguments a.o. the dimensionality
 of the problem (dimens) and lrw=1000000, the length of the work array needed by
 the solver. If this value is set too small, the solver will return with the size needed.
 It takes about 0.5 second to solve this 10000 state variable model.
-<<>>=
-Conc0 <- matrix(nr=n,nc=n,10.)
-print(system.time(
-ST3 <- steady.2D(Conc0,func=diffusion2D,parms=NULL,pos=TRUE,dimens=c(n,n),
-lrw=1000000,atol=1e-10,rtol=1e-10,ctol=1e-10)
-))
-
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Conc0} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{nr}\hlstd{=n,}\hlkwc{nc}\hlstd{=n,}\hlnum{10.}\hlstd{)}
+\hlkwd{print}\hlstd{(}\hlkwd{system.time}\hlstd{(}
+\hlstd{ST3} \hlkwb{<-} \hlkwd{steady.2D}\hlstd{(Conc0,}\hlkwc{func}\hlstd{=diffusion2D,}\hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{pos}\hlstd{=}\hlnum{TRUE}\hlstd{,}\hlkwc{dimens}\hlstd{=}\hlkwd{c}\hlstd{(n,n),}
+\hlkwc{lrw}\hlstd{=}\hlnum{1000000}\hlstd{,}\hlkwc{atol}\hlstd{=}\hlnum{1e-10}\hlstd{,}\hlkwc{rtol}\hlstd{=}\hlnum{1e-10}\hlstd{,}\hlkwc{ctol}\hlstd{=}\hlnum{1e-10}\hlstd{)}
+\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+##    user  system elapsed 
+##   0.224   0.005   0.230
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 user system elapsed
 1.044 0.032 1.076
 The S3 image method is used to generate the steady-state plot.
 
-<<>>=
-image(ST3,main="2-D diffusion+production", xlab="x", ylab="y")
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{image}\hlstd{(ST3,}\hlkwc{main}\hlstd{=}\hlstr{"2-D diffusion+production"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"x"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"y"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-19-1} 
+\end{knitrout}
 
-<<>>=
-pde2D <- function (t, y, parms) {
-CONC <- matrix(nr = n, nc = n, y)
-Tran <- tran.2D(CONC, D.x = Dx, D.y = Dy, dx = dx, dy = dy)
-dCONC <- Tran$dC - r * CONC
-dCONC[ii]<- dCONC[ii] + p
-return(list(as.vector(dCONC)))
-}
-
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{pde2D} \hlkwb{<-} \hlkwa{function} \hlstd{(}\hlkwc{t}\hlstd{,} \hlkwc{y}\hlstd{,} \hlkwc{parms}\hlstd{) \{}
+\hlstd{CONC} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{nr} \hlstd{= n,} \hlkwc{nc} \hlstd{= n, y)}
+\hlstd{Tran} \hlkwb{<-} \hlkwd{tran.2D}\hlstd{(CONC,} \hlkwc{D.x} \hlstd{= Dx,} \hlkwc{D.y} \hlstd{= Dy,} \hlkwc{dx} \hlstd{= dx,} \hlkwc{dy} \hlstd{= dy)}
+\hlstd{dCONC} \hlkwb{<-} \hlstd{Tran}\hlopt{$}\hlstd{dC} \hlopt{-} \hlstd{r} \hlopt{*} \hlstd{CONC}
+\hlstd{dCONC[ii]}\hlkwb{<-} \hlstd{dCONC[ii]} \hlopt{+} \hlstd{p}
+\hlkwd{return}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwd{as.vector}\hlstd{(dCONC)))}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 Before running the model, the grid sizes (dx, dx), diffusion coefficients (Dx, Dy), 1st order
 consumption rate (r) are defined. There are 100 boxes in x- and y direction (n). Furthermore,
 we assume that the substance is produced in 50 randomly chosen cells (ii) at a constant rate
 (p):
 
-<<>>=
-n <- 100
-dy <- dx <- 1
-Dy <- Dx <- 2
-r <- 0.001
-p <- runif(50)
-ii <- trunc(cbind(runif(50) * n, runif(50) * n) + 1)
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{n} \hlkwb{<-} \hlnum{100}
+\hlstd{dy} \hlkwb{<-} \hlstd{dx} \hlkwb{<-} \hlnum{1}
+\hlstd{Dy} \hlkwb{<-} \hlstd{Dx} \hlkwb{<-} \hlnum{2}
+\hlstd{r} \hlkwb{<-} \hlnum{0.001}
+\hlstd{p} \hlkwb{<-} \hlkwd{runif}\hlstd{(}\hlnum{50}\hlstd{)}
+\hlstd{ii} \hlkwb{<-} \hlkwd{trunc}\hlstd{(}\hlkwd{cbind}\hlstd{(}\hlkwd{runif}\hlstd{(}\hlnum{50}\hlstd{)} \hlopt{*} \hlstd{n,} \hlkwd{runif}\hlstd{(}\hlnum{50}\hlstd{)} \hlopt{*} \hlstd{n)} \hlopt{+} \hlnum{1}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
-<<>>=
-Conc0 <- matrix(nr = n, nc = n, 10)
-print(system.time(ST <- steady.2D(y = Conc0, func = pde2D,
-parms = NULL, dimens = c(n, n), lrw = 6e+05)))
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Conc0} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{nr} \hlstd{= n,} \hlkwc{nc} \hlstd{= n,} \hlnum{10}\hlstd{)}
+\hlkwd{print}\hlstd{(}\hlkwd{system.time}\hlstd{(ST} \hlkwb{<-} \hlkwd{steady.2D}\hlstd{(}\hlkwc{y} \hlstd{= Conc0,} \hlkwc{func} \hlstd{= pde2D,}
+\hlkwc{parms} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{dimens} \hlstd{=} \hlkwd{c}\hlstd{(n, n),} \hlkwc{lrw} \hlstd{=} \hlnum{6e+05}\hlstd{)))}
+\end{alltt}
+\begin{verbatim}
+##    user  system elapsed 
+##   0.067   0.005   0.072
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
-<<>>=
-image(ST, main = "steady-state 2-D PDE")
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{image}\hlstd{(ST,} \hlkwc{main} \hlstd{=} \hlstr{"steady-state 2-D PDE"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-23-1} 
+\end{knitrout}
 
 
 \section{Considering 2D Models}
