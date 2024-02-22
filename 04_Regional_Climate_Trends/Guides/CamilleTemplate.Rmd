@@ -233,15 +233,19 @@ Let's find rank TMIN trends for each station.
 ```{r}
 library(dplyr)
 
-USC00331592.trends %>%
+temp1 <- USC00331592.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00331592")
+temp1
 
-USC00330563.trends %>%
+temp2 <- USC00330563.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00330563")
+temp2
 
 USC00330862.trends %>%
   filter(ELEMENT == "TMIN") %>%
@@ -312,6 +316,28 @@ USC00338830.trends %>%
 ## Suggestions for Next Steps
 
 Create a dataframe with each of the stations' locations and the TMIN trend for June that includes the p-value and slope.
+
+```{r}
+# example
+# put stations together
+temp.trends = rbind(temp1, temp2)
+
+temp.trends
+
+# join with my.inventory
+temp.trend2 <- full_join(temp.trends, 
+        subset(my.inventory, select=c("ID", "LATITUDE", "LONGITUDE", "STATE")), by='ID')
+names(temp.trend2)
+
+# select june and select columns
+june.trend3 <- temp.trend2 %>%
+  filter(MONTH == 6) %>%
+  select(ID, STATE, LATITUDE, LONGITUDE, Estimate, `Pr(>|t|)`, r.squared)
+
+june.trend
+
+```
+
 
 Then we create a map with the size of the point representing the magnitude of the trend and the color representing the p-value.
 
