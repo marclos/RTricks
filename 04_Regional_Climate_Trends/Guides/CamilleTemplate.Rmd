@@ -334,12 +334,30 @@ june.trend3 <- temp.trend2 %>%
   filter(MONTH == 6) %>%
   select(ID, STATE, LATITUDE, LONGITUDE, Estimate, `Pr(>|t|)`, r.squared)
 
-june.trend
+june.trend3
 
 ```
 
 
 Then we create a map with the size of the point representing the magnitude of the trend and the color representing the p-value.
+
+using 
+
+```{r}
+# map ID for LONGITUDE and LATITUDE USING ESTIMATE AS SIZE AND P-VALUE AS COLOR
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mapdata)
+ggplot(june.trend3, aes(x=LONGITUDE, y=LATITUDE, size=Estimate, color=`Pr(>|t|)`)) +
+  geom_point() +
+  scale_size_continuous(range = c(1, 10)) +
+  scale_color_gradient(low = "blue", high = "red") +
+  theme_minimal() +
+  labs(title = "TMIN June Trends", x = "Longitude", y = "Latitude")
+
+
+```
 
 
 
