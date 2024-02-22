@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-/Users/EvelynMineo/Downloads/Guide1functions.R="C3E03C13"
-/Users/EvelynMineo/Downloads/Guide2functions.R="EEC257CE"
-/Users/EvelynMineo/RTricks/04_Regional_Climate_Trends/Evelyn/QuartoWeatherGuide.qmd="D957043E"
-/Users/EvelynMineo/RTricks/04_Regional_Climate_Trends/Evelyn/Trying PRCP.R="21484DE1"
-/Users/EvelynMineo/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R="AE04FD9F"
-=======
 /home/mwl04747/Climate_Change_Narratives/Social_Media/US_Weather_Station_Records_Selection.Rnw="3C35E137"
 /home/mwl04747/Climate_Change_Narratives/Social_Media/Weather_Station_Records_and_Climate_Change.Rnw="81B124AA"
 /home/mwl04747/RTricks/.gitignore="5B9FA012"
@@ -34,6 +27,7 @@
 /home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/4_Climate_Change_and_Broader_Impacts.Rnw="503FCD65"
 /home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/4_Climate_Change_and_Broader_Impacts_and_Activism.Rnw="337B0C9F"
 /home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/5_Communicating_Climate_Trends.Rnw="11E90F98"
+/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/CamilleTemplate.Rmd="A5503E82"
 /home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R="1627A795"
 /home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R="72B12287"
 /home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3bfunctions.R="A261CB58"
@@ -54,4 +48,3 @@
 /usr/share/texlive/texmf-dist/tex/latex/lettrine/lettrine.sty="C38C106D"
 /usr/share/texlive/texmf-dist/tex/latex/pgf/utilities/pgffor.sty="2330FF44"
 /usr/share/texlive/texmf-dist/tex/latex/xkeyval/xkeyval.sty="1BE29166"
->>>>>>> ce487a35549ec6b893b5c73cbf449f0437b2325f
