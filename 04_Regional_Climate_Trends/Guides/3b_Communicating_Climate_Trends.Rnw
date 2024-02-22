@@ -26,9 +26,19 @@ Developing the skills to communicate climate trends is an important skill for sc
 
 \subsection{Goals}
 
-Create a compelling story\dots 
+Create a compelling story! Based on the data and the analysis, what is the story you want to tell? What are the key messages you want to communicate? How does this ``jive'' with the EPA reports or policy goals in the state?
+
+Based on what we have learn from research on Social Media, what type of graphics or script do you want to write. 
 
 \subsection{Approach}
+
+Although I find the ordering of the guides to be terribly illogical, here's how to use this guide: 
+
+\begin{enumerate}
+  \item Explore various methods to display climate data
+  \item Use the following \href{https://docs.google.com/document/d/1GMsAxapAsnqdWhQVDylUcAq3n8MHJtf8hoZwNwessb8/edit?usp=sharing}{Google Doc} to suggest code and/or some functions that can be used to analyze your data. Marc and mentors will meet to see if we can help you with your code.
+\end{enumerate}
+
 
 \subsubsection{R Code with Custom Functions}
 
@@ -144,6 +154,25 @@ mainland +
 \section{Communicating Long-term Weather Records}
 
 \subsection{Creating A Basic Trend Plot}
+
+\begin{description}
+
+\item[Plot Trends by Month] I have created a basic function template, but we'll develop this together when we have a chance. This function will take the list of creates a plot based on the following inputs: list of station dataframes, the element, and the month.
+
+\begin{center}
+\textbf{Function: \textcolor{Plum}{Function: plotTrend.fun()}}
+\end{center}
+
+\item[Example of how to use the function] Here's an example using the list of station dataframes anomalies. Note: I have often spelled the word anomaly wrong!
+
+<<echo=TRUE, results='hide'>>=
+plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
+@
+
+\item[Explore Results] I suggest you look carefully at the plots for hidden trends. In this case, look how the temperature really starts warming after teh 1960s. I don't know that that means, but seems important!
+
+\end{description}
+
 
 \begin{description}
 

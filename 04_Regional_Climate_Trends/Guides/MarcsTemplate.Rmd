@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-Updated: 2024-02-09
+Updated: 2024-02-16
 
 
 # Guide 1
@@ -23,7 +23,7 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions
 
 ## Chunk 2 Read Inventory
 ```{r, chunk1_2}
-my.state = "CA"
+my.state = "MT"
 filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
 ```
@@ -117,7 +117,7 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions
 
 ## Chunk 2 Plot Trend
 ```{r}
-plotTrend.fun(USC00042294.anomalies, "TMIN", 7)
+plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
 ```
 
 almost done!
@@ -139,13 +139,15 @@ zip(zipfile = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guidefun
 
 
 # Putting it together 
-```{r}
+```{r, eval=FALSE}
 # Guide 1
+source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R") # 1_1
 
-my.state = "RI"
+my.state = "MT"
 filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv" # 1_1
 my.inventory <- readInventory.fun(filename.csv, my.state) # 1_2
-# downloadStations.fun(datapath, my.inventory) # 1_3
+datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+downloadStations.fun(datapath, my.inventory) # 1_3
 
 # Guide 2
 source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R") # 2_1
@@ -153,25 +155,28 @@ source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions
 datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 ReadStations2.fun(datafolder) # 2_2
 
-station = USW00054797
-stationID = "USW00054797"
+#station = 	USC00246918
+#stationID = "USW00054797"
 
-stationa <- fixDates.fun(station) # 2_4
-coverage.fun(stationa) # 2_5
-stationb <- fixValues.fun(stationa) # 2_6
-QAQC.fun(stationb) # 2_7
-station.monthly <- MonthlyValues.fun(stationb) # 2_8
-station.normals <- MonthlyNormals.fun(stationb) # 2_8
+	
+USC00246918a <- fixDates.fun(USC00246918) # 2_4
+coverage.fun(USC00246918a) # 2_5
+USC00246918b <- fixValues.fun(USC00246918a) # 2_6
+QAQC.fun(USC00246918b) # 2_7
+USC00246918.monthly <- MonthlyValues.fun(USC00246918b) # 2_8
+USC00246918.normals <- MonthlyNormals.fun(USC00246918b) # 2_8
 
-station.anomalies <- MonthlyAnomalies.fun(station.monthly, station.normals) # 2_9
+USC00246918.anomalies <- MonthlyAnomalies.fun(USC00246918.monthly, USC00246918.normals) # 2_9
 
 # Guide 3
 source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R") # 3_1
-station.trends <- monthlyTrend.fun(station.anomalies) # 3_2
+USC00246918.trends <- monthlyTrend.fun(USC00246918.anomalies) # 3_2
+plotTrend2.fun(USC00246918.anomalies, "TMIN", 7) # 4_2
 
-Guide 4
-source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R") # 4_1
-plotTrend.fun(station.anomalies, "TMIN", 7) # 4_2
+
+#Guide 4
+#source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R") # 4_1
+
 ```
 
 

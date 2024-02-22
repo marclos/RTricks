@@ -13,7 +13,7 @@
 \colorlet{LightRubineRed}{RubineRed!100}
 \definecolor{mypink2}{RGB}{219, 48, 122}
 
-\title{Broader Impacts of Climate Science and Local Activism}
+\title{Guide 4: Climate Science, State Policy, and Local Activism}
 \author{Marc Los Huertos}
 \date{\today~(ver. 0.49)} 
 

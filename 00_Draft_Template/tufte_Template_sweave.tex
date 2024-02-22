@@ -53,20 +53,18 @@
 %\geometry{showframe}% for debugging purposes -- displays the margins
 
 \usepackage{amsmath}
+\usepackage{graphicx}
 \usepackage{natbib}
+
+
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 \bibfont{\small} % Doesn't see to work...
 
-% Set up the images/graphics package
-\usepackage{graphicx}
-\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
-% \graphicspath{{graphics/}}
-\title{Template %\thanks{}
-}
-\author[Marc Los Huertos]{Marc Los Huertos}
-\date{}  % if the \date{} command is left out, the current date will be used
+\graphicspath{{graphics/}}
 
-
-% \SweaveOpts{prefix.string=graphics/plot} % Created a "graphics" subdirectory to 
+\title{DRAFT ! Advection, Diffusion \& Reaction Modeling}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.4 don't read until I get to v .8!)}
 
 \setsidenotefont{\color{blue}}
 % \setcaptionfont{hfont commandsi}
@@ -83,316 +81,680 @@
 
 \maketitle% this prints the handout title, author, and date
 \begin{abstract}
-\noindent R is a robust, open source software package to process and analyzed data. As an extremely flexible programming environment, its development has been rapid and popularity has been growing dramatically in recent years. Most graduate schools teach R and many are phasing out the traditional software package site licenses (\eg SAS, SPSS, etc). 
+The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
 
-This handout provides an brief introduction to the syntax of R and some applications to plot and bivariate data. I believe R provides a mechanism to learn 1) skills to process electronic data, 2) a programming environment to implement a range of statistical tests, and 3) provide skills that can be used in your future career, whether or not R is used again.\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
+%\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
 \end{abstract}
+
+\section{Introduction}
+
+\subsection{The Problem}
+
+The movement of compounds in the environment is driven by three processes: advection , diffusion, and reaction. Of course, these processes occur in three dimensions. The implications of these processes is profound -- they determine the fate and transport of pollutants in the environment, the movement of nutrients in the soil, and the movement of solutes in the human body. Our understanding of these processes is critical to understanding issues of environmental quality and justice for human and non-humans alike. We use our undestanding to develop of environmental policy, the management of agricultural systems, and to mitigate the impacts of pollution on human health.
+
+However, these processes are complex and are often difficult to measure. As a result, we often rely on models to help us understand the movement of solutes in the environment. These models are based on the fundamental processes of advection, diffusion, and reaction.
+
+\subsection{The Processes}
+
+Advection and diffusion are two fundamental processes that govern the transport of solutes in the environment. Advection is the process of transport of a solute by the bulk motion of the fluid. Diffusion is the process of transport of a solute by random molecular motion.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figure/Diagram-advection-diffusion.png}
+\caption{A simple diagram of advection and diffusion that inclues how "solutes" might be deposited downwind of a stationary source if air pollution.}
+\label{fig:advection-diffusion}
+\end{figure}
+
+In a simple example, if we have a dose of a solute, like a dye in the center of some media, we'll see it spread out by diffusion (Figure~\ref{fig:diffusion}). If the media is moving, we'll see the dye move with the bulk motion of the media. If the dye reacts with the media, we'll see the dye disappear.
+
+\begin{figure}[h]
+\centering
+\caption{A simple diagram of 2D diffusion.}
+\label{fig:diffusion}
+\includegraphics[width=0.8\textwidth]{figure/2D_diffusion.png}
+\end{figure}
+
+
+Besides examples we often see with respect to air pollution sources (Figure~\ref{fig:advection-diffusion}), we might think about solutes as pollutants or nutrients. For example, the movement of a nutrient in a river is driven by the bulk motion of the water (advection) and the random motion of the molecules (diffusion) and the reactions that might occur in the water column and sediments (Figure\ref{nutrientspiraling}).
+
+\begin{figure}[h]
+\caption{A simple diagram of advection and nutrient reactions (organic substances and inorganic substances) in a river. Although not shown, you might also think about how diffusion might influence the movement of nutrients in the river and in the sediments.  
+The zone where water moves into the sediment bed is called the hyperreic zone. The porosity of the sediments will allow more advective flow that might influence the reaction capacity of solutes in the sediments.}
+\label{fig:nutrientspiraling}
+\centering
+\includegraphics[width=0.8\textwidth]{figure/NutrientSpiraling.jpg}
+\end{figure}
+
+
+\subsection{Session Goals}
+
+We will not become experts in advection-diffusion-reaction modeling, but we will become familiar with the processes and the equations that describe them. Moreover, we'll see a bit more about how R can be used to model these processes. After this session, I hope you can do the following:
+
+\begin{enumerate}
+	\item Describe the physical processes of advection and diffusion and solute reaction
+	\item Describe the equations used to model A-D-R. 
+	\item Analyze 1-dimensional movement using advection equations in R.
+	\item Describe diffusion mathematically
+	\item Analyze 1-dimensional adveecton-diffusion using R.
+	\item Appreciate how two-dimensional analysis of advection-diffusion can be modeled in R.
+\end{enumerate}
+
+In this session, we'll want to think about the movement of solutes in the porous media, i.e. a soil with air space, sediments with water between the particles. We will refer to the porousity as $\xi$, which is a proportion between 0 and 1. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figure/Darcy_permeability.jpg}
+\end{figure}
+
+%We'll start with one-dimensional systems and then move to two-dimensional systems. We'll also consider the effects of reactions on the movement of solutes.
+
+\subsection{Advection and Convection: Material and Heat}
+
+Advection is the transport of a substance by bulk motion. Convection is the transfer of heat by the actual movement of the warmed matter. The equation that are used to describe advection and convection are similar, but the physical processes are different.
+
+
+
+\subsection{The Processes and the Equations to Describe Them}
+
+
+%− 1 Axξx ·( ∂ ∂xAx·(−D· ∂ξxC ∂x )− ∂ ∂x(Ax·v·ξxC)) 
+
+\begin{equation}
+- \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot \frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
+\end{equation}
+
+
+Here $D$ is the ``diffusion coefficient'', $v$ is the ``advection rate'', and $A_x$ and $\xi$ are the surface area and volume fraction, respectively. 
+
+Assuming that A, $\xi$, D and v are constant along x, we can rewrite this in a more general form: 
+
+%D∂2C ∂x2−u∂C ∂x
+\begin{equation}
+D \frac{\partial^2 C}{\partial x^2} - \mu \frac{\partial C}{\partial x}
+\end{equation}
+
+where $u = v/A_x \xi_x$ is the ``velocity'' of the fluid.
+
+The movement of compounds in the environment is driven by two processes, advection and diffusion. Of course, these processes occur in three dimensions, but for this class we'll begin with one dimensional processes before getting to more complicated examples.
+
+Nevertheless, let's look at the 3-D advection-diffusion-reacton equation in three dimensions:
+
+\begin{equation}
+\frac{\partial C}{\partial t} = \nabla \cdot (D\nabla C - \mu C) + R
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $\mu$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+Ok, what what is $\nabla$? It's the gradient operator, which is a vector operator that operates on a scalar function to produce a vector whose magnitude is the maximum rate of change of the function at the point of the gradient and that points in the direction of that maximum rate of change. $\nabla \cdot$ represents divergence. In this equation, $\nabla C$ represents concentration gradient.
+
+
+\subsubsection{Advection}
+
+Advection is the process of transport of a solute by the bulk motion of the fluid. The rate of advection is proportional to the velocity of the fluid and the concentration of the solute. The rate of advection is given by the equation:
+
+\begin{equation}
+\frac{\partial C}{\partial t} + \nabla \cdot (u C) = 0
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, and $u$ is the velocity of the fluid. 
+
+For one dimensional systems, the equation can be written as:
+
+\begin{equation}
+\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} = 0
+\end{equation}
+
+or
+
+\begin{equation}
+\frac{\partial C}{\partial t} + \mu_x \frac{\partial C}{\partial x}
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, and $x$ is the spatial coordinate.
+
+The advection equation is not simple to solve numerically: the system is a hyperbolic partial differential equation, and interest typically centers on discontinuous "shock" solutions (which are notoriously difficult for numerical schemes to handle).
+
+
+\subsubsection{Diffusion}
+
+Diffusion is the process of transport of a solute by random molecular motion. The rate of diffusion is proportional to the concentration gradient of the solute. The rate of diffusion is given by the equation:
+
+\begin{equation}
+\frac{\partial C}{\partial t} = D \nabla^2 C
+\end{equation}
+
+where $D$ is the diffusion coefficient.
+
+\subsubsection{Advection-Diffusion Equation}
+
+The advection-diffusion equation is a combination of the advection and diffusion equations. The advection-diffusion equation is given by the equation:
+
+\begin{equation}
+\frac{\partial C}{\partial t} + \nabla \cdot (u C) = D \nabla^2 C
+\end{equation}
+
+or 
+
+\begin{equation}
+\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} = D \frac{\partial^2 C}{\partial x^2}
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, and $D$ is the diffusion coefficient.
+
+\subsubsection{Advection-Difffusion-Reaction Equation}
+
+The advection-diffusion-reaction equation is a combination the advection, diffusion, and reaction equations. The advection-diffusion-reaction equation is given by the equation:
+
+\begin{equation}
+\frac{\partial C}{\partial t} + \nabla \cdot (u C) = D \nabla^2 C + R
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+or in one-dimension:
+
+\begin{equation}
+\frac{\partial C}{\partial t} = \mu \frac{\partial C}{\partial x} = D \frac{\partial^2 C}{\partial x^2} + R
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+  
+\subsubsection{Advenction-Difffusion-Reaction in multi-phase systems and for shapes with variable geometry}
+
+The advection-diffusion-reaction equation can be extended to multi-phase systems and to shapes with variable geometry. The advection-diffusion-reaction equation for multi-phase systems and for shapes with variable geometry is given by the equation:
+
+\begin{equation}
+\frac{\partial C}{\partial t} + \nabla \cdot (u C) = D \nabla^2 C + R
+\end{equation}
+
+where $C$ is the concentration of the solute, $t$ is time, $u$ is the velocity of the fluid, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+\subsection{ReacTran Package}
+
+\citet{soetaert2017package} have developed a nice library in R that solves these equations using finite-difference solutions. 
+
+The ReacTran package is a collection of functions for modeling solute transport in 1D, 2D, and 3D. The package includes functions for solving the advection-diffusion equation, the advection-diffusion-reaction equation, and the advection-diffusion-reaction equation for multi-phase systems and for shapes with variable geometry. The package also includes functions for solving the advection-diffusion equation in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion-reaction equation in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion-reaction equation for multi-phase systems and for shapes with variable geometry in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion equation in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion-reaction equation in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion-reaction equation for multi-phase systems and for shapes with variable geometry in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion equation in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion-reaction equation in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion-reaction equation for multi-phase systems and for shapes with variable geometry in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion equation in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion-reaction equation in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion-reaction equation for multi-phase systems and for shapes with variable geometry in 1D, 2D, and 3D. The package also includes functions for solving the advection-diffusion equation in 1D, 2D, and 3D.
+  
+\section{Applications using R}
+
+\subsection{R as a Calculator and Modeling Environment}
+
+
+
+
+We can use R to solve the advection-diffusion equation. The following code uses the `deSolve` package to solve the advection-diffusion equation for a simple one-dimensional case.
+
+\begin{verbatim}
+# Load the deSolve package
+library(deSolve)
+
+# Define the advection-diffusion equation
+advection_diffusion <- function(t, C, parms) {
+  with(as.list(parms), {
+    dC <- D * (diff(C, lag = 2) - 2 * diff(C, lag = 1) + diff(C, lag = 0)) / dx^2
+    dC[1] <- 0
+    dC[n] <- 0
+    list(dC)
+  })
+}
+
+# Set the parameters
+parms <- list(
+  D = 0.1,  # Diffusion coefficient
+  dx = 0.1  # Spatial step
+)
+
+# Set the initial conditions
+C0 <- c(0, rep(0, 98), 1, rep(0, 98), 0)
+  
+# Set the times at which to evaluate the solution
+times <- seq(0, 100, by = 1)
+
+# Solve the advection-diffusion equation
+
+out <- ode(y = C0, times = times, func = advection_diffusion, parms = parms)
+
+# Plot the solution
+
+plot(out, xlab = "Distance", ylab = "Concentration", type = "l")
+\end{verbatim}
+
+\subsection{1D Transportion Model}
+
+The `ReacTran` package provides a function to solve the advection-diffusion-reaction equation for a simple one-dimensional case.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Load the ReacTran package}
+\hlkwd{library}\hlstd{(ReacTran)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: rootSolve}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: deSolve}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: shape}}\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{tran.1D}\hlstd{(}\hlkwc{C} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{D} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{flux.up} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{v} \hlstd{=} \hlnum{5}\hlstd{,} \hlkwc{A}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{dx} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{full.output} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## $dC
+## [1] -4
+## 
+## $C.up
+## [1] 0.2
+## 
+## $C.down
+## [1] 1
+## 
+## $dif.flux
+## [1] 0 0
+## 
+## $adv.flux
+## [1] 1 5
+## 
+## $flux
+## [1] 1 5
+## 
+## $flux.up
+## [1] 1
+## 
+## $flux.down
+## [1] 5
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\subsection{Solving a 1-D reaction tranport mdodel}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(ReacTran)}
+\hlstd{out} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{func} \hlstd{= advModel,} \hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{25}\hlstd{),} \hlkwc{params} \hlstd{= parms,} \hlkwc{nspace}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{positive} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+We can use R to solve the advection-diffusion-reaction equation. The following code uses the `deSolve` package to solve the advection-diffusion-reaction equation for a simple one-dimensional case.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Load the deSolve package}
+\hlkwd{library}\hlstd{(deSolve)}
+
+\hlcom{# Define the advection-diffusion-reaction equation}
+\hlstd{advection_diffusion_reaction} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{t}\hlstd{,} \hlkwc{C}\hlstd{,} \hlkwc{parms}\hlstd{) \{}
+  \hlkwd{with}\hlstd{(}\hlkwd{as.list}\hlstd{(parms), \{}
+    \hlstd{dC} \hlkwb{<-} \hlstd{D} \hlopt{*} \hlstd{(}\hlkwd{diff}\hlstd{(C,} \hlkwc{lag} \hlstd{=} \hlnum{2}\hlstd{)} \hlopt{-} \hlnum{2} \hlopt{*} \hlkwd{diff}\hlstd{(C,} \hlkwc{lag} \hlstd{=} \hlnum{1}\hlstd{)} \hlopt{+} \hlkwd{diff}\hlstd{(C,} \hlkwc{lag} \hlstd{=} \hlnum{0}\hlstd{))} \hlopt{/} \hlstd{dx}\hlopt{^}\hlnum{2} \hlopt{-} \hlstd{k} \hlopt{*} \hlstd{C}
+    \hlstd{dC[}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlnum{0}
+    \hlstd{dC[n]} \hlkwb{<-} \hlnum{0}
+    \hlkwd{list}\hlstd{(dC)}
+  \hlstd{\})}
+\hlstd{\}}
+
+\hlcom{# Set the parameters}
+\hlstd{parms} \hlkwb{<-} \hlkwd{list}\hlstd{(}
+  \hlkwc{D} \hlstd{=} \hlnum{0.1}\hlstd{,}  \hlcom{# Diffusion coefficient}
+  \hlkwc{dx} \hlstd{=} \hlnum{0.1}\hlstd{,}  \hlcom{# Spatial step}
+  \hlkwc{k} \hlstd{=} \hlnum{0.01}  \hlcom{# Reaction rate}
+\hlstd{)}
+
+\hlcom{# Set the initial conditions}
+\hlstd{C0} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{98}\hlstd{),} \hlnum{1}\hlstd{,} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{98}\hlstd{),} \hlnum{0}\hlstd{)}
+
+\hlcom{# Set the times at which to evaluate the solution}
+\hlstd{times} \hlkwb{<-} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{100}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{1}\hlstd{)}
+
+\hlcom{# Solve the advection-diffusion-reaction equation}
+\hlstd{out} \hlkwb{<-} \hlkwd{ode}\hlstd{(}\hlkwc{y} \hlstd{= C0,} \hlkwc{times} \hlstd{= times,} \hlkwc{func} \hlstd{= advection_diffusion_reaction,} \hlkwc{parms} \hlstd{= parms)}
+
+\hlcom{# Plot the solution}
+\hlkwd{plot}\hlstd{(out,} \hlkwc{xlab} \hlstd{=} \hlstr{"Distance"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Concentration"}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{1-D Reaction-Transport Model}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(ReacTran)}
+
+\hlstd{parms} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwc{F0} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{v}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{k} \hlstd{=} \hlnum{0.1}\hlstd{,} \hlkwc{D} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{dx} \hlstd{=} \hlnum{1}\hlstd{)}
+
+\hlstd{advModel} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{t}\hlstd{,} \hlkwc{C}\hlstd{,} \hlkwc{parms}\hlstd{) \{}
+  \hlkwd{with}\hlstd{(}\hlkwd{as.list}\hlstd{(parms), \{}
+    \hlstd{Tran} \hlkwb{<-} \hlkwd{tran.1D}\hlstd{(}\hlkwc{C} \hlstd{= C,} \hlkwc{D} \hlstd{= D,} \hlkwc{flux.up} \hlstd{= F0,} \hlkwc{v} \hlstd{= v,} \hlkwc{dx} \hlstd{= dx)}
+    \hlstd{Consumption} \hlkwb{=} \hlstd{k} \hlopt{*} \hlstd{C}
+    \hlstd{dC} \hlkwb{<-} \hlstd{Tran}\hlopt{$}\hlstd{dC} \hlopt{-} \hlstd{Consumption}
+
+    \hlkwd{return}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwc{dC} \hlstd{= dC,} \hlkwc{Consumption} \hlstd{= Consumption,} \hlkwc{flux.up} \hlstd{= Tran}\hlopt{$}\hlstd{flux.up,} \hlkwc{flux.down} \hlstd{= Tran}\hlopt{$}\hlstd{flux.down))}
+  \hlstd{\})}
+\hlstd{\}}
+
+\hlstd{out} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{func} \hlstd{= advModel,} \hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{25}\hlstd{),} \hlkwc{parms} \hlstd{= parms,} \hlkwc{nspec}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{positive} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlstd{parms} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwc{F0} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{v}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{k} \hlstd{=} \hlnum{0.5}\hlstd{,} \hlkwc{D}\hlstd{=}\hlnum{0}\hlstd{,} \hlkwc{dx} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlstd{out2} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{func} \hlstd{= advModel,} \hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{25}\hlstd{),} \hlkwc{parms} \hlstd{= parms,} \hlkwc{nspec}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{positive} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlstd{parms} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwc{F0} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{v}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{k} \hlstd{=} \hlnum{0.5}\hlstd{,} \hlkwc{D}\hlstd{=}\hlnum{50}\hlstd{,} \hlkwc{dx} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlstd{out3} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{func} \hlstd{= advModel,} \hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{25}\hlstd{),} \hlkwc{parms} \hlstd{= parms,} \hlkwc{nspec}\hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{positive} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{out}
+\end{alltt}
+\begin{verbatim}
+## $y
+##  [1] 0.9090909 0.8264463 0.7513148 0.6830135 0.6209213 0.5644739 0.5131581
+##  [8] 0.4665074 0.4240976 0.3855433 0.3504939 0.3186308 0.2896644 0.2633313
+## [15] 0.2393921 0.2176291 0.1978447 0.1798588 0.1635080 0.1486436 0.1351306
+## [22] 0.1228460 0.1116782 0.1015256 0.0922960
+## 
+## $Consumption
+##  [1] 0.09090909 0.08264463 0.07513148 0.06830135 0.06209213 0.05644739
+##  [7] 0.05131581 0.04665074 0.04240976 0.03855433 0.03504939 0.03186308
+## [13] 0.02896644 0.02633313 0.02393921 0.02176291 0.01978447 0.01798588
+## [19] 0.01635080 0.01486436 0.01351306 0.01228460 0.01116782 0.01015256
+## [25] 0.00922960
+## 
+## $flux.up
+## [1] 1
+## 
+## $flux.down
+## [1] 0.092296
+## 
+## attr(,"precis")
+## [1] 4.406130e-01 2.339217e-09
+## attr(,"steady")
+## [1] TRUE
+## attr(,"class")
+## [1] "steady1D"  "rootSolve" "list"     
+## attr(,"dimens")
+## [1] 25
+## attr(,"nspec")
+## [1] 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{3}\hlstd{))}
+\hlkwd{plot}\hlstd{(out,} \hlkwc{xlab} \hlstd{=} \hlstr{"X"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Concentration"}\hlstd{,} \hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Advection-Reaction: Steady State Solution"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-1} 
+\begin{kframe}\begin{alltt}
+\hlkwd{plot}\hlstd{(out2,} \hlkwc{xlab} \hlstd{=} \hlstr{"X"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Concentration"}\hlstd{,} \hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Advection-Reaction: Steady State Solution"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-2} 
+\begin{kframe}\begin{alltt}
+\hlkwd{plot}\hlstd{(out3,} \hlkwc{xlab} \hlstd{=} \hlstr{"X"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Concentration"}\hlstd{,} \hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Advection-Reaction: Steady State Solution"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-3} 
+\end{knitrout}
+
+\subsection{Oxygen Consumption Porous Spherical Particle}
+
+We will be modeling the consumption of oxygen in a "sand-sized" porous spherical particle. The model is based on the following equation:
+
+\[ \frac{\partial C}{\partial t} = -v \frac{\partial C}{\partial x} - k(C) \]
+
+where \( C \) is the concentration of oxygen, \( D \) is the diffusion coefficient, \( v \) is the velocity of the fluid, and \( k(C) \) is the rate of oxygen consumption.
+
+At this scale the velocity will be zero. Thus, we will rely on diffusion to for the oxygen movement to where it is consumed. 
+
+
+
+We start with defining the size and porosity of the particle and use R to create a grid to solve the advection-diffusion-reaction equation.
+
+\begin{table}[h]
+\caption{Chararacteristics of the Particle}
+\centering
+\begin{tabular}{|l|l|c|c|} \hline
+Parameter & Description & Typical Range &  Modelled Value \\ \hline\hline
+\( R \) & Radius of the particle & \( 0.005 - 0.2 \) cm &  0.025 cm \\
+Porosity & Proportion of void space & \(0.005 -- 0.7\) &  0.7 \\ \hline
+\end{tabular}
+\end{table}
+
+We will create a grid to model the particle with Radius \( R \) and \( N \) (= 100) grid points. We will also define the properties of the particle such as porosity, diffusion coefficient (D = 400), and the rate of oxygen consumption, R$_{02}$ = \ensuremath{10^{6}}.
+
+Although we are modeling a one-dimensional system, we will need to create a grid surface as a circle to effectively model the particle surface area changes as O2 diffuses into the particle and is consumed by the reactions in the particle.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{grid} \hlkwb{<-} \hlkwd{setup.grid.1D}\hlstd{(}\hlkwc{x.up}\hlstd{=}\hlnum{0}\hlstd{,} \hlkwc{L} \hlstd{= R,} \hlkwc{N} \hlstd{= N)}
+
+\hlstd{por.grid} \hlkwb{<-} \hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{value}\hlstd{=por,} \hlkwc{grid}\hlstd{=grid)}
+\hlstd{D.grid} \hlkwb{<-} \hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{value}\hlstd{=D,} \hlkwc{grid}\hlstd{=grid)}
+
+\hlstd{sphere.surf} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlnum{4}\hlopt{*}\hlstd{pi}\hlopt{*}\hlstd{x}\hlopt{^}\hlnum{2}
+\hlstd{A.grid} \hlkwb{<-} \hlkwd{setup.prop.1D}\hlstd{(}\hlkwc{func}\hlstd{=sphere.surf,}  \hlkwc{grid}\hlstd{=grid)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Finally, we need to define the O2 concentration at the surface of the particle and the O2 consumption rate of the particle. 
+
+\begin{table}[h]
+\caption{Oxygen Consumption in the Particle}
+\centering
+\begin{tabular}{|l|l|c|c|} \hline
+Parameter & Description & Typical Range &  Modelled Value \\ \hline\hline
+\( C_{ow} \) & Concentration of O2 in Water & \( 0.1 - 0.3 \) \mumolspercm &  0.25 \mumolspercm \\
+\( R_{02} \) & Rate of oxygen consumption & \( 10^5 - 10^6 \) \mumolspercm~/year &  \ensuremath{10^{6}} \mumolspercm/year \\
+\( K_s \) & O2 saturation & \( 0.001 - 0.01 \) \mumolspercm &  0.005 \mumolspercm \\ \hline
+\end{tabular}
+\end{table}
+
+Note, we often measure oxygen using ppm (parts per million), but the model uses \mumolspercm. The conversion is 1 ppm = 0.0224 \mumolspercm, thus, we are modeling \(Ks \) within a range of 2.24 - 6.72 ppm, using Ks = 0.22 \mumolspercm.
+
+
+Next we create a function to model the oxygen consumption in the, particle that relies on We will use the \texttt{tran.1D} function to solve the advection-diffusion equation and the \texttt{steady.1D} function to solve the steady state solution of the advection-diffusion-reaction equation.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Aggregate.Model} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{time}\hlstd{,} \hlkwc{O2}\hlstd{,} \hlkwc{pars}\hlstd{) \{}
+  \hlstd{tran} \hlkwb{<-} \hlkwd{tran.1D}\hlstd{(}\hlkwc{C} \hlstd{= O2,} \hlkwc{C.down} \hlstd{= C.ow.02,} \hlkwc{D} \hlstd{= D.grid,}
+          \hlkwc{A}\hlstd{=A.grid,} \hlkwc{VF} \hlstd{= por.grid,} \hlkwc{dx} \hlstd{= grid)}
+    \hlstd{reac} \hlkwb{<-} \hlopt{-} \hlstd{R.02} \hlopt{*} \hlstd{(O2} \hlopt{/}\hlstd{(Ks} \hlopt{+} \hlstd{O2))}
+    \hlkwd{return}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwc{dCdt}\hlstd{= tran}\hlopt{$}\hlstd{dC} \hlopt{+} \hlstd{reac,} \hlkwc{reac} \hlstd{= reac,}
+                \hlkwc{flux.up}\hlstd{=tran}\hlopt{$}\hlstd{flux.up,} \hlkwc{flux.down}\hlstd{=tran}\hlopt{$}\hlstd{flux.down))}
+\hlstd{\}}
+
+
+\hlstd{O2.agg} \hlkwb{<-} \hlkwd{steady.1D}\hlstd{(}\hlkwc{y} \hlstd{=} \hlkwd{runif}\hlstd{(N),} \hlkwc{func}\hlstd{=Aggregate.Model,}
+                    \hlkwc{nspec}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{positive}\hlstd{=}\hlnum{TRUE}\hlstd{,} \hlkwc{atol} \hlstd{=} \hlnum{1e-10}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{figure}[h]
+\centering
+\caption{Oxygen Consumption in a Porous Sphere}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/plotO2agg-1} 
+\end{knitrout}
+\end{figure}
+
+The plot shows the oxygen concentration in the particle. The concentration is highest at the surface and decreases as it moves into the particle. The concentration is zero at the center of the particle.
+
+\begin{figure}[h]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/circleplot-1} 
+\end{knitrout}
+\end{figure}
+
+
+
+
+
+
+
+%\printclassoptions
 
 % Setting up the margins, etc for R
 
 
-\section{Session Goals}
 
-\begin{enumerate}
-	\item Open and use the R GUI with consistent results.
-	\item Use math operators to solve simple calculations.
-	\item Create vectors (type of objects).
-	\item Best fit line and linear models.
-\end{enumerate}
 
-\section{The R GUI}
-
-Starting the program is fairly easy.\sidenote[][-.5in]{Outcome: Open R and use the R GUI with consistent results.} Assuming R is installed,\footnote[][.03in]{If R is not installed, it can be done easily by going to http://www.r-project.org/ and downloading the free software "base" program, which have been compiled for Windows and Mac and there is source code for Linux and Unix boxes.} find R by going to the windows "Start" button, navigate to "All Programs" and search for "R". Click on R program, whose icon is usually an capital R followed by a version number. 
-
-Now that R is started, you should notice a few things.  The GUI, or graphical user interface is quite Spartican, compared to what computers are capable of. For beginners this is the most disturbing part of the program. Second, there are some hints of how to start, but to follow these hints, you have to type exactly what you see. Yes, computers are stupid, they only recognized the commands they expect, not what you want them to understand. 
-
-\begin{figure}
-		\includegraphics{OpeningScreenShot.pdf}
-	\caption{Opening window screen shot of R. Notice the version number is probably different than what you have. Don't worry about this, the differences are minor and only play a significant role as you start to do more advanced statistics. There are new versions every few months and I might be a few versions ahead or behind what you see. Also, notice some hints have been created for the beginner. However, you much type exactly what you see including the parentheses. Most commands in R have parentheses, which signifies a function, which are like verbs in R. Without a function (or verb), R doesn't really know what to do.}
-	\label{fig:OpeningScreenShot}
-\end{figure}
-
-At the bottom of the screen is a prompt, which is a ">" symbol. Yes, you could change that to something more recognizable, but later you will appreciate the simplicity. This is where R expects commands lines to be entered. This characteristic is why R is called a command line program. There are no buttons to push and the menus are pretty limited.
-  
-Let's start with closing R.  Type "quit()" to close R. Notice that R asked you to save the workspace. R keeps track of your typing history and objects that you create. I'll explain objects soon enough. I generally don't save anything, if you do, you might find a bewildering number of objects that will interfere with your work at a later date. So, click "no" and R goes away.
-
-Start R again. Congratulations, you have just met the first outcome. You can smile and get a drink of water.
-
-Before moving on, open a word processor and begin recording your response to following question and question at the end of each section.
-
-\bigskip
-\noindent \textbf{\#1 Please list three or four questions you have so far. }
-
-\section{R as a Calculator}
-
-Using a computer for calculating values has become a trivial exercise with the widespread use of Excel.\sidenote{Outcome: Use math operators to solve simple calculations.} However, there are a number of symbols required when you are doing math functions on a computer because the keyboard is not specialized like a calculator. Thus, we have to learn how to use operators using simple keyboard characters. See the Table~\ref{tab:KeyboardOperators} for a list of the common characters used for operators in R.
-
-\begin{table}
-	\begin{center}
-	\begin{tabular}{lcc}
-		\toprule
-Operation &\ Operator &\ Example \\
-\midrule
-Addition & + &  6 + 5  \\  
-Subtraction & - & 6 - 5 \\
-Multiplication & * & 6 * 5 \\
-Division & / & 3 / 5\\
-Power & $\wedge$ & 3 $\wedge$ 5  \\
-\bottomrule
-\end{tabular}
-\end{center}	
-\caption{Keyboard Operator for Mathematical Operations in R.}
-	\label{tab:KeyboardOperators}
-\end{table}
-
-In addition, for more complex operations, R uses functions, which have a different syntax, \eg \texttt{log()}, \texttt{exp()}, \texttt{sin()}, etc. The syntax for these functions is fairly straightforward. For example, to calculate the base 10 logarithm of 3.5, we can type:\sidenote{as below, each time you see a ``>'', I am referring to the R prompt and you want to type the text after the prompt.}
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{log10}\hlstd{(}\hlnum{3.5}\hlstd{)}
+\hlstd{diffusion2D} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{t}\hlstd{,}\hlkwc{conc}\hlstd{,}\hlkwc{par}\hlstd{)\{}
+\hlstd{Conc} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{nr}\hlstd{=n,}\hlkwc{nc}\hlstd{=n,}\hlkwc{data}\hlstd{=conc)} \hlcom{# vector to 2-D matrix}
+\hlstd{dConc} \hlkwb{<-} \hlopt{-}\hlstd{r}\hlopt{*}\hlstd{Conc}\hlopt{*}\hlstd{Conc} \hlcom{# consumption}
+\hlstd{BND} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,n)} \hlcom{# boundary concentration}
+
+\hlcom{# constant production in certain cells}
+\hlstd{dConc[ii]}\hlkwb{<-} \hlstd{dConc[ii]}\hlopt{+} \hlstd{p}
+
+\hlcom{#diffusion in X-direction; boundaries=imposed concentration}
+
+\hlstd{Flux} \hlkwb{<-} \hlopt{-}\hlstd{Dx} \hlopt{*} \hlkwd{rbind}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,n),(Conc[}\hlnum{2}\hlopt{:}\hlstd{n,]}\hlopt{-}\hlstd{Conc[}\hlnum{1}\hlopt{:}\hlstd{(n}\hlopt{-}\hlnum{1}\hlstd{),]),}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,n))}\hlopt{/}\hlstd{dx}
+\hlstd{dConc} \hlkwb{<-} \hlstd{dConc} \hlopt{-} \hlstd{(Flux[}\hlnum{2}\hlopt{:}\hlstd{(n}\hlopt{+}\hlnum{1}\hlstd{),]}\hlopt{-}\hlstd{Flux[}\hlnum{1}\hlopt{:}\hlstd{n,])}\hlopt{/}\hlstd{dx}
+
+\hlcom{#diffusion in Y-direction}
+\hlstd{Flux} \hlkwb{<-} \hlopt{-}\hlstd{Dy} \hlopt{*} \hlkwd{cbind}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,n),(Conc[,}\hlnum{2}\hlopt{:}\hlstd{n]}\hlopt{-}\hlstd{Conc[,}\hlnum{1}\hlopt{:}\hlstd{(n}\hlopt{-}\hlnum{1}\hlstd{)]),}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,n))}\hlopt{/}\hlstd{dy}
+\hlstd{dConc} \hlkwb{<-} \hlstd{dConc} \hlopt{-} \hlstd{(Flux[,}\hlnum{2}\hlopt{:}\hlstd{(n}\hlopt{+}\hlnum{1}\hlstd{)]}\hlopt{-}\hlstd{Flux[,}\hlnum{1}\hlopt{:}\hlstd{n])}\hlopt{/}\hlstd{dy}
+
+\hlkwd{return}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwd{as.vector}\hlstd{(dConc)))}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+After specifying the values of the parameters, 10 cells on the 2-D grid where there will be
+substance produced are randomly selected (ii).
+
+14 Package rootSolve : roots, gradients and steady-states in R
+0.0 0.2 0.4 0.6 0.8 1.0
+0.0 0.2 0.4 0.6 0.8 1.0
+2-D diffusion+production
+x
+y
+Figure 5: Steady-state solution of the nonlinear 2-Dimensional model
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# parameters}
+\hlstd{dy} \hlkwb{<-} \hlstd{dx} \hlkwb{<-} \hlnum{1} \hlcom{# grid size}
+\hlstd{Dy} \hlkwb{<-} \hlstd{Dx} \hlkwb{<-} \hlnum{1.5} \hlcom{# diffusion coeff, X- and Y-direction}
+\hlstd{r} \hlkwb{<-} \hlnum{0.01} \hlcom{# 2-nd-order consumption rate (/time)}
+\hlstd{p} \hlkwb{<-} \hlnum{20} \hlcom{# 0-th order production rate (CONC/t)}
+\hlstd{n} \hlkwb{<-} \hlnum{100}
+\hlcom{# 10 random cells where substance is produced at rate p}
+\hlstd{ii} \hlkwb{<-} \hlkwd{trunc}\hlstd{(}\hlkwd{cbind}\hlstd{(}\hlkwd{runif}\hlstd{(}\hlnum{10}\hlstd{)}\hlopt{*}\hlstd{n}\hlopt{+}\hlnum{1}\hlstd{,}\hlkwd{runif}\hlstd{(}\hlnum{10}\hlstd{)}\hlopt{*}\hlstd{n}\hlopt{+}\hlnum{1}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+The steady-state is found using function steady.2D. It takes as arguments a.o. the dimensionality
+of the problem (dimens) and lrw=1000000, the length of the work array needed by
+the solver. If this value is set too small, the solver will return with the size needed.
+It takes about 0.5 second to solve this 10000 state variable model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Conc0} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{nr}\hlstd{=n,}\hlkwc{nc}\hlstd{=n,}\hlnum{10.}\hlstd{)}
+\hlkwd{print}\hlstd{(}\hlkwd{system.time}\hlstd{(}
+\hlstd{ST3} \hlkwb{<-} \hlkwd{steady.2D}\hlstd{(Conc0,}\hlkwc{func}\hlstd{=diffusion2D,}\hlkwc{parms}\hlstd{=}\hlkwa{NULL}\hlstd{,}\hlkwc{pos}\hlstd{=}\hlnum{TRUE}\hlstd{,}\hlkwc{dimens}\hlstd{=}\hlkwd{c}\hlstd{(n,n),}
+\hlkwc{lrw}\hlstd{=}\hlnum{1000000}\hlstd{,}\hlkwc{atol}\hlstd{=}\hlnum{1e-10}\hlstd{,}\hlkwc{rtol}\hlstd{=}\hlnum{1e-10}\hlstd{,}\hlkwc{ctol}\hlstd{=}\hlnum{1e-10}\hlstd{)}
+\hlstd{))}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.544068
+##    user  system elapsed 
+##   0.225   0.014   0.240
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-
-Or to calculate the natural log, type
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{log}\hlstd{(}\hlnum{3.5}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## [1] 1.252763
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-R allows the user to make complex equations and even solving complex calculations. For example, the if you want to solve the following equation:
-
-\begin{equation}
-V = V_{max}\frac{S}{K_s + S}
-\end{equation}
-
-And $V_{max}$ = 3, $S$ = 1.0 and $K_s = 0.3$, then you can type
+user system elapsed
+1.044 0.032 1.076
+The S3 image method is used to generate the steady-state plot.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlnum{3.0} \hlopt{*} \hlstd{(}\hlnum{1.0} \hlopt{/} \hlstd{(}\hlnum{0.3} \hlopt{+} \hlnum{1.0}\hlstd{))}
-\end{alltt}
-\begin{verbatim}
-## [1] 2.307692
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-However, typing these formulas can be time consuming and subject to typos, (\eg it is easy to forget to put the parentheses in the right place) so we'll see how we can streamline the process to make R uses more efficient. 
-
-\bigskip
-\noindent \textbf{\#2 What are the differences between what you have seen in other computer programs so far? }
-
-\section{Objects in R}
-
-\subsection{Creating Objects}
-
-Typing a long string of numbers each time you want to due something is a waste of time and effort. Let's say you wanted to have the numbers from 1 to 10. But R would have no way to handle this series. Instead, we use R to store these values in an object and recall them at will. To create objects in R, we use either the \texttt{=} or the \texttt{<-} symbols, which is composed of a ``less than symbol'' and a ``dash.'' I prefer the second because it is obviously directional and thus there is no ambiguity.\sidenote{Outcome: Create Objects.}
-
-When creating an object, we need to name the object and define the object type. Usually, this can be done in a single step. But we'll try to break it down so you can follow along. First, let's say we want to make an object that has 10 numbers in it. The most basic type of object is a vector, which can store a string of numbers or characters. Let's call the vector something recognizable, \texttt{myvector}. To put numbers into a vector, we need to concatenate or combine them, thus we need R to do something with the numbers, in other words, we need a "verb". In this case the verb concatenate or combine is abbreviated as \texttt{c()}. Remember with each function, there are parentheses. Now what we put ten numbers into the parentheses to be concatenated. We'll put a series of numbers from 1 to 10. 
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{myvector} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{6}\hlstd{,} \hlnum{7}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{9}\hlstd{,} \hlnum{10}\hlstd{)}
+\hlkwd{image}\hlstd{(ST3,}\hlkwc{main}\hlstd{=}\hlstr{"2-D diffusion+production"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"x"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"y"}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\end{knitrout}
-
-In this case, each number to be combined is separated by a comma. Spaces between the commas does not affect the object at all. Notice when you create the vector, R does not return any response. At first, this might seem disconcerting. But soon, you will be excited by the silence. In general, no news is good news in R, i.e. when there is no response, R did something and there was no error. Now it might not be what you wanted, but it did something. So, now let's see if R did what we wanted. 
-
-Now, we can view the vector by typing the name of the vector as below:\sidenote{The numbers in the square brackets are referencing the "index" number of the first observation in the row. It will make more sense when we create longer vectors.}  
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{myvector}
-\end{alltt}
-\begin{verbatim}
-##  [1]  1  2  3  4  5  6  7  8  9 10
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-\subsection{Interrogating Objects}
-
-We now use a function to interrogate the vector. For example, how long is the vector?
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{length}\hlstd{(myvector)}
-\end{alltt}
-\begin{verbatim}
-## [1] 10
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-What is the sum of the values in the vector?
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{sum}\hlstd{(myvector)}
-\end{alltt}
-\begin{verbatim}
-## [1] 55
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-What is the mean of the vector?
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{mean}\hlstd{(myvector)}
-\end{alltt}
-\begin{verbatim}
-## [1] 5.5
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-Congratulations, you have now made an object. This object is a vector, which we  named "myvector".\footnote{By the way, R is case sensitive, so "myvector" or "myVector" or "Myvector" refer to two different objects, two of which don't exists. Failing to keep track of what is upper and lower case can lead to high levels of frustration. I suggest you start with keeping everything lower case to avoid confusion. However, I will violate this suggestion immediately, for reasons that I will explain below.} Another thing to notice is that we have created a vector of numbers, would have also created a vector of characters (and words) and logical or binary responses, \ie TRUE and FALSE.
-
-\bigskip
-\noindent \textbf{\#3 Please list what questions might have come up in this section? }
-
-\subsection{Types of Objects}
-
-There a variety of objects that can be created in R (Table~\ref{tab:CommonObjects}). For the purpose of our class, we will concentrate on the following objects:
-\begin{table}
-	\centering
-		\begin{tabular}{ll}
-Object Type &\ Coercive functions \\
-\hline
-Vector & \texttt{c()}, \texttt{as.vector()} \\
-Matrix & \texttt{matrix()}, \texttt{as.matrix()} \\
-List & \texttt{list()}, \texttt{as.list()} \\
-Data frame & \texttt{data.frame()}, \texttt{as.data.frame()} \\
-Linear model & \texttt{lm()}, \texttt{aov()} \\\hline
-		\end{tabular}
-	\caption{Examples of common objects and the coercive functions to create them. We will use many of these, so do not worry if you don't know what they mean yet.}
-	\label{tab:CommonObjects}
-\end{table}
-
-
-
-Okay, we have dumped the each of the treatments onto the screen, but we haven't created any objects. Next, create a vector of the 15 observations, but using the c() function, which combines or more accurately concatenates the values. 
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{temperature} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{15}\hlstd{,} \hlnum{15}\hlstd{,} \hlnum{14}\hlstd{,} \hlnum{12}\hlstd{,} \hlnum{12}\hlstd{,} \hlnum{10}\hlstd{)}
-\hlstd{depth} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{6}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{10}\hlstd{,} \hlnum{12}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
-
-There are a few things to notice. First, look at all the parentheses. Keeping track of these is really important, for every opening parentheses there is a closing one. And they have to be in the right place, based on the syntax of the function. As you can see, this can get rather complicated and mistakes will be made. In other words, try to pay attention to these characters, and if you get errors, look for mistakes with parenthesis as first strategy to fix errors. Second, notice all the commas. Just as important to the syntax of these commands as parenthesis, commas need to be in the right place. If they are not, you will get errors. Remember, no news is good news in R; when you get some text in return that you haven't asked for, there is an error somewhere, and always check for commas and parenthesis firsts. Finally, failing to match opening and closing quotations marks are also a common error. 
-
-Generate 3 different error messages by leaving out a closing parenthesis or quotation mark or comma. See what happens if you have all three errors. You can see that error trapping in R is rudimentary, so you can spend a fair amount of time deciphering errors which are actually really simple to fix. 
-
-On of the most common objects is a data frame, which appears to be like a spreadsheet. We'll create a data frame by combining two vectors. First, let's create the vector of response values, which are flower date, as reported in Julian dates.\footnote[][-1.1cm]{Julian dates are the day number since the first day of the year, thus January 1st is Julian date 1 and Julian date 31 is January 31st.}
-
-
-
-\begin{fullwidth}
-
-\end{fullwidth}
-
-
-
-The vector name is a bit long, but it describes exactly what are in the data. It seems worth having names that are meaningful and that can remembered. But there is a trade off, you have to spell it correctly, so you may prefer shorter names. 
-
-Let's check to see if both vectors have the same length. If they are not, they will not be able to be combined into a data frame. Notice that each of the vectors have lower case letters. We could have capitalized the first letter, but as you will see below, I reserve that for data frame variable names. It is a matter of preference.
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{length}\hlstd{(temperature)}
-\end{alltt}
-\begin{verbatim}
-## [1] 6
-\end{verbatim}
-\begin{alltt}
-\hlkwd{length}\hlstd{(depth)}
-\end{alltt}
-\begin{verbatim}
-## [1] 6
-\end{verbatim}
-\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-15-1} 
 \end{knitrout}
 
 
-\section{Linear Models in R}
+\section{Considering 2D Models}
 
-The use of the linear model is the cornerstone of statistics. So ubiquitous it is rarely explained coherently.\sidenote{Outcome: Build and test a linear model.} The linear model can be summarized at the equation for a line, but with the addition of error. You are probably familiar with the equation for a line where, 
+2.4. Steady-state solution of 2-D PDEs
+Function steady.2D effciently snds the steady-state of 2-dimensional problems.
+Karline Soetaert 13
+In the following model
+@C
+@t
+= Dx 
+@2C
+@x2 + Dy 
+@2C
+@y2
+.. r  C2 + pxy
+a substance C is consumed at a quadratic rate (r C2), while dispersing in X- and Y-direction.
+At certain positions (x,y) the substance is produced (rate p).
+The model is solved on a square (100*100) grid. There are zero-
+ux boundary conditions at
+the 4 boundaries.
+The term Dx  @2C
+@x2 is in fact shorthand for:
+..
+@Flux
+@x
+where
+Flux = ..Dx 
+@C
+@x
+i.e. it is the negative of the 
+ux gradient, where the 
+ux is due to diffusion.
+In the numerical approximation fo the 
+ux, the concentration gradient is approximated as the
+subtraction of two matrices, with the columns or rows shifted (e.g. Conc[2:n,]-Conc[1:(n-1),]).
+The 
+ux gradient is then also approximated by subtracting entire matrices
+(e.g. Flux[2:(n+1),]-Flux[1:(n),]). This is very fast. The zero-
+ux at the boundaries is
+imposed by binding a column or row with 0-s.
 
-\begin{equation}
-y = m * x + b
-\end{equation}
-
-This equation defines a line, where $m$ is the slope, $b$ is the y-intercept, and the x and y are coordinates. The linear model is based on this form and is usually written as  
-
-\begin{equation}
-y \sim \alpha + \beta * x + \epsilon
-\end{equation}
-
-The order is usually changed, where the intercept is first, followed by the slope and x variable and the addition of error or noise. The error is usually symbolized as $\epsilon$. In general, in a statistical model, Greek letters are used and instead of an equals sign, we use a tilde, meaning that that left side of the equation is a function of the right side. Luckily, this is the approximate form that R expects, so if you understand this, you will have a pretty good idea of how to code a linear model in R. 
-
-The function to build a linear model is \texttt{lm()}. This function is extremely powerful and can be easily implemented, but this is a good time to see what the help menus look like in R. 
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{help}\hlstd{(lm)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
-
-I am not showing it here, but you should see a long complex looking help page window pop up. All help files in R are structured the same way, so in spite of the uninterpretable text, written by and for computer programmers, the structure will become familiar. Beginning with the description, the help screen describes the function, how to use it, and give some examples. Admittedly, I rarely understand much of the text, but I find the examples to be very useful! In fact, I suggest you paste the example into R and see what happens, I find this one of the best ways to learn R. Use an example that I know works, then change it to make it do what I want it to do.
-
-Using the linear model, we can analyze several types of data, when the response variable is continuous. If the have a predictor variable that is categorical, then we often analyze the data using the method known as analysis of variance or ANOVA. If the predictor variable is continuous, then we often analyze data using a regression analysis. 
+\section{Conclusion}
 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{plot}\hlstd{(depth, temperature)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/depth_v_temp-1} 
-\end{knitrout}
+% bibiliography section here-------------------------------------------
+%\clearpage
 
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{TempDepth.lm} \hlkwb{<-} \hlkwd{lm}\hlstd{(temperature} \hlopt{~} \hlstd{depth)}
-
-\hlkwd{coef}\hlstd{(TempDepth.lm)}
-\end{alltt}
-\begin{verbatim}
-## (Intercept)       depth 
-##  16.6000000  -0.5142857
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
+\bibliographystyle{apalike}
+%\renewcommand\bibname{References}{}
+\bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
 
 
 \end{document}
