@@ -1,0 +1,160 @@
+\documentclass{article}
+\usepackage{natbib}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=red,
+    filecolor=magenta,
+    urlcolor=purple,
+    citecolor=violet
+}
+%\usepackage{comment}
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!100}
+\definecolor{mypink2}{RGB}{219, 48, 122}
+
+\title{Guide 5: Communicating Climate Trends -- Combining Imagery and Audio}
+\author{Marc Los Huertos}
+\date{\today~(ver. 0.58)} 
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+Developing the skills to communicate climate trends is an important skill for scientists and policy makers. This exercise will focus on developing the skills to communicate climate trends using a imple script, graphics, and audio to create a publically available video.
+
+\subsection{Goals}
+
+Create a compelling story! Based on the data and the analysis, what is the story you want to tell? What are the key messages you want to communicate? How does this ``jive'' with the EPA reports or policy goals in the state?
+
+Based on what we have learn from research on Social Media, what type of graphics or script do you want to write. 
+
+\subsection{Approach}
+
+Unfortunately, a linear order of steps (and use of our guides) is not possible. The process of creating a compelling story is iterative and requires some back and forth between processes and guides. 
+
+Nevertheless, for this stage, here's what I suggest: 
+
+\begin{enumerate}
+  \item Explore various methods to display climate data
+  \item Use the following \href{https://docs.google.com/document/d/1GMsAxapAsnqdWhQVDylUcAq3n8MHJtf8hoZwNwessb8/edit?usp=sharing}{Google Doc} to suggest code and/or some functions that can be used to analyze your data. Marc and mentors will meet to see if we can help you with your code.
+\end{enumerate}
+
+\section{Take Home Message}
+
+I suggest that you start with the end in mind. What is the take home message? What do you want the viewer to remember?
+
+\begin{itemize}
+  \item What are some types of evidence that Climate change is happening in State X?
+  \item What are the potential impacts of a changing climate on State X's resources/activities?
+  \item What is State X doing to mitigate/adapt?
+  \item What might a resident of State X do about climate change?
+\end{itemize}
+
+\section{A roll and B roll}
+
+\subsection{A roll}
+
+The A roll is the primary footage that drives the story. It is the main footage that is used to tell the story.
+
+\subsection{B roll}
+
+The B roll is the secondary footage that is used to support the A roll. It is often used to show the viewer what the narrator is talking about.
+
+\newpage
+\section{Script}
+
+\subsection{What are some types of evidence that Climate change is happening in State X?}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
+\hline
+\textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
+\rule{0in}{2cm} 0:00                 &                       & \\
+\rule{0in}{2cm} 0:20                &                       & \\
+\rule{0in}{2cm} 0:40                &                       & \\
+\rule{0in}{2cm} 1:00                &                       & \\
+\rule{0in}{2cm} 1:20                &                       & \\
+\rule{0in}{2cm} 1:40                &                       & \\
+\rule{0in}{2cm} 2:00                &                       & \\
+\hline
+
+\end{tabular}
+\end{table}
+
+\newpage
+\subsection{What are the potential impacts of a changing climate on State X's resources/activities?}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
+\hline
+\textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
+\rule{0in}{2cm} 1:00                 &                       & \\
+\rule{0in}{2cm} 1:20                &                       & \\
+\rule{0in}{2cm} 1:40                &                       & \\
+\rule{0in}{2cm} 2:00                &                       & \\
+\rule{0in}{2cm} 2:20                &                       & \\
+\rule{0in}{2cm} 2:40                &                       & \\
+\rule{0in}{2cm} 3:00                &                       & \\
+\hline
+
+\end{tabular}
+\end{table}
+
+
+\newpage
+\subsection{What is State X doing to mitigate/adapt?}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
+\hline
+\textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
+\rule{0in}{2cm} 2:00                 &                       & \\
+\rule{0in}{2cm} 2:20                &                       & \\
+\rule{0in}{2cm} 2:40                &                       & \\
+\rule{0in}{2cm} 3:00                &                       & \\
+\rule{0in}{2cm} 3:20                &                       & \\
+\rule{0in}{2cm} 3:40                &                       & \\
+\rule{0in}{2cm} 4:00                &                       & \\
+\hline
+
+\end{tabular}
+\end{table}
+
+
+\newpage
+\subsection{}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
+\hline
+\textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
+\rule{0in}{2cm} 3:00                 &                       & \\
+\rule{0in}{2cm} 3:20                &                       & \\
+\rule{0in}{2cm} 3:40                &                       & \\
+\rule{0in}{2cm} 4:00                &                       & \\
+\rule{0in}{2cm} 4:20                &                       & \\
+\rule{0in}{2cm} 4:40                &                       & \\
+\rule{0in}{2cm} 5:00                &                       & \\
+\hline
+
+\end{tabular}
+\end{table}
+
+
+
+
+
+% bibilography section here-------------------------------------------
+%\clearpage
+
+\bibliographystyle{apalike}
+%\renewcommand\bibname{References}{}
+\bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
+
+\end{document}

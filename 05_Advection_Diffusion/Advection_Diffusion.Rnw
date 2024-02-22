@@ -1,0 +1,552 @@
+\documentclass{tufte-handout}
+
+%\geometry{showframe}% for debugging purposes -- displays the margins
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{cancel}
+\usepackage{comment}
+
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+\bibfont{\small} % Doesn't see to work...
+
+\graphicspath{{graphics/}}
+
+\newenvironment{itemize*}%
+  {\begin{itemize}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{itemize}}
+	
+\newenvironment{enumerate*}%
+  {\begin{enumerate}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{enumerate}}
+	
+	\newenvironment{description*}%
+  {\begin{description}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{description}}
+
+\newcommand{\numolspercm}{$\mu$mols/cm$^{-3}$}
+
+\title{DRAFT! Advection, Diffusion \& Reaction Modeling}
+\author{Marc Los Huertos}
+\date{\today~(ver.~0.83)}
+
+\setsidenotefont{\color{blue}}
+% \setcaptionfont{hfont commandsi}
+% \setmarginnotefont{\color{blue}}
+% \setcitationfont{\color{gray}}
+
+% The following package makes prettier tables.  We're all about the bling!
+\usepackage{booktabs}
+
+% Small sections of multiple columns
+\usepackage{multicol}
+
+\begin{document}
+
+\maketitle% this prints the handout title, author, and date
+\begin{abstract}
+The movement of compounds in the environment is driven by two processes, advection and diffusion. The compounds are also subject to transformations or reactions. Thus, to monitor the fate and transport of compounds in the environment, we can capitalize on mathematical models that have been used to describe advection, diffusion, and reaction. %We'll begin with simple examples and then consider more complicated examples. We'll also consider the implications of these processes on the environment and human health.
+
+%\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
+\end{abstract}
+
+\section{Introduction}
+
+\subsection{Fate and Transport Processes}
+
+The fate and transport of compounds in the environment is subject to an array of processes. For example, pollutants might carried by the wind (advection) and spread out (dispersion or diffusion). In addition, the pollutant might be transformed into different compounds (reaction). Together, these three processes, advection, diffusion, and reaction (Figure~\ref{fig:advection-diffusion}).%, can be effectively described mathematically, which can then be tested.
+
+%. Of course, these processes occur in three dimensions but we'll focus on 1D and 2D for this session. 
+
+\begin{marginfigure}
+\centering
+\includegraphics[width=1.0\textwidth]{graphics/Diagram-advection-diffusion.png}
+\caption{A simple diagram of advection and diffusion that inclues how "solutes" might be deposited downwind of a stationary source if air pollution. At the scale analyzed there, the term turbulant diffusion is different than molecular diffusion, but might be modelled in a similar way.}
+\label{fig:advection-diffusion}
+\end{marginfigure}
+
+
+These three processes have profound  implications -- they provide the a framework to understand and quantify the fate and transport of pollutants in the environment (Figure~\ref{fig:dioxaneplume}), the movement of nutrients in the soil, and the movement of solutes in the human body. By understanding of these processes, we have tools to characterize environmental quality and its implications on human and non-human populations. Moreover, by modeling these processes, we can develop more effective policy, regulation, and mitigation strategies.
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.9\textwidth]{graphics/Dioxane_plume.png}
+\caption{A diagram of the major processes that influence the fate and transport of a dioxane plume from a ce in the environment (Source: \url{https://14d-1.itrcweb.org/environmental-fate-transport-and-investigative-strategies/}). 1,4-Dioxane is often referred to as a "forever" compound.}
+\label{fig:dioxaneplume}
+\end{figure*}
+
+Because these processes are complex and are often difficult to measure, we rely on models to help us understand the movement of solutes in the environment. These models are based on the fundamental mathematical equations to describe advection, diffusion, and reaction.
+
+\subsection{The Processes}
+
+As an example of the three processes consider a droplet of dye in water as a dose in a solution. The dye will move with the bulk motion of the water (advection), spread out by random molecular motion (diffusion)(Figure~\ref{fig:diffusion}), and disappear as it reacts with the water (reaction).
+
+Advection and diffusion govern the transport of solutes in the environment. Advection is the transport of a solute by the bulk motion of the fluid. Advection depends on velocity or $\nu$ in this session. Diffusion is the transport of a solute by random molecular motion. Diffusion depends on the diffusion coefficient and the concentration gradient or $\frac{\partial^2 C}{\partial x^2}$ in this session. Notice that this is the second derivative. 
+
+\begin{marginfigure}
+\caption{A simple diagram of 2D diffusion. To solve these equations, we'll use a numerical approach and descretize the media into a grid. We'll then solve the equations for each grid cell.}
+\label{fig:diffusion}
+\includegraphics[width=1.0\textwidth]{graphics/2D_diffusion.png}
+\end{marginfigure}
+
+Reaction is the transformation of a solute into a different compound. Reaction depends on the reaction rate or $k$ in this session.
+
+In the case of air pollution, we are interested in the pollutant in the context of the air -- or the media of air (Figure~\ref{fig:advection-diffusion}). And for air pollution, the chemical transormations are a critical part of our regulatory framework (Figure~\ref{}). In the case of water, we might think about solutes in the water as a media. For example, the movement of a nutrient in a river is driven by the bulk motion of the water (advection) through the water column and the sediments (two types of media) and the random motion of the molecules (diffusion) and the reactions that might occur in the water column and sediments (Figure\ref{fig:nutrientspiraling}).
+
+\begin{figure*}
+\caption{A simple diagram of advection and diffusion in the context of air pollution.}
+\label{fig:smog}
+\centering
+\includegraphics[width=0.99\textwidth]{graphics/sources-of-air-pollution-310314_orig.png}
+\end{figure*}
+
+
+\begin{figure}
+\caption{A simple diagram of advection and nutrient reactions (organic substances and inorganic substances) in a river. Although not shown, you might also think about how diffusion might influence the movement of nutrients in the river and in the sediments.  
+The zone where water moves into the sediment bed is called the hyperreic zone. The porosity of the sediments will allow more advective flow that might influence the reaction capacity of solutes in the sediments.}
+\label{fig:nutrientspiraling}
+\centering
+\includegraphics[width=0.99\textwidth]{graphics/NutrientSpiraling.jpg}
+\end{figure}
+jk
+\subsection{Session Goals}
+
+We will not become experts in advection-diffusion-reaction modeling, but we will become familiar with the processes and the equations that describe them. Moreover, we'll see a bit more about how R can be used to model these processes. After this session, I hope you can do the following:
+
+\begin{enumerate*}
+	\item Describe the physical processes of advection and diffusion and solute reaction
+	\item Describe the equations used to model A-D-R. 
+	\item Analyze 1-dimensional movement using advection equations in R.
+	\item Describe diffusion mathematically
+	\item Analyze 1-dimensional adveecton-diffusion using R.
+	\item Appreciate how two-dimensional analysis of advection-diffusion can be modeled in R.
+\end{enumerate*}
+
+In this session, we'll want to think about the movement of solutes in the porous media, i.e. a soil with air space, sediments with water between the particles. We will refer to the porousity as $\xi$, which is a proportion between 0 and 1. 
+
+\begin{marginfigure}
+\centering
+\includegraphics{graphics/Darcy_permeability.jpg}
+\caption{Notice how the porosity of the media can influence the path of the fluid. In ground water, this is measured as permeability and can be used to evaluate the flow chacterstitics in aquifers and oil fields. The permeability is a function of the porosity and the connectivity of the pores.}
+\end{marginfigure}
+
+%We'll start with one-dimensional systems and then move to two-dimensional systems. We'll also consider the effects of reactions on the movement of solutes.
+
+\section{Equations to Describe Processes}
+
+\newthought{An Equation that Often Creates Anxiety}
+
+The advection equation is a partial differential equation that describes the movement of a substance in a fluid. The equation is derived from the conservation of mass. The equation is:
+
+%− 1 Axξx ·( ∂ ∂xAx·(−D· ∂ξxC ∂x )− ∂ ∂x(Ax·v·ξxC)) 
+
+%\begin{equation}
+%- \frac{1}{A_x \xi_x} \cdot \left( \frac{\partial}{\partial x} A_x \cdot \left( -D \cdot %\frac{\partial \xi_x C}{\partial x} \right) - \frac{\partial}{\partial x} \left( A_x \cdot v \cdot \xi_x C \right) \right)
+%\end{equation}
+
+\begin{equation}
+\frac{\partial C}{\partial t} = D_x \frac{\partial^2  \xi_x C}{\partial x^2} +
+D_y \frac{\partial^2  \xi_y C}{\partial y^2} +
+D_z \frac{\partial^2  \xi_z C}{\partial z^2} -
+v_x \frac{\partial  \xi_x C}{\partial x} - R
+\end{equation}
+
+Here $D$ is the ``diffusion coefficient'', $\nu$ is the ``advection rate'' (or velocity), and $A_x$ and $\xi$ are the surface area and volume fraction, respectively.
+
+As you complete the first part of this handout, please do some reflecting: 
+
+\begin{quote}
+
+What you look at this equation, think about how it makes you feel. It's a bit intimidating, to say the least. But that's only part of the story. I believe these equations, when put in front of is generates anxiety -- and this anxiety can be a barrier to learning. While it's easy to claim we can just put this anxiety away seems to be be a disservice and acknoweldgement of our emotional responses. Before moving forward, let's take a moment to acknowledge the anxiety and see where in your body you are feeling that. Take a deep breath and let it out several times before moving forward.
+
+\end{quote} 
+
+First, let's simplify this to 1-D (in one direction, x). And assume that the volume fraction is 1 ($xi = 1$). The movement of compounds in the environment is driven by two processes, advection and diffusion -- these terms associated with $\partial x$ define movement. The third term on the right, $R$, is the reaction term.
+
+\begin{equation}
+\frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2} - \nu \frac{\partial C}{\partial x} - R
+\end{equation}
+
+\subsection{Left side: $\frac{\partial C}{\partial t}$}
+
+The left side of the equation describes the change in concentration over time. This is the rate of change of the concentration of the solute in the fluid. In steady state, this term is zero, which will use use to model the steady state concentration of the solute in the fluid.
+
+\subsection{First term on the right side: $D \frac{\partial^2 C}{\partial x^2}$}
+
+The first term on the right side of the equation describes the movement of the solute due to diffusion. This is the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration.
+
+\subsection{Second term on the right side: $- \nu \frac{\partial C}{\partial x}$}
+
+The second term on the right side of the equation describes the movement of the solute due to advection. This is the rate of change of the concentration of the solute in the fluid due to the movement of the fluid.
+
+\subsection{Third term on the right side: $- R$}
+
+The third term on the right side of the equation describes the rate of change of the concentration of the solute in the fluid due to reactions. This is the rate of change of the concentration of the solute in the fluid due to the reaction of the solute with other compounds in the fluid.
+
+\begin{quote}
+\textbf{Pause for a moment:} Reflect on your emotional state. What are you feeling? Where are you feeling it? Take a deep breath and let it out several times. You have completed the reading for Wednesday's class. 
+\end{quote}
+
+\section{2/21 Handout Update}
+
+
+
+\section{Quatifying Advective Transport}
+
+\begin{equation}
+  J = C \cdot \nu
+\end{equation}
+
+J is the ``flux density'' of the solute, which is the amount of solute that moves through a unit area in a unit time. With units of $mass / (area \cdot time)$, the equation returns the rate of movement of the solute in the fluid.
+
+
+We can take the derivative of the flux density with respect to the distance to get the ``flux rate'' and then derive the concentration change with respect to time: \sidenote{How dows J become C??}
+
+\begin{equation}
+  \frac{\partial J}{\partial x} = \nu \frac{\partial C}{\partial t}
+\end{equation}
+
+
+of the solute, which is the amount of solute that moves through a unit area in a unit time. With units of $mass / (area \cdot time)$, the equation returns the rate of movement of the solute in the fluid.
+
+\section{Diffusion}
+
+\subsection{Fick's First Law and Three Types of Diffusion}
+
+There are three types of diffusion: turbulent (eddy) diffusion, dispersion and molecular diffusion. Each of the operate at different scales, but have similar effects and are describe by the same equation:
+
+\begin{equation}\label{eq:ficks-first-law}
+  J = -D \frac{d C}{dx}
+\end{equation}
+
+Equation~\ref{eq:ficks-first-law} ss known as Fick's first law. The negative sign indicates that the solute moves from areas of high concentration to areas of low concentration. The equation returns the rate of movement of the solute in the fluid.
+
+\begin{description*}
+
+\item[Turbulent or Eddy diffusion] is the movement of solutes due to the movement of the fluid. In this case, D is the ``eddy diffusion coefficient''.
+
+\item[Dispersion] is the movement of solutes due to the random movement of the solute through a porous media where D is the ``dispersion coefficient''.
+
+\item[Molecular diffusion] is the movement of solutes due to the random movement of the solute molecules where D is the ``molecular diffusion coefficient''.
+
+\end{description*}
+
+\subsection{Fick's Second Law -- Rate of Change}
+
+Fick's Second Law is based on the conservation of mass, where the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration is described by the equation:
+
+\begin{equation}
+  \frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2}
+\end{equation}
+
+which can be written as 
+
+\begin{equation}
+  \frac{\partial C}{\partial t} + D \frac{\partial^2 C}{\partial x^2} = 0
+\end{equation}
+
+
+
+We can rearrange Fick's first law to get the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration:
+
+\begin{equation}
+  \frac{\partial C}{\partial t} + D \frac{\partial^2 C}{\partial x^2}
+\end{equation}
+
+
+Based on the conservation of mass, we can derive the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration:
+
+
+\begin{equation}
+  \frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2}
+\end{equation}
+
+This equation is known as Fick's second law. It describes the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration.
+
+\section{Applications using R}
+
+\subsection{ReacTran Package}
+
+\citet{soetaert2017package} have developed a nice library in R that solves these equations using finite-difference solutions. 
+
+The ReacTran package is a collection of functions for modeling solute transport in 1D, 2D, and 3D. The package includes functions for solving the advection-diffusion equation, the advection-diffusion-reaction equation, and the advection-diffusion-reaction equation for multi-phase systems. 
+
+The package also includes functions for solving:
+
+\begin{itemize*}
+\item Advection-diffusion equations in 1D, 2D, and 3D 
+\item Advection-diffusion-reaction equations in 1D, 2D, and 3D
+\item Advection-diffusion-reaction equations for multi-phase systems
+\end{itemize*}
+
+\subsection{Using R as a Modelling Environment to Solve PDEs and ODEs}
+
+We can use R to solve the advection-diffusion equation. The `deSolve` package to solve the ReacTran library functions decomposing the partial differential equatation (PDE) into a descretized by space and solving be ordinary differential equations (ODE). 
+
+<<>>=
+library(ReacTran) # Load the ReacTran package
+library(deSolve) # Load the deSolve package
+library(xtable) # Load the xtable package to help format tables outputs
+@
+
+
+\subsection{Grid and Time Step}
+
+
+\subsection{Steady-state vs. Transient State}
+
+\subsection{Boundary Conditions}
+
+\subsection{Initial Conditions}
+
+\subsection{Rate of Reaction}
+
+
+
+\section{Implemeting Some 1D Examples in R}
+
+\subsection{Plug Flow}
+
+\subsection{Plug Flow through two media}
+
+
+\subsection{Dissolved Oxygen Consumed in a Porous Media}
+
+We will be modeling the consumption of oxygen in a "sand-sized" porous spherical particle. The model is based on the following equation:
+
+\[ \frac{\partial C}{\partial t} = -v \frac{\partial C}{\partial x} - k(C) \]
+
+where \( C \) is the concentration of oxygen, \( D \) is the diffusion coefficient, \( v \) is the velocity of the fluid, and \( k(C) \) is the rate of oxygen consumption.
+
+At this scale the velocity will be zero. Thus, we will rely on diffusion to for the oxygen movement to where it is consumed. 
+
+<<echo=FALSE>>=
+# Grid defnitions
+R <- 0.025 # radius of particle cm
+N <- 100 # Number of grid points
+
+C.ow.02 <- 0.25 ## Concentration of O2 in Water micromols/cm-3
+por <- 0.7 # Porosity
+D <- 400 # Diffusion coefficient micromols/cm-2/year
+v <- 0
+R.02 <- 1000000 # Rate of oxygen consumption micromols/cm-3/year
+Ks <- 0.005 # Half saturation constant micromols/cm-3
+@
+
+We start with defining the size and porosity of the particle and use R to create a grid to solve the advection-diffusion-reaction equation.
+
+\begin{table}
+\caption{Chararacteristics of the Particle}
+\centering
+\begin{tabular}{|l|l|c|c|} \hline
+Parameter & Description & Typical Range &  Modelled Value \\ \hline\hline
+\( R \) & Radius of the particle & \( 0.005-0.2 \) cm &  \Sexpr{R} cm \\
+Porosity & Proportion of void space & \(0.005-0.7\) &  \Sexpr{por} \\ \hline
+\end{tabular}
+\end{table}
+
+We will create a grid to model the particle with Radius \( R \) and \( N \) (= \Sexpr{N}) grid points. We will also define the properties of the particle such as porosity, diffusion coefficient (D = \Sexpr{D}), and the rate of oxygen consumption, R$_{02}$ = \Sexpr{R.02}.
+
+Although we are modeling a one-dimensional system, we will need to create a grid surface as a circle to effectively model the particle surface area changes as O2 diffuses into the particle and is consumed by the reactions in the particle.
+
+<<>>=
+grid <- setup.grid.1D(x.up=0, L = R, N = N) # Grid definition
+por.grid <- setup.prop.1D(value=por, grid=grid) # Porosity
+D.grid <- setup.prop.1D(value=D, grid=grid) # Diffusion coefficient
+
+sphere.surf <- function(x) 4*pi*x^2 # Surface area of a sphere
+A.grid <- setup.prop.1D(func=sphere.surf,  grid=grid) # Surface area
+@
+
+Finally, we need to define the O2 concentration at the surface of the particle and the O2 consumption rate of the particle. 
+
+\begin{table}
+\caption{Oxygen Consumption in the Particle}
+\centering
+\begin{tabular}{|l|l|c|c|} \hline
+Parameter & Description & Typical Range &  Modelled Value \\ \hline\hline
+\( C_{ow} \) & Concentration of O2 in Water & \( 0.1 - 0.3 \) \numolspercm &  \Sexpr{C.ow.02} \numolspercm \\
+\( R_{02} \) & Rate of oxygen consumption & \( 10^5 - 10^6 \) \numolspercm~/year &  \Sexpr{R.02} \numolspercm/year \\
+\( K_s \) & O2 saturation & \( 0.001 - 0.01 \) \numolspercm &  \Sexpr{Ks} \numolspercm \\ \hline
+\end{tabular}
+\end{table}
+
+Note, we often measure oxygen using ppm (parts per million), but the model uses \numolspercm. The conversion is 1 ppm = 0.0224 \numolspercm, thus, we are modeling \(Ks \) within a range of 2.24 - 6.72 ppm, using Ks = \Sexpr{round(Ks/0.0224, 2)} \numolspercm.
+
+
+Next we create a function to model the oxygen consumption in the, particle that relies on We will use the \texttt{tran.1D} function to solve the advection-diffusion equation and the \texttt{steady.1D} function to solve the steady state solution of the advection-diffusion-reaction equation.
+
+<<>>=
+Aggregate.Model <- function(time, O2, pars) {
+  tran <- tran.1D(C = O2, C.down = C.ow.02, D = D.grid, 
+          A=A.grid, VF = por.grid, dx = grid)
+    reac <- - R.02 * (O2 /(Ks + O2))
+    return(list(dCdt= tran$dC + reac, reac = reac, 
+                flux.up=tran$flux.up, flux.down=tran$flux.down))
+}
+
+
+O2.agg <- steady.1D(y = runif(N), func=Aggregate.Model, 
+                    nspec=1, positive=TRUE, atol = 1e-10)
+@
+
+
+\begin{figure}
+\centering
+\caption{Oxygen Consumption in a Porous Sphere}
+<<plotO2agg, echo=FALSE>>=
+plot(O2.agg, grid = grid$x.mid, xlab = "Distance to Center", ylab = "mmol/m3", 
+     las=1, main="Oxygen Consumption in a Porous Sphere")
+@
+\end{figure}
+
+The plot shows the oxygen concentration in the particle. The concentration is highest at the surface and decreases as it moves into the particle. The concentration is zero at the center of the particle.
+
+\begin{figure}
+<<circleplot, echo=FALSE>>=
+#R = 0.025
+t <- seq(0, 2 * pi, length = 1000)
+
+plot(0, 0, xlim = c(-R, R), ylim = c(-R, R), las=1, ylab="", xlab="")
+
+for(i in 0:4) {
+  lines((R - (i * R/5)) * sin(t) + 0, (R - (i * R/5)) * cos(t) + 0, col= "grey")
+}
+
+prob = c(0.2, 0.4, 0.6, 0.8, 1.0)
+quant = round(quantile(O2.agg$y, probs = prob),2)
+
+len <- length(O2.agg$y)
+
+#scale_values <- function(x){(x-min(x))/(max(x)-min(x))}
+#length(scale_values(O2.agg$y))
+
+heatcolors = colorRamps::matlab.like(len)
+
+points(grid$x.mid, rep(0, length(grid$x.mid)), 
+       col=heatcolors, pch=19, cex=0.5)
+#points(grid$x.mid, rep(0, length(grid$x.mid)), col=heatcolors)
+
+text(R*prob, .002,  quant, cex=.8, adj=c(1,1))
+
+for(i in 0:7) {
+  lines(R * sin(c(i * pi /8, i * pi / 8 + pi)) + 0,
+        R * cos(c(i * pi /8, i * pi / 8 + pi)) + 0, col="grey")
+}
+@
+\end{figure}
+
+Next steps: figure out how to create a 3D sphere with the oxygen concentration changes as we enter the sphere... 
+
+
+<<eval=FALSE, echo=FALSE>>=
+
+library("rgl")
+options(rgl.printRglwidget = TRUE)
+spheres3d(0,0,0,lit=FALSE,color="white")
+spheres3d(0,0,0,radius=1.01,lit=FALSE,color="black",front="lines")
+
+set.seed(10)
+n <- 50
+theta <- runif(n,0,2*pi)
+u <- runif(n,-1,1)
+x <- sqrt(1-u^2)*cos(theta)
+y <- sqrt(1-u^2)*sin(theta)
+z <- u
+spheres3d(x,y,z,col="red",radius=0.02)
+@
+
+
+
+\section{2D Examples}
+
+Modeling vehicle pollution from cars on a freeway that does in a west to east direction, while pollution moved in a north to south direction. The cars are pollution makers, and the wind is the advection term. The diffusion term is the natural spread of the pollution. The reaction term is the removal of pollution from the air. We'll model this as a steady state, where $\frac{\partial C}{\partial t} = 0$.
+
+
+
+
+
+Where $\nu_x$  is the velocity in the x direction, $\nu_y$ is the velocity in the y direction, $D$ is the diffusion coefficient, and $R$ is the reaction term.
+
+
+
+\begin{equation}
+\frac{\partial C}{\partial t} + u \frac{\partial C}{\partial x} + v \frac{\partial C}{\partial y} = D \left( \frac{\partial^2 C}{\partial x^2} + \frac{\partial^2 C}{\partial y^2} \right) - R
+\end{equation}
+
+OR? with C as a fuction of y would be better!
+\begin{comment}
+\begin{equation}
+ \frac{\partial C}{\partial y} = \left D \left( \frac{\partial^2 C}{\partial x^2} + \frac{\partial^2 C}{\partial y^2} \right) - R - \nu_x \frac{\partial C}{\partial x} \right \cdot \frac{1}{\nu_y}
+\end{equation}
+\end{comment}
+Not working yet!
+
+<<eval=FALSE>>=
+
+# Create a function to model the pollution
+
+Pollution.Model <- function(time, C, pars) {
+  tran <- tran.2D(C = C, C.down = C.ow, D = D.grid, 
+          A=A.grid, VF = por.grid, dx = grid)
+    reac <- - R * (C /(Ks + C))
+    return(list(dCdt= tran$dC + reac, reac = reac, 
+                flux.up=tran$flux.up, flux.down=tran$flux.down))
+}
+
+# Create a 2D grid
+
+grid <- expand.grid(x = seq(0, 100, length = 100), 
+                    y = seq(0, 100, length = 100))
+
+# Define Initial Conditions
+???
+
+# Create a 2D model
+
+Pollution.2D <- steady.2D(y = runif(nrow(grid)), func=Pollution.Model, 
+                    nspec=1, positive=TRUE, atol = 1e-10)
+
+
+# Plot the 2D model
+
+plot(Pollution.2D, grid = grid, xlab = "Distance to Center", ylab = "mmol/m3", 
+     las=1, main="Pollution in a 2D Grid")
+
+@
+
+
+
+
+
+
+\section{3D Examples}
+
+\section{Conclusion}
+
+
+
+\newpage
+
+\section{References}
+
+% bibiliography section here-------------------------------------------
+%\clearpage
+
+\url{https://en.wikipedia.org/wiki/Convection%E2%80%93diffusion_equation}
+
+
+
+\bibliographystyle{apalike}
+%\renewcommand\bibname{References}{}
+\bibliography{/home/mwl04747/RTricks/references}%	\addcontentsline{toc}{chapter}{References}
+
+
+\end{document}

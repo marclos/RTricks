@@ -1,23 +1,5 @@
 # Guide2functions.R
-# Updated: 2024-02-09
-
-#-------------------------------------------------------------------------------
-# Function to Read CSV Files into R
-ReadStationsOLD.fun <- function(datafolder){
-  StationList <- list.files(datafolder, full.names=TRUE, pattern = "\\.csv$")
-   # exclude unfinished stuff
-  #StationList <- StationList[!grepl("\\-TMAX.csv$", StationList)]
-  #StationList <- StationList[!grepl("\\-TMIN.csv$", StationList)]
-  #StationList <- StationList[!grepl("\\-PRCP.csv$", StationList)]
-  #CHCNd_ID = read.csv(my.inventory.csv))
-  colnames <- c("ID", "DATE", "ELEMENT", "VALUE", 
-                "M-FLAG", "Q-FLAG", "S-FLAG", "OBS-TIME")
-  for (i in 1:length(StationList)){
-    assign(paste0("station", i), read.csv(StationList[i], 
-        header=TRUE, col.names=colnames), envir = parent.frame())
-  return(paste0("station", i))
-  }
-}
+# Updated: 2024-02-15
 
 #-------------------------------------------------------------------------------
 ReadStations2.fun <- function(datafolder){
@@ -176,8 +158,6 @@ df_head = function(df){
 # df_exists("USC00042294b")
 # df_names(USC00042294b)
 # df_head(USC00042294.anomalies)
-
-
 
 
 
