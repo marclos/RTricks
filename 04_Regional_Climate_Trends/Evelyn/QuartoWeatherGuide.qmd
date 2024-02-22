@@ -107,7 +107,7 @@ abline(coef(USC00411017.lm), col = "red")
 ```
 
 ```{r}
-USC00411017.lm = lm(TMAX.a~Ymd, data = subset(USC00411017.anomalies$TMAX, MONTH = 1))
+USC00411017.lm = lm(TMAX.a~Ymd, data = subset(USC00411017.anamalies$TMAX, MONTH = 1))
 summary(USC00411017.lm)
 
 abline(coef(USC00411017.lm), col = "red")
