@@ -9,6 +9,11 @@
     citecolor=violet
 }
 %\usepackage{comment}
+
+\usepackage{geometry}
+% reduce margins
+\geometry{margin=0.75in}
+
 \usepackage[dvipsnames]{xcolor}
 \colorlet{LightRubineRed}{RubineRed!100}
 \definecolor{mypink2}{RGB}{219, 48, 122}
@@ -146,7 +151,34 @@ The B roll is the secondary footage that is used to support the A roll. It is of
 \end{tabular}
 \end{table}
 
+\clearpage
+\section{Making a Movie}
 
+\clearpage
+\section{Grading Rubric}
+
+\begin{table}[h]
+
+\begin{tabular}{|p{5cm}|p{5cm}|p{5cm}|p{1cm}|}
+\hline
+\textbf{Category} & \textbf{Mastery} &  \textbf{Accomplished} & \textbf{Points} \\ \hline
+Problem Definition& clear PQP, audience ask is clear and obvious &                       & \\
+Question of Interest &  &                       & \\
+Purpose of Video  & Clearly defined,  &                       & \\
+Documented Evidence &  &                       & \\
+Data Graphics     & Carefully customized R graphic &   Uses pre-made \& cited sourced graphics                    & \\
+Impacts of Climate Change &  &                       & \\
+State Policy Described &  &                       & \\
+Audience Empowermment &  &                       & \\
+Audio                  &  &                       & \\
+
+
+Movie A/B Roll Integration                  &  &                       & \\
+Take Home Message       &             &                       & \\
+Total                 &   &                       & \\
+\hline
+\end{tabular}
+\end{table}
 
 
 
