@@ -444,9 +444,18 @@ head(CHCND)
 This is a common way to communicate temperatures changes. I suspect we have a better sense of change when we notice "extreme" events, and this also fits the news media's need for "new" stories.
 
 <<eval=FALSE, echo=FALSE>>=
-names(CHCND)
+## names(CHCND)
 
-minTMIN.length = aggregate(minTMIN~Year, data=CHCND, length)
+names(USC00411017b)
+unique(USC00411017b$ELEMENT)
+
+prcp <- subset(USC00411017, subset = ELEMENT == "PRCP")
+
+lapply(prcp$VALUE~prcp$Ymd, sort)
+
+minTMIN.length = aggregate(minTMIN~Year, data=USC00411017.anamolies$PRCP, length)
+
+
 minTMIN.length$group <- "Record Lows"
 names(minTMIN.length) <- c("Year", "Num", "Group")
 minTMIN.length$Num = -minTMIN.length$Num
