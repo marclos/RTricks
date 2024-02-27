@@ -126,7 +126,6 @@ The B roll is the secondary footage that is used to support the A roll. It is of
 \rule{0in}{2cm} 3:40                &                       & \\
 \rule{0in}{2cm} 4:00                &                       & \\
 \hline
-
 \end{tabular}
 \end{table}
 
@@ -157,7 +156,23 @@ The B roll is the secondary footage that is used to support the A roll. It is of
 \clearpage
 \section{Grading Rubric}
 
+\section{Self-Grading}
+
+Why self grading on this assignment. As we approach our independent projects, it is important to be able to assess our own work. This is a skill that is important in the professional world. Moreover, each project will be different and I, as the instructor, will not be able to grade each project is unique, making the grading more subjective. 
+
+To build this into the course, I have developed a 3-step process. We will develop the criteria and standards together. Then we'll watch several other projects and develop a range of grades. Finally, you will grade your own project with the context of the criteria, standards, and range of grades.
+
+\subsection{Devloping the Criteria and Standards}
+
+This assignment is self-graded. But the criteria have not been defined because I was not sure how far you would get. Thus, after seeing a great job on the script, I figured we might use a google doc to develop our grading criteria. 
+
+See the google doc here: \url{https://docs.google.com/document/d/1AmZXKbcnBlqLqNuxSL5f9fhDD2joQRebMWgB6VJVuE4/edit?usp=sharing}
+
+We'll use Table~\ref{tab:rubric} to start the conversation and then I will update this table to reflect the classes rubric. 
+
 \begin{table}[h]
+\caption{Grading Rubric}
+\label{tab:rubric}
 
 \begin{tabular}{|p{5cm}|p{5cm}|p{5cm}|p{1cm}|}
 \hline
