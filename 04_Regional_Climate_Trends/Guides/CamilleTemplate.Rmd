@@ -247,70 +247,85 @@ temp2 <- USC00330563.trends %>%
   mutate(ID = "USC00330563")
 temp2
 
-USC00330862.trends %>%
+temp3 <- USC00330862.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00330862")
+  
 
-USC00331072.trends %>%
+temp4 <- USC00331072.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00331072")
 
-USC00332098.trends %>%
+temp5 <- USC00332098.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00332098")
 
-USC00332791.trends %>%
+temp6 <- USC00332791.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00332791")
 
-USC00333375.trends %>%
+temp7 <- USC00333375.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00333375")
 
-USC00333758.trends %>%
+temp8 <- USC00333758.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00333758")
 
-USC00333780.trends %>%
+temp9 <- USC00333780.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00333780")
 
-USC00335438.trends %>%
+temp10 <- USC00335438.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00335438")
 
-USC00336781.trends %>%
+temp11 <- USC00336781.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00336781")
 
-USC00338609.trends %>%
-  filter(ELEMENT == "TMIN") %>%
-  filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
 
-USC00338769.trends %>%
+temp12 <- USC00338609.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00338609")
 
-USC00338822.trends %>%
+temp13 <- USC00338769.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00338769")
 
-USC00338830.trends %>%
+temp14 <- USC00338822.trends %>%
   filter(ELEMENT == "TMIN") %>%
   filter(`Pr(>|t|)` < 0.05) %>%
-  arrange(-Estimate)
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00338822")
+
+temp15 <- USC00338830.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00338830")
 ```
 
 ## Suggestions for Next Steps
@@ -320,8 +335,8 @@ Create a dataframe with each of the stations' locations and the TMIN trend for J
 ```{r}
 # example
 # put stations together
-temp.trends = rbind(temp1, temp2)
-
+temp.trends = rbind(temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp10, temp11, temp12, temp13, temp14)
+# 9, 15 no obs
 temp.trends
 
 # join with my.inventory
@@ -332,7 +347,8 @@ names(temp.trend2)
 # select june and select columns
 june.trend3 <- temp.trend2 %>%
   filter(MONTH == 6) %>%
-  select(ID, STATE, LATITUDE, LONGITUDE, Estimate, `Pr(>|t|)`, r.squared)
+  select(ID, STATE, LATITUDE, LONGITUDE, Estimate, `Pr(>|t|)`, r.squared) %>%
+  mutate(Estimate = round(Estimate*100, 0))
 
 june.trend3
 
@@ -345,13 +361,16 @@ using
 
 ```{r}
 # map ID for LONGITUDE and LATITUDE USING ESTIMATE AS SIZE AND P-VALUE AS COLOR
+# ohio boundaries
+ohio <- map_data("state", region = "ohio")
 library(ggplot2)
 library(ggmap)
 library(maps)
 library(mapdata)
-ggplot(june.trend3, aes(x=LONGITUDE, y=LATITUDE, size=Estimate, color=`Pr(>|t|)`)) +
+ggplot(june.trend3, aes(x=LONGITUDE, y=LATITUDE, size=Estimate, color=r.squared)) +
+#  geom_polygon(data = ohio, fill = "white", color = "black") +
   geom_point() +
-  scale_size_continuous(range = c(1, 10)) +
+  scale_size_continuous(range = c(1, 4)) +
   scale_color_gradient(low = "blue", high = "red") +
   theme_minimal() +
   labs(title = "TMIN June Trends", x = "Longitude", y = "Latitude")
