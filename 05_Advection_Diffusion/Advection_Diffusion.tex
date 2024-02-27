@@ -290,7 +290,13 @@ Equation~\ref{eq:ficks-first-law} ss known as Fick's first law. The negative sig
 
 \subsection{Fick's Second Law -- Rate of Change}
 
+STILL WORKING ON THIS... 
+
 Fick's Second Law is based on the conservation of mass, where the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration is described by the equation:
+
+\begin{equation}
+  \frac{\partial C}{\partial t} + \frac{\partial}{\partial x} J = 0 \rightarrow  \frac{\partial C}{\partial t} = - \frac{\partial}{\partial x}( D \frac{\partial}{\partial x} C) = 0
+\end{equation}
 
 \begin{equation}
   \frac{\partial C}{\partial t} = D \frac{\partial^2 C}{\partial x^2}
@@ -376,7 +382,33 @@ We can use R to solve the advection-diffusion equation. The `deSolve` package to
 
 \subsection{Plug Flow}
 
-\subsection{Plug Flow through two media}
+The impacts of matrix diffusion on the initial breakthrough of the solute plume and on later cleanup are illustrated in Figure~\ref{fig:ADRFig3}). Using a traditional advection-dispersion model, the breakthrough curve for a pulse tracer injection appears as a bell-shaped (Gaussian) curve (gray line on the right side of the upper graph) where the peak arrival time corresponds to the average groundwater velocity. Using an advection-diffusion approach, the breakthrough curve for a pulse injection is asymmetric (solid black line) with the peak tracer concentration arriving earlier than would be expected based on the average groundwater velocity, but with a long extended tail to the flushout curve.
+\begin{marginfigure}
+\includegraphics[width=1.0\textwidth]{graphics/ADRFig3.png}
+\caption{The impacts of matrix diffusion on the initial breakthrough of the solute plume and on later cleanup are illustrated in Figure X. Using a traditional advection-dispersion model, the breakthrough curve for a pulse tracer injection appears as a bell-shaped (Gaussian) curve (gray line on the right side of the upper graph) where the peak arrival time corresponds to the average groundwater velocity. Using an advection-diffusion approach, the breakthrough curve for a pulse injection is asymmetric (solid black line) with the peak tracer concentration arriving earlier than would be expected based on the average groundwater velocity, but with a long extended tail to the flushout curve.}
+\label{fig:ADRFig3}
+\end{marginfigure}
+
+The lower graph shows the predicted cleanup concentration profiles following complete elimination of a source area. The advection-dispersion model (gray line) predicts a clean-water front arriving at a time corresponding to the average groundwater velocity. The advection-diffusion model (black line) predicts that concentrations will start to decline more rapidly than expected (based on the average groundwater velocity) as clean water rapidly migrates through the highest-permeability strata. However, low but significant contaminant concentrations linger much longer (tailing) due to diffusive contaminant mass exchange between zones of high and low permeability.
+
+\begin{equation}
+\frac{d C\nu_vc}{d t} = \Sigma Q_{in} \cdot C_{in} - \Sigma Q_{out} \cdot C_{out} + \Sigma R V_{cv}
+\end{equation}
+
+
+\begin{equation}
+  \frac{\partial C}{\partial t} = - \nu \frac{\partial C}{\partial x}
+\end{equation}
+
+\begin{equation}
+C(x,t) = \frac{M}{A \sqrt{4\pi D_d t}} \cdot \exp[\frac{−x^{\prime 2}}{4D_d t}]
+\end{equation}
+
+Where
+M = mass of conservative material in the spike\\
+Dd = axial dispersion coefficient [L2/T],\\
+x’ = x - Ut, U = longitudinal advective velocity in the reactor,\\
+A is the cross-sectional area of the reactor.\\
 
 
 \subsection{Dissolved Oxygen Consumed in a Porous Media}
