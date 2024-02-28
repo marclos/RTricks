@@ -1,0 +1,135 @@
+---
+title: "Course Time"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## General Expections
+
+Based on the "accepted" expectations, we should be a spending a minimum of 2 hours outside of class for every hour in class (2:1 ratio). Counting only the lecture and 1/2 of lab time that would be about atleast 6 hours outside of class. 
+
+In general, I get worried if a class requires more than 8 hours outside of class for every hour in class on a consistent basis.
+
+## Time Spent Outside of Class
+
+```{r, echo=TRUE}
+
+week2 <- c(1.5, 1, 15, 40, 3, 2, 10, 1.5, 
+           0, 20, 2, 45, 7, 10, 2, 0, 2, 2, 2.5, 5, 0)
+week3 <- c(0.5, 4, 2, 1.5, 6, 5, 3, 5, 3, 5, 3, 6, 2, 5, 5, 3, 3, 4.5, 5, 8)
+week4 <- c(1.5, 3,3, 2, 7, 8, 4, 3, 3, 3, 6, 1,2, 8, 6, 2, 6, 10, 2, 7, 5.5, 5, 8)
+week5 <- c(1, 3, 6, 3, 5, 7, 4, 2, 4, 3, 7, 4, 8, 4, 1, 6, 13, 5, 6, 7, 7)
+week6 <- c(6, 3, 6, 6, 10, 5, 8, 6, 4, 7, 6, 4, 3, 7, 5, 6, 9, 7)
+```
+
+## Create a Data Frame
+
+```{r}
+TimeOutSideClass <- data.frame(Week = c(rep("Week 2", length=length(week2)),
+                                        rep("Week 3", length=length(week3)),
+                                        rep("Week 4", length=length(week4)),
+                                        rep("Week 5", length=length(week5)),
+                                        rep("Week 6", length=length(week6))),
+                               Time = c(week2, week3, week4, week5, week6))
+```
+
+## Boxplot
+
+```{r}
+par(mar=c(5,5,2,2))
+boxplot(TimeOutSideClass$Time ~ TimeOutSideClass$Week, 
+        col=c("lightblue", "lightgreen", "lightyellow", "lightpink", "lightgrey"),
+        ylab="Time (hours)", xlab="Week", main="Time spent outside in a week", las=1)
+abline(h=mean(TimeOutSideClass$Time), lwd=2, lty=2, col="red")
+
+```
+
+
+
+
+## Skewed Distribution
+
+- Outliers
+- Data Entry Mistakes, maybe?
+- Excessive Readings, likely!
+```{r}
+par(mfrow=c(3,2), las=1)
+hist(week2, breaks=20, col="lightblue", border="black", xlim=c(0,50), xlab="Time (hours)", main="Week 2", ylab="Frequency")
+hist(week3, breaks=20, col="lightblue", border="black", xlim=c(0,13), xlab="Time (hours)", main="Week 3", ylab="Frequency")
+hist(week4, breaks=20, col="lightblue", border="black", xlim=c(0,13), xlab="Time (hours)", main="Week 4", ylab="Frequency")
+hist(week5, breaks=20, col="lightblue", border="black", xlim=c(0,13), xlab="Time (hours)", main="Week 5", ylab="Frequency")
+hist(week6, breaks=20, col="lightblue", border="black", xlim=c(0,13), xlab="Time (hours)", main="Week 6", ylab="Frequency")
+
+
+```
+
+## t-test a hypothesis: Different than 6 hours
+
+```{r ttest2, echo = TRUE}
+summary(aov(Time ~ Week, data=TimeOutSideClass))
+```
+
+
+```{r}
+
+TimeOutsideClass2 <- subset(TimeOutSideClass, Week!="Week 2")
+
+summary(aov(Time ~ Week, data=TimeOutsideClass2))
+
+
+```
+## Boxplot
+
+```{r}
+par(mar=c(5,5,2,2))
+boxplot(Time ~ Week, data = TimeOutsideClass2,
+        col=c("lightblue", "lightgreen", "lightyellow", "lightpink", "lightgrey"),
+        ylab="Time (hours)", xlab="Week", main="Time spent outside in a week", las=1)
+abline(h=mean(TimeOutsideClass2$Time), lwd=2, lty=2, col="red")
+abline(h=6, lwd=2, lty=2, col="blue")
+
+
+```
+
+
+## t-test a hypothesis: Different than 6 hours (Week 3)
+
+```{r test, echo = TRUE}
+t.test(week6, mu=6)
+```
+
+
+## t-test: Greater than 6 hours
+
+```{r testcompare, echo = TRUE}
+week2.ttest =t.test(week5, mu=6, alternative="greater")
+week3.ttest = t.test(week6, mu=6, alternative="less" )
+```
+
+```{r, echo=FALSE}
+# str(week2.ttest)
+
+print(paste0("H1 NULL: Week 5 (!>6): ", round(week2.ttest$p.value,3), " (", week2.ttest$method, " Greater than mu)")
+)
+print(paste0("H2 NULL: Week 6 (!>6): ", round(week3.ttest$p.value,3), " (", week2.ttest$method, " (Greater than mu)")
+)
+```
+
+## Marc's Prior Conclusions
+
+- Make sure the quiz directions are clear.
+- Reduced readings are working, perhaps too well!
+- Offer additional support: If you find the readings to take more than 6-8 hours.
+- Determine how lab work might be used to augment weekly hour workload. Project will take up more time. Will gauge next week.
+
+## New Hypotheses ?
+
+
+
+
+
