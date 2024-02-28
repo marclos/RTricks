@@ -20,7 +20,7 @@
 
 \title{Guide 5: Communicating Climate Trends -- Combining Imagery and Audio}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.58)} 
+\date{\today~(ver. 0.80)} 
 
 \begin{document}
 \maketitle
@@ -153,10 +153,16 @@ The B roll is the secondary footage that is used to support the A roll. It is of
 \clearpage
 \section{Making a Movie}
 
+Filming a short movie can take a lot of work. In general, it takes 10 hours of work to produce 1 minute of video. This includes planning, filming, and editing. But if the script is coherent and the B roll is well planned, the process can be much faster. Editting can be the most time consuming part of the process. 
+
+I have found that the best way to edit a movie is to start with the script and the B roll. Then, I add the A roll. Finally, I add the audio. There are lots of software tools available to help with this process and many are free and available on cell phones as apps. However, I also can give you access to the EA studio if you want to use professional software, Adobe Premier Pro. 
+
+In addition, I'll help you with that process. 
+
 \clearpage
 \section{Grading Rubric}
 
-\section{Self-Grading}
+\subsection{Self-Grading}
 
 Why self grading on this assignment. As we approach our independent projects, it is important to be able to assess our own work. This is a skill that is important in the professional world. Moreover, each project will be different and I, as the instructor, will not be able to grade each project is unique, making the grading more subjective. 
 
