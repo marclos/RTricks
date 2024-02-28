@@ -6,8 +6,6 @@ editor: visual
 
 ## Some Dataset that "beg the question"
 
-
-
 ## Bullets
 
 When you click the **Render** button a document will be generated that includes:
@@ -34,6 +32,8 @@ Anscombe = as.data.frame(
     nrow=11,  byrow=TRUE)) 
 
 names(Anscombe) = c("Obs.", "x1", "x2", "x3", "x4", "y1", "y2", "y3", "y4")
+
+write.csv(file="/home/mwl04747/RTricks/00_Stats/Anscombe_files/ansombe.csv", Anscombe)
 
 ```
 
@@ -79,5 +79,3 @@ summary(lm(Anscombe$y3 ~ Anscombe$x3))
 ```{r}
 summary(lm(Anscombe$y4 ~ Anscombe$x4))
 ```
-
-
