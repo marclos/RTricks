@@ -6,12 +6,14 @@ editor: visual
 
 ## Some Dataset that "beg the question"
 
-## Bullets
+## The problems of data analysis and interpretation
 
-When you click the **Render** button a document will be generated that includes:
+Looking into **Using Models** might be dangerous
 
--   Content authored with markdown
--   Output from executable code
+-   models are not reality
+-   models are not the data
+-   models are not the truth
+
 
 ## Anscombe Data
 
@@ -37,7 +39,9 @@ write.csv(file="/home/mwl04747/RTricks/00_Stats/Anscombe_files/ansombe.csv", Ans
 
 ```
 
-## Results
+## Results -- Visualizations
+
+
 
 ```{r}
 par(mfrow=c(2,2))
@@ -78,4 +82,17 @@ summary(lm(Anscombe$y3 ~ Anscombe$x3))
 
 ```{r}
 summary(lm(Anscombe$y4 ~ Anscombe$x4))
+```
+
+## Plotting Results
+```{r, echo=FALSE}
+par(mfrow=c(2,2))
+plot(Anscombe$x1, Anscombe$y1, main="I")
+abline(coef(lm(Anscombe$y1 ~ Anscombe$x1)), col="red")
+plot(Anscombe$x2, Anscombe$y2, main="II")
+abline(coef(lm(Anscombe$y1 ~ Anscombe$x1)), col="red")
+plot(Anscombe$x3, Anscombe$y3, main="III")
+abline(coef(lm(Anscombe$y1 ~ Anscombe$x1)), col="red")
+plot(Anscombe$x4, Anscombe$y4, main="IV")
+abline(coef(lm(Anscombe$y1 ~ Anscombe$x1)), col="red")
 ```
