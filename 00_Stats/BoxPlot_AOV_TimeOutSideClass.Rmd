@@ -108,7 +108,7 @@ t.test(week6, mu=6)
 
 ```{r testcompare, echo = TRUE}
 week2.ttest =t.test(week5, mu=6, alternative="greater")
-week3.ttest = t.test(week6, mu=6, alternative="less" )
+week3.ttest = t.test(week6, mu=6, alternative="greater" )
 ```
 
 ```{r, echo=FALSE}
