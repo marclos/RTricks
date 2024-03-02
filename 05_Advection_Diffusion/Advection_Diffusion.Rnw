@@ -35,7 +35,7 @@
 
 \title{DRAFT! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver.~0.83)}
+\date{\today~(ver.~0.84)}
 
 \setsidenotefont{\color{blue}}
 % \setcaptionfont{hfont commandsi}
@@ -302,6 +302,7 @@ library(deSolve) # Load the deSolve package
 library(xtable) # Load the xtable package to help format tables outputs
 @
 
+Much of the complexity for modeling solute transport in 1D, 2D, and 3D is in the boundary conditions, initial conditions, and the rate of reaction. If these are not carefully considered, the model, which is an interative process, may not ``converge'' to a solution.
 
 \subsection{Grid and Time Step}
 
@@ -320,10 +321,11 @@ library(xtable) # Load the xtable package to help format tables outputs
 
 \subsection{Plug Flow}
 
-The impacts of matrix diffusion on the initial breakthrough of the solute plume and on later cleanup are illustrated in Figure~\ref{fig:ADRFig3}). Using a traditional advection-dispersion model, the breakthrough curve for a pulse tracer injection appears as a bell-shaped (Gaussian) curve (gray line on the right side of the upper graph) where the peak arrival time corresponds to the average groundwater velocity. Using an advection-diffusion approach, the breakthrough curve for a pulse injection is asymmetric (solid black line) with the peak tracer concentration arriving earlier than would be expected based on the average groundwater velocity, but with a long extended tail to the flushout curve.
+The impacts of matrix diffusion on the initial breakthrough of the solute plume and on later cleanup are illustrated in Figure~\ref{fig:ADRFig3}). 
+
 \begin{marginfigure}
 \includegraphics[width=1.0\textwidth]{graphics/ADRFig3.png}
-\caption{The impacts of matrix diffusion on the initial breakthrough of the solute plume and on later cleanup are illustrated in Figure X. Using a traditional advection-dispersion model, the breakthrough curve for a pulse tracer injection appears as a bell-shaped (Gaussian) curve (gray line on the right side of the upper graph) where the peak arrival time corresponds to the average groundwater velocity. Using an advection-diffusion approach, the breakthrough curve for a pulse injection is asymmetric (solid black line) with the peak tracer concentration arriving earlier than would be expected based on the average groundwater velocity, but with a long extended tail to the flushout curve.}
+\caption{Using a traditional advection-dispersion model, the breakthrough curve for a pulse tracer injection appears as a bell-shaped (Gaussian) curve (gray line on the right side of the upper graph) where the peak arrival time corresponds to the average groundwater velocity. Using an advection-diffusion approach, the breakthrough curve for a pulse injection is asymmetric (solid black line) with the peak tracer concentration arriving earlier than would be expected based on the average groundwater velocity, but with a long extended tail to the flushout curve.}
 \label{fig:ADRFig3}
 \end{marginfigure}
 
