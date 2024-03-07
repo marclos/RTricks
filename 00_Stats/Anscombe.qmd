@@ -14,7 +14,6 @@ Looking into **Using Models** might be dangerous
 -   models are not the data
 -   models are not the truth
 
-
 ## Anscombe Data
 
 ```{r}
@@ -41,58 +40,79 @@ write.csv(file="/home/mwl04747/RTricks/00_Stats/Anscombe_files/ansombe.csv", Ans
 
 ## Results -- Visualizations
 
-
-
 ```{r}
 par(mfrow=c(2,2))
-plot(Anscombe$x1, Anscombe$y1, main="I")
+plot(y1 ~ x1, data = Anscombe, main="I")
 plot(Anscombe$x2, Anscombe$y2, main="II")
 plot(Anscombe$x3, Anscombe$y3, main="III")
 plot(Anscombe$x4, Anscombe$y4, main="IV")
 ```
 
 ## Linear Model Coefficents
-
 ```{r}
-coef(lm(Anscombe$y1 ~ Anscombe$x1))
-coef(lm(Anscombe$y2 ~ Anscombe$x2))
-coef(lm(Anscombe$y3 ~ Anscombe$x3))
-coef(lm(Anscombe$y4 ~ Anscombe$x4))
+lm1 <- lm(y1 ~ x1, data = Anscombe)
+lm2 <- lm(y2 ~ x2, data = Anscombe)
+lm3 <- lm(y3 ~ x3, data = Anscombe)
+lm4 <- lm(y4 ~ x4, data = Anscombe)
 ```
 
 ## Linear Model Summaries
 
 ```{r}
-summary(lm(Anscombe$y1 ~ Anscombe$x1))
+summary(lm1)
 ```
 
 ## Linear Model Summaries
 
 ```{r}
-summary(lm(Anscombe$y2 ~ Anscombe$x2))
+summary(lm2)
 ```
 
 ## Linear Model Summaries
 
 ```{r}
-summary(lm(Anscombe$y3 ~ Anscombe$x3))
+summary(lm3)
 ```
 
 ## Linear Model Summaries
 
 ```{r}
-summary(lm(Anscombe$y4 ~ Anscombe$x4))
+summary(lm4)
 ```
 
 ## Plotting Results
+
 ```{r, echo=FALSE}
 par(mfrow=c(2,2))
-plot(Anscombe$x1, Anscombe$y1, main="I")
-abline(coef(lm(Anscombe$y1 ~ Anscombe$x1)), col="red")
-plot(Anscombe$x2, Anscombe$y2, main="II")
-abline(coef(lm(Anscombe$y1 ~ Anscombe$x1)), col="red")
-plot(Anscombe$x3, Anscombe$y3, main="III")
-abline(coef(lm(Anscombe$y1 ~ Anscombe$x1)), col="red")
-plot(Anscombe$x4, Anscombe$y4, main="IV")
-abline(coef(lm(Anscombe$y1 ~ Anscombe$x1)), col="red")
+plot(y1 ~ x1, data = Anscombe, main="I")
+abline(coef(lm1), col="red")
+plot(y1 ~ x1, data = Anscombe, main="II")
+abline(coef(lm2), col="red")
+plot(y1 ~ x1, data = Anscombe, main="III")
+abline(coef(lm3), col="red")
+plot(y1 ~ x1, data = Anscombe, main="IV")
+abline(coef(lm4), col="red")
 ```
+
+## Plotting Diagnostics Plots
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm1)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm2)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm3)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm4)
+```
+

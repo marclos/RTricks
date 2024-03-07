@@ -351,24 +351,6 @@
 <img data-src="Anscombe_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
 <section id="linear-model-coefficents" class="slide level2">
 <h2>Linear Model Coefficents</h2>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>(Intercept) Anscombe$x1 
-  3.0000909   0.5000909 </code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>(Intercept) Anscombe$x2 
-   3.000909    0.500000 </code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>(Intercept) Anscombe$x3 
-  3.0024545   0.4997273 </code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>(Intercept) Anscombe$x4 
-  3.0017273   0.4999091 </code></pre>
-</div>
-</div>
 </section>
 <section id="linear-model-summaries" class="slide level2">
 <h2>Linear Model Summaries</h2>
@@ -376,7 +358,7 @@
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = Anscombe$y1 ~ Anscombe$x1)
+lm(formula = y1 ~ x1, data = Anscombe)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
@@ -385,7 +367,7 @@ Residuals:
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)   
 (Intercept)   3.0001     1.1247   2.667  0.02573 * 
-Anscombe$x1   0.5001     0.1179   4.241  0.00217 **
+x1            0.5001     0.1179   4.241  0.00217 **
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -401,7 +383,7 @@ F-statistic: 17.99 on 1 and 9 DF,  p-value: 0.00217</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = Anscombe$y2 ~ Anscombe$x2)
+lm(formula = y2 ~ x2, data = Anscombe)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
@@ -410,7 +392,7 @@ Residuals:
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)   
 (Intercept)    3.001      1.125   2.667  0.02576 * 
-Anscombe$x2    0.500      0.118   4.239  0.00218 **
+x2             0.500      0.118   4.239  0.00218 **
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -426,7 +408,7 @@ F-statistic: 17.97 on 1 and 9 DF,  p-value: 0.002179</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = Anscombe$y3 ~ Anscombe$x3)
+lm(formula = y3 ~ x3, data = Anscombe)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
@@ -435,7 +417,7 @@ Residuals:
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)   
 (Intercept)   3.0025     1.1245   2.670  0.02562 * 
-Anscombe$x3   0.4997     0.1179   4.239  0.00218 **
+x3            0.4997     0.1179   4.239  0.00218 **
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -451,7 +433,7 @@ F-statistic: 17.97 on 1 and 9 DF,  p-value: 0.002176</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = Anscombe$y4 ~ Anscombe$x4)
+lm(formula = y4 ~ x4, data = Anscombe)
 
 Residuals:
    Min     1Q Median     3Q    Max 
@@ -460,7 +442,7 @@ Residuals:
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)   
 (Intercept)   3.0017     1.1239   2.671  0.02559 * 
-Anscombe$x4   0.4999     0.1178   4.243  0.00216 **
+x4            0.4999     0.1178   4.243  0.00216 **
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -473,7 +455,30 @@ F-statistic:    18 on 1 and 9 DF,  p-value: 0.002165</code></pre>
 <section id="plotting-results" class="slide level2">
 <h2>Plotting Results</h2>
 
-<img data-src="Anscombe_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"><div class="footer footer-default">
+<img data-src="Anscombe_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<section id="plotting-diagnostics-plots" class="slide level2">
+<h2>Plotting Diagnostics Plots</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="Anscombe_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="Anscombe_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="Anscombe_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="Anscombe_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+</div>
+</div>
+<div class="footer footer-default">
 
 </div>
 </section>

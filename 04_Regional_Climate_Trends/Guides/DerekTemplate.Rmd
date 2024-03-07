@@ -1,0 +1,471 @@
+---
+title: "Climate Change Project"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Updated: 2024-02-16
+
+
+# Guide 1
+
+## Chunk 1 Source Guide1fuctions
+
+```{r, chunk1_1}
+source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R")
+```
+
+## Chunk 2 Read Inventory
+```{r, chunk1_2}
+my.state = "IL"
+filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
+my.inventory <- readInventory.fun(filename.csv, my.state)
+```
+
+## Chunk 3 Download Stations
+```{r, chunk1_3, results='hide'}
+datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+downloadStations.fun(datapath, my.inventory)
+```
+
+# Guide 2
+
+## Chunk 1 Source Guide1fuctions
+
+```{r chunk2_1}
+source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R")
+```
+
+## Chunk 2 Read Stations
+```{r, chunk2_2}
+datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+ReadStations2.fun(datafolder)
+```
+
+## Chunk 3 Sort Stations --> Skip
+```{r}
+# sortstations.fun() Nor working yet. 
+```
+
+## Chunk 4 (Fix Date)
+```{r, chunk2_4}
+ls()
+USC00117391a <- fixDates.fun(USC00117391)
+USC00116526a <- fixDates.fun(USC00116526)
+USC00110338a <- fixDates.fun(USC00110338)
+USC00111280a <- fixDates.fun(USC00111280)
+USC00111329a <- fixDates.fun(USC00111329)
+USC00112193a <- fixDates.fun(USC00112193)
+USC00112348a <- fixDates.fun(USC00112348)
+USC00113335a <- fixDates.fun(USC00113335)
+USC00115768a <- fixDates.fun(USC00115768)
+USC00116610a <- fixDates.fun(USC00116610)
+USC00118684a <- fixDates.fun(USC00118684)
+USC00118916a <- fixDates.fun(USC00118916)
+USC00119241a <- fixDates.fun(USC00119241)
+USC00110187a <- fixDates.fun(USC00110187)
+USC00112140a <- fixDates.fun(USC00112140)
+
+
+```
+
+## Chunk 5 Check Coverage
+```{r, chunk2_5}
+coverage.fun(USC00331592a)
+coverage.fun(USC00330563a)
+coverage.fun(USC00330862a)
+coverage.fun(USC00331072a)
+coverage.fun(USC00332098a)
+coverage.fun(USC00332791a)
+coverage.fun(USC00333375a)
+coverage.fun(USC00333758a)
+coverage.fun(USC00333780a)
+coverage.fun(USC00335438a)
+coverage.fun(USC00336781a)
+coverage.fun(USC00338609a)
+coverage.fun(USC00338769a)
+coverage.fun(USC00338822a)
+coverage.fun(USC00338830a)
+
+
+```
+
+## Chunk 6 Fix Values
+```{r, chunk2_6}
+USC00331592b <- fixValues.fun(USC00331592a)
+USC00330563b <- fixValues.fun(USC00330563a)
+USC00330862b <- fixValues.fun(USC00330862a)
+USC00331072b <- fixValues.fun(USC00331072a)
+USC00332098b <- fixValues.fun(USC00332098a)
+USC00332791b <- fixValues.fun(USC00332791a)
+USC00333375b <- fixValues.fun(USC00333375a)
+USC00333758b <- fixValues.fun(USC00333758a)
+USC00333780b <- fixValues.fun(USC00333780a)
+USC00335438b <- fixValues.fun(USC00335438a)
+USC00336781b <- fixValues.fun(USC00336781a)
+USC00338609b <- fixValues.fun(USC00338609a)
+USC00338769b <- fixValues.fun(USC00338769a)
+USC00338822b <- fixValues.fun(USC00338822a)
+USC00338830b <- fixValues.fun(USC00338830a)
+
+```
+
+## Chunk 7 QAQC
+```{r, chunk2_7}
+QAQC.fun(USC00042294b)
+```
+
+## Chunk 8 # Monthly Means and Normals
+```{r, chunk2_8}
+USC00331592.monthly <- MonthlyValues.fun(USC00331592b)
+USC00331592.normals <- MonthlyNormals.fun(USC00331592b)
+
+USC00330563.monthly <- MonthlyValues.fun(USC00330563b)
+USC00330563.normals <- MonthlyNormals.fun(USC00330563b)
+
+USC00330862.monthly <- MonthlyValues.fun(USC00330862b)
+USC00330862.normals <- MonthlyNormals.fun(USC00330862b)
+
+USC00331072.monthly <- MonthlyValues.fun(USC00331072b)
+USC00331072.normals <- MonthlyNormals.fun(USC00331072b)
+
+USC00332098.monthly <- MonthlyValues.fun(USC00332098b)
+USC00332098.normals <- MonthlyNormals.fun(USC00332098b)
+
+USC00332791.monthly <- MonthlyValues.fun(USC00332791b)
+USC00332791.normals <- MonthlyNormals.fun(USC00332791b)
+
+USC00333375.monthly <- MonthlyValues.fun(USC00333375b)
+USC00333375.normals <- MonthlyNormals.fun(USC00333375b)
+
+USC00333758.monthly <- MonthlyValues.fun(USC00333758b)
+USC00333758.normals <- MonthlyNormals.fun(USC00333758b)
+
+USC00333780.monthly <- MonthlyValues.fun(USC00333780b)
+USC00333780.normals <- MonthlyNormals.fun(USC00333780b)
+
+USC00335438.monthly <- MonthlyValues.fun(USC00335438b)
+USC00335438.normals <- MonthlyNormals.fun(USC00335438b)
+
+USC00336781.monthly <- MonthlyValues.fun(USC00336781b)
+USC00336781.normals <- MonthlyNormals.fun(USC00336781b)
+
+USC00338609.monthly <- MonthlyValues.fun(USC00338609b)
+USC00338609.normals <- MonthlyNormals.fun(USC00338609b)
+
+USC00338769.monthly <- MonthlyValues.fun(USC00338769b)
+USC00338769.normals <- MonthlyNormals.fun(USC00338769b)
+
+USC00338822.monthly <- MonthlyValues.fun(USC00338822b)
+USC00338822.normals <- MonthlyNormals.fun(USC00338822b)
+
+USC00338830.monthly <- MonthlyValues.fun(USC00338830b)
+USC00338830.normals <- MonthlyNormals.fun(USC00338830b)
+
+
+```
+
+
+## Chunk 9 Anomalies
+```{r, chunk2_9}
+USC00331592.anomalies <- MonthlyAnomalies.fun(USC00331592.monthly, USC00331592.normals)
+USC00330563.anomalies <- MonthlyAnomalies.fun(USC00330563.monthly, USC00330563.normals)
+USC00330862.anomalies <- MonthlyAnomalies.fun(USC00330862.monthly, USC00330862.normals)
+USC00331072.anomalies <- MonthlyAnomalies.fun(USC00331072.monthly, USC00331072.normals)
+USC00332098.anomalies <- MonthlyAnomalies.fun(USC00332098.monthly, USC00332098.normals)
+USC00332791.anomalies <- MonthlyAnomalies.fun(USC00332791.monthly, USC00332791.normals)
+USC00333375.anomalies <- MonthlyAnomalies.fun(USC00333375.monthly, USC00333375.normals)
+USC00333758.anomalies <- MonthlyAnomalies.fun(USC00333758.monthly, USC00333758.normals)
+USC00333780.anomalies <- MonthlyAnomalies.fun(USC00333780.monthly, USC00333780.normals)
+USC00335438.anomalies <- MonthlyAnomalies.fun(USC00335438.monthly, USC00335438.normals)
+USC00336781.anomalies <- MonthlyAnomalies.fun(USC00336781.monthly, USC00336781.normals)
+USC00338609.anomalies <- MonthlyAnomalies.fun(USC00338609.monthly, USC00338609.normals)
+USC00338769.anomalies <- MonthlyAnomalies.fun(USC00338769.monthly, USC00338769.normals)
+USC00338822.anomalies <- MonthlyAnomalies.fun(USC00338822.monthly, USC00338822.normals)
+USC00338830.anomalies <- MonthlyAnomalies.fun(USC00338830.monthly, USC00338830.normals)
+
+
+```
+
+
+
+# Guide 3
+
+## Chunk 1 Source Guide3fuctions
+
+You might see a note about file not found, this is for Marc, you can ignore.
+```{r, chunk3_1}
+source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R")
+```
+
+## Chunk 2 Analyze for Trends by Month
+```{r chunk3_2}
+USC00331592.trends <- monthlyTrend.fun(USC00331592.anomalies)
+USC00330563.trends <- monthlyTrend.fun(USC00330563.anomalies)
+USC00330862.trends <- monthlyTrend.fun(USC00330862.anomalies)
+USC00331072.trends <- monthlyTrend.fun(USC00331072.anomalies)
+USC00332098.trends <- monthlyTrend.fun(USC00332098.anomalies)
+USC00332791.trends <- monthlyTrend.fun(USC00332791.anomalies)
+USC00333375.trends <- monthlyTrend.fun(USC00333375.anomalies)
+USC00333758.trends <- monthlyTrend.fun(USC00333758.anomalies)
+USC00333780.trends <- monthlyTrend.fun(USC00333780.anomalies)
+USC00335438.trends <- monthlyTrend.fun(USC00335438.anomalies)
+USC00336781.trends <- monthlyTrend.fun(USC00336781.anomalies)
+USC00338609.trends <- monthlyTrend.fun(USC00338609.anomalies)
+USC00338769.trends <- monthlyTrend.fun(USC00338769.anomalies)
+USC00338822.trends <- monthlyTrend.fun(USC00338822.anomalies)
+USC00338830.trends <- monthlyTrend.fun(USC00338830.anomalies)
+
+
+```
+
+## Chunk 3 TBD
+
+Camille's Analysis
+
+Let's find rank TMIN trends for each station. 
+```{r}
+library(dplyr)
+
+temp1 <- USC00331592.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00331592")
+temp1
+
+temp2 <- USC00330563.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00330563")
+temp2
+
+temp3 <- USC00330862.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00330862")
+  
+
+temp4 <- USC00331072.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00331072")
+
+temp5 <- USC00332098.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00332098")
+
+temp6 <- USC00332791.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00332791")
+
+temp7 <- USC00333375.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00333375")
+
+temp8 <- USC00333758.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00333758")
+
+temp9 <- USC00333780.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00333780")
+
+temp10 <- USC00335438.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00335438")
+
+temp11 <- USC00336781.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00336781")
+
+
+temp12 <- USC00338609.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00338609")
+
+temp13 <- USC00338769.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00338769")
+
+temp14 <- USC00338822.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00338822")
+
+temp15 <- USC00338830.trends %>%
+  filter(ELEMENT == "TMIN") %>%
+  filter(`Pr(>|t|)` < 0.05) %>%
+  arrange(-Estimate) %>%
+  mutate(ID = "USC00338830")
+```
+
+## Suggestions for Next Steps
+
+Create a dataframe with each of the stations' locations and the TMIN trend for June that includes the p-value and slope.
+
+```{r}
+# example
+# put stations together
+temp.trends = rbind(temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp10, temp11, temp12, temp13, temp14)
+# 9, 15 no obs
+temp.trends
+
+# join with my.inventory
+temp.trend2 <- full_join(temp.trends, 
+        subset(my.inventory, select=c("ID", "LATITUDE", "LONGITUDE", "STATE")), by='ID')
+names(temp.trend2)
+
+# select june and select columns
+june.trend3 <- temp.trend2 %>%
+  filter(MONTH == 6) %>%
+  select(ID, STATE, LATITUDE, LONGITUDE, Estimate, `Pr(>|t|)`, r.squared) %>%
+  mutate(Estimate = round(Estimate*100, 0))
+
+june.trend3
+
+```
+
+
+Then we create a map with the size of the point representing the magnitude of the trend and the color representing the p-value.
+
+using 
+
+```{r}
+# map ID for LONGITUDE and LATITUDE USING ESTIMATE AS SIZE AND P-VALUE AS COLOR
+# ohio boundaries
+ohio <- map_data("state", region = "ohio")
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mapdata)
+ggplot(june.trend3, aes(x=LONGITUDE, y=LATITUDE, size=Estimate, color=r.squared)) +
+#  geom_polygon(data = ohio, fill = "white", color = "black") +
+  geom_point() +
+  scale_size_continuous(range = c(1, 4)) +
+  scale_color_gradient(low = "blue", high = "red") +
+  theme_minimal() +
+  labs(title = "TMIN June Trends", x = "Longitude", y = "Latitude")
+
+
+```
+
+
+
+# Guide 4
+
+## Chunk 1 Source Guide4functions
+
+You might see a note about file note found, this is for Marc, you can ignore.
+```{r chunk4_1}
+source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R")
+```
+
+## Chunk 2 Plot Trend
+```{r}
+plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
+```
+
+almost done!
+
+
+# Zip Files for Class
+
+Marc's has created a function to zip all the costum functions and active stations file into a zip file for easy download/upload: Guidefunctions.zip.
+```{r, echo=FALSE}
+zip(zipfile = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guidefunctions.zip", 
+    files = c("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/MarcsTemplate.Rmd",
+              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"),
+    flags= "-j")
+```
+
+
+# Putting it together 
+```{r, eval=FALSE}
+# Guide 1
+source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R") # 1_1
+
+my.state = "MT"
+filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv" # 1_1
+my.inventory <- readInventory.fun(filename.csv, my.state) # 1_2
+datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+downloadStations.fun(datapath, my.inventory) # 1_3
+
+# Guide 2
+source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R") # 2_1
+
+datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+ReadStations2.fun(datafolder) # 2_2
+
+#station = 	USC00246918
+#stationID = "USW00054797"
+
+	
+USC00246918a <- fixDates.fun(USC00246918) # 2_4
+coverage.fun(USC00246918a) # 2_5
+USC00246918b <- fixValues.fun(USC00246918a) # 2_6
+QAQC.fun(USC00246918b) # 2_7
+USC00246918.monthly <- MonthlyValues.fun(USC00246918b) # 2_8
+USC00246918.normals <- MonthlyNormals.fun(USC00246918b) # 2_8
+
+USC00246918.anomalies <- MonthlyAnomalies.fun(USC00246918.monthly, USC00246918.normals) # 2_9
+
+# Guide 3
+source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R") # 3_1
+USC00246918.trends <- monthlyTrend.fun(USC00246918.anomalies) # 3_2
+plotTrend2.fun(USC00246918.anomalies, "TMIN", 7) # 4_2
+
+
+#Guide 4
+#source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R") # 4_1
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

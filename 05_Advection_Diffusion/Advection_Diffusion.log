@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  2 MAR 2024 13:42
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  2 MAR 2024 15:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -812,64 +812,66 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \langwohyphens=\language3
-<graphics/Diagram-advection-diffusion.png, id=49, 815.045pt x 494.84875pt>
-File: graphics/Diagram-advection-diffusion.png Graphic file (type png)
-<use graphics/Diagram-advection-diffusion.png>
-Package pdftex.def Info: graphics/Diagram-advection-diffusion.png  used on inpu
-t line 120. on input line 120.
-Package pdftex.def Info: Requested size: 143.99059pt x 87.42285pt on input line
- 120.
-LaTeX Font Info:    Try loading font information for OT1+pplx on input line 123
+LaTeX Font Info:    Try loading font information for OT1+pplx on input line 104
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pplx.fd
 File: ot1pplx.fd 2004/09/06 font definitions for OT1/pplx.
 )
-LaTeX Font Info:    Try loading font information for OML+zplm on input line 123
+LaTeX Font Info:    Try loading font information for OML+zplm on input line 104
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlzplm.fd
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMS+zplm on input line 123
+LaTeX Font Info:    Try loading font information for OMS+zplm on input line 104
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omszplm.fd
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMX+zplm on input line 123
+LaTeX Font Info:    Try loading font information for OMX+zplm on input line 104
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxzplm.fd
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
-LaTeX Font Info:    Try loading font information for OT1+zplm on input line 123
+LaTeX Font Info:    Try loading font information for OT1+zplm on input line 104
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1zplm.fd
 File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 )
-LaTeX Font Info:    Try loading font information for U+wasy on input line 123.
+LaTeX Font Info:    Try loading font information for U+wasy on input line 104.
 
 (/usr/share/texlive/texmf-dist/tex/latex/wasysym/uwasy.fd
 File: uwasy.fd 2003/10/30 v2.0 Wasy-2 symbol font definitions
 )
+
+LaTeX Warning: Marginpar on page 1 moved.
+
+<graphics/Diagram-advection-diffusion.png, id=49, 815.045pt x 494.84875pt>
+File: graphics/Diagram-advection-diffusion.png Graphic file (type png)
+<use graphics/Diagram-advection-diffusion.png>
+Package pdftex.def Info: graphics/Diagram-advection-diffusion.png  used on inpu
+t line 125. on input line 125.
+Package pdftex.def Info: Requested size: 143.99059pt x 87.42285pt on input line
+ 125.
 <graphics/Dioxane_plume.png, id=51, 770.88pt x 581.92406pt>
 File: graphics/Dioxane_plume.png Graphic file (type png)
 <use graphics/Dioxane_plume.png>
-Package pdftex.def Info: graphics/Dioxane_plume.png  used on input line 130. on
- input line 130.
+Package pdftex.def Info: graphics/Dioxane_plume.png  used on input line 135. on
+ input line 135.
 Package pdftex.def Info: Requested size: 431.9957pt x 326.10611pt on input line
- 130.
-LaTeX Font Info:    Try loading font information for T1+fvm on input line 133.
-
+ 135.
+LaTeX Font Info:    Try loading font information for T1+fvm on input line 138.
 (/usr/share/texlive/texmf-dist/tex/latex/bera/t1fvm.fd
 File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
 )
 LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 6.80005pt on input line 133.
+(Font)              scaled to size 6.80005pt on input line 138.
 
-Overfull \hbox (100.59442pt too wide) in paragraph at lines 133--133
+Overfull \hbox (100.59442pt too wide) in paragraph at lines 138--138
 \T1/fvm/m/n/8 environmental-[]fate-[]transport-[]and-[]investigative-[]strategi
 es/$[][]\T1/pplj/m/n/8 ). 
  []
@@ -878,194 +880,247 @@ es/$[][]\T1/pplj/m/n/8 ).
 
 {/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map} <./graphics/
 Diagram-advection-diffusion.png>] [2 <./graphics/Dioxane_plume.png>]
-<graphics/2D_diffusion.png, id=75, 301.125pt x 168.63pt>
+<graphics/2D_diffusion.png, id=74, 301.125pt x 168.63pt>
 File: graphics/2D_diffusion.png Graphic file (type png)
 <use graphics/2D_diffusion.png>
-Package pdftex.def Info: graphics/2D_diffusion.png  used on input line 146. on 
-input line 146.
+Package pdftex.def Info: graphics/2D_diffusion.png  used on input line 151. on 
+input line 151.
 Package pdftex.def Info: Requested size: 144.00536pt x 80.64299pt on input line
- 146.
+ 151.
 
-Overfull \hbox (6.00536pt too wide) in paragraph at lines 146--147
+Overfull \hbox (6.00536pt too wide) in paragraph at lines 151--152
 [][]  
  []
 
-
-LaTeX Warning: Marginpar on page 3 moved.
-
 LaTeX Font Info:    Font shape `T1/pplj/bx/n' in size <10> not available
-(Font)              Font shape `T1/pplj/b/n' tried instead on input line 151.
+(Font)              Font shape `T1/pplj/b/n' tried instead on input line 156.
 
-LaTeX Warning: Reference `' on page 3 undefined on input line 151.
+LaTeX Warning: Reference `' on page 3 undefined on input line 156.
 
-<graphics/sources-of-air-pollution-310314_orig.png, id=78, 1104.125pt x 713.666
+<graphics/sources-of-air-pollution-310314_orig.png, id=77, 1104.125pt x 713.666
 24pt>
 File: graphics/sources-of-air-pollution-310314_orig.png Graphic file (type png)
 
 <use graphics/sources-of-air-pollution-310314_orig.png>
 Package pdftex.def Info: graphics/sources-of-air-pollution-310314_orig.png  use
-d on input line 157. on input line 157.
+d on input line 162. on input line 162.
 Package pdftex.def Info: Requested size: 475.20255pt x 307.15363pt on input lin
-e 157.
-<graphics/NutrientSpiraling.jpg, id=79, 746.01291pt x 559.50967pt>
+e 162.
+<graphics/NutrientSpiraling.jpg, id=78, 746.01291pt x 559.50967pt>
 File: graphics/NutrientSpiraling.jpg Graphic file (type jpg)
 <use graphics/NutrientSpiraling.jpg>
-Package pdftex.def Info: graphics/NutrientSpiraling.jpg  used on input line 166
-. on input line 166.
+Package pdftex.def Info: graphics/NutrientSpiraling.jpg  used on input line 171
+. on input line 171.
 Package pdftex.def Info: Requested size: 308.88382pt x 231.66287pt on input lin
-e 166.
+e 171.
 [3 <./graphics/2D_diffusion.png (PNG copy)> <./graphics/sources-of-air-pollutio
 n-310314_orig.png (PNG copy)>]
 <graphics/Darcy_permeability.jpg, id=85, 981.6675pt x 402.50375pt>
 File: graphics/Darcy_permeability.jpg Graphic file (type jpg)
 <use graphics/Darcy_permeability.jpg>
-Package pdftex.def Info: graphics/Darcy_permeability.jpg  used on input line 18
-6. on input line 186.
+Package pdftex.def Info: graphics/Darcy_permeability.jpg  used on input line 19
+1. on input line 191.
 Package pdftex.def Info: Requested size: 143.99332pt x 59.0402pt on input line 
-186.
+191.
  [4 <./graphics/NutrientSpiraling.jpg> <./graphics/Darcy_permeability.jpg>] [5]
 LaTeX Font Info:    Font shape `T1/pplj/bx/n' in size <9> not available
-(Font)              Font shape `T1/pplj/b/n' tried instead on input line 244.
+(Font)              Font shape `T1/pplj/b/n' tried instead on input line 249.
 
 
 LaTeX Warning: Marginpar on page 6 moved.
 
 [6] [7]
-LaTeX Font Info:    Try loading font information for TS1+pplj on input line 340
+LaTeX Font Info:    Try loading font information for TS1+pplj on input line 345
 .
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1pplj.fd
 File: ts1pplj.fd 2004/09/06 font definitions for TS1/pplj.
 )
 LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 8.50006pt on input line 351.
+(Font)              scaled to size 8.50006pt on input line 356.
 LaTeX Font Info:    Font shape `T1/fvm/bx/n' in size <10> not available
-(Font)              Font shape `T1/fvm/b/n' tried instead on input line 352.
+(Font)              Font shape `T1/fvm/b/n' tried instead on input line 357.
 LaTeX Font Info:    Font shape `T1/fvm/b/n' will be
-(Font)              scaled to size 8.50006pt on input line 352.
+(Font)              scaled to size 8.50006pt on input line 357.
 LaTeX Font Info:    Font shape `T1/fvm/m/it' in size <10> not available
-(Font)              Font shape `T1/fvm/m/sl' tried instead on input line 352.
+(Font)              Font shape `T1/fvm/m/sl' tried instead on input line 357.
 LaTeX Font Info:    Font shape `T1/fvm/m/sl' will be
-(Font)              scaled to size 8.50006pt on input line 352.
+(Font)              scaled to size 8.50006pt on input line 357.
 
-Overfull \hbox (51.30948pt too wide) in paragraph at lines 362--362
+Overfull \hbox (51.30948pt too wide) in paragraph at lines 367--367
 [][]\T1/fvm/b/n/10 library[][]\T1/fvm/m/n/10 (xtable)[] []\T1/fvm/m/sl/10 # Loa
 d the xtable package to help format tables outputs[][] 
  []
 
-<graphics/ADRFig3.png, id=131, 854.19125pt x 1167.36125pt>
-File: graphics/ADRFig3.png Graphic file (type png)
-<use graphics/ADRFig3.png>
-Package pdftex.def Info: graphics/ADRFig3.png  used on input line 389. on input
- line 389.
-Package pdftex.def Info: Requested size: 143.99844pt x 196.79222pt on input lin
-e 389.
-[8]
-Missing character: There is no â in font pplr9t!
-Missing character: There is no ˆ in font pplr9t!
-Missing character: There is no ’ in font pplr9t!
- [9 <./graphics/ADRFig3.png>]
-Overfull \hbox (25.46854pt too wide) in paragraph at lines 433--438
- [][] 
+[8] [9]
+Overfull \hbox (25.7243pt too wide) in paragraph at lines 417--417
+[]\T1/fvm/m/n/10 C <- ode(y = C, times = t, func = solute_transport, parms = pa
+rms)[] 
  []
 
 
-Overfull \hbox (0.13913pt too wide) in paragraph at lines 447--447
+Overfull \hbox (245.7568pt too wide) in paragraph at lines 456--456
+[][]\T1/fvm/b/n/10 plot[][]\T1/fvm/m/n/10 (x, C,[] []type[] []=[] []"l"[][],[] 
+[]xlab[] []=[] []"Distance"[][],[] []ylab[] []=[] []"Concentration"[][],[] []ma
+in[] []=[] []"Pulse Tracer Test"[][],[] []ylim[][]=[][]\T1/fvm/b/n/10 c[][]\T1/
+fvm/m/n/10 ([][]0[][],[] []0.4[][]))[][] 
+ []
+
+[10]
+<figure/unnamed-chunk-2-1.pdf, id=157, pagebox=cropbox, 505.89pt x 505.89pt>
+File: figure/unnamed-chunk-2-1.pdf Graphic file (type pdf)
+<use figure/unnamed-chunk-2-1.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-2-1.pdf  used on input line 463. 
+on input line 463.
+Package pdftex.def Info: Requested size: 312.00435pt x 312.00435pt on input lin
+e 463.
+
+Overfull \hbox (12.00435pt too wide) in paragraph at lines 463--465
+[][] 
+ []
+
+<graphics/ADRFig3.png, id=159, 854.19125pt x 1167.36125pt>
+File: graphics/ADRFig3.png Graphic file (type png)
+<use graphics/ADRFig3.png>
+Package pdftex.def Info: graphics/ADRFig3.png  used on input line 472. on input
+ line 472.
+Package pdftex.def Info: Requested size: 143.99844pt x 196.79222pt on input lin
+e 472.
+[11 <./figure/unnamed-chunk-2-1.pdf> <./graphics/ADRFig3.png>]
+Missing character: There is no â in font pplr9t!
+Missing character: There is no ˆ in font pplr9t!
+Missing character: There is no ’ in font pplr9t!
+
+
+LaTeX Warning: Marginpar on page 12 moved.
+
+
+Overfull \hbox (9.35977pt too wide) in paragraph at lines 528--529
+[]\T1/pplj/m/n/10 Next we de-fine the func-tions that will be used to solve the
+ advection- 
+ []
+
+
+Overfull \hbox (20.60727pt too wide) in paragraph at lines 537--537
+[]    []\T1/fvm/m/n/10 dC[] []<-[] []-[][]v[] []*[] [](C[] []-[] []C[[][]-[][]1
+[][]])[][]/[][]dx[] []-[] []D[] []*[] [](C[[][]-[][]1[][]][] []-[] []2[] []*[] 
+[]C[] []+[] []C[[][]-[][]nx])[][]/[][]dx[][]^[][]2[][] 
+ []
+
+[12]
+Overfull \hbox (25.7243pt too wide) in paragraph at lines 555--555
+[][]\T1/fvm/m/n/10 C[] []<-[] []\T1/fvm/b/n/10 ode[][]\T1/fvm/m/n/10 ([][]y[] [
+]= C,[] []times[] []= t,[] []func[] []= solute_transport,[] []parms[] []= parms
+)[][] 
+ []
+
+
+Overfull \hbox (5.25616pt too wide) in paragraph at lines 559--560
+[]\T1/fvm/m/n/10 ## Warning in max(abs(diff(times))): no non-missing arguments 
+
+ []
+
+
+Overfull \hbox (25.46854pt too wide) in paragraph at lines 594--599
+ [][] 
+ []
+
+[13]
+Overfull \hbox (0.13913pt too wide) in paragraph at lines 608--608
 [][]\T1/fvm/m/n/10 grid[] []<-[] []\T1/fvm/b/n/10 setup.grid.1D[][]\T1/fvm/m/n/
 10 ([][]x.up[][]=[][]0[][],[] []L[] []= R,[] []N[] []= N)[] []\T1/fvm/m/sl/10 #
  Grid definition[][] 
  []
 
 
-Overfull \hbox (30.84134pt too wide) in paragraph at lines 449--449
+Overfull \hbox (30.84134pt too wide) in paragraph at lines 610--610
 [][]\T1/fvm/m/n/10 D.grid[] []<-[] []\T1/fvm/b/n/10 setup.prop.1D[][]\T1/fvm/m/
 n/10 ([][]value[][]=D,[] []grid[][]=grid)[] []\T1/fvm/m/sl/10 # Diffusion coeff
 icient[][] 
  []
 
 
-Overfull \hbox (5.25616pt too wide) in paragraph at lines 451--451
+Overfull \hbox (5.25616pt too wide) in paragraph at lines 612--612
 [][]\T1/fvm/m/n/10 sphere.surf[] []<-[] []\T1/fvm/b/n/10 function[][]\T1/fvm/m/
 n/10 ([][]x[][])[] []4[][]*[][]pi[][]*[][]x[][]^[][]2[] []\T1/fvm/m/sl/10 # Sur
 face area of a sphere[][] 
  []
 
 
-Overfull \hbox (35.95837pt too wide) in paragraph at lines 452--452
+Overfull \hbox (35.95837pt too wide) in paragraph at lines 613--613
 [][]\T1/fvm/m/n/10 A.grid[] []<-[] []\T1/fvm/b/n/10 setup.prop.1D[][]\T1/fvm/m/
 n/10 ([][]func[][]=sphere.surf,[]  []grid[][]=grid)[] []\T1/fvm/m/sl/10 # Surfa
 ce area[][] 
  []
 
 
-Overfull \hbox (141.67018pt too wide) in paragraph at lines 462--468
+Overfull \hbox (141.67018pt too wide) in paragraph at lines 623--629
  [][] 
  []
 
 
-Overfull \hbox (15.49023pt too wide) in paragraph at lines 483--483
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 644--644
 []                []\T1/fvm/m/n/10 flux.up[][]=tran[][]$[][]flux.up,[] []flux.d
 own[][]=tran[][]$[][]flux.down))[][] 
  []
 
-[10]
-<figure/plotO2agg-1.pdf, id=162, pagebox=cropbox, 505.89pt x 505.89pt>
+<figure/plotO2agg-1.pdf, id=186, pagebox=cropbox, 505.89pt x 505.89pt>
 File: figure/plotO2agg-1.pdf Graphic file (type pdf)
 <use figure/plotO2agg-1.pdf>
-Package pdftex.def Info: figure/plotO2agg-1.pdf  used on input line 499. on inp
-ut line 499.
+Package pdftex.def Info: figure/plotO2agg-1.pdf  used on input line 660. on inp
+ut line 660.
 Package pdftex.def Info: Requested size: 312.00435pt x 312.00435pt on input lin
-e 499.
-<figure/circleplot-1.pdf, id=163, pagebox=cropbox, 505.89pt x 505.89pt>
+e 660.
+<figure/circleplot-1.pdf, id=187, pagebox=cropbox, 505.89pt x 505.89pt>
 File: figure/circleplot-1.pdf Graphic file (type pdf)
 <use figure/circleplot-1.pdf>
-Package pdftex.def Info: figure/circleplot-1.pdf  used on input line 508. on in
-put line 508.
+Package pdftex.def Info: figure/circleplot-1.pdf  used on input line 669. on in
+put line 669.
 Package pdftex.def Info: Requested size: 312.00435pt x 312.00435pt on input lin
-e 508.
- [11 <./figure/plotO2agg-1.pdf>] [12 <./figure/circleplot-1.pdf>]
+e 669.
+[14] [15 <./figure/plotO2agg-1.pdf>] [16 <./figure/circleplot-1.pdf>]
 Excluding 'comment' comment.
-Overfull \hbox (15.49023pt too wide) in paragraph at lines 553--553
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 714--714
 []                []\T1/fvm/m/n/10 flux.up[][]=tran[][]$[][]flux.up,[] []flux.d
 own[][]=tran[][]$[][]flux.down))[][] 
  []
 
 
-Overfull \hbox (46.19244pt too wide) in paragraph at lines 566--566
+Overfull \hbox (46.19244pt too wide) in paragraph at lines 727--727
 [][]\T1/fvm/m/n/10 Pollution.2D[] []<-[] []\T1/fvm/b/n/10 steady.2D[][]\T1/fvm/
 m/n/10 ([][]y[] []=[] []\T1/fvm/b/n/10 runif[][]\T1/fvm/m/n/10 ([][]\T1/fvm/b/n
 /10 nrow[][]\T1/fvm/m/n/10 (grid)),[] []func[][]=Pollution.Model,[][] 
  []
 
 
-Overfull \hbox (87.12872pt too wide) in paragraph at lines 572--572
+Overfull \hbox (87.12872pt too wide) in paragraph at lines 733--733
 [][]\T1/fvm/b/n/10 plot[][]\T1/fvm/m/n/10 (Pollution.2D,[] []grid[] []= grid,[]
  []xlab[] []=[] []"Distance to Center"[][],[] []ylab[] []=[] []"mmol/m3"[][],[]
 [] 
  []
 
-[13] [14] (./Advection_Diffusion.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 605.
- [15]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 605.
+[17] [18] (./Advection_Diffusion.bbl)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 766.
+ [19]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 766.
  (./Advection_Diffusion.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 605.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 605.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 766.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 766.
 Package rerunfilecheck Info: File `Advection_Diffusion.out' has not changed.
-(rerunfilecheck)             Checksum: F13550BDFCE28CCE83C1119994849796;1523.
+(rerunfilecheck)             Checksum: 2AF2773C777823AB6F202625769FE760;1523.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 605.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 766.
  ) 
 Here is how much of TeX's memory you used:
- 14088 strings out of 494917
- 198038 string characters out of 6180699
- 299975 words of memory out of 5000000
- 16995 multiletter control sequences out of 15000+600000
+ 14100 strings out of 494917
+ 198283 string characters out of 6180699
+ 300008 words of memory out of 5000000
+ 16999 multiletter control sequences out of 15000+600000
  73894 words of font info for 128 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 45i,12n,45p,723b,559s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 45i,12n,45p,740b,518s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
@@ -1079,10 +1134,10 @@ st/fonts/type1/public/bera/fvmro8a.pfb></usr/share/texlive/texmf-dist/fonts/typ
 e1/urw/palatino/uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palat
 ino/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplri8a.
 pfb>
-Output written on Advection_Diffusion.pdf (15 pages, 1506889 bytes).
+Output written on Advection_Diffusion.pdf (19 pages, 1523218 bytes).
 PDF statistics:
- 260 PDF objects out of 1000 (max. 8388607)
- 214 compressed objects within 3 object streams
- 66 named destinations out of 1000 (max. 500000)
- 1158 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 291 PDF objects out of 1000 (max. 8388607)
+ 239 compressed objects within 3 object streams
+ 73 named destinations out of 1000 (max. 500000)
+ 1163 words of extra memory for PDF output out of 10000 (max. 10000000)
 
