@@ -35,7 +35,7 @@
 
 \title{DRAFT! Advection, Diffusion \& Reaction Modeling}
 \author{Marc Los Huertos}
-\date{\today~(ver.~0.84)}
+\date{\today~(ver.~0.85)}
 
 \setsidenotefont{\color{blue}}
 % \setcaptionfont{hfont commandsi}
@@ -51,11 +51,16 @@
 \begin{document}
 
 \maketitle% this prints the handout title, author, and date
+\sidenote{Document progress: This is a draft document that will be used to help Marc develop some code with Ami in Math. Unitl the version reaches 1.0, consider this a non-functional draft.}
+
+
 \begin{abstract}
 The movement of compounds in the environment is driven by two processes, advection and diffusion. The compounds are also subject to transformations or reactions. Thus, to monitor the fate and transport of compounds in the environment, we can capitalize on mathematical models that have been used to describe advection, diffusion, and reaction. %We'll begin with simple examples and then consider more complicated examples. We'll also consider the implications of these processes on the environment and human health.
 
 %\sidenote{Typeset using the Sweave function in R and \LaTeX\ using a \citet{Tufte:1983, Tufte:1997} and style.}
 \end{abstract}
+
+
 
 \section{Introduction}
 
@@ -306,20 +311,94 @@ Much of the complexity for modeling solute transport in 1D, 2D, and 3D is in the
 
 \subsection{Grid and Time Step}
 
+Setting up the grid and time step is the first step in solving the advection-diffusion equation. The grid is the spatial domain over which the solute is transported, and the time step is the time domain over which the solute is transported. The grid and time step are used to discretize the advection-diffusion equation, which is a partial differential equation that describes the rate of change of the concentration of the solute in the fluid due to the movement of the solute from areas of high concentration to areas of low concentration.
+
+Here are some rules of thumb for setting up the grid and time step:
+
+\begin{itemize*}
+\item The grid should be fine enough to capture the spatial variation of the solute in the fluid.
+
+\noindent General equation??
+
+\item The time step should be small enough to capture the temporal variation of the solute in the fluid.
+
+\noindent General equation??
+
+\end{itemize*}
+
+
 
 \subsection{Steady-state vs. Transient State}
 
+The advection-diffusion equation can be solved in either the steady-state or transient state. 
+
+The steady-state solution is used to determine the concentration of the solute in the fluid at a given time, while the transient state solution is used to determine the concentration of the solute in the fluid over time.
+
 \subsection{Boundary Conditions}
 
+The boundary conditions are used to specify the concentration of the solute in the fluid at the boundaries of the grid. The boundary conditions are used to specify the concentration of the solute in the fluid at the inlet and outlet of the grid, and at the top and bottom of the grid.
+
 \subsection{Initial Conditions}
+
+The initial conditions are used to specify the concentration of the solute in the fluid at the start of the simulation. The initial conditions are used to specify the concentration of the solute in the fluid at the start of the simulation, and at the start of each time step.
+
+
 
 \subsection{Rate of Reaction}
 
 
 
+\begin{verbatim}
+parms <- c(v = v, D = D, dx = dx, nx = nx)
+
+C <- ode(y = C, times = t, func = solute_transport, parms = parms)
+\end{verbatim}
+
+
 \section{Implemeting Some 1D Examples in R}
 
-\subsection{Plug Flow}
+\subsection{Plug Flow  -- Salts in a River}
+
+\subsection{Pulse Injection -- Tracer Test}
+
+Tracer test are used to determine the flow velocity of a fluid. The tracer is injected into the fluid and the concentration of the tracer is measured at a downstream location. The time it takes for the tracer to travel from the injection point to the downstream location is used to determine the flow velocity of the fluid.
+
+The advection-dispersion model is used to predict the concentration of the tracer at the downstream location. The model is based on the advection-diffusion equation, which describes the movement of the tracer through the fluid. The advection-dispersion model is a partial differential equation that describes the rate of change of the concentration of the tracer in the fluid due to the movement of the tracer from areas of high concentration to areas of low concentration.
+
+The advection-dispersion model is based on the conservation of mass, where the rate of change of the concentration of the tracer in the fluid due to the movement of the tracer from areas of high concentration to areas of low concentration is described by the equation:
+
+\begin{equation}
+  \frac{\partial C}{\partial t} + \frac{\partial}{\partial x} J = 0 \rightarrow  \frac{\partial C}{\partial t} = - \frac{\partial}{\partial x}( D \frac{\partial}{\partial x} C) = 0
+\end{equation}
+
+<<>>=
+# pulse tracer test in water without decay
+# simple diffusion portion?? not sure where...
+pulseTracer <- function(x, t, D, v, C0) {
+  C <- C0 * exp(-v * x / D) / sqrt(4 * pi * D * t)
+  return(C)
+}
+
+# Solve
+x <- seq(0, 6, .1)
+t <- 1
+D <- 1
+v <- 1
+C0 <- 1
+
+
+
+C <- pulseTracer(x, t, D, v, C0)
+plot(x, C, type = "l", xlab = "Distance", ylab = "Concentration", main = "Pulse Tracer Test", ylim=c(0, 0.4))
+for(t in seq(1, 10, 1)) {
+  C <- pulseTracer(x, t, D, v, C0)
+  lines(x, C, col = t)
+}
+
+@
+
+\subsection{Pulse Injection -- Tracer Test with Decay}
+
 
 The impacts of matrix diffusion on the initial breakthrough of the solute plume and on later cleanup are illustrated in Figure~\ref{fig:ADRFig3}). 
 
@@ -329,7 +408,7 @@ The impacts of matrix diffusion on the initial breakthrough of the solute plume 
 \label{fig:ADRFig3}
 \end{marginfigure}
 
-The lower graph shows the predicted cleanup concentration profiles following complete elimination of a source area. The advection-dispersion model (gray line) predicts a clean-water front arriving at a time corresponding to the average groundwater velocity. The advection-diffusion model (black line) predicts that concentrations will start to decline more rapidly than expected (based on the average groundwater velocity) as clean water rapidly migrates through the highest-permeability strata. However, low but significant contaminant concentrations linger much longer (tailing) due to diffusive contaminant mass exchange between zones of high and low permeability.
+The lower graph in Figure~\ref{fig:ADRFig3} shows the predicted cleanup concentration profiles following complete elimination of a source area. The advection-dispersion model (gray line) predicts a clean-water front arriving at a time corresponding to the average groundwater velocity. The advection-diffusion model (black line) predicts that concentrations will start to decline more rapidly than expected (based on the average groundwater velocity) as clean water rapidly migrates through the highest-permeability strata. However, low but significant contaminant concentrations linger much longer (tailing) due to diffusive contaminant mass exchange between zones of high and low permeability.
 
 \begin{equation}
 \frac{d C\nu_vc}{d t} = \Sigma Q_{in} \cdot C_{in} - \Sigma Q_{out} \cdot C_{out} + \Sigma R V_{cv}
@@ -344,11 +423,68 @@ The lower graph shows the predicted cleanup concentration profiles following com
 C(x,t) = \frac{M}{A \sqrt{4\pi D_d t}} \cdot \exp[\frac{−x^{\prime 2}}{4D_d t}]
 \end{equation}
 
-Where
+Where:\\
 M = mass of conservative material in the spike\\
 Dd = axial dispersion coefficient [L2/T],\\
 x’ = x - Ut, U = longitudinal advective velocity in the reactor,\\
 A is the cross-sectional area of the reactor.\\
+
+First we make a one-dimensional grid and define the parameters of the problem.\sidenote{The future code is going to rely on ReacTran package.}
+
+<<>>=
+# working on this
+
+L <- 1 # length of the grid, 10 meters
+nx <- 100 # number of grid cells
+dx <- L/nx # length of each grid cell
+x <- seq(0, L, by=dx) # grid
+D <- 0.1 # diffusion coefficient
+@
+
+Next, we define the initial and boundary conditions. We will assume that the concentration of the solute is zero at the beginning of the experiment and that the concentration of the solute is constant at the boundaries of the grid.
+
+<<>>=
+# working on this
+
+v <- 0.1 # advection velocity
+t <- 0.1 # times
+C <- 0 # concentration of the solute
+@
+
+Next we define the functions that will be used to solve the advection-diffusion equation.
+
+<<>>=
+# working on this
+# define the solute transport function
+solute_transport <- function(t, C, parms) {
+  with(as.list(c(parms, C)), {
+    dC <- -v * (C - C[-1])/dx - D * (C[-1] - 2 * C + C[-nx])/dx^2
+    list(dC)
+  })
+}
+
+
+
+@
+
+We solve the advection-diffusion equation using the `ode` function from the `deSolve` package.
+
+<<>>=
+# working on this
+# solve the advection-diffusion equation
+# error hmax = must be a non-ngative value... ??
+
+parms <- c(v = v, D = D, dx = dx, nx = nx)
+C <- ode(y = C, times = t, func = solute_transport, parms = parms)
+@
+
+Finally, we visualize the results.
+
+<<>>=
+# working on this
+@
+
+
 
 
 \subsection{Dissolved Oxygen Consumed in a Porous Media}
