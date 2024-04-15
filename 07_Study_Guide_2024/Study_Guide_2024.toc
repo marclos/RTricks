@@ -1,0 +1,6 @@
+\contentsline {subsection}{Round One}{2}{subsection*.1}
+\contentsline {subsection}{Round Two}{2}{subsection*.2}
+\contentsline {section}{Working with R}{2}{section*.3}
+\contentsline {subsection}{Creating Vectors}{2}{subsection*.4}
+\contentsline {subsection}{Creating Dataframe in R}{3}{subsection*.5}
+\contentsfinish 
