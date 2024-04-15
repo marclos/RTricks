@@ -1,6 +1,6 @@
 ---
 title: "Statistics -- Study Guide"
-author: "Marc Los Huertos"
+author: "EA 30 Spring 2024"
 date: "`r Sys.Date()`"
 output: pdf_document
 ---
@@ -31,28 +31,37 @@ Here's a [link to the google doc](https://docs.google.com/document/d/1aYsL29_yqi
 ## Round Two
 
 ![Data Analysis Flow Chart](Leek_DataAnalysisFlowChart.png)
-In the same groups: 
+
+New Groups: 
+
+- Group 1: vectors and test for association (contingency tables)
+- Group 2: dataframes and logistic regression
+- Group 3: summary statistics (and a probability distribution function image)
+- Group 4: ANOVA and boxplots and causuality
+- Group 5: t-tests and histograms
+- Group 6: linear regression and correlation (what's the difference)
+
 
 1. Copy Rmd into Rstudio and knit and make sure it works.
-2. Provide some backgroud on topic and why the information is useful. If you link to a video, please describe what the viewer is going to learn.
-3.  Adjust your question to make it align with the course content. Change the examples to environmental data types. All dataset should have an EA theme. 
 
-4. Make sure the code works and generates an output. 
 
-5. Provide some help to reader to interpret results.
+2. For each section, we would like our peers to have some background on topic and why the information is useful. If you link to a video, please describe what the viewer is going to learn.
 
-6. Add questions that addresses the flow chart above -- ask the reader to consider what type of analysis it might be and why!
+3.  Adjust your question to make it align with the course content. Change the examples to environmental data types. All datasets should have an EA theme. 
 
-Groups: 
+4. Use vectors and data frames in problem sets as much as possible. 
 
-- Group 1: vectors and logistics
-- Group 2: dataframes and test for association
-- Group 3: summary statistics (and a pdf images)
-- Group 4: ANOVA and boxplots
-- Group 5: t-tests and histograms
-- Group 6: linear regression and corrletion
+5. Make sure the code works and generates an output. The guide should work!
 
-7. Cut the sections of the Rmd that you are not working on and when you are done, please submit on canvas.
+6. Provide some help to reader to interpret results.
+
+7. Add questions that addresses the flow chart above -- ask the reader to consider what type of analysis it might be and why!
+
+
+
+8. Cut the sections of the Rmd that you are not working on and when you are done (don't cut the preamble stuff). 
+
+9. please submit a working Rmd file on today's canvas assignment and change the folks in your group in the "author" in the Rmd file.
 
 # Working with R
 
@@ -265,7 +274,9 @@ Command: boxplot()
 
 ## ANOVA
 
-Analysis of Variance (ANOVA) in R (very helpful explanation) 
+[Link to Video: Analysis of Variance (ANOVA) in R](https://www.youtube.com/watch?v=qrP7evoNCy4)
+
+(very helpful explanation) 
 
 Helpful tips:
 
