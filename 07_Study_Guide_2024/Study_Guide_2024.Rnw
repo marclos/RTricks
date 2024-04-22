@@ -42,7 +42,7 @@
 Each group will write two questions (and answers). Then at the top of each section, write out a short study guide that might include useful functions to understand, a link to a video, or “psuedo” code that might help.
 
 
-\begin{itemize}
+\begin{itemize*}
 	\item Group 1: 1a and 8b
 	\item Group 2: 2a and 7b
 	\item Group 3: 3a and 6
@@ -51,7 +51,7 @@ Each group will write two questions (and answers). Then at the top of each secti
 	\item Group 6: 6a and 4b
 	\item Group 7: 7a and 1b
 	\item Group 8: 8a and 2b
-\end{itemize}
+\end{itemize*}
 
 \subsection{Round Two}
 
@@ -67,6 +67,8 @@ Each group will write two questions (and answers). Then at the top of each secti
 \section{Working with R}
 
 \subsection{Creating Vectors}
+
+
 
 Each group will write two questions (and answers). Then at the top of each section, write out a short study guide that might include useful functions to understand, a link to a video, or “psuedo” code that might help.
 
@@ -96,9 +98,6 @@ print{fruits_vector}
 
 
 
-Question 1b: Why are vectors commonly used in graphing data?
-
-Answer: They are very versatile and can store multiple variables in a single date type.
 
 
 
@@ -161,9 +160,9 @@ Scenario2 = data.frame(Birds, Dogs, Cats)
 
 We cannot create a dataframe for scenario 2 because the Dog vector has one less entry than the other two vectors.\sidenote{I didn't get an error, not sure what the goal is here.}
 
+\section{Summary Statistics}
 
-
-Question 2b: 
+Question 2a: 
 
 Create a dataframe based on the following table:
 \begin{table}
@@ -188,12 +187,25 @@ print(super_sleepers)
 Summary Statistics
 @
 
-So, what are summary statistics? Check out this 5-minute video: Basic summary statistics in R. Pay close attention to the code used to find the mean, median, and standard deviation. 
+
+
+So, what are summary statistics? Check out this 5-minute video: 
+
+Basic summary statistics in R. Pay close attention to the code used to find the mean, median, and standard deviation. 
 
 1. When might it be helpful to use summary statistics? 
+
+
 Answer: When you want to evaluate a dataset and learn more information about the distribution! It is a helpful first step before undertaking more complex tests on the data 
 
-2. In your RStudio, load the dataset cars. This is built into the software! Now, please provide some of the summary statistics for this dataset. This includes the mean and median for speed and distance. It might be helpful to View the dataset before starting to orient yourself within the data. 
+2. In your RStudio, load the dataset cars. This is built into the software! 
+
+
+Now, please provide some of the summary statistics for this dataset. This includes the mean and median for speed and distance. It might be helpful to View the dataset before starting to orient yourself within the data. \sidenote{no code given...}
+
+<<>>=
+# No code given
+@
 
 View: this is what the first 15 columns should look like
  
@@ -202,20 +214,20 @@ Mean Values: speed = 15.4, distance = 42.98
 
 Median Values: speed = 15.00, 36.00
 
-T-test
+\section{Comparing Two Populations}
 
-Each group will write two questions (and answers). Then at the top of each section, write out a short study guide that might include useful functions to understand, a link to a video, or “psuedo” code that might help.
 
-How to do a t-test
+QA. What is a t-test? What information do you need to know in order to conduct a T-test?
 
-2 Questions:
-What is a t-test? What information do you need to know in order to conduct a T-test?
-T-tests are a type of inferential statistic used to determine statistical significance between the means of two variables.
-T tests are used to test whether or not a hypothesis is statistically significant.
-To calculate a t-test, you need the mean values from each data set, the standard deviation, and how many data values there are.
+Answer: T-tests are a type of inferential statistic used to determine statistical significance between the means of two variables. T-tests are used to test whether or not a hypothesis is statistically significant.
+
 T-tests can be dependent or independent.
-What is a practical use of a t test?
-Comparing efficacy of different trial medications or treatments
+
+What is a practical use of a t test? Comparing efficacy of different trial medications or treatments
+
+QB: To calculate a t-test, you need the mean values from each data set, the standard deviation, and how many data values there are.
+
+
 Pseudo code 
 t.test(x, y,
       alternative = c("two.sided", "less", "greater"),
@@ -226,11 +238,14 @@ t.test(x, y,
 https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/t.test 
 
 Fake data set:
-Group 1 (Treatment Group):
+<<>>=
+# Group 1 (Treatment Group):
 25, 28, 30, 32, 26
-Group 2 (Control Group):
+# Group 2 (Control Group):
 20, 22, 24, 21, 23
-You could use this data set to perform a two-sample t-test to compare the means of the treatment and control groups.
+@
+
+You could use this data set to perform a two-sample t-test to compare the means of the treatment and control groups.\sidenote{not sure how this would work given the code above}
 
 What type of graph is useful for showing a t-test? 
 Boxplot
