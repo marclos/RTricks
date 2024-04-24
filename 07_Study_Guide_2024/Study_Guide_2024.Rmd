@@ -242,8 +242,10 @@ We have collected data on the weight of ground squirrels and the number of offsp
 
 ```{r}
 Ground_Squirrel_ID <- 1:20
-Weight <-     c(250, 340, 550, 190, 509, 609, 745, 846, 963, 433, 444, 833, 355, 455, 300,555, 666, 777, 888, 599)
-Off_spring <- c(0,     0,   1,   0,   0,   0,   1,   0,   1,   1,   0,   1,   0,   0,   0,  0,  1,    1,  1,    1)
+Weight <-     c(250, 340, 550, 190, 509, 609, 745, 846, 963, 433, 444, 833, 
+                355, 455, 300,555, 666, 777, 888, 599)
+Off_spring <- c(0,     0,   1,   0,   0,   0,   1,   0,   1,   1,   0,   1,  
+                0,   0,   0,  0,  1,    1,  1,    1)
 
 Ground_Squirrel_data <- data.frame(Ground_Squirrel_ID, Weight, Off_spring)
 ```
@@ -265,7 +267,7 @@ Step-by-Step Guide:
 
 For our purposes, we'll make a matrix of the following data:
 
-\begin{table}
+\begin{table}[h]
 	\centering
 		\begin{tabular}{cccc}
 	&	Bees & Butterflies & Beetles \\
@@ -282,14 +284,14 @@ Herb Garden	&		7 & 11 & 15 \\
 pollinators_type <- c("Bees", "Butterflies", "Beetles")
 garden_type <- c("Vegetable garden", "Flower garden", "Herb garden")
 
-pollinator_data = c(1, 2, 2, 15, 6, 22, 9, 11, 15)
+pollinator_data = c(6, 27, 16, 5, 12, 22, 14, 18, 25)
 # Generate fake data
 pollination_matrix = matrix(pollinator_data, nrow = 3, ncol = , byrow=TRUE)
 
 pollination_matrix
 ```
 
-Sometimes it nice to name the rows and columns to make sure you can keep track of the data.
+Sometimes it's nice to name the rows and columns to make sure you can keep track of the data.
 
 ```{r}
 colnames(pollination_matrix) <- garden_type
@@ -299,6 +301,7 @@ rownames(pollination_matrix) <- pollinators_type
 
 ```{r}
 pollination_matrix
+fisher.test(pollination_matrix)
 ```
 
 We will use a [Q6a: Fisher Test of Pollinator Data] to analyze this data.
@@ -374,7 +377,7 @@ All good, but if you want to look at how these data vary by category, then we ne
 
 A histogram is a visual representation of the distribution of quantitative data. It is a useful tool for understanding the shape of the data, as well as the center and spread of the data. 
 
-Using the tree height vectors from Section [Q5a: Histogram of Tree Height Vector], we can put two histograms side-by-side.
+Using the tree height vectors from Section [Q1a: Create a vector of numeric tree heights], we can put two histograms side-by-side.
 
 ```{r}
 par(mfrow=c(1,2), las=1)
@@ -383,6 +386,8 @@ p2<-hist(tree2_height)
 ```
 
 Notice we use a par() function define the panel layout. The mfrow argument is set to c(1,2), which means that we want to have one row and two columns of plots. The las argument is set to 1, which means that the axis labels are horizontal. 
+
+We can now analyze the data using a t-test as demonstrated in Section [7 t-test: Comparing Two Populations].
 
 ### Q5b: Overlaying Histograms 
 
@@ -473,13 +478,13 @@ fisher.test(pollination_matrix)
 
 ### Q6b: Chi-squared Test of PFAS Cancer Data
 
-We analyze the data matrix in Section [Q3b: Create a Matrix of PFAS Cancer Data].
+We analyze the data matrix in Section [Q3b: Matrix with PFAS and Cancer].
 
 ```{r}
 chisq.test(Cancer_matrix)
 ```
 
-## 7 t-Test: Comparing Two Populations
+## 7 t-test: Comparing Two Populations
 
 T-tests are a type of inferential statistic used to determine statistical significance between the means of two variables. T-tests are used to test whether or not a hypothesis is statistically significant.
 
@@ -586,11 +591,11 @@ lines(years, prediction, col = "red")
 
 ## 10. Logistic Regression
 
-Logistic regression estimates the probability of an event occurring, such as voted or didn’t vote, based on a given data set of independent variables. They are used commonly for prediction and classification problems. They are best used in scenarios where there is a binary outcome (ie. yes or no, black of white, etc.)
+Logistic regression estimates the probability of an event occurring, such as voted or didn't vote, based on a given data set of independent variables. They are used commonly for prediction and classification problems. They are best used in scenarios where there is a binary outcome (ie. yes or no, black of white, etc.)
 
 Logistics regression graphs can be made with data sets that contain continuous variables (Like temperature, or depth) and a binary/ categorical outcome variable (yes/no , 1/0, on /off). Sample sizes are usually larger and assumes a linear relationship between variables and categorical outcomes. 
 
-What is a logistic regression? Watch this 8 min video to find out!
+What is a logistic regression? Watch [this video](https://pomona.box.com/s/2lxorc9w0k2u0yg4g1zyo7vw0nxtbb8b) to find out!
 
 In other words a generalized linear model is just a linear model, but with a modified error distribution that better captures the data generating process that has helped in the creation of your data. For instance, if your responses are successes and failures, which are typically coded as 1s and 0s, it is pretty clear that 1s and 0s are not normally distributed data nor would they have a normal error distribution on their residuals. In cases like these we need to modify our underlying linear modeling distribution to best match what distribution has helped shape our data.
 
@@ -608,7 +613,11 @@ summary(logit_model)
 
 ### Q10b: Odds Ratio of Ground-Squirrel Reproduction
 
-Didn't have a chance to lecture on this... but here is the code to find the odds ratio of the model:
+Didn't have a chance to lecture on this, but here's a quick explanation: 
+
+The odds ratio is the exponential function of the regression coefficient associated with a one-unit increase in the predictor.
+ 
+Here is the code to find the odds ratio of the model:
 
 ```{r}  
 exp(coef(logit_model))
