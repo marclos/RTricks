@@ -24,6 +24,7 @@ vignettes/*.pdf
 *.knit.md
 # Folders
 00_resources/
+00_Admin/
 DRAFT/
 OLD/
 04_Regional_Climate_Trends/Data/
