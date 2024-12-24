@@ -1,0 +1,147 @@
+\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\title{GWP and it's Discontents}
+\author{Marc Los Huertos}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle
+
+\section{Understanding Global Warming Potentials}
+
+Greenhouse gases (GHGs) warm the Earth by absorbing energy and slowing its escape to space, acting like an insulating blanket. Different GHGs vary in their impact on warming based on two key factors: their ability to absorb energy ("radiative efficiency") and their atmospheric lifetime.
+
+Since 1990, the Intergovernmental Panel on Climate Change (IPCC) has used Global Warming Potential (GWP) to compare the warming impacts of different gases. GWP measures how much energy the emission of 1 ton of a gas will absorb over a specified time, relative to 1 ton of carbon dioxide (CO2). A higher GWP indicates a greater warming effect compared to CO2 over that period. The most common time horizon for GWP calculations is 100 years. This metric provides a standardized unit to aggregate emissions of various gases (e.g., for national GHG inventories) and evaluate emissions reduction strategies across sectors and gases.
+
+CO2 has a GWP of 1 by definition, regardless of the time horizon, as it serves as the reference gas. CO2 remains in the climate system for thousands of years, meaning its emissions cause long-lasting increases in atmospheric concentrations.
+
+Methane (CH4) has a GWP of 27-30 over 100 years. Although CH4 lasts only about a decade in the atmosphere—much shorter than CO2—it absorbs significantly more energy. The GWP for CH4 also incorporates indirect effects, such as its role as a precursor to ozone, another GHG.
+
+Nitrous oxide (N2O) has a GWP of 273 over 100 years. Unlike CH4, N2O remains in the atmosphere for over a century, contributing to its high GWP.
+
+Certain synthetic gases, such as chlorofluorocarbons (CFCs), hydrofluorocarbons (HFCs), hydrochlorofluorocarbons (HCFCs), perfluorocarbons (PFCs), and sulfur hexafluoride (SF6), are often referred to as high-GWP gases. These gases trap vastly more heat per unit of mass than CO2, with GWPs ranging in the thousands to tens of thousands.
+
+How GWPs Are Calculated
+
+\begin{description}
+	\item[Determine Radiative Efficiency] Radiative efficiency quantifies a gas’s ability to absorb and emit infrared radiation. This depends on the gas’s molecular structure and its interaction with specific wavelengths of radiation.
+
+	\item[Measure Atmospheric Lifetime] The duration a gas remains in the atmosphere affects how long it contributes to warming. For example, CH4 has a lifetime of about 12 years, while some PFCs persist for thousands of years.
+
+	\item[Integrate Forcing Over Time] The GWP calculation integrates the cumulative radiative forcing—the change in energy balance caused by the gas—over the chosen time horizon and compares it to CO2.
+
+	\item[Choose a Time Horizon] Commonly used time horizons are 20, 100, and 500 years. The chosen horizon significantly impacts the GWP value. Short-lived gases like CH4 have higher GWPs over 20 years but lower GWPs over 100 or 500 years as their atmospheric concentration diminishes. Conversely, long-lived gases like N2O or SF6 retain high GWPs over extended periods.
+
+\end{description}
+
+This standardized approach to measuring GHG impacts allows scientists and policymakers to compare the relative effects of various gases and prioritize mitigation strategies effectively.
+
+
+Formula for GWP
+
+
+The GWP for a gas $i$ over a time horizon H is express as: 
+
+\begin{equation}
+GWP_i = \frac{\int^{H}_{0}RE_i \cdot [C_i(t)]dt}{\int^{H}_{0}RE_{CO_2} \cdot [C_{CO_2}(t)]dt}
+\end{equation}
+
+Where: 
+
+REi: Radiative efficiency of gas i
+[Ci(t)]: Atmospheric concentration of gas i as a function of time
+H: Time horizon,
+The denominator compares these quantities for CO$_2$.
+
+
+Example GWPs
+CO$_2$: Defined as 1 (baseline),
+CH$_4$: ~28-34 over 100 years, ~84-86 over 20 years (depending on carbon-cycle feedbacks),
+N$_2$O: ~265-298 over 100 years.
+
+Limitations of GWPs
+GWPs do not account for feedback mechanisms, such as those affecting CO$_2$ uptake by oceans and vegetation.
+
+
+They focus on warming potential rather than other impacts, such as cooling from aerosols.
+The choice of time horizon can influence policy decisions by prioritizing different gases.
+Despite these limitations, GWPs remain a widely used and practical tool for evaluating and comparing the climate impacts of GHGs.
+
+from /url{https://hydrocomputing.github.io/igwp/}
+Why an improved version
+The Global Warming Potential (GWP) is a commonly used, simple model to "normalize" the warming impact of different climate pollutants to 
+
+  equivalents. This approach works well for long-lived climate pollutants (LLCPs) but fails for short-lived climate pollutants (SLCPs). The improved version IGWP accounts much better for impacts of SLCPs.
+
+Scientific background
+This project:
+
+is based on the findings in this paper: Cain, M., Lynch, J., Allen, M.R., Fuglestedt, D.J. \& Macey, A.H. (2019). Improved calculation of warming- equivalent emissions for short-lived climate pollutants. npj Climate and Atmospheric Science. 2(29). Retrieved from \url{https://www.nature.com/articles/s41612-019-0086-4}
+
+inspired by: \url{https://gitlab.ouce.ox.ac.uk/OMP_climate_pollutants/co2-warming-equivalence/}
+
+and uses the simple emissions-based impulse response and carbon cycle model FaIR: https://github.com/OMS-NetZero/FAIR
+
+The maths
+
+\begin{equation}
+IGWP = GWP_H * (r * \frac{\Delta E_{SLCP}}{\Delta t}*H + s * E_{SLCP})
+\end{equation}
+
+
+IGWP - Improved Global Warming Potential
+
+	
+
+\end{document}
+
