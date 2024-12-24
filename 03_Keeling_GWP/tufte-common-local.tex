@@ -1,0 +1,130 @@
+% colored hyperlinks
+\hypersetup{colorlinks}
+
+%% bergamo is free, chantilly is $15!
+% If they're installed, use Bergamo and Chantilly from www.fontsite.com.
+% They're clones of Bembo and Gill Sans, respectively.
+%\IfFileExists{bergamo.sty}{\usepackage[osf]{bergamo}}{}% Bembo
+%\IfFileExists{chantill.sty}{\usepackage{chantill}}{}% Gill Sans
+
+%\usepackage{microtype} % Unsure what this is for.
+
+\usepackage{graphicx}
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+\graphicspath{{graphics/}}   % set graphics path
+\usepackage{fancyvrb}        % customize the formatting of verbatim
+\fvset{fontsize=\normalsize} % using a slightly smaller font
+
+\usepackage{natbib}								% bibliography package
+\usepackage{amsmath}
+\usepackage{wasysym}
+\usepackage{hyperref}             % For creating hyperlinks in cross references
+\usepackage{lettrine}							% Creates Large letters at chapter starts.
+%\usepackage{draftwatermark}				% Draft watermark on every page
+% \usepackage{boxedminipage}
+\usepackage{multicol}							% Make multiple column text
+%\usepackage{movie15}							% Embed movies
+\usepackage{units}								% Nice, non-stacked fractions & spacing for units.
+
+%% For nicely typeset tabular material 
+\usepackage{booktabs}
+\usepackage{paralist}
+%\usepackage[version=3]{mhchem}   	% Chemicals and Chemical Reactions
+\usepackage{xspace}								% Prints a trailing space in a smart way.
+
+% Prints the month name (e.g., January) and the year (e.g., 2008)
+\newcommand{\monthyear}{%
+  \ifcase\month\or January\or February\or March\or April\or May\or June\or
+  July\or August\or September\or October\or November\or
+  December\fi\space\number\year
+}
+ 
+% Prints an epigraph and speaker in sans serif, all-caps type.
+\newcommand{\openepigraph}[2]{%
+  %\sffamily\fontsize{14}{16}\selectfont % Messes up the font for the whole doc
+  \begin{fullwidth}
+  \sffamily\large
+  \begin{doublespace}
+  \noindent\allcaps{#1}\\  % epigraph
+  \noindent\allcaps{#2}    % author
+  \end{doublespace}
+  \end{fullwidth}
+}
+
+% Inserts a blank page
+\newcommand{\blankpage}{\newpage\hbox{}\thispagestyle{empty}\newpage}
+
+
+%\makeatletter % must go in preamble to work.. not sure why...
+%\newcommand\reaction@[1]{\begin{equation}\ce{#1}\end{equation}}
+%\newcommand\reaction@nonumber[1]%
+%{\begin{equation*}\ce{#1}\end{equation*}}
+%\newcommand\reaction{\@ifstar{\reaction@nonumber}{\reaction@}}
+%\makeatother
+
+% Typesets the font size, leading, and measure in the form of 10/12x26 pc.
+\newcommand{\measure}[3]{#1/#2$\times$\unit[#3]{pc}}
+
+%% Macros for typesetting the documentation
+\newcommand{\hlred}[1]{\textcolor{Maroon}{#1}}   % highlight in red
+\newcommand{\hangleft}[1]{\makebox[0pt][r]{#1}}
+\newcommand{\hairsp}{\hspace{1pt}}               % hair space
+\newcommand{\hquad}{\hskip0.5em\relax}           % half quad space
+\newcommand{\TODO}{\textcolor{red}{\bf TODO!}\xspace}
+\newcommand{\ie}{\textit{i.\hairsp{}e.}\xspace}   % text for i.e.
+\newcommand{\eg}{\textit{e.\hairsp{}g.}\xspace}   % text for e.g.
+\newcommand{\na}{\quad--}                         % used in tables for N/A cells
+\newcommand{\degrees}{\ensuremath{^\circ}}        % temperature degrees symbol
+\newcommand{\outcome}[1]{\sidenote{#1}} 
+
+%% Useful in tabular environments.
+\newcommand{\hangp}[1]{\makebox[0pt][r]{(}#1\makebox[0pt][l]{)}} % parenthesis with no horizontal space
+\newcommand{\hangstar}{\makebox[0pt][l]{*}} % asterisk with no horizontal space.
+
+%\providecommand{\XeLaTeX}{X\lower.5ex\hbox{\kern-0.15em\reflectbox{E}}\kern-0.1em\LaTeX}
+%\newcommand{\tXeLaTeX}{\XeLaTeX\index{XeLaTeX@\protect\XeLaTeX}}
+% \index{\texttt{\textbackslash xyz}@\hangleft{\texttt{\textbackslash}}\texttt{xyz}}
+
+\newcommand{\tuftebs}{\symbol{'134}}              % a backslash in tt type in OT1/T1
+\newcommand{\doccmdnoindex}[2][]{\texttt{\tuftebs#2}}% command name -- adds backslash automatically (and doesn't add cmd to the index)
+\newcommand{\doccmddef}[2][]{%
+  \hlred{\texttt{\tuftebs#2}}\label{cmd:#2}          %
+  \ifthenelse{\isempty{#1}}%
+    {% add the command to the index
+      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2}}% command name
+    }%
+    {% add the command and package to the index
+      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2} (\texttt{#1} package)}% command name
+      \index{#1 package@\texttt{#1} package}\index{packages!#1@\texttt{#1}}% package name
+    }%
+}% command name -- adds backslash automatically
+\newcommand{\doccmd}[2][]{%
+  \texttt{\tuftebs#2}%
+  \ifthenelse{\isempty{#1}}%
+    {% add the command to the index
+      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2}}% command name
+    }%
+    {% add the command and package to the index
+      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2} (\texttt{#1} package)}% command name
+      \index{#1 package@\texttt{#1} package}\index{packages!#1@\texttt{#1}}% package name
+    }%
+}% command name -- adds backslash automatically
+\newcommand{\docopt}[1]{\ensuremath{\langle}\textrm{\textit{#1}}\ensuremath{\rangle}}% optional command argument
+
+\newcommand{\docarg}[1]{\textrm{\textit{#1}}}% (required) command argument
+
+\newenvironment{docspec}{\begin{quotation}
+
+\ttfamily\parskip0pt\parindent0pt\ignorespaces}{\end{quotation}}% command specification environment
+
+\newcommand{\docenv}[1]{\texttt{#1}\index{#1 environment@\texttt{#1} environment}\index{environments!#1@\texttt{#1}}}% environment name
+
+
+\newcommand{\docfilehook}[2]{\texttt{#1}\index{file hooks!#2}\index{#1@\texttt{#1}}}
+
+\newcommand{\doccounter}[1]{\texttt{#1}\index{#1 counter@\texttt{#1} counter}}
+
+\setsidenotefont{\color{blue}}
+% \setcaptionfont{hfont commandsi}
+% \setmarginnotefont{\color{blue}}
+% \setcitationfont{\color{red}}
