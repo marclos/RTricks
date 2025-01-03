@@ -61,7 +61,72 @@
 
 Greenhouse gases (GHGs) warm the Earth by absorbing energy and slowing its escape to space, acting like an insulating blanket. Different GHGs vary in their impact on warming based on two key factors: their ability to absorb energy ("radiative efficiency") and their atmospheric lifetime.
 
+\section{History of GWP}
+
 Since 1990, the Intergovernmental Panel on Climate Change (IPCC) has used Global Warming Potential (GWP) to compare the warming impacts of different gases. GWP measures how much energy the emission of 1 ton of a gas will absorb over a specified time, relative to 1 ton of carbon dioxide (CO2). A higher GWP indicates a greater warming effect compared to CO2 over that period. The most common time horizon for GWP calculations is 100 years. This metric provides a standardized unit to aggregate emissions of various gases (e.g., for national GHG inventories) and evaluate emissions reduction strategies across sectors and gases.
+
+History of the Global Warming Potential (GWP) Metric by the IPCC
+The Global Warming Potential (GWP) metric was introduced in the early reports of the Intergovernmental Panel on Climate Change (IPCC) as a standardized way to compare the climate impact of different greenhouse gases (GHGs). Here's an overview of its development and evolution:
+
+\subsection{Origins and Introduction (1990 - First Assessment Report, FAR)}
+
+Purpose: The GWP metric was developed to provide policymakers with a simplified, comparable measure of the relative contributions of GHGs to global warming.
+Definition: GWP quantifies the cumulative radiative forcing a GHG causes over a specific time horizon, relative to CO₂.
+Initial Time Horizons: The IPCC initially proposed three time horizons: 20, 100, and 500 years, reflecting the immediate, intermediate, and long-term impacts of GHGs.
+
+Key Assumptions:
+Radiative efficiency (warming potential per molecule) is constant.
+Atmospheric decay follows exponential decay, assuming no feedbacks.
+Evolution in Subsequent Reports
+
+
+\subsection{Second Assessment Report (SAR, 1995)}
+
+Updates: Refinements were made based on improved understanding of atmospheric lifetimes and radiative efficiencies.
+Feedbacks: Some initial considerations of feedback mechanisms were introduced but not fully incorporated.
+Policy Impact: GWPs from the SAR became the basis for emissions equivalency calculations in the Kyoto Protocol (1997).
+
+
+\subsection{Third Assessment Report (TAR, 2001)}
+
+Scientific Advancements:
+Enhanced modeling of gas lifetimes and interactions in the atmosphere.
+Inclusion of carbon-cycle feedbacks for CO₂ was discussed but not yet fully integrated.
+Clarifications: Highlighted that the choice of time horizon influences GWP values, and the 100-year horizon remained the standard for international policy.
+
+
+\subsection{Fourth Assessment Report (AR4, 2007)}
+Refinements: Updated GWP values based on new measurements of radiative efficiencies and lifetimes.
+Biogenic Methane: Addressed differences in methane’s GWP due to feedbacks (e.g., tropospheric ozone and stratospheric water vapor effects).
+
+
+\subsection{Fifth Assessment Report (AR5, 2013)}
+GWP Concept*: Introduced alternative metrics like GTP (Global Temperature Potential) for specific applications but retained GWP as the primary metric.
+Carbon-Cycle Feedbacks: Incorporated carbon-cycle feedbacks into CO₂-related metrics, increasing the accuracy of GWP values.
+Methane Updates: Refined methane’s GWP to 28–34 over 100 years, accounting for indirect effects and feedbacks.
+
+
+\subsection{Sixth Assessment Report (AR6, 2021)}
+Improved Precision: Latest atmospheric chemistry models and empirical data provided the most precise GWP values to date.
+Dynamic Metrics: Introduced GWP* and other dynamic metrics as alternatives to better account for short-lived climate pollutants (e.g., methane).
+Policy Implications: Reaffirmed the 100-year time horizon as a standard, while encouraging flexibility for specific applications (e.g., prioritizing methane reductions in near-term climate policies).
+
+
+Key Developments Over Time
+Focus on Standardization: GWP has remained the most widely used metric for GHG comparisons due to its simplicity and compatibility with policy frameworks.
+
+
+Criticisms and Alternatives:
+Critics argue that GWPs oversimplify the complexities of GHG impacts, especially for short-lived gases like methane.
+Alternatives like GWP* and GTP aim to address these concerns but are less established in policy contexts.
+Scientific Advancements: Improvements in data, modeling, and understanding of feedbacks have progressively refined GWP values and interpretations.
+GWP in Policy
+Kyoto Protocol: GWPs from the SAR (1995) were enshrined in the Kyoto Protocol for calculating CO₂-equivalent emissions.
+Paris Agreement: GWPs from AR4 (2007) and AR5 (2013) have been used in national inventories and climate pledges under the Paris Agreement.
+
+The GWP metric, while not perfect, has been instrumental in shaping climate policy and scientific discourse. Its history reflects the interplay between advancing scientific understanding and the need for practical tools in global climate governance. As climate science and policy evolve, GWP will likely remain a foundational metric while newer approaches address its limitations.
+
+\section{Defining GWP}
 
 CO2 has a GWP of 1 by definition, regardless of the time horizon, as it serves as the reference gas. CO2 remains in the climate system for thousands of years, meaning its emissions cause long-lasting increases in atmospheric concentrations.
 
@@ -107,7 +172,55 @@ The denominator compares these quantities for CO$_2$.
 Example GWPs
 CO$_2$: Defined as 1 (baseline),
 CH$_4$: ~28-34 over 100 years, ~84-86 over 20 years (depending on carbon-cycle feedbacks),
-N$_2$O: ~265-298 over 100 years.
+N$_2$O: ~265-298 over 100 years.\
+
+
+Example: 
+
+Step-by-Step Process
+Understand the GWP Equation The GWP for a gas i over a time horizon
+H is (See Equation 1).
+
+
+
+ : Radiative efficiency of gas 
+𝑖
+i (W/m² per unit concentration).
+
+ : Atmospheric lifetime of gas 
+
+ : Exponential decay of the gas concentration over time.
+𝐻
+H: Time horizon (e.g., 20, 100, or 500 years).
+Set Up Parameters
+
+Radiative efficiency and atmospheric lifetime for each gas.
+Choose a time horizon 
+𝐻
+H.
+Discretize the Time Horizon
+
+Use numerical integration (e.g., the trapezoidal rule) to approximate the integrals.
+
+Write the R Code
+
+
+Explanation of the Code
+Parameters:
+
+Radiative efficiencies and lifetimes are based on published IPCC values.
+
+A simplified effective lifetime is used for CO2 since it has multiple removal processes.
+Exponential Decay:
+
+Simulates the diminishing atmospheric concentration of each gas over time.
+Numerical Integration:
+
+The trapz function from the pracma library calculates the integral of radiative forcing over the time horizon.
+Calculate GWP:
+
+The ratio of the integrated radiative forcing of Ch4 to CO2 gives the GWP.
+
 
 Limitations of GWPs
 GWPs do not account for feedback mechanisms, such as those affecting CO$_2$ uptake by oceans and vegetation.

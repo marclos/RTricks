@@ -37,6 +37,64 @@ Based on what we have learn from research on Social Media, what type of graphics
 
 \subsection{Approach}
 
+Using social media to imagine a better world means shifting from merely preaching about issues to actively inspiring and engaging people in envisioning and creating solutions. Here are some strategies to make social media a platform for hope, creativity, and collective action:
+
+1. Tell Stories of Hope and Resilience
+Share Success Stories: Highlight individuals or communities overcoming challenges through innovative solutions (e.g., sustainable farming practices or community microgrid initiatives).
+Visualize the Future: Post artistic renderings, short videos, or animations that depict the world you’re working toward—a city powered by clean energy, vibrant ecosystems, or equitable societies.
+2. Encourage Participation
+Interactive Content: Create polls, challenges, or campaigns that invite people to contribute their ideas, such as “What does a carbon-free neighborhood look like to you?”
+Collaborative Vision Boards: Use platforms like Instagram or Pinterest to crowdsource images and ideas for a sustainable future.
+3. Show, Don’t Just Tell
+Data Visualization: Share accessible graphs, infographics, or animations showing positive trends, like renewable energy adoption or reforestation progress.
+Demonstrate Impact: Post before-and-after visuals or live updates from on-the-ground projects that demonstrate tangible change.
+4. Amplify Diverse Voices
+Platform Local Leaders: Feature voices from communities directly affected by or solving the problems.
+Celebrate Cultural Contributions: Highlight how different cultures envision and contribute to a better world.
+5. Inspire Action Through Creativity
+Collaborative Art Projects: Use hashtags to unite a global audience in co-creating art, poetry, or stories about a sustainable future.
+Gamify Solutions: Share challenges or quizzes that encourage followers to make sustainable choices and share their progress.
+6. Lead With Positivity
+Frame Solutions as Achievable: Focus on what can be done rather than what’s been lost.
+Highlight Everyday Heroes: Share stories of ordinary people making extraordinary contributions to their communities or the planet.
+7. Make it Relatable
+Personal Stories: Share experiences of how individuals or small actions have contributed to larger goals.
+Localized Content: Adapt global messages to resonate with specific audiences by using local examples, languages, or traditions.
+8. Create Space for Dialogue
+Host Live Discussions: Use features like Instagram Live, Twitter Spaces, or Facebook Live to brainstorm solutions with your audience.
+Encourage Constructive Debate: Frame discussions around “What would you do to make this better?” instead of focusing solely on criticism.
+9. Promote Collaborative Activism
+Highlight Collective Efforts: Share campaigns or projects where individuals can join forces, whether it’s planting trees, lobbying for clean energy policies, or reducing waste.
+Celebrate Milestones: Recognize collective achievements to maintain momentum and foster a sense of belonging.
+By shifting the focus to imagining possibilities and celebrating collective achievements, social media can become a tool for inspiring and co-creating a better future rather than a platform for criticism or despair.
+
+Here are several academic sources that explore how social media can be utilized to envision a better world through participatory storytelling, community engagement, and positive social technologies:
+
+Participatory Storytelling and Community Building on Social Media
+This study analyzes a Facebook-based participatory storytelling program, revealing how local communities co-construct narrative accounts of lived experiences, thereby fostering community engagement and collective envisioning. 
+SAGE JOURNALS
+
+Envisioning New Futures of Positive Social Technology
+This workshop introduces Positive Social Technology (Positech), a framework that shifts emphasis toward leveraging social technologies to support and enrich human experiences and connections, moving beyond merely fixing or preventing issues. 
+ARXIV
+
+Insights from a Study of Digital Storytelling with Marginalized Youth
+This article draws on qualitative data from a long-term partnership, exemplifying the unique advantages of interdisciplinary and collaborative approaches in digital storytelling to empower marginalized youth and foster community engagement. 
+JCES
+
+Social Media and Digital Storytelling for Social Good
+The analysis in this article reveals that digital stories can change community perceptions, shape personal politics, manage adversity, and promote social good, highlighting the transformative potential of storytelling on social media platforms. 
+RESEARCHGATE
+
+Using Social Media to Engage Communities with Research
+This publication focuses on methods and tools for evaluating the success of social media engagement, providing insights into how researchers can effectively use social media to engage communities and envision better futures collaboratively. 
+EDIS
+
+Social Media as a Civic Mobilizer: Community Storytelling Network
+This study advances communication infrastructure theory by testing the effects of an integrated community storytelling network and social media, demonstrating how these platforms can mobilize civic engagement and collective action. 
+TAYLOR \& FRANCIS ONLINE
+
+
 Unfortunately, a linear order of steps (and use of our guides) is not possible. The process of creating a compelling story is iterative and requires some back and forth between processes and guides. 
 
 Nevertheless, for this stage, here's what I suggest: 

@@ -1,0 +1,307 @@
+---
+title: "Stock and Flow"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(deSolve) #supports numerical integration using a range of numerical methods
+library(ggplot2) #supports visualization of layered graphics
+library(gridExtra) #supports visualization of multiple plots & graphs
+library(plyr) #supports data frame merging
+library(magrittr) #supports pipe function
+library(grid) #supports additional graphing capability
+```
+
+```{r}
+# Set time period and step
+START <- 2015
+FINISH <- 2030
+STEP <- 0.25
+simtime <- seq(START, FINISH, by = STEP)
+
+head(simtime);tail(simtime)
+
+# Set stock capacity, growth and decline rates
+stocks <- c(sCustomers = 10000)
+auxs <- c(aGrowthFraction = 0.08, aDeclineFraction = 0.03)
+
+```
+```{r}
+# Create the function and returns a list
+model <- function(time, stocks, auxs){
+  with(as.list(c(stocks, auxs)), {
+    fRecruits <- sCustomers * aGrowthFraction
+    fLosses <- sCustomers * aDeclineFraction
+    dC_dt <- fRecruits - fLosses
+    return (list(c(dC_dt),
+                 Recruits = fRecruits, Losses = fLosses,
+                 GF = aGrowthFraction, DF = aDeclineFraction))
+  }) 
+}
+
+# Create the data frame using the `ode` function
+o <- data.frame(ode(y = stocks, times = simtime, func = model,
+                    parms = auxs, method = "euler"))
+
+head(o)
+
+summary(o[,-c(1, 5, 6)])
+```
+
+4 Limits to Growth
+It is necessary to introduce a formulation method before presenting the limits to growth model. Formulation models allows developers to create equations robust enough to model the effect of a variable on another. They are useful for a wide variety of system dynamics models especially those with influencing stocks in different systems.
+
+We begin with modeling causal relationships using effects. This is defined as
+
+
+Y=Y∗∗Effect(X1onY)∗...∗Effect(XnonY)
+
+
+where, based on the assumptions:
+
+Y
+ = dependent variable of a causal relationship and is a function of n independent variables (X1,X2,...,Xn)
+
+Y∗
+ = reference value, which is the normal value the variable Y takes on. This reference value is multiplied by a sequence of effect functions that are calculated based on the normalized ratio of input term (Xi/X∗i)
+ where X∗i
+ is the reference input value, and Xi
+is the actual input value.
+
+The effect function has the normalized ratio (X/X∗)
+ on its x-axis, and always contains the point (1, 1). This point (1, 1) is important for the following reason: if x
+ equals its reference value X∗
+, then the effect function will be 1, and therefore y
+ will then equal its reference value Y∗
+.
+
+
+## New Version
+
+```{r}
+# Load necessary library
+library(dplyr)
+library(tidyr)
+
+# Example dataset: Emissions inventories for USA, China, and India over 10 years
+emissions_data <- data.frame(
+  Year = rep(2015:2024, each = 3), # 10 years
+  Country = rep(c("USA", "China", "India"), times = 10),
+  CO2_emissions = c(
+    runif(10, 4500, 5000), runif(10, 9000, 10000), runif(10, 2200, 2500) # million metric tons
+  ),
+  CH4_emissions = c(
+    runif(10, 250, 300), runif(10, 400, 500), runif(10, 150, 200) # million metric tons
+  ),
+  N2O_emissions = c(
+    runif(10, 100, 120), runif(10, 180, 200), runif(10, 80, 100) # million metric tons
+  )
+)
+
+# Global Warming Potential (GWP) values for 100-year horizon
+GWP_CO2 <- 1
+GWP_CH4 <- 28
+GWP_N2O <- 265
+
+# Calculate yearly GWP-weighted emissions
+emissions_data <- emissions_data %>%
+  mutate(
+    GWP_CO2 = CO2_emissions * GWP_CO2,
+    GWP_CH4 = CH4_emissions * GWP_CH4,
+    GWP_N2O = N2O_emissions * GWP_N2O,
+    Total_GWP = GWP_CO2 + GWP_CH4 + GWP_N2O
+  )
+
+# Stock-and-flow model: Cumulative GWP
+cumulative_emissions <- emissions_data %>%
+  group_by(Country) %>%
+  arrange(Country, Year) %>%
+  mutate(
+    Cumulative_GWP = cumsum(Total_GWP) # Accumulate total GWP over time
+  )
+
+# View cumulative emissions data
+print(cumulative_emissions)
+
+# Summarize total GWP and cumulative GWP per country for 10 years
+summary_table <- cumulative_emissions %>%
+  group_by(Country) %>%
+  summarize(
+    Total_10_Years_GWP = sum(Total_GWP),
+    Final_Cumulative_GWP = max(Cumulative_GWP)
+  )
+
+# Print summary results
+print(summary_table)
+
+# Save detailed and summary results to CSV
+write.csv(cumulative_emissions, "cumulative_emissions_gwp_3_countries.csv", row.names = FALSE)
+write.csv(summary_table, "summary_gwp_3_countries.csv", row.names = FALSE)
+
+```
+
+Stocks and Flows
+Julio Huato
+5/8/2020
+1 Introduction
+
+As in the physical sciences, all basic magnitudes in economics are specified either at a point in time or over a period of time. The distinction between these two types of magnitudes is one of the most important ones in accounting, finance, and economics. Much confusion can be avoided by understanding the distinction, and maintaining it consistently when conducting economic analysis. Let us define the basic concepts.
+2 Definitions
+
+Stock magnitude
+
+A stock magnitude (a stock, for short) is the value of a variable at a given point in time.
+
+Flow magnitude
+
+A flow magnitude (or, simply, a flow) is the value of a variable for a given period of time.
+
+Once these basic magnitudes are defined, a host of other magnitudes can be derived as well—such as ratios of flows to flows, stocks to stocks, flows to stocks, and stocks1 to flows.
+
+As an analogy, consider a vessel or container with water, with one pipe delivering additional water into the vessel, and another pipe leaking it out. A physicist or an engineer would call this a simple “hydrodynamic system.”
+
+A simple hydrodynamic system.
+
+Stock and flow magnitudes can be used to measure the performance of this system. A stock measure would be the amount of water in the container at given points in time, such as Sundays at noon or on the last day of each month at 4 PM. Alternatively, a flow measure would be one of the amount of water flowing into, through, or out of the vessel over given periods of time, such as a day, week, or month.
+
+Then, by combining both forms of measurement, we would get a more complete picture of the functioning of the system. The stock measures may help us correct errors in the measurement of flows and, vice versa.
+
+Using the upper-case letters denote stocks and the lower-case ones denote flows, we now let Xt
+be the amount of water in the vessel at point in time t, xit the amount of water flowing into the vessel during the month, and xot the amount of water flowing out of the vessel during the month. Then, the net amount of water flowing through the vessel in the month is given by xnt=xit−xot, and the amount of water in the container at point in time t+1 is:
+Xt+1=Xt+xit−xot=Xt+xnt
+In words, the amount of water in the container at the end of the period is equal to the amount of water in the container at the beginning of the period, plus the water that got in it during period from t through t+1
+
+, minus the water that leaked out of it during the same period.2
+
+Example: A container On November 1 (t=0
+), the amount of water in the container is 10 gallons (X0=10). The water flowing into the vessel during November is 40 gallons (xit=40) and the water flowing out of the vessel is 39 gallons (xot=39). The amount of water in the container on December 1:
+X1=X0+xi1−xo1=10+40−39=11.
+
+That is, there are eleven gallons of water in the container at the end of November.
+
+If the stock of water on December 1 is any different from (greater than or less than) the result above, we have made errors in our measurements. The new measure of the water level can help us correct our records.
+
+Example: Peter’s checking account On November 1 (t=0
+), the balance of Peter’s checking account is 100 dollars (X0=100). During November, Peter deposited checks his grandmother and father sent him that totalled 400 dollars (xit=400). Also in the month, he made electronic payments, wrote checks, and withdrew cash from the ATM machine for a total of 390 dollars (xot=390). The balance of his account on December 1 is determined as follows:
+X1=X0+xi1−xo1=100+400−390=110.
+
+That is, Peter held a balance of 110 dollars at the end of November.
+
+Example: A town’s finances On January 1, 2010 (t=0
+), the town’s assets were estimated in 10,000 dollars (X0=10). In 2010, the town received local taxes and grants from the central government totalling 40,000 dollars (xit=40). Also in 2010, the town spent in its administration, public works, and local public programs a total of 39,000 dollars (xot=39). The value of the town’s assets at the end of 2010 is given by:
+X1=X0+xi1−xo1=10+40−39=11.
+
+That is, the town began 2011 with assets worth 11,000 dollars.
+
+Example: An economy As of January 1, 2010 (t=0
+), the total wealth of an economy is estimated in 10 billion dollars (X0=10). During 2010, the economy produced output estimated in 40 billion dollars (xit=40). ALso, households in the economy consumed 39 billion dollars during the year (xot=390). The wealth of this economy as of January 1, 2011 is:
+X1=X0+xi1−xo1=10+40−39=11.
+
+That is, the outstanding wealth of the economy increased by 10 percent to 11 billion dollars.
+
+Note that the mathematical structure of the four examples above is essentially the same.
+
+Exercises
+
+R code
+3 Accounting principles
+
+The two basic financial statements that accountants produce are the balance sheet and the income statement. These financial statements provide a detailed picture of the ongoing financial performance of a business or organization.
+
+Balance sheet: The balance sheet of any organization (such as a business) is a report that describes the financial condition of the organization at a given point in time.
+
+The balance sheet has two sides. The left-hand side reports the value of all the organization’s assets at a given point in time, typically at the end of a year. The assets are the resources under the management of the organization measured at a point in time. The right-hand side reports the source of the value of the assets listed on the left-hand side. They are either owed to others, in which case they are called liabilities, or they are owned by the legal owners, in which case they are called equity, net worth, or (in the case of banks) capital.
+
+In usual practice, organizations report a balance sheet every year, quarter, and—sometimes—month. Less usual is every week or day. In principle, it could be determined at each point in time. This has become increasingly possible with modern day computers.
+
+The fundamental equation of the balance sheet is:
+At=Lt+Et
+
+where t
+indicates a point in time (e.g. the last day of the year), A is total assets, L is total liabilities, and E
+
+is total equity.3
+
+Example: A typical balance sheet. See table 1.
+
+Table 1. ABC, Inc.’s Balance Sheet as of 12/31/2010
+Item 	Amount 	Item 	Amount
+Cash and liquid securities 	$10 	Payables 	$20
+Inventories 	50 	Other short-term debt 	40
+Receivables 	60 	Mortgages 	80
+Trucks (net) 	25 	Other long-term debt 	250
+Office equipment (net) 	10 	Total liabilities 	390
+Machinery (net) 	45 	Total equity 	120
+Buildings (net) 	220 		
+Other fixed assets (net) 	90 		
+Total assets 	$510 	Total liabilities plus equity 	$510
+: 			
+
+All items in the balance sheet are stock measures. So, whenever you consider a balance sheet, think of “water in a container” measured at a point in time.
+
+In the balance sheet, by convention, asset items are viewed as positive stock magnitudes while liabilities and equity items are negative stock magnitudes.
+
+Income statement: The income statement (or result statement or profit-loss statement) of any organization (such as a business) is a report that describes the financial activity of the organization over a given period time.
+
+The income statement reports on its top line the total flow of gross income (e.g. sales revenues) received by the organization during a period of time (e.g. a year) as a positive number. The next lines report the various expenses that the activity of the organization incurred during the period to sustain its gross income. These expenses—sorted out as production costs, operating expenses, financial expenses, and taxes—are deducted or subtracted from the top line. In other words, they are regarded as negative numbers. Finally, the bottom line of the income statement indicates the flow of net income or net profit (if the net income is positive) or net loss (if the net income is negative) during the period.
+
+The fundamental equation of the income statement is:
+NIt=GIt−PCt−OEt−FEt−Tt
+where t is the period of time from point in time t−1 to point in time t, NI is the residual income or net income (net profit or net loss), GI is the gross income (typically, revenues from sales, though it may include rental income and interest income the organization may receive during the period), PC is the total cost of goods sold (such as cost of raw materials, storage costs, wages and benefits of factory-floor workers), OE are the operating expenses (sales and administrative expenses, including salaries and commissions of administrative and sales personnel and depreciation of fixed assets), FE is financial expenses (interest paid on outstanding liabilities), and T
+
+is taxes paid.
+
+Example: A typical income statement. See table 2.
+
+Table 2. ABC, Inc.’s Income Statement from 1/1/2010 through 12/31/2010
+Item 	Amount
+(+
+) Sales revenues 	$200
+(−
+) Cost of goods sold 	90
+Gross profit 	110
+(−
+) Operating expenses (includes depreciation) 	40
+Operating profit 	70
+(−
+) Interest paid 	10
+Taxable profit 	60
+(−
+) Taxes 	10
+Net profit 	$50
+: 	
+
+All items in the income statement are flow measures. Think of them as "water that flows in or out of the container" over a period of time.
+
+In the income statement, the convention is that revenues (from sales) are regarded as positive flows and all costs and expenses as negative flows.
+
+The balance sheet and the income statement are related in multiple ways.
+
+Again, it is useful to think that, every time an organization conducts an operation or transaction, every time a business takes raw materials from its inventories and have its workers process them on the factory floor, every time its sales people sell a batch of goods or its administrative personnel orders a shipment from its suppliers, every time a payment is made or received, etc. there is “water flowing” from one balance-sheet “container” into another one. At the end of the given period (and beginning of the next period), the balance sheet reports the adjusted levels of “water" in each”container" at that point in time.
+
+Also at the end of the given period (beginning of the next), each spurt of “water” that flowed from “container” to “container” during the period is added up (aggregated) into its respective category and recorded in the income statement. The legal owners of the organization (if a corporation, the legal owners are called stockholders or shareholders) pay most attention to the level of “water” in their equity “container.”
+
+The examples above should make it clear that the principles of accounting are the same whether they are applied to one household, business, entity, or organization, including a national economy or the entire global economy for that matter.
+
+The Generally Accepted Accounting Principles (GAAP)—with rules set by the Financial Accounting Standards Board (FASB), a private sector organization—that are used in business practice, are a set of detailed conventions based on these fundamental principles. The national income and product accounts (NIPA) and the balance of payments (BoP) accounts kept by the Bureau of Economic Analysis (BEA) of the U.S. Department of Commerce, the flow of funds (FoF) accounts kept by the Federal Reserve (“Fed”), and the data on prices, employment, pay, and productivity kept by Bureau of Labor Statistics, all of them statistical records intended to measure the performance of the U.S. economy, are based on these very principles. Other national statistics agencies, central banks, and international organizations—such as the International Monetary Fund (IMF), the World Bank (WB), the World Trade Organization (WTO), the Organization for Economic Cooperation and Development (OECD), and the United Nations (UN)—apply the same principles to their statistical collection efforts.
+
+Further details are the subject matter of formal courses in financial accounting, macroeconomics, and other particular fields.
+
+Exercises
+
+R code
+
+    The term stock has several meanings in economics and finance. It also refers to the equity or residual wealth claimed by the legal owners of a company traded in the market. The context should make it clear when the term is used in one or another sense.↩︎
+
+    Assume no evaporation or, alternatively, that the water leaked out in the period includes evaporated water.↩︎
+
+    To separate an organization from its individual owners, it may be convenient to state the equation as A = L, i.e. assets equal liabilities. They are liabilities to either others or to the individual “owners” of the organization. In this interpretation, the equity of the legal owners of, e.g., a business is considered a special type of liability.↩︎
+
