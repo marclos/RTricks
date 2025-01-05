@@ -10,6 +10,23 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here) # used to help move between github users, and with knitr sessions
 ```
 
+# Today's Goal: Create a Compelling Plot using Mauna Loa CO2 Data
+
+
+What is the equation for a line?
+
+$y = mx + b$, where
+
+m = slope, b = intercept
+
+In statistics, we usually write it as a function where y is a function of x or: 
+
+$y =f(x)$
+
+that includes things like the slope, intercept and error, which are generally 
+referred to as coefficents, and each have associated error, since real data 
+never fall on the line. 
+
 ## Read Data
 
 ```{r}

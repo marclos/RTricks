@@ -1,7 +1,7 @@
 ---
-title: "Visualizating pHake Lake Temperature Profiles"
+title: "Visualizing pHake Lake Temperature Profiles"
 author: "Marc Los Huertos"
-date: "2024-01-18"
+date: "2025-01-18"
 output: pdf_document
 ---
 
@@ -26,17 +26,27 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Import into R
 
-1. Use file.choose() in the console to select the file and path of the csv.
-2. Using your path, change the code in the Rmd to define the path to your csv (See example below -- Note: your path will differ!) In effect you are specifying 'path' to the YOURDATA.csv object.
-3. Run the modified code (example, but different than yours) to import into R. You can 
-run the R chunk with the green arrow. I suggest you also "knit" to make sure nothing 
-else is wrong. 
+1. Use file.choose() in the *console* to select the file and path of the csv.
 
-```{r importCSV, echo=FALSE}
+```{r, eval=FALSE}
+file.choose()
+```
+
+2. Using your path, change the code in the Rmd to define the path to your csv (See example below -- Note: your path will differ!) In effect you are specifying 'path' to the YOURDATA.csv object.
+
+3. Put the code in the Rmd file--i suggest you put at the end in a new r block.
+
+```{r importCSV, echo=TRUE}
 temp.csv <- "/home/mwl04747/RTricks/02_pHake_Lake/G0.csv" # change this to your path...
 temp = read.csv(temp.csv) # This creates a data frame in R called temp
-
+temp
 ```
+4. Run the modified code (example, but different than yours) to import into R. You can 
+run the R chunk with the green arrow. I suggest you also "knit" to make sure nothing 
+else is wrong. 
+5. Remove the text and R blocks from the template.
+
+
 
 ## Check the Data have been imported correctly and Document Code Functions
 
@@ -81,17 +91,25 @@ plot(Depth~Temperature, data=temp)
 ```
 5. Add title, adjust y-axis limits:
 ```{r Addtitle}
-plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(14,0), main="pHake Lake Temperature Profile (Jan 16, 2024)")
+plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(14,0), 
+     main="pHake Lake Temperature Profile (Jan 16, 2024)")
 ```
 
 5. Define units with axes labels:
-```{r Addtitle}
+```{r Addlabels}
 plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(14,0), ylab="Depth (M)", 
 xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Jan 16, 2024)")
 ```
 
 I had to copy and paste the degree symbol, there are better ways to do that, but 
 it's complictated -- so do this to keep it simple for now. 
+
+## Prepare the Rmd file for submission
+
+1. Create headings that describe the steps in the rmd file
+2. Add text that describes what the r code will be doing.
+3. Add comments for each line (I often do it before the code)
+4. knit
 
 ## Download Rmd and PDF files and Submit to Canvas:
 
