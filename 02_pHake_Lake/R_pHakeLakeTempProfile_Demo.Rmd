@@ -107,7 +107,9 @@ it's complictated -- so do this to keep it simple for now.
 ## Prepare the Rmd file for submission
 
 1. Create headings that describe the steps in the rmd file
-2. Add text that describes what the r code will be doing.
+2. Add text that describes what the r code will be doing. Feel free to use my 
+bullets and make them into sentences. If you are unsure about the code, come to
+mentor session or search online for an explanation. 
 3. Add comments for each line (I often do it before the code)
 4. knit
 
