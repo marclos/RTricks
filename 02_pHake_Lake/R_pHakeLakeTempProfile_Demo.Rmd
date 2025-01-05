@@ -1,7 +1,7 @@
 ---
 title: "Visualizating pHake Lake Temperature Profiles"
 author: "Marc Los Huertos"
-date: "2024-01-15"
+date: "2024-01-18"
 output: pdf_document
 ---
 
@@ -13,48 +13,87 @@ knitr::opts_chunk$set(echo = TRUE)
 
 1. Download the data from Google Sheets as a csv file (Note where on your computer the file is saved!)
 2. Start Rstudio Server (rstudio.pomona.edu)
-3. Create New Folder called pHake_Lake
-4. Upload data into pHake_Lake folder
+3. Create New Folder called "pHake_Lake"
+4. Upload data into the pHake_Lake folder
 
-## Import into R
+## Create Rmd and PDF
 
 1. Create an R Markdown file and give it a title and select pdf for the output.
 2. Save the file as R_pHakeLakeTempProfile.Rmd
-3. Use file.choose() in the console to select the file and path of the csv.
-4. Using your path, change the code below to match your path and file name, where you are specifying path to the temp.csv object.
-5. Run the modified code below to import into R.
+3. Check to see if the pdf is created. If not, check steps above.
+4. Look how R code and R results are interwoven with text. YES, pretty neat. 
+5. Read the pdf to learn how the R code is used. 
 
-```{r importCSV}
-temp.csv <- "/home/mwl04747/RTricks/01_Introduction_to_R/Temperature Profile Data Entry - Test.csv"
-temp = read.csv(temp.csv)
+## Import into R
 
-```
+1. Use file.choose() in the console to select the file and path of the csv.
+2. Using your path, change the code in the Rmd to define the path to your csv (See example below -- Note: your path will differ!) In effect you are specifying 'path' to the YOURDATA.csv object.
+3. Run the modified code (example, but different than yours) to import into R. You can 
+run the R chunk with the green arrow. I suggest you also "knit" to make sure nothing 
+else is wrong. 
 
-6. If the code works, add a comment line for each function to explain what it does. Comments begin with a #.
-
-## Check the Data have been imported correctly
-
-```{r checkData}
-ls()
-names(temp)
-str(temp)
+```{r importCSV, echo=FALSE}
+temp.csv <- "/home/mwl04747/RTricks/02_pHake_Lake/G0.csv" # change this to your path...
+temp = read.csv(temp.csv) # This creates a data frame in R called temp
 
 ```
+
+## Check the Data have been imported correctly and Document Code Functions
+
+1. Run each line below to see if the data were read correctly!
+
+```{r checkData, echo=TRUE, results='hide'}
+ls() # list the object in the environment
+names(temp) # list the column names
+str(temp) # list the structure of the data frame
+head(temp) # list the first 6 rows of the data frame
+
+```
+2. If the code works, add a comment line for each function to explain what it does. Comments begin with a #.
+3. While you can hide code and and comments to make the pdf prettier, we won't do that 
+yet, so I can see your work!  
 
 ## Plot the Data
 
+1. Create a basic plot;
 
-```{r plotData}
+```{r plotData, echo=TRUE}
 plot(Temperature~Depth, data=temp)
-plot(-Depth~Temperature, data=temp)
-
-plot(-Depth~Temperature, data=temp, las=1, ty="l")
-
-plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(13,0), main="pHake Lake Temperature Profile (Jan X, 2023)")
 ```
 
-7. Download Rmd and PDF files
+Read: Y is a function of x. 
 
-Click on the two files in the "Files" tab in the lower right panel of RStudio and then click on the "More" tab and select "Export".  This will download the files to your computer.
+2. Put Depth on y-axis and Temperature on x-axis:
 
-Then upload the files to Canvas!
+```{r changeaxes}
+plot(Depth~Temperature, data=temp)
+```
+
+3. Change the order of the depth, so the surface (0) is at the top of the y-axis:
+
+```{r ReversePlot}
+#plot(-Depth~Temperature, data=temp)
+```
+
+4. Let's rotate axis and make into a line graph:
+```{r rotateaxis}
+#plot(-Depth~Temperature, data=temp, las=1, ty="l")
+```
+5. Add title, adjust y-axis limits:
+```{r Addtitle}
+plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(14,0), main="pHake Lake Temperature Profile (Jan 16, 2024)")
+```
+
+5. Define units with axes labels:
+```{r Addtitle}
+plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(14,0), ylab="Depth (M)", 
+xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Jan 16, 2024)")
+```
+
+I had to copy and paste the degree symbol, there are better ways to do that, but 
+it's complictated -- so do this to keep it simple for now. 
+
+## Download Rmd and PDF files and Submit to Canvas:
+
+1. Click on the two files in the "Files" tab in the lower right panel of RStudio and then click on the "More" tab and select "Export".  This will download the files to your computer.
+2. Submit to Canvas (first question on weekly quiz)!
