@@ -9,6 +9,17 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Introduction
+
+## Activity Goals
+
+We will use R to visualize our data from pHake Lake. 
+
+I created this guide as a tutorial use as a model for R. It's not designed 
+as an introduction to R -- please see the "Introduction to R" handout for that!
+
+# Procedures
+
 ## Downloading and Uploading Data
 
 1. Download the data from Google Sheets as a csv file (Note where on your computer the file is saved!)
@@ -29,7 +40,7 @@ knitr::opts_chunk$set(echo = TRUE)
 1. Use file.choose() in the *console* to select the file and path of the csv.
 
 ```{r, eval=FALSE}
-file.choose()
+file.choose() # we use this to determine the path and filename
 ```
 
 2. Using your path, change the code in the Rmd to define the path to your csv (See example below -- Note: your path will differ!) In effect you are specifying 'path' to the YOURDATA.csv object.
@@ -39,7 +50,7 @@ file.choose()
 ```{r importCSV, echo=TRUE}
 temp.csv <- "/home/mwl04747/RTricks/02_pHake_Lake/G0.csv" # change this to your path...
 temp = read.csv(temp.csv) # This creates a data frame in R called temp
-temp
+temp # prints out dataframe
 ```
 4. Run the modified code (example, but different than yours) to import into R. You can 
 run the R chunk with the green arrow. I suggest you also "knit" to make sure nothing 
@@ -68,7 +79,7 @@ yet, so I can see your work!
 1. Create a basic plot;
 
 ```{r plotData, echo=TRUE}
-plot(Temperature~Depth, data=temp)
+plot(Temperature~Depth, data=temp) # plot where temperature is a fanction of depth
 ```
 
 Read: Y is a function of x. 
