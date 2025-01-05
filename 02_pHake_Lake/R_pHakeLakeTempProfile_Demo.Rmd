@@ -79,7 +79,7 @@ yet, so I can see your work!
 1. Create a basic plot;
 
 ```{r plotData, echo=TRUE}
-plot(Temperature~Depth, data=temp) # plot where temperature is a fanction of depth
+plot(Temperature~Depth, data=temp) # plot where temperature is a function of depth
 ```
 
 Read: Y is a function of x. 
