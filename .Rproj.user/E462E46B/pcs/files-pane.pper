@@ -1,13 +1,13 @@
 {
     "sortOrder": [
         {
-            "columnIndex": 2,
-            "ascending": true
+            "columnIndex": 4,
+            "ascending": false
         },
         {
-            "columnIndex": 4,
+            "columnIndex": 2,
             "ascending": true
         }
     ],
-    "path": "~/RTricks/02_pHake_Lake"
+    "path": "~/RTricks/04_Regional_Climate_Trends"
 }
