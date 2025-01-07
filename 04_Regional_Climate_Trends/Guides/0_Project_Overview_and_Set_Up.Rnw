@@ -5,7 +5,7 @@
 
 \title{Preparing Regional Weather Data Analysis Project}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.74)} % without \date command, current date is supplied
+\date{\today~(ver. 0.75)} % without \date command, current date is supplied
 
 \begin{document}
 \maketitle
@@ -60,7 +60,9 @@ Note, it maybe that there are too many missing values in one or more of your sta
 The station inventory is available as a .txt file. The file is a fixed width file, which means that each column has a specific width. The file is available at the following URL: \url{https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.txt}.
 
 <<read_ghcnd_inventory, echo=TRUE>>=
+
 library(here)
+
 # Get Stations Data (Inventory)
 inventory = read.table("https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.txt")
 
@@ -78,6 +80,7 @@ names(inventory) = inventory_names
 # Check the structure of the data
 str(inventory)
 @
+
 
 
 \subsection{Selecting Active Weather Stations with Maximum Daily Temperature Readings}
@@ -196,6 +199,8 @@ plot(stations.active.oldest$LONGITUDE, stations.active.oldest$LATITUDE,
 \subsection{Next Steps}
 
 In Guide \#1, we'll use the stations.active.oldest dataset to download the daily temperature and precipitation data for the ``oldest, active stations".
+
+
 <<write_stations.active.oldest>>=
 # export file to csv
 write.csv(stations.active.oldest, 
@@ -248,9 +253,6 @@ Upload Video              & ? (??) & Rstudio, R code & Guide 4 \\ \hline\hline
 Total (hrs)               & X (\Sexpr{round(sum(tasks$Time)/60,1)}) & & \\ \hline
 \end{tabular}
 \end{table}
-
-
-
 
 
 \end{document}

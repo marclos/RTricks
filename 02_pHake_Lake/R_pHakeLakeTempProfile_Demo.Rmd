@@ -13,7 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Activity Goals
 
-We will use R to visualize our data from pHake Lake. 
+We will use R to visualize our data from pHake Lake and learn something about some
+of the plants and animals that might inhabit the region.
 
 I created this guide as a tutorial use as a model for R. It's not designed 
 as an introduction to R -- please see the "Introduction to R" handout for that!
@@ -117,7 +118,9 @@ it's complictated -- so do this to keep it simple for now.
 
 ## Prepare the Rmd file for submission
 
-1. Create headings that describe the steps in the rmd file
+1. Create headings that describe the steps in the rmd file;
+2. Research the name of your group and describe it's life history as part of the 
+introduction (yes, not exactly related, but let's go with it).
 2. Add text that describes what the r code will be doing. Feel free to use my 
 bullets and make them into sentences. If you are unsure about the code, come to
 mentor session or search online for an explanation. 
