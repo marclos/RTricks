@@ -25,17 +25,18 @@ vignettes/*.pdf
 # Folders
 00_resources/
 00_Admin/
+00_Draft_Template
 DRAFT/
 OLD/
-04_Regional_Climate_Trends/Data/
-04_Regional_Climate_Trends/Guides/OLD/
-04_Regional_Climate_Trends/Guides/*.log
-04_Regional_Climate_Trends/Guides/*.tex
-04_Regional_Climate_Trends/Guides/*.concordance.tex
-04_Regional_Climate_Trends/Guides/*.synctex.gz
-04_Regional_Climate_Trends/Guides/figure
-05_Advection_Diffusion/figure
-05_Advection_Diffusion/*.log
+05_Regional_Climate_Trends/Data/
+05_Regional_Climate_Trends/Guides/OLD/
+05_Regional_Climate_Trends/Guides/*.log
+05_Regional_Climate_Trends/Guides/*.tex
+05_Regional_Climate_Trends/Guides/*.concordance.tex
+05_Regional_Climate_Trends/Guides/*.synctex.gz
+05_Regional_Climate_Trends/Guides/figure
+06_Advection_Diffusion/figure
+06_Advection_Diffusion/*.log
 # Guides
 # 01_Introduction_to_R/*.log
 
