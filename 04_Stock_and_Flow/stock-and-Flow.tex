@@ -1,0 +1,642 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Stock and Flow},
+  pdfauthor={Marc Los Huertos},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Stock and Flow}
+\author{Marc Los Huertos}
+\date{2025-01-07}
+
+\begin{document}
+\maketitle
+
+\subsection{R Markdown}\label{r-markdown}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(deSolve) }\CommentTok{\#supports numerical integration using a range of numerical methods}
+\FunctionTok{library}\NormalTok{(ggplot2) }\CommentTok{\#supports visualization of layered graphics}
+\FunctionTok{library}\NormalTok{(gridExtra) }\CommentTok{\#supports visualization of multiple plots \& graphs}
+\FunctionTok{library}\NormalTok{(plyr) }\CommentTok{\#supports data frame merging}
+\FunctionTok{library}\NormalTok{(magrittr) }\CommentTok{\#supports pipe function}
+\FunctionTok{library}\NormalTok{(grid) }\CommentTok{\#supports additional graphing capability}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Set time period and step}
+\NormalTok{START }\OtherTok{\textless{}{-}} \DecValTok{2015}
+\NormalTok{FINISH }\OtherTok{\textless{}{-}} \DecValTok{2030}
+\NormalTok{STEP }\OtherTok{\textless{}{-}} \FloatTok{0.25}
+\NormalTok{simtime }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(START, FINISH, }\AttributeTok{by =}\NormalTok{ STEP)}
+
+\FunctionTok{head}\NormalTok{(simtime);}\FunctionTok{tail}\NormalTok{(simtime)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2015.00 2015.25 2015.50 2015.75 2016.00 2016.25
+\end{verbatim}
+
+\begin{verbatim}
+## [1] 2028.75 2029.00 2029.25 2029.50 2029.75 2030.00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Set stock capacity, growth and decline rates}
+\NormalTok{stocks }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\AttributeTok{sCustomers =} \DecValTok{10000}\NormalTok{)}
+\NormalTok{auxs }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\AttributeTok{aGrowthFraction =} \FloatTok{0.08}\NormalTok{, }\AttributeTok{aDeclineFraction =} \FloatTok{0.03}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create the function and returns a list}
+\NormalTok{model }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(time, stocks, auxs)\{}
+  \FunctionTok{with}\NormalTok{(}\FunctionTok{as.list}\NormalTok{(}\FunctionTok{c}\NormalTok{(stocks, auxs)), \{}
+\NormalTok{    fRecruits }\OtherTok{\textless{}{-}}\NormalTok{ sCustomers }\SpecialCharTok{*}\NormalTok{ aGrowthFraction}
+\NormalTok{    fLosses }\OtherTok{\textless{}{-}}\NormalTok{ sCustomers }\SpecialCharTok{*}\NormalTok{ aDeclineFraction}
+\NormalTok{    dC\_dt }\OtherTok{\textless{}{-}}\NormalTok{ fRecruits }\SpecialCharTok{{-}}\NormalTok{ fLosses}
+    \FunctionTok{return}\NormalTok{ (}\FunctionTok{list}\NormalTok{(}\FunctionTok{c}\NormalTok{(dC\_dt),}
+                 \AttributeTok{Recruits =}\NormalTok{ fRecruits, }\AttributeTok{Losses =}\NormalTok{ fLosses,}
+                 \AttributeTok{GF =}\NormalTok{ aGrowthFraction, }\AttributeTok{DF =}\NormalTok{ aDeclineFraction))}
+\NormalTok{  \}) }
+\NormalTok{\}}
+
+\CommentTok{\# Create the data frame using the \textasciigrave{}ode\textasciigrave{} function}
+\NormalTok{o }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\FunctionTok{ode}\NormalTok{(}\AttributeTok{y =}\NormalTok{ stocks, }\AttributeTok{times =}\NormalTok{ simtime, }\AttributeTok{func =}\NormalTok{ model,}
+                    \AttributeTok{parms =}\NormalTok{ auxs, }\AttributeTok{method =} \StringTok{"euler"}\NormalTok{))}
+
+\FunctionTok{head}\NormalTok{(o)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      time sCustomers Recruits   Losses   GF   DF
+## 1 2015.00   10000.00 800.0000 300.0000 0.08 0.03
+## 2 2015.25   10125.00 810.0000 303.7500 0.08 0.03
+## 3 2015.50   10251.56 820.1250 307.5469 0.08 0.03
+## 4 2015.75   10379.71 830.3766 311.3912 0.08 0.03
+## 5 2016.00   10509.45 840.7563 315.2836 0.08 0.03
+## 6 2016.25   10640.82 851.2657 319.2246 0.08 0.03
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(o[,}\SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    sCustomers       Recruits          Losses     
+##  Min.   :10000   Min.   : 800.0   Min.   :300.0  
+##  1st Qu.:12048   1st Qu.: 963.9   1st Qu.:361.4  
+##  Median :14516   Median :1161.3   Median :435.5  
+##  Mean   :14866   Mean   :1189.3   Mean   :446.0  
+##  3rd Qu.:17489   3rd Qu.:1399.2   3rd Qu.:524.7  
+##  Max.   :21072   Max.   :1685.7   Max.   :632.2
+\end{verbatim}
+
+4 Limits to Growth It is necessary to introduce a formulation method
+before presenting the limits to growth model. Formulation models allows
+developers to create equations robust enough to model the effect of a
+variable on another. They are useful for a wide variety of system
+dynamics models especially those with influencing stocks in different
+systems.
+
+We begin with modeling causal relationships using effects. This is
+defined as
+
+Y=Y∗∗Effect(X1onY)∗\ldots∗Effect(XnonY)
+
+where, based on the assumptions:
+
+Y = dependent variable of a causal relationship and is a function of n
+independent variables (X1,X2,\ldots,Xn)
+
+Y∗ = reference value, which is the normal value the variable Y takes on.
+This reference value is multiplied by a sequence of effect functions
+that are calculated based on the normalized ratio of input term (Xi/X∗i)
+where X∗i is the reference input value, and Xi is the actual input
+value.
+
+The effect function has the normalized ratio (X/X∗) on its x-axis, and
+always contains the point (1, 1). This point (1, 1) is important for the
+following reason: if x equals its reference value X∗ , then the effect
+function will be 1, and therefore y will then equal its reference value
+Y∗ .
+
+\subsection{New Version}\label{new-version}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load necessary library}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:plyr':
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:gridExtra':
+## 
+##     combine
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'tidyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:magrittr':
+## 
+##     extract
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Example dataset: Emissions inventories for USA, China, and India over 10 years}
+\NormalTok{emissions\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Year =} \FunctionTok{rep}\NormalTok{(}\DecValTok{2015}\SpecialCharTok{:}\DecValTok{2024}\NormalTok{, }\AttributeTok{each =} \DecValTok{3}\NormalTok{), }\CommentTok{\# 10 years}
+  \AttributeTok{Country =} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"USA"}\NormalTok{, }\StringTok{"China"}\NormalTok{, }\StringTok{"India"}\NormalTok{), }\AttributeTok{times =} \DecValTok{10}\NormalTok{),}
+  \AttributeTok{CO2\_emissions =} \FunctionTok{c}\NormalTok{(}
+    \FunctionTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{4500}\NormalTok{, }\DecValTok{5000}\NormalTok{), }\FunctionTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{9000}\NormalTok{, }\DecValTok{10000}\NormalTok{), }\FunctionTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{2200}\NormalTok{, }\DecValTok{2500}\NormalTok{) }\CommentTok{\# million metric tons}
+\NormalTok{  ),}
+  \AttributeTok{CH4\_emissions =} \FunctionTok{c}\NormalTok{(}
+    \FunctionTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{250}\NormalTok{, }\DecValTok{300}\NormalTok{), }\FunctionTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{400}\NormalTok{, }\DecValTok{500}\NormalTok{), }\FunctionTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{150}\NormalTok{, }\DecValTok{200}\NormalTok{) }\CommentTok{\# million metric tons}
+\NormalTok{  ),}
+  \AttributeTok{N2O\_emissions =} \FunctionTok{c}\NormalTok{(}
+    \FunctionTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{120}\NormalTok{), }\FunctionTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{180}\NormalTok{, }\DecValTok{200}\NormalTok{), }\FunctionTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{80}\NormalTok{, }\DecValTok{100}\NormalTok{) }\CommentTok{\# million metric tons}
+\NormalTok{  )}
+\NormalTok{)}
+
+\CommentTok{\# Global Warming Potential (GWP) values for 100{-}year horizon}
+\NormalTok{GWP\_CO2 }\OtherTok{\textless{}{-}} \DecValTok{1}
+\NormalTok{GWP\_CH4 }\OtherTok{\textless{}{-}} \DecValTok{28}
+\NormalTok{GWP\_N2O }\OtherTok{\textless{}{-}} \DecValTok{265}
+
+\CommentTok{\# Calculate yearly GWP{-}weighted emissions}
+\NormalTok{emissions\_data }\OtherTok{\textless{}{-}}\NormalTok{ emissions\_data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{GWP\_CO2 =}\NormalTok{ CO2\_emissions }\SpecialCharTok{*}\NormalTok{ GWP\_CO2,}
+    \AttributeTok{GWP\_CH4 =}\NormalTok{ CH4\_emissions }\SpecialCharTok{*}\NormalTok{ GWP\_CH4,}
+    \AttributeTok{GWP\_N2O =}\NormalTok{ N2O\_emissions }\SpecialCharTok{*}\NormalTok{ GWP\_N2O,}
+    \AttributeTok{Total\_GWP =}\NormalTok{ GWP\_CO2 }\SpecialCharTok{+}\NormalTok{ GWP\_CH4 }\SpecialCharTok{+}\NormalTok{ GWP\_N2O}
+\NormalTok{  )}
+
+\CommentTok{\# Stock{-}and{-}flow model: Cumulative GWP}
+\NormalTok{cumulative\_emissions }\OtherTok{\textless{}{-}}\NormalTok{ emissions\_data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Country) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(Country, Year) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{Cumulative\_GWP =} \FunctionTok{cumsum}\NormalTok{(Total\_GWP) }\CommentTok{\# Accumulate total GWP over time}
+\NormalTok{  )}
+
+\CommentTok{\# View cumulative emissions data}
+\FunctionTok{print}\NormalTok{(cumulative\_emissions)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 30 x 10
+## # Groups:   Country [3]
+##     Year Country CO2_emissions CH4_emissions N2O_emissions GWP_CO2 GWP_CH4
+##    <int> <chr>           <dbl>         <dbl>         <dbl>   <dbl>   <dbl>
+##  1  2015 China           4692.          260.         107.    4692.   7290.
+##  2  2016 China           4659.          281.         115.    4659.   7854.
+##  3  2017 China           4715.          278.         110.    4715.   7783.
+##  4  2018 China           9222.          470.         187.    9222.  13172.
+##  5  2019 China           9840.          455.         198.    9840.  12752.
+##  6  2020 China           9135.          463.         181.    9135.  12973.
+##  7  2021 China           9369.          493.         181.    9369.  13817.
+##  8  2022 China           2238.          184.          80.2   2238.   5149.
+##  9  2023 China           2284.          164.          95.2   2284.   4588.
+## 10  2024 China           2492.          173.          91.0   2492.   4843.
+## # i 20 more rows
+## # i 3 more variables: GWP_N2O <dbl>, Total_GWP <dbl>, Cumulative_GWP <dbl>
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Summarize total GWP and cumulative GWP per country for 10 years}
+\NormalTok{summary\_table }\OtherTok{\textless{}{-}}\NormalTok{ cumulative\_emissions }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Country) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}
+    \AttributeTok{Total\_10\_Years\_GWP =} \FunctionTok{sum}\NormalTok{(Total\_GWP),}
+    \AttributeTok{Final\_Cumulative\_GWP =} \FunctionTok{max}\NormalTok{(Cumulative\_GWP)}
+\NormalTok{  )}
+
+\CommentTok{\# Print summary results}
+\FunctionTok{print}\NormalTok{(summary\_table)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 3
+##   Country Total_10_Years_GWP Final_Cumulative_GWP
+##   <chr>                <dbl>                <dbl>
+## 1 China              505676.              505676.
+## 2 India              469769.              469769.
+## 3 USA                488546.              488546.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Save detailed and summary results to CSV}
+\FunctionTok{write.csv}\NormalTok{(cumulative\_emissions, }\StringTok{"cumulative\_emissions\_gwp\_3\_countries.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{write.csv}\NormalTok{(summary\_table, }\StringTok{"summary\_gwp\_3\_countries.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Stocks and Flows Julio Huato 5/8/2020 1 Introduction
+
+As in the physical sciences, all basic magnitudes in economics are
+specified either at a point in time or over a period of time. The
+distinction between these two types of magnitudes is one of the most
+important ones in accounting, finance, and economics. Much confusion can
+be avoided by understanding the distinction, and maintaining it
+consistently when conducting economic analysis. Let us define the basic
+concepts. 2 Definitions
+
+Stock magnitude
+
+A stock magnitude (a stock, for short) is the value of a variable at a
+given point in time.
+
+Flow magnitude
+
+A flow magnitude (or, simply, a flow) is the value of a variable for a
+given period of time.
+
+Once these basic magnitudes are defined, a host of other magnitudes can
+be derived as well---such as ratios of flows to flows, stocks to stocks,
+flows to stocks, and stocks1 to flows.
+
+As an analogy, consider a vessel or container with water, with one pipe
+delivering additional water into the vessel, and another pipe leaking it
+out. A physicist or an engineer would call this a simple ``hydrodynamic
+system.''
+
+A simple hydrodynamic system.
+
+Stock and flow magnitudes can be used to measure the performance of this
+system. A stock measure would be the amount of water in the container at
+given points in time, such as Sundays at noon or on the last day of each
+month at 4 PM. Alternatively, a flow measure would be one of the amount
+of water flowing into, through, or out of the vessel over given periods
+of time, such as a day, week, or month.
+
+Then, by combining both forms of measurement, we would get a more
+complete picture of the functioning of the system. The stock measures
+may help us correct errors in the measurement of flows and, vice versa.
+
+Using the upper-case letters denote stocks and the lower-case ones
+denote flows, we now let Xt be the amount of water in the vessel at
+point in time t, xit the amount of water flowing into the vessel during
+the month, and xot the amount of water flowing out of the vessel during
+the month. Then, the net amount of water flowing through the vessel in
+the month is given by xnt=xit−xot, and the amount of water in the
+container at point in time t+1 is: Xt+1=Xt+xit−xot=Xt+xnt In words, the
+amount of water in the container at the end of the period is equal to
+the amount of water in the container at the beginning of the period,
+plus the water that got in it during period from t through t+1
+
+, minus the water that leaked out of it during the same period.2
+
+Example: A container On November 1 (t=0 ), the amount of water in the
+container is 10 gallons (X0=10). The water flowing into the vessel
+during November is 40 gallons (xit=40) and the water flowing out of the
+vessel is 39 gallons (xot=39). The amount of water in the container on
+December 1: X1=X0+xi1−xo1=10+40−39=11.
+
+That is, there are eleven gallons of water in the container at the end
+of November.
+
+If the stock of water on December 1 is any different from (greater than
+or less than) the result above, we have made errors in our measurements.
+The new measure of the water level can help us correct our records.
+
+Example: Peter's checking account On November 1 (t=0 ), the balance of
+Peter's checking account is 100 dollars (X0=100). During November, Peter
+deposited checks his grandmother and father sent him that totalled 400
+dollars (xit=400). Also in the month, he made electronic payments, wrote
+checks, and withdrew cash from the ATM machine for a total of 390
+dollars (xot=390). The balance of his account on December 1 is
+determined as follows: X1=X0+xi1−xo1=100+400−390=110.
+
+That is, Peter held a balance of 110 dollars at the end of November.
+
+Example: A town's finances On January 1, 2010 (t=0 ), the town's assets
+were estimated in 10,000 dollars (X0=10). In 2010, the town received
+local taxes and grants from the central government totalling 40,000
+dollars (xit=40). Also in 2010, the town spent in its administration,
+public works, and local public programs a total of 39,000 dollars
+(xot=39). The value of the town's assets at the end of 2010 is given by:
+X1=X0+xi1−xo1=10+40−39=11.
+
+That is, the town began 2011 with assets worth 11,000 dollars.
+
+Example: An economy As of January 1, 2010 (t=0 ), the total wealth of an
+economy is estimated in 10 billion dollars (X0=10). During 2010, the
+economy produced output estimated in 40 billion dollars (xit=40). ALso,
+households in the economy consumed 39 billion dollars during the year
+(xot=390). The wealth of this economy as of January 1, 2011 is:
+X1=X0+xi1−xo1=10+40−39=11.
+
+That is, the outstanding wealth of the economy increased by 10 percent
+to 11 billion dollars.
+
+Note that the mathematical structure of the four examples above is
+essentially the same.
+
+Exercises
+
+R code 3 Accounting principles
+
+The two basic financial statements that accountants produce are the
+balance sheet and the income statement. These financial statements
+provide a detailed picture of the ongoing financial performance of a
+business or organization.
+
+Balance sheet: The balance sheet of any organization (such as a
+business) is a report that describes the financial condition of the
+organization at a given point in time.
+
+The balance sheet has two sides. The left-hand side reports the value of
+all the organization's assets at a given point in time, typically at the
+end of a year. The assets are the resources under the management of the
+organization measured at a point in time. The right-hand side reports
+the source of the value of the assets listed on the left-hand side. They
+are either owed to others, in which case they are called liabilities, or
+they are owned by the legal owners, in which case they are called
+equity, net worth, or (in the case of banks) capital.
+
+In usual practice, organizations report a balance sheet every year,
+quarter, and---sometimes---month. Less usual is every week or day. In
+principle, it could be determined at each point in time. This has become
+increasingly possible with modern day computers.
+
+The fundamental equation of the balance sheet is: At=Lt+Et
+
+where t indicates a point in time (e.g.~the last day of the year), A is
+total assets, L is total liabilities, and E
+
+is total equity.3
+
+Example: A typical balance sheet. See table 1.
+
+Table 1. ABC, Inc.'s Balance Sheet as of 12/31/2010 Item Amount Item
+Amount Cash and liquid securities \$10 Payables \$20 Inventories 50
+Other short-term debt 40 Receivables 60 Mortgages 80 Trucks (net) 25
+Other long-term debt 250 Office equipment (net) 10 Total liabilities 390
+Machinery (net) 45 Total equity 120 Buildings (net) 220\\
+Other fixed assets (net) 90\\
+Total assets \$510 Total liabilities plus equity \$510 :
+
+All items in the balance sheet are stock measures. So, whenever you
+consider a balance sheet, think of ``water in a container'' measured at
+a point in time.
+
+In the balance sheet, by convention, asset items are viewed as positive
+stock magnitudes while liabilities and equity items are negative stock
+magnitudes.
+
+Income statement: The income statement (or result statement or
+profit-loss statement) of any organization (such as a business) is a
+report that describes the financial activity of the organization over a
+given period time.
+
+The income statement reports on its top line the total flow of gross
+income (e.g.~sales revenues) received by the organization during a
+period of time (e.g.~a year) as a positive number. The next lines report
+the various expenses that the activity of the organization incurred
+during the period to sustain its gross income. These expenses---sorted
+out as production costs, operating expenses, financial expenses, and
+taxes---are deducted or subtracted from the top line. In other words,
+they are regarded as negative numbers. Finally, the bottom line of the
+income statement indicates the flow of net income or net profit (if the
+net income is positive) or net loss (if the net income is negative)
+during the period.
+
+The fundamental equation of the income statement is:
+NIt=GIt−PCt−OEt−FEt−Tt where t is the period of time from point in time
+t−1 to point in time t, NI is the residual income or net income (net
+profit or net loss), GI is the gross income (typically, revenues from
+sales, though it may include rental income and interest income the
+organization may receive during the period), PC is the total cost of
+goods sold (such as cost of raw materials, storage costs, wages and
+benefits of factory-floor workers), OE are the operating expenses (sales
+and administrative expenses, including salaries and commissions of
+administrative and sales personnel and depreciation of fixed assets), FE
+is financial expenses (interest paid on outstanding liabilities), and T
+
+is taxes paid.
+
+Example: A typical income statement. See table 2.
+
+Table 2. ABC, Inc.'s Income Statement from 1/1/2010 through 12/31/2010
+Item Amount (+ ) Sales revenues \$200 (− ) Cost of goods sold 90 Gross
+profit 110 (− ) Operating expenses (includes depreciation) 40 Operating
+profit 70 (− ) Interest paid 10 Taxable profit 60 (− ) Taxes 10 Net
+profit \$50 :
+
+All items in the income statement are flow measures. Think of them as
+``water that flows in or out of the container'' over a period of time.
+
+In the income statement, the convention is that revenues (from sales)
+are regarded as positive flows and all costs and expenses as negative
+flows.
+
+The balance sheet and the income statement are related in multiple ways.
+
+Again, it is useful to think that, every time an organization conducts
+an operation or transaction, every time a business takes raw materials
+from its inventories and have its workers process them on the factory
+floor, every time its sales people sell a batch of goods or its
+administrative personnel orders a shipment from its suppliers, every
+time a payment is made or received, etc. there is ``water flowing'' from
+one balance-sheet ``container'' into another one. At the end of the
+given period (and beginning of the next period), the balance sheet
+reports the adjusted levels of ``water'' in each''container'' at that
+point in time.
+
+Also at the end of the given period (beginning of the next), each spurt
+of ``water'' that flowed from ``container'' to ``container'' during the
+period is added up (aggregated) into its respective category and
+recorded in the income statement. The legal owners of the organization
+(if a corporation, the legal owners are called stockholders or
+shareholders) pay most attention to the level of ``water'' in their
+equity ``container.''
+
+The examples above should make it clear that the principles of
+accounting are the same whether they are applied to one household,
+business, entity, or organization, including a national economy or the
+entire global economy for that matter.
+
+The Generally Accepted Accounting Principles (GAAP)---with rules set by
+the Financial Accounting Standards Board (FASB), a private sector
+organization---that are used in business practice, are a set of detailed
+conventions based on these fundamental principles. The national income
+and product accounts (NIPA) and the balance of payments (BoP) accounts
+kept by the Bureau of Economic Analysis (BEA) of the U.S. Department of
+Commerce, the flow of funds (FoF) accounts kept by the Federal Reserve
+(``Fed''), and the data on prices, employment, pay, and productivity
+kept by Bureau of Labor Statistics, all of them statistical records
+intended to measure the performance of the U.S. economy, are based on
+these very principles. Other national statistics agencies, central
+banks, and international organizations---such as the International
+Monetary Fund (IMF), the World Bank (WB), the World Trade Organization
+(WTO), the Organization for Economic Cooperation and Development (OECD),
+and the United Nations (UN)---apply the same principles to their
+statistical collection efforts.
+
+Further details are the subject matter of formal courses in financial
+accounting, macroeconomics, and other particular fields.
+
+Exercises
+
+R code
+
+\begin{verbatim}
+The term stock has several meanings in economics and finance. It also refers to the equity or residual wealth claimed by the legal owners of a company traded in the market. The context should make it clear when the term is used in one or another sense.↩︎
+
+Assume no evaporation or, alternatively, that the water leaked out in the period includes evaporated water.↩︎
+
+To separate an organization from its individual owners, it may be convenient to state the equation as A = L, i.e. assets equal liabilities. They are liabilities to either others or to the individual “owners” of the organization. In this interpretation, the equity of the legal owners of, e.g., a business is considered a special type of liability.↩︎
+\end{verbatim}
+
+\end{document}

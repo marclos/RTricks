@@ -1,7 +1,7 @@
 ---
 title: "Visualizing pHake Lake Temperature Profiles"
 author: "Marc Los Huertos"
-date: "2025-01-18"
+date: "2025-01-18 (ver. 1.0)"
 output: pdf_document
 ---
 
@@ -17,7 +17,7 @@ We will use R to visualize our data from pHake Lake and learn something about so
 of the plants and animals that might inhabit the region.
 
 I created this guide as a tutorial use as a model for R. It's not designed 
-as an introduction to R -- please see the "Introduction to R" handout for that!
+as an introduction to R -- please see the ``Introduction to R" handout for that!
 
 # Procedures
 
@@ -25,7 +25,7 @@ as an introduction to R -- please see the "Introduction to R" handout for that!
 
 1. Download the data from Google Sheets as a csv file (Note where on your computer the file is saved!)
 2. Start Rstudio Server (rstudio.pomona.edu)
-3. Create New Folder called "pHake_Lake"
+3. Create New Folder called ``pHake_Lake"
 4. Upload data into the pHake_Lake folder
 
 ## Create Rmd and PDF
@@ -116,18 +116,26 @@ xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Jan 16, 2024)")
 I had to copy and paste the degree symbol, there are better ways to do that, but 
 it's complictated -- so do this to keep it simple for now. 
 
-## Prepare the Rmd file for submission
+## Prepare the Rmd file for ``Weekly Milestone'' submission
 
 1. Create headings that describe the steps in the rmd file;
 2. Research the name of your group and describe it's life history as part of the 
 introduction (yes, not exactly related, but let's go with it).
-2. Add text that describes what the r code will be doing. Feel free to use my 
-bullets and make them into sentences. If you are unsure about the code, come to
-mentor session or search online for an explanation. 
-3. Add comments for each line (I often do it before the code)
-4. knit
+3. Be sure your plot includes the following: 
+
+ - x- and y-axes are labelled correctly (x=temp, y=depth)
+ - y-axis scale is rotated and ordered correctly
+ - axes limits are defined
+ - graphic is correctly titled (e.g. Temperature Profile (pHake Lake -- Date))
+
+
+4. Add comments that describes what the r code will be doing. I often do it 
+before the code. Feel free to use my bullets and make them into sentences. 
+If you are unsure about the code, come to mentor session or search online 
+for an explanation. 
+5. knit
 
 ## Download Rmd and PDF files and Submit to Canvas:
 
-1. Click on the two files in the "Files" tab in the lower right panel of RStudio and then click on the "More" tab and select "Export".  This will download the files to your computer.
+1. Click on the two files in the "Files" tab in the lower right panel of RStudio and then click on the "More" tab and select "Export".  This will zip and download the files to your computer.
 2. Submit to Canvas (first question on weekly quiz)!
