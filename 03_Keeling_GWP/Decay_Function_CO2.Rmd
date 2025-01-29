@@ -1,0 +1,72 @@
+---
+title: "Decay Function of CO2"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+```{r}
+# Function to calculate the decay of CO2 over time
+decay_function_co2 <- function(t) {
+  # IPCC AR5 parameters for CO2
+  a0 <- 0.217
+  a1 <- 0.259
+  a2 <- 0.338
+  a3 <- 0.186
+  tau1 <- 172.9
+  tau2 <- 18.51
+  tau3 <- 1.186
+  
+  decay <- a0 + a1 * exp(-t / tau1) + a2 * exp(-t / tau2) + a3 * exp(-t / tau3)
+  return(decay)
+}
+
+```
+
+
+```{r}
+timeframe = 0:100
+```
+
+
+
+```{r, echo=TRUE}
+plot(timeframe, decay_function_co2(timeframe), type = "l", xlab = "Time (years)", ylab = "Decay", main = "Decay Estimates for CO2")
+```
+
+
+```{r, echo=TRUE}
+par(las=1)
+plot(timeframe, decay_function_co2(timeframe)*100, type = "l", xlab = "Time (years)", ylab = "Percent CO2 Remaining", main = "Decay Estimates for CO2")
+```
+
+# 500 Years
+```{r}
+timeframe = 0:500
+```
+
+```{r, echo=FALSE}
+par(las=1)
+plot(timeframe, decay_function_co2(timeframe)*100, type = "l", xlab = "Time (years)", ylab = "Percent CO2 Remaining", main = "Decay Estimates for CO2 (500 years)")
+```
+
+# 1000 Years
+```{r, echo=FALSE}
+timeframe = 0:1000
+```
+
+```{r, echo=FALSE}
+par(las=1)
+plot(timeframe, decay_function_co2(timeframe)*100, type = "l", xlab = "Time (years)", ylab = "Percent CO2 Remaining", main = "Decay Estimates for CO2 (1000 years)")
+```

@@ -31,7 +31,7 @@ never fall on the line.
 
 ```{r}
 #filepath = here("02_keeling","Mauna_Loa.csv")
-filename = "/home/mwl04747/RTricks/02_keeling/Mauna_Loa.csv"
+filename = "/home/mwl04747/RTricks/03_Keeling_GWP/Mauna_Loa.csv"
 maunaloa <- read.csv(filename)
 ```
 
@@ -43,15 +43,369 @@ maunaloa <- read.csv(filename)
 
 
 
+# Generate code to use RF to estimate GWP for Carbon dioxide and methane
+
+Approximate RF values for common greenhouse gases:
+Carbon dioxide (CO2): 2.1 W/m² 100 years
+Methane (CH4): 0.84 W/m²   7-12 years
+Nitrous oxide (N2O): 0.34 W/m²  >100 years
+
+calculate_gwp Function: This function takes radiative forcing values and a time horizon as inputs and computes the GWP for that time horizon. The decay rate is an example value and should be set according to the specific gas being analyzed.
+
+Radiative Forcing Values: Replace the radiative_forcing vector with the actual published radiative forcing values for the gas of interest.
+
+Time Horizons: The time_horizons vector contains the different time horizons for which the GWP is to be calculated.
+
+GWP Calculation: The sapply function is used to apply the calculate_gwp function to each time horizon.
+
+Output: The GWP values for the different time horizons are printed in a data frame.
+
+Make sure to replace the example radiative forcing values with the actual published values for your specific analysis. Additionally, adjust the decay rate as needed based on the specific properties of the gas being studied.
+
+```{r}
+# Function to calculate GWP
+calculate_gwp <- function(radiative_forcing, time_horizon) {
+  # Constants
+  decay_rate <- 0.5  # Example decay rate (this would depend on the specific gas)
+  
+  # Calculate GWP for the given time horizon
+  gwp <- sum(radiative_forcing * exp(-decay_rate * (0:time_horizon)))
+  
+  return(gwp)
+}
+
+# Example radiative forcing values (W/m^2)
+# These values should be replaced with actual published radiative forcing values
+radiative_forcing <- c(1.2, 1.1, 1.05, 1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7)
+
+# Time horizons
+time_horizons <- c(10, 20, 50, 100, 500)
+
+# Calculate GWP for each time horizon
+gwp_values <- sapply(time_horizons, function(th) calculate_gwp(radiative_forcing, th))
+
+# Print GWP values
+gwp_data <- data.frame(
+  Time_Horizon = time_horizons,
+  GWP = gwp_values
+)
+
+print(gwp_data)
+```
+
+
+```{r}
+# Read in the data
+# Function to calculate GWP
+
+# radiative forcing for methane from fossil fuels
+radiative_forcing <- c(5.7*10^-4); radiative_forcing # W/m^2/ppb
+radiative_forcingco2 <- c(1.33^-5); radiative_forcingco2 # W/m^2/ppb
+
+
+radiative_forcing_kg <- radiative_forcing * 1e9; radiative_forcing_kg # W/m^2/kg
+radiative_forcing_kg = 1.3e-13
+
+# atmospheric lifetime for methane
+lifetime <- c(11.8) # years
+lifetimeco2 <- c(1) # years
+# Calculate decay rate
+decay_rate <- 1 / lifetime; decay_rate
+decay_rateco2 <- 1 / lifetimeco2; decay_rateco2
+
+
+# Calculate GWP for the given time horizon (100 years)
+gwp <- radiative_forcing * exp(-decay_rate * (0:100)); gwp
+gwpco2 <- radiative_forcingco2 * exp(-decay_rateco2 * (0:100)); gwpco2
+
+
+plot(0:100, gwp, type = "l", xlab = "Time (years)", ylab = "GWP", main = "GWP for Methane")
+
+# Calculate GWP relative for carbon dixode
+gwp_relative <- gwp / gwpco2; gwp_relative
+
+print(sum(gwp_relative))
+
+gwp_relative <- sum(gwp) / sum(gwpco2); gwp_relative
+
+
+print(gwp)
+```
+
+
+```{r}
 
 
 
+calculate_gwp <- function(radiative_forcing, time_horizon, decay_rate = 0.5 ) {
+  # Constants
+  # decay_rate <- 0.5  # Example decay rate (this would depend on the specific gas)
+  
+  # Calculate GWP for the given time horizon
+  gwp <- sum(radiative_forcing * exp(-decay_rate * (0:time_horizon)))
+  return(gwp)
+}
+
+```
+
+
+```{r}
+
+# Example radiative forcing values (W/m^2)
+# These values should be replaced with actual published radiative forcing values
+RF <- data.frame(Gas = c("CO2", "CH4", "N2O"), RF = c(2.1, 0.84, .34)); RF
+radiative_forcing = 2.1
+
+# Time horizons
+time_horizons <- c(10, 20, 50, 100, 500)
+
+# Calculate GWP for each time horizon
+gwp_values <- sapply(time_horizons, function(th) calculate_gwp(radiative_forcing, th))
+
+# Print GWP values
+gwp_data <- data.frame(
+  Time_Horizon = time_horizons,
+  GWP = gwp_values
+)
+
+print(gwp_data)
+
+```
+
+
+```{r}
+# Function to calculate GWP for methane
+calculate_gwp_methane <- function(time_horizon) {
+  # IPCC AR5 parameters for methane
+  radiative_efficiency <- 5.7e-4  # W/m²/ppb
+  lifetime <- 11.8  # years
+  
+  # CO2 radiative efficiency (reference gas)
+  radiative_efficiency_co2 <- 1.33e-5  # W/m²/ppb
+  
+  # Function to calculate the time-dependent decay of CH4
+  decay_function_ch4 <- function(t) {
+    exp(-t / lifetime)
+  }
+  
+  # Integrate the decay function over the time horizon to get the integrated RF
+  integrate_rf_ch4 <- integrate(decay_function_ch4, 0, time_horizon)$value
+  
+  # Calculate the GWP for methane
+  gwp_ch4 <- (radiative_efficiency / radiative_efficiency_co2) * integrate_rf_ch4
+  
+  return(gwp_ch4)
+}
+
+# Time horizons
+time_horizons <- c(20, 100, 500)
+
+# Calculate GWP for each time horizon
+gwp_values_ch4 <- sapply(time_horizons, calculate_gwp_methane)
+
+# Print GWP values
+gwp_data_ch4 <- data.frame(
+  Time_Horizon = time_horizons,
+  GWP_CH4 = gwp_values_ch4
+)
+
+print(gwp_data_ch4)
+```
+
+
+```{r}
+# Function to calculate the decay of CO2 over time
+decay_function_co2 <- function(t) {
+  # IPCC AR5 parameters for CO2
+  a0 <- 0.217
+  a1 <- 0.259
+  a2 <- 0.338
+  a3 <- 0.186
+  tau1 <- 172.9
+  tau2 <- 18.51
+  tau3 <- 1.186
+  
+  decay <- a0 + a1 * exp(-t / tau1) + a2 * exp(-t / tau2) + a3 * exp(-t / tau3)
+  return(decay)
+}
+
+decay_function_co2 <- function(t) {
+  lifetime_co2 <- 100  # years
+  decay <- exp(-t / lifetime_co2)
+  return(decay)
+}
+
+# Function to calculate the decay of CH4 over time
+decay_function_ch4 <- function(t) {
+  lifetime_ch4 <- 11.8  # years
+  decay <- exp(-t / lifetime_ch4)
+  return(decay)
+}
+
+# Function to calculate GWP for methane
+calculate_gwp_methane <- function(time_horizon) {
+  # IPCC AR5 parameters for methane
+  radiative_efficiency_ch4 <- 9.7e-4  # W/m²/ppb
+  
+  # Radiative efficiency for CO2 (reference gas)
+  radiative_efficiency_co2 <- 1.33e-5  # W/m²/ppb
+  
+  # Integrate the decay function over the time horizon for CH4 and CO2
+  integrate_rf_ch4 <- integrate(decay_function_ch4, 0, time_horizon)$value
+  integrate_rf_co2 <- integrate(decay_function_co2, 0, time_horizon)$value
+  
+  # Calculate the GWP for methane
+  gwp_ch4 <- (radiative_efficiency_ch4 * integrate_rf_ch4) / (radiative_efficiency_co2 * integrate_rf_co2)
+  
+  return(gwp_ch4)
+}
+
+# Time horizons
+time_horizons <- c(20, 100, 500)
+
+# Calculate GWP for each time horizon
+gwp_values_ch4 <- sapply(time_horizons, calculate_gwp_methane)
+
+# Print GWP values
+gwp_data_ch4 <- data.frame(
+  Time_Horizon = time_horizons,
+  GWP_CH4 = gwp_values_ch4
+)
+
+print(gwp_data_ch4)
+```
 
 
 
+```{r}
+# Function to calculate the decay of CO2 over time
+decay_function_co2 <- function(t) {
+  # IPCC AR5 parameters for CO2
+  a0 <- 0.217
+  a1 <- 0.259
+  a2 <- 0.338
+  a3 <- 0.186
+  tau1 <- 172.9
+  tau2 <- 18.51
+  tau3 <- 1.186
+  
+  decay <- a0 + a1 * exp(-t / tau1) + a2 * exp(-t / tau2) + a3 * exp(-t / tau3)
+  return(decay)
+}
+
+# Function to calculate the decay of CH4 over time
+decay_function_ch4 <- function(t) {
+  lifetime_ch4 <- 11.8  # years
+  decay <- exp(-t / lifetime_ch4)
+  return(decay)
+}
+
+# Function to calculate GWP for methane
+calculate_gwp_methane <- function(time_horizon) {
+  # IPCC AR5 parameters for methane
+  radiative_efficiency_ch4 <- 5.7e-4  # W/m²/ppb
+  
+  # Radiative efficiency for CO2 (reference gas)
+  radiative_efficiency_co2 <- 1.33e-5  # W/m²/ppb
+  
+  # Integrate the decay function over the time horizon for CH4 and CO2
+  integrate_rf_ch4 <- integrate(decay_function_ch4, 0, time_horizon)$value
+  integrate_rf_co2 <- integrate(decay_function_co2, 0, time_horizon)$value
+  
+  # Calculate the GWP for methane
+  gwp_ch4 <- (radiative_efficiency_ch4 * integrate_rf_ch4) / (radiative_efficiency_co2 * integrate_rf_co2)
+  
+  return(gwp_ch4)
+}
+
+# Time horizons
+time_horizons <- c(20, 100, 500)
+
+# Calculate GWP for each time horizon
+gwp_values_ch4 <- sapply(time_horizons, calculate_gwp_methane)
+
+# Print GWP values
+gwp_data_ch4 <- data.frame(
+  Time_Horizon = time_horizons,
+  GWP_CH4 = round(gwp_values_ch4, 2)  # Round the results to 2 decimal places for clarity
+)
+
+print(gwp_data_ch4)
+```
 
 
+```{r}
+# Function to calculate the decay of CO2 over time
+decay_function_co2 <- function(t) {
+  lifetime_co2 <- 100  # years
+  decay <- exp(-t / lifetime_co2)
+  return(decay)
+}
 
+
+decay_function_co2 <- function(t) {
+  # IPCC AR5 parameters for CO2
+  a0 <- 0.217
+  a1 <- 0.259
+  a2 <- 0.338
+  a3 <- 0.186
+  tau1 <- 172.9
+  tau2 <- 18.51
+  tau3 <- 1.186
+  
+  decay <- a0 + a1 * exp(-t / tau1) + a2 * exp(-t / tau2) + a3 * exp(-t / tau3)
+  return(decay)
+}
+
+# Function to calculate the decay of CH4 over time
+decay_function_ch4 <- function(t) {
+  lifetime_ch4 <- 11.8  # years
+  decay <- exp(-t / lifetime_ch4)
+  return(decay)
+}
+
+# Function to calculate GWP for methane
+calculate_gwp_methane <- function(time_horizon) {
+  # IPCC AR5 parameters for methane
+  radiative_efficiency_ch4 <- 5.7e-4  # W/m²/ppb
+  molecular_weight_ch4 <- 16.04  # g/mol
+  
+  # IPCC AR5 parameters for CO2
+  radiative_efficiency_co2 <- 1.33e-5  # W/m²/ppb
+  molecular_weight_co2 <- 44.01  # g/mol
+  
+  # Number of moles in 1 ton (1,000,000 grams) of each gas
+  moles_ch4 <- 1e6 / molecular_weight_ch4
+  moles_co2 <- 1e6 / molecular_weight_co2
+  
+  # Convert moles to ppb equivalents
+  ppb_ch4 <- moles_ch4 * 1e9
+  ppb_co2 <- moles_co2 * 1e9
+  
+  # Integrate the decay function over the time horizon for CH4 and CO2
+  integrate_rf_ch4 <- integrate(function(t) decay_function_ch4(t) * radiative_efficiency_ch4 * ppb_ch4, 0, time_horizon)$value
+  integrate_rf_co2 <- integrate(function(t) decay_function_co2(t) * radiative_efficiency_co2 * ppb_co2, 0, time_horizon)$value
+  
+  # Calculate the GWP for methane per ton
+  gwp_ch4 <- integrate_rf_ch4 / integrate_rf_co2
+  
+  return(gwp_ch4)
+}
+
+# Time horizons
+time_horizons <- c(20, 100, 500)
+
+# Calculate GWP for each time horizon
+gwp_values_ch4 <- sapply(time_horizons, calculate_gwp_methane)
+
+# Print GWP values
+gwp_data_ch4 <- data.frame(
+  Time_Horizon = time_horizons,
+  GWP_CH4 = round(gwp_values_ch4, 2)  # Round the results to 2 decimal places for clarity
+)
+
+print(gwp_data_ch4)
+```
 
 
 
