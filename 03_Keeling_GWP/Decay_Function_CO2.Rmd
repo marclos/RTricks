@@ -2,18 +2,25 @@
 title: "Decay Function of CO2"
 author: "Marc Los Huertos"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Setting Up CO2 Decay Function
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The decay of CO2 in the atmosphere is a function of time. The IPCC AR5 report provides the following equation for the decay of CO2 over time:
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+\begin{equation}
+CO2 (t) = a_0 + a_1 e^{-t/\tau_1} + a_2 e^{-t/\tau_2} + a_3 e^{-t/\tau_3}
+\end{equation}
+
+where $a_0 = 0.217$, $a_1 = 0.259$, $a_2 = 0.338$, $a_3 = 0.186$, $\tau_1 = 172.9$, $\tau_2 = 18.51$, and $\tau_3 = 1.186$.
+
 
 ```{r cars}
 ```{r}
@@ -42,13 +49,21 @@ timeframe = 0:100
 
 
 ```{r, echo=TRUE}
-plot(timeframe, decay_function_co2(timeframe), type = "l", xlab = "Time (years)", ylab = "Decay", main = "Decay Estimates for CO2")
+plot(timeframe, decay_function_co2(timeframe), 
+     type = "l", 
+     xlab = "Time (years)", 
+     ylab = "Decay", 
+     main = "Decay Estimates for CO2")
 ```
 
 
 ```{r, echo=TRUE}
 par(las=1)
-plot(timeframe, decay_function_co2(timeframe)*100, type = "l", xlab = "Time (years)", ylab = "Percent CO2 Remaining", main = "Decay Estimates for CO2")
+plot(timeframe, decay_function_co2(timeframe)*100, 
+     type = "l", 
+     xlab = "Time (years)", 
+     ylab = "Percent CO2 Remaining", 
+     main = "Decay Estimates for CO2")
 ```
 
 # 500 Years
@@ -58,7 +73,11 @@ timeframe = 0:500
 
 ```{r, echo=FALSE}
 par(las=1)
-plot(timeframe, decay_function_co2(timeframe)*100, type = "l", xlab = "Time (years)", ylab = "Percent CO2 Remaining", main = "Decay Estimates for CO2 (500 years)")
+plot(timeframe, decay_function_co2(timeframe)*100, 
+     type = "l", 
+     xlab = "Time (years)", 
+     ylab = "Percent CO2 Remaining", 
+     main = "Decay Estimates for CO2 (500 years)")
 ```
 
 # 1000 Years
