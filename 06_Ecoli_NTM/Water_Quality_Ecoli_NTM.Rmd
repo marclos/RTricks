@@ -1,0 +1,133 @@
+---
+title: "Water Quality -- E. coli and NTM"
+runningheader: "EA30 Guide Title" # only for pdf output
+subtitle: "RTricks: #1" # only for html output
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_html: default
+bibliography: skeleton.bib
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(tufte)
+# invalidate cache when the tufte version changes
+knitr::opts_chunk$set(cache.extra = packageVersion('tufte'))
+options(htmltools.dir.version = FALSE)
+```
+
+# Introduction
+
+*Escherichia coli* (*E. coli*) is a bacterium commonly found in the intestines of humans and warm-blooded animals. While most strains of *E. coli* are harmless and part of the normal gut microbiota, certain pathogenic strains can cause severe health problems when present in water sources.
+
+Nontuberculous Mycobacteria (NTM) are a diverse group of mycobacterial species that are commonly found in natural and engineered water systems. Unlike *Mycobacterium tuberculosis*, NTM are not known to cause tuberculosis. However, they are increasingly recognized as opportunistic pathogens, particularly among vulnerable populations.
+
+# Environmental Sources of *E. coli* in Water
+
+## Agricultural Runoff
+
+- **Livestock Waste**: Manure from cattle, pigs, and poultry can wash into nearby water bodies during rainfall or irrigation.
+- **Crop Fertilization**: The use of manure or improperly treated biosolids as fertilizer can introduce *E. coli* into surface and groundwater.
+
+## Human Waste
+
+- **Sewage Discharges**: Leaks or overflows from sewage systems, especially during heavy rainfall, can release untreated or partially treated human waste into water bodies.
+- **Septic Systems**: Improperly maintained or failing septic systems can leach *E. coli* into groundwater supplies.
+
+## Wildlife Contributions
+
+- **Wild Animal Excreta**: Birds, deer, and other wildlife can contribute to *E. coli* contamination in natural water sources.
+- **Urban Runoff**: Stormwater drains may collect fecal matter from urban wildlife, such as raccoons and rodents, leading to contamination.
+
+## Surface Water Dynamics
+
+- **Flooding Events**: Heavy rains and floods can wash *E. coli* from contaminated soils and fecal deposits into rivers, lakes, and reservoirs.
+- **Sediment Resuspension**: *E. coli* can survive in sediments and be resuspended into the water column during disturbances.
+
+# Health Implications of *E. coli* in Water
+
+## Gastrointestinal Illnesses
+
+- Pathogenic strains like *E. coli* O157:H7 produce Shiga toxins, which can cause:
+  - Severe diarrhea (often bloody)
+  - Abdominal cramps
+  - Vomiting
+  - Fever
+
+## Hemolytic Uremic Syndrome (HUS)
+
+- In severe cases, *E. coli* infections can lead to HUS, a life-threatening condition characterized by:
+  - Kidney failure
+  - Low platelet count
+  - Hemolytic anemia
+
+## Vulnerable Populations
+
+- Children, the elderly, and individuals with compromised immune systems are at higher risk of severe outcomes.
+
+
+# Health Impacts of NTM
+
+## Respiratory Infections
+
+NTM infections often target the respiratory system and can lead to conditions such as:
+
+- **Pulmonary NTM Disease**: Symptoms include chronic cough, fatigue, weight loss, and shortness of breath. This condition is especially common in individuals with pre-existing lung diseases, such as:
+  - Chronic obstructive pulmonary disease (COPD)
+  - Cystic fibrosis
+  - Bronchiectasis
+
+## Skin and Soft Tissue Infections
+
+- NTM can also cause localized skin infections, often resulting from contaminated water exposure during procedures like tattooing or surgical interventions.
+
+## Risk Populations
+
+- Individuals with weakened immune systems, such as those undergoing chemotherapy, organ transplant recipients, or people with HIV/AIDS, are more susceptible to NTM infections.
+
+# Sources of NTM in Water
+
+NTM are ubiquitous in various water environments due to their ability to resist disinfection processes. Common sources include:
+
+- **Tap Water**: Household water supplies can harbor NTM in biofilms within plumbing systems.
+- **Hot Tubs and Pools**: Warm water environments provide ideal conditions for NTM growth, especially if maintenance is inadequate.
+- **Healthcare Settings**: Hospital water systems and medical equipment, such as bronchoscopes, can become reservoirs for NTM, posing risks to patients.
+- **Natural Water Bodies**: Lakes, rivers, and groundwater are natural habitats for NTM, particularly in areas with high organic content.
+
+# Mechanisms of Survival in Water Systems
+
+NTM exhibit several adaptations that enhance their survival, including:
+
+- **Biofilm Formation**: NTM thrive in biofilms, which protect them from chlorine and other disinfectants.
+- **Hydrophobic Cell Walls**: Their lipid-rich cell walls increase resistance to desiccation and chemical agents.
+- **Thermotolerance**: Many NTM species can survive and proliferate in temperatures up to 50°C.
+
+# Public Health Recommendations
+
+To mitigate the risk of NTM exposure, the following measures are recommended:
+
+1. Regular maintenance and cleaning of plumbing systems, hot tubs, and medical devices.
+2. Use of effective filtration systems in household and healthcare settings.
+3. Adhering to water disinfection guidelines to reduce biofilm formation.
+
+# Monitoring and Prevention Strategies
+
+1. **Water Testing**: Regular monitoring of water for fecal coliforms and *E. coli* levels is essential to ensure safety.
+2. **Improved Sanitation**: Proper treatment of wastewater and maintenance of septic systems can minimize human contributions to contamination.
+3. **Agricultural Best Practices**:
+   - Implementing buffer zones to prevent runoff into waterways.
+   - Proper manure management and composting techniques.
+4. **Public Awareness**: Educating communities on the risks of consuming untreated water and the importance of hygiene near water sources.
+
+# Conclusion
+
+The presence of *E. coli* in water is a critical indicator of fecal contamination and poses significant health risks, particularly from pathogenic strains. Understanding its environmental sources and implementing targeted prevention measures are key to protecting water quality and public health.
+
+Nontuberculous Mycobacteria pose significant health risks, particularly to immunocompromised individuals and those with pre-existing respiratory conditions. Awareness of their sources in water systems and implementing preventive measures are critical for public health.

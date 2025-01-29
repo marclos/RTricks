@@ -1,4 +1,5 @@
 \documentclass{tufte-handout}
+\usepackage[version=4]{mhchem}
 
 \title{GWP and it's Discontents}
 \author{Marc Los Huertos}
@@ -10,14 +11,13 @@
 
 \section{Understanding Global Warming Potentials}
 
-Greenhouse gases (GHGs) warm the Earth by absorbing energy and slowing its escape to space, acting like an insulating blanket. Different GHGs vary in their impact on warming based on two key factors: their ability to absorb energy ("radiative efficiency") and their atmospheric lifetime.
+Greenhouse gases (GHGs) warm the Earth by absorbing energy and slowing its escape to space, acting like an insulating blanket. Different GHGs vary in their impact on warming based on two key factors: their ability to absorb energy (``radiative efficiency'') and their atmospheric lifetime.
 
 \section{History of GWP}
 
 Since 1990, the Intergovernmental Panel on Climate Change (IPCC) has used Global Warming Potential (GWP) to compare the warming impacts of different gases. GWP measures how much energy the emission of 1 ton of a gas will absorb over a specified time, relative to 1 ton of carbon dioxide (CO2). A higher GWP indicates a greater warming effect compared to CO2 over that period. The most common time horizon for GWP calculations is 100 years. This metric provides a standardized unit to aggregate emissions of various gases (e.g., for national GHG inventories) and evaluate emissions reduction strategies across sectors and gases.
 
-History of the Global Warming Potential (GWP) Metric by the IPCC
-The Global Warming Potential (GWP) metric was introduced in the early reports of the Intergovernmental Panel on Climate Change (IPCC) as a standardized way to compare the climate impact of different greenhouse gases (GHGs). Here's an overview of its development and evolution:
+%History of the Global Warming Potential (GWP) Metric by the IPCC The Global Warming Potential (GWP) metric was introduced in the early reports of the Intergovernmental Panel on Climate Change (IPCC) as a standardized way to compare the climate impact of different greenhouse gases (GHGs). Here's an overview of its development and evolution:
 
 \subsection{Origins and Introduction (1990 - First Assessment Report, FAR)}
 
@@ -26,12 +26,14 @@ The Intergovernmental Panel on Climate Change was founded in 1988 to review the 
 Surface temperature: The panel predicted in one scenario that, if 1990's levels of emissions remained constant, the mean global temperature would increase by an average of about 0.3 degrees C per decade. This would be a more rapid increase than the globe had experienced during the past 10,000 years and would result in a rise of 3 degrees C by the end of the 21st century.
 
 Purpose: The GWP metric was developed to provide policymakers with a simplified, comparable measure of the relative contributions of GHGs to global warming.
-Definition: GWP quantifies the cumulative radiative forcing a GHG causes over a specific time horizon, relative to CO₂.
+Definition: GWP quantifies the cumulative radiative forcing a GHG causes over a specific time horizon, relative to \ce{CO2}.
 Initial Time Horizons: The IPCC initially proposed three time horizons: 20, 100, and 500 years, reflecting the immediate, intermediate, and long-term impacts of GHGs.
 
 Key Assumptions:
 Radiative efficiency (warming potential per molecule) is constant.
 Atmospheric decay follows exponential decay, assuming no feedbacks.
+
+
 Evolution in Subsequent Reports
 
 Feedbacks:Sea level rise: The report predicted that sea level would rise by 6 centimeters per decade over the next century under a "business as usual" scenario, in which greenhouse gas emissions were kept at 1990 levels. This rise would be caused mainly by thermal expansion of the ocean and the melting of some land ice. A 30- to 50-centimeter sea-level rise—which the panel said could happen by 2050 under the highest emission scenarios—would threaten low islands and coastal zones. A 1-meter rise by 2100 would have major ramifications, rendering some island countries uninhabitable, displacing tens of millions of people, threatening low-lying urban areas, flooding productive land, contaminating freshwater supplies, and seriously altering coastlines.

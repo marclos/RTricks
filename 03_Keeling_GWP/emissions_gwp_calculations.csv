@@ -1,0 +1,4 @@
+"Country","CO2_emissions","CH4_emissions","N2O_emissions","GWP_CO2","GWP_CH4","GWP_N2O","Total_GWP"
+"Country A",1000,50,30,1000,1400,7950,10350
+"Country B",1500,40,25,1500,1120,6625,9245
+"Country C",2000,60,35,2000,1680,9275,12955
