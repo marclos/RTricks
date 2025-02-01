@@ -71,7 +71,7 @@ downloadStations.fun <- function(datafolder, my.inventory=my.inventory){
   write.csv(my.inventory, paste0(datafolder, "my.inventory.csv"), row.names = FALSE)
 }
 
-# Test Function
+# Test Function -- Can't remember why I have this here. Delete?
 # downloadStations.fun("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/test/", my.inventory)
 
 

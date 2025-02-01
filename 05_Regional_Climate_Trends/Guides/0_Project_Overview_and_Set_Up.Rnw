@@ -5,7 +5,7 @@
 
 \title{Preparing Regional Weather Data Analysis Project}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.75)} % without \date command, current date is supplied
+\date{\today~(ver. 1.00)} % without \date command, current date is supplied
 
 \begin{document}
 \maketitle
@@ -20,7 +20,8 @@ Create a public product (video) that explains climate change trends in a state; 
 \subsection{Project Stages}
 
 \begin{description}
-  \item[Project Overview (This Document)] A brief overview of the project and the steps to complete it. In addition, this document, when run selects the oldest active station ID for each state (and territory). Students don not need to run this document, but creates an updated list for them each time it is run. In addition, this document explains some of the R code used to create this list as background information. 
+  \item[Project Overview (This Document)] A brief overview of the project and the steps to complete it. In addition, this document, when run selects the oldest active station ID for each state (and territory). Students do not need to run this document, but creates an updated list for them each time it is run. In addition, this document explains some of the R code used to create this list as background information. 
+  
   \item[Guide 1] Data Collection (Download station data from the web and read into R.)
   \item[Guide 2] Data Processing (Clean and Pre-process Data)
   \item[Guide 3] Data Analysis (Use R to analyze data (means, trends, etc))
@@ -38,7 +39,7 @@ At this point, I have created a DRAFT visual flow chart that displays each stage
 
 \subsection{Approach}
 
-I have created several Guides 1 through 4. Each guide is a Rmarkdown document that explains the steps to complete the guide. The guides are designed to be completed in order, but it is possible to skip a guide if the data is already available.
+I have created several Guides 1 through 4. Each guide is a Rmarkdown document that explains the steps to complete the project. These guides are designed to be completed in order. %, but it is possible to skip a guide if the data is already available.
 
 This particular document has NO code for you to run, but document the process that I used to obtain the data and create a list of stations from you to select from. So, please read this as an informational document and not something to follow. However, there are some insights here about how to find the data and the code that I used to prepare for the project for the class. 
 \section{Selecting US Weather Station with Robust Records}
@@ -60,7 +61,6 @@ Note, it maybe that there are too many missing values in one or more of your sta
 The station inventory is available as a .txt file. The file is a fixed width file, which means that each column has a specific width. The file is available at the following URL: \url{https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.txt}.
 
 <<read_ghcnd_inventory, echo=TRUE>>=
-
 library(here)
 
 # Get Stations Data (Inventory)
@@ -82,8 +82,12 @@ str(inventory)
 @
 
 
+\subsection{Selecting Active (and inactive) Weather Stations with Maximum Daily Temperature Readings}
 
-\subsection{Selecting Active Weather Stations with Maximum Daily Temperature Readings}
+
+
+Selecting the stations that are both active and contain a basic measure of the maximum temperature (TMAX) is a good place to evaluate the quality and quantity of the data.
+
 
 <<subsetTMAX, echo=TRUE>>=
 # Subset data for TMAX  (Max Temperature) Element
@@ -92,23 +96,26 @@ inventory.TMAX = subset(inventory, subset=ELEMENT=="TMAX")
 # Check the structure of the data
 str(inventory.TMAX)
 
-# Subset Active Stations (observations that include 2022 and more recent)
-inventory.TMAX = subset(inventory.TMAX, subset=LASTYEAR>=2022); str(inventory.TMAX)
+# Subset Active Stations (observations that include 2024 and more recent)
+active.TMAX = subset(inventory.TMAX, subset=LASTYEAR>=2024); str(inventory.TMAX)
+# Subset Inactive and Old Stations)
+inactive.TMAX = subset(inventory.TMAX, subset=(FIRSTYEAR <= 1850 & LASTYEAR<=2023)); str(inactive.TMAX)
 @
 
 \begin{figure}
-  \caption{A plot of the global weather stations. Note the increase in stations over time and spatial distribution. Austrailia has most of it's stations with 1750 start dates, but I suspect most of these stations have lots of missing data. }
+  \caption{A plot of active global weather stations (GHCN-d). Note the increase in stations over time and spatial distribution. It's a story of the industrialization of Europe and the US and colonialiam.}
   \label{fig:global-weather-stations}
 <<echo=FALSE>>=
-plot(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1961), pch=20, cex=.1, xlab="Long", ylab="Lat", las=1, col="grey70")
-points(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1923), pch=20, cex=.15, col="azure")
-points(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1873), pch=20, cex=.2, col="cornflowerblue")
-points(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1823), pch=20, cex=.25, col="green")
-points(LATITUDE~LONGITUDE, data=subset(inventory.TMAX, subset=FIRSTYEAR<=1773), pch=20, cex=.3, col="blue")
+plot(LATITUDE~LONGITUDE, data=active.TMAX, pch=20, cex=.10, xlab="Longitude", ylab="Latitude", las=1, col="grey70", cex.lab=1.5)
+points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1900), pch=20, cex=.17, col="cornflowerblue")
+points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1890), pch=20, cex=.23, col="blue")
+points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1875), pch=20, cex=.37, col="green")
+points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1865), pch=20, cex=.42, col="red")
+legend("bottomleft", legend=c("<1865", "<1875", "<1890", "<1900", ">=1900"), pch=20, col=c("red", "green", "blue", "cornflowerblue", "grey70"), title="In Operation", cex=1, bty="n")
 @
 \end{figure}
 
-\subsection{Using the GHCND-station Dataset to Select US Stations}
+\subsection{Subsetting the GHCN-d Inventory}
 
 The inventory has a list of stations and map coordinates (latitude and longitude). However, it's not easy to select a region, like a state, from the latitude and longitude values. Thus, we need to merge the inventory with a dataset that includes state names and merge them based on the station ID. 
 
@@ -148,7 +155,7 @@ str(States)
 StateIDs = subset(Stations, select=c("ID", "STATE"))
 StateIDs = merge(StateIDs, States, by="STATE") # Add State Names
 
-temp.TMAX = merge(inventory.TMAX, StateIDs, by="ID")
+temp.TMAX = merge(active.TMAX, StateIDs, by="ID")
 # Note: Some outer join would be better, to be completed later.
 
 # Remove Stations that STATE = blank!
@@ -157,16 +164,18 @@ stations.USCan = subset(temp.TMAX, subset=(STATE!="  "))
 
 \subsection{Select Active Stations}
 
+To ensure we can limit our data to stations that are active, we need to subset the data to include only stations that have data from 2024 and later, however, if we don't find enough stations on the state you selected, I have relaxed the criteria to 2023.
+
 How many stations are in the state? 'r nrow(stations.USCan)'!
 <<select_active_stations>>=
-stations.active = subset(stations.USCan, subset=LASTYEAR>=2022)
+stations.active = subset(stations.USCan, subset=LASTYEAR>=2023)
 str(stations.active)
 nrow(stations.active)
 @
 
-\subsection{Select Upto 15 Stations for Each State}
+\subsection{Selecting Stations for Each State}
 
-To accomplish this, I need to do a loop to select the first 5 stations for each state.
+To accomplish this, I created a loop to select the stations from each state. The loop selects the 15 oldest, active stations from each state. If there are fewer than 15 stations, it selects all the stations.
 
 <<selected15oldests>>=
 # Loop to select 15 stations for each state
@@ -189,70 +198,101 @@ for(i in 1:nrow(States)) {
 
 @
 
-\section{Plot Results}
+
+\subsection{Plotting Active Stations}
+
+At some point, I'd like to ``map'' the stations with actual state boundaries and a 
+projection that make more sense. For example, what are the stations north of the 
+Equator and 150 E in longitude? 
+
 
 <<mapstations>>=
 plot(stations.active.oldest$LONGITUDE, stations.active.oldest$LATITUDE, 
      pch=20, cex=.4, xlab="Long", ylab="Lat", las=1)
 @
 
-\subsection{Next Steps}
-
-In Guide \#1, we'll use the stations.active.oldest dataset to download the daily temperature and precipitation data for the ``oldest, active stations".
-
+\subsection{Write the Active Stations to a CSV File}
 
 <<write_stations.active.oldest>>=
 # export file to csv
 write.csv(stations.active.oldest, 
-    here("04_Regional_Climate_Trends", 
+    here("05_Regional_Climate_Trends", 
     "stations.active.oldest.csv"))
 @
 
+\section{Next Steps}
+\subsection{Estimate Time for Project}
 
 <<estimatingprojecttime, echo=FALSE, results='hide'>>=
 # Read csv
-import = read.csv(here("04_Regional_Climate_Trends", "Guides", "timestatimages.csv"))
+import = read.csv(here("05_Regional_Climate_Trends", "Guides", "timestatimages.csv"))
 tasks <- aggregate(Time ~ Task, import, mean)
 tasks$Time = round(tasks$Time, 0)
 
 tasks$Task 
 @
-Here's a Table of Task for the Project:
 
-We use Table~\ref{tab:task} to estimate the time and resources needed to complete the project.
+
+%Here's a Table of Task for the Project:
+
+Based on the \href{https://docs.google.com/forms/d/e/1FAIpQLSeudJL4xHX5UMQAJtEFM3LWcB9EktVZbT6G0FziGB_rlWlPSw/viewform?usp=header}{class survey} Table~\ref{tab:tasks} estimates the time and resources needed to complete the project.
 
 \begin{table}[h]
 \centering
-\caption{Probably Tasks and Time Estimates for the Project. Time is based on our estimate (x) and post project evaluation of time required (y) (Source: EA30 2024).}
+\caption{Probably Tasks and Time Estimates for the Project. Time is based on our survey estimates.~
+% (x) and post project evaluation of time required (y) (Source: EA30 2025).
+$^1$Guide 1 can take extra time because NOAA data are not consistently formatted.
+$^2$ TBD.}
 \label{tab:tasks}
-\begin{tabular}{|l|l|p{3cm}|l|}
+\begin{tabular}{|l|c|p{8cm}|}
 \hline
-\textbf{Task}             & \textbf{Time}             & \textbf{Resources} & \textbf{Notes} \\ \hline \hline
-1. Select State           & x (\Sexpr{tasks$Time[14]})           & Rstudio, R code and NOAA website & Guide 1 \\ \hline
-2. Download Station Data  & x (\Sexpr{tasks$Time[5]})                      & Rstudio, R code and NOAA website & Guide 1  \\ \hline
-3. Read Station Data into R & 5 (\Sexpr{tasks$Time[12]})         & Rstudio, R code & Guide 1 \\ \hline
-4. Fix Dates              & x (\Sexpr{tasks$Time[7]}) & Rstudio, R code      &  \\ Guide 2 \\ \hline
-5. Transform Data         & x (\Sexpr{tasks$Time[18]}) & Rstudio, R code &  Guide 2 \\ \hline
-Check Coverage            & x (\Sexpr{tasks$Time[2]}) & Rstudio, R code & Guide 2 \\ \hline
-6. Subset for TMAX        & x (\Sexpr{tasks$Time[16]}) & Rstudio, R code& Guide 3 \\ \hline
-7. Linear Model for TMAX  & x (\Sexpr{tasks$Time[10]}) & Rstudio, R code & Guide 3 \\ \hline
-Evaluation of Model       & x (??) & Rstudio, R code & Guide 3 \\ \hline
-Subset for TMIN           & x (\Sexpr{tasks$Time[17]}) & Rstudio, R code & Guide 3 \\ \hline
-Linear Model for TMIN     & x (\Sexpr{tasks$Time[8]}) & Rstudio, R code & Guide 3 \\ \hline
-Evaluation of Model       & x (??) & Rstudio, R code & Guide 3 \\ \hline
-Subset for PRCP           & ? (\Sexpr{tasks$Time[15]}) & Rstudio, R code & Guide 3 \\ \hline
-Linear Model for PRCP     & ? (\Sexpr{tasks$Time[9]}) & Rstudio, R code & Guide 3 \\ \hline
-Evaluation of Model       & ? (??) & Rstudio, R code & Guide 3\\ \hline
-Read EPA State Impact Report & ? (\Sexpr{tasks$Time[6]}) & EPA State CC Status & Canvas Link  \\ \hline
-Explore Analysis Options & ?0 (\Sexpr{tasks$Time[1]}) & Rstudio, R code & Guide 3 \\ \hline
-Decide on Graphics        & ?0 (\Sexpr{tasks$Time[4]}) & Rstudio, R code & Guide 4 \\ \hline
-Presentation Ready Graphics & ?0 (\Sexpr{tasks$Time[3]}) & Rstudio, R code & Guide 4 \\ \hline
-Scripting for Video       & ?0 (\Sexpr{tasks$Time[13]}) & Rstudio, R code & Guide 4 \\ \hline
-Make Video                & ?0 (\Sexpr{tasks$Time[11]}) & Rstudio, R code & Guide 4 \\ \hline
-Upload Video              & ? (??) & Rstudio, R code & Guide 4 \\ \hline\hline
-Total (hrs)               & X (\Sexpr{round(sum(tasks$Time)/60,1)}) & & \\ \hline
+\textbf{Task/Guide}     & \textbf{Time (min)} & \textbf{Resources} (Notes) \\ \hline \hline
+Guide \#1                 & x                   & Rstudio, R code, NOAA website$^1$   \\ \hline
+
+Guide \#2                 & x                   & Rstudio, R code  \\ \hline
+
+Guide \#3                 & x                   & Rstudio, R code  \\ \hline
+
+Guide \#4                 & x                   & EPA documents and other literature  \\ \hline
+
+Guide \#5                 & x                   & EA Streaming/Video Booth  \\
+\hline
+
+%2. Download Station Data  & x (\Sexpr{tasks$Time[5]})                      & Rstudio, R code and NOAA website & Guide 1  \\ \hline
+%3. Read Station Data into R & 5 (\Sexpr{tasks$Time[12]})         & Rstudio, R code & Guide 1 \\ \hline
+%4. Fix Dates              & x (\Sexpr{tasks$Time[7]}) & Rstudio, R code      &  \\ Guide 2 \\ \hline
+%5. Transform Data         & x (\Sexpr{tasks$Time[18]}) & Rstudio, R code &  Guide 2 \\ \hline
+%6. Check Coverage            & x (\Sexpr{tasks$Time[2]}) & Rstudio, R code & Guide 2 \\ \hline
+%7. Subset for TMAX        & x (\Sexpr{tasks$Time[16]}) & Rstudio, R code& Guide 3 \\ \hline
+%8. Linear Model for TMAX  & x (\Sexpr{tasks$Time[10]}) & Rstudio, R code & Guide 3 \\ \hline
+
+%Evaluation of Model       & x (??) & Rstudio, R code & Guide 3 \\ \hline
+%Subset for TMIN           & x (\Sexpr{tasks$Time[17]}) & Rstudio, R code & Guide 3 \\ \hline
+%Linear Model for TMIN     & x (\Sexpr{tasks$Time[8]}) & Rstudio, R code & Guide 3 \\ \hline
+%Evaluation of Model       & x (??) & Rstudio, R code & Guide 3 \\ \hline
+%Subset for PRCP           & ? (\Sexpr{tasks$Time[15]}) & Rstudio, R code & Guide 3 \\ \hline
+%Linear Model for PRCP     & ? (\Sexpr{tasks$Time[9]}) & Rstudio, R code & Guide 3 \\ \hline
+%Evaluation of Model       & ? (??) & Rstudio, R code & Guide 3\\ \hline
+%Read EPA State Impact Report & x (\Sexpr{tasks$Time[6]}) & EPA State CC Status & Canvas Link  \\ \hline
+%Explore Analysis Options & x (\Sexpr{tasks$Time[1]}) & Rstudio, R code & Guide 3 \\ \hline
+%Decide on Graphics        & x (\Sexpr{tasks$Time[4]}) & Rstudio, R code & Guide 4 \\ \hline
+%Presentation Ready Graphics & x (\Sexpr{tasks$Time[3]}) & Rstudio, R code & Guide 4 \\ \hline
+%Scripting for Video       & x (\Sexpr{tasks$Time[13]}) & Rstudio, R code & Guide 4 \\ \hline
+%Make Video                & x (\Sexpr{tasks$Time[11]}) & Rstudio, R code & Guide 4 \\ \hline
+%Upload Video              & ? (??) & Rstudio, R code & Guide 4 \\ \hline\hline
+Total (hrs)               & X  &  \\ \hline
 \end{tabular}
 \end{table}
+
+
+\subsection{Start Guide \#1}
+
+In Guide \#1, we use the \textbf{stations.active.oldest.csv} dataset to download the weather data for the ``oldest, active stations.''
+
+
+
+
+
 
 
 \end{document}

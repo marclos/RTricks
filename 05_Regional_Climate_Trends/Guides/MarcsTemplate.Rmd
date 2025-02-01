@@ -15,22 +15,28 @@ Updated: 2024-02-16
 
 # Guide 1
 
-## Chunk 1 Source Guide1fuctions
+## Chunk 1 Source Guide1fuctions.R
 
-```{r, chunk1_1}
-source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R")
+Load Guide Functions
+
+```{r, Guide1_1}
+source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions.R")
 ```
 
-## Chunk 2 Read Inventory
+## Chunk 2 Read 
+  
+
+Select State and Read Inventory of Statons
+
 ```{r, chunk1_2}
 my.state = "MT"
-filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
+filename.csv <- "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
 ```
 
 ## Chunk 3 Download Stations
 ```{r, chunk1_3, results='hide'}
-datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
 downloadStations.fun(datapath, my.inventory)
 ```
 
@@ -39,16 +45,17 @@ downloadStations.fun(datapath, my.inventory)
 ## Chunk 1 Source Guide1fuctions
 
 ```{r chunk2_1}
-source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R")
+source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R")
 ```
 
 ## Chunk 2 Read Stations
 ```{r, chunk2_2}
-datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP24/"
 ReadStations2.fun(datafolder)
 ```
 
 ## Chunk 3 Sort Stations --> Skip
+
 ```{r}
 # sortstations.fun() Nor working yet. 
 ```
@@ -112,7 +119,7 @@ USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
 
 You might see a note about file note found, this is for Marc, you can ignore.
 ```{r chunk4_1}
-source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R")
+source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide4functions.R")
 ```
 
 ## Chunk 2 Plot Trend
@@ -127,32 +134,34 @@ almost done!
 
 Marc's has created a function to zip all the costum functions and active stations file into a zip file for easy download/upload: Guidefunctions.zip.
 ```{r, echo=FALSE}
-zip(zipfile = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guidefunctions.zip", 
-    files = c("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R",
-              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R",
-              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R",
-              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R",
-              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/MarcsTemplate.Rmd",
-              "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"),
+zip(zipfile = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guidefunctions.zip", 
+    files = c("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions.R",
+              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R",
+              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide3functions.R",
+              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide4functions.R",
+              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/MarcsTemplate.Rmd",
+              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"),
     flags= "-j")
 ```
 
 
-# Putting it together 
+# Putting it together
+
+
 ```{r, eval=FALSE}
 # Guide 1
-source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide1functions.R") # 1_1
+source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions.R") # 1_1
 
 my.state = "MT"
-filename.csv <- "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv" # 1_1
+filename.csv <- "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv" # 1_1
 my.inventory <- readInventory.fun(filename.csv, my.state) # 1_2
 datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 downloadStations.fun(datapath, my.inventory) # 1_3
 
 # Guide 2
-source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide2functions.R") # 2_1
+source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R") # 2_1
 
-datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP24/"
 ReadStations2.fun(datafolder) # 2_2
 
 #station = 	USC00246918
