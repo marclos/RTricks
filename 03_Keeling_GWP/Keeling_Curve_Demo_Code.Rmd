@@ -229,6 +229,12 @@ decay_function_co2 <- function(t) {
   return(decay)
 }
 
+timeframe = 0:100
+
+plot(timeframe, decay_function_co2(timeframe), type = "l", xlab = "Time (years)", ylab = "Decay", main = "Decay Estimates for CO2")
+
+
+
 decay_function_co2 <- function(t) {
   lifetime_co2 <- 100  # years
   decay <- exp(-t / lifetime_co2)
