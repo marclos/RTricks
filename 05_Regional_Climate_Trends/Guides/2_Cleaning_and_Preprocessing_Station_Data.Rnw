@@ -15,7 +15,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.95)} 
+\date{\today~(ver. 0.98)} 
 
 \begin{document}
 \maketitle
@@ -45,8 +45,8 @@ We need to address several things that might get in the way of our analysis:
   \item Fix date format (convert to POSIXct, adding month and year as variables)
   \item Convert units (VALUE: PRCP = 0.1 mm, TMAX/TMIN = 0.1 C)
   \item Evaluate missing data (Coverage.fun)
-  \item Evalutae for Outliers (QACQ.fun)
-  \item Other stuff??
+  \item Evaluate for Outliers (QACQ.fun)
+  \item Other stuff?? We will see what we need to do as we go along. The data evolve each year.
 \end{enumerate}
 
 \section{Cleaning and Pre-Processing Functions}

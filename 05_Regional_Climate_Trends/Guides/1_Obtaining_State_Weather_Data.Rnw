@@ -54,7 +54,7 @@ The US National Oceanic and Atmospheric Administration (NOAA) maintains several 
 
 At various times, these records have been used to evaluate long-term climate change with varying success. Without a doubt, these data are not perfect, but they remain that foundation of an effective adn professionally maintained environmental monitoring program that engenders integrity, even when facing budget cuts. 
 
-I will use these data to select for a station with a long record for each state in the USA. Future projects might evaluate the record for stations around the world, but we will see about that. 
+We use these data to select for a station with a long record for each state in the USA. Future projects might evaluate the record for stations around the world, but we will see about that. 
 
 \subsubsection{R Programming Language}
 
