@@ -50,7 +50,7 @@ source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions
 
 ## Chunk 2 Read Stations
 ```{r, chunk2_2}
-datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP24/"
+datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
 ReadStations2.fun(datafolder)
 ```
 
@@ -100,7 +100,7 @@ USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.n
 
 You might see a note about file not found, this is for Marc, you can ignore.
 ```{r, chunk3_1}
-source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R")
+source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide3functions.R")
 ```
 
 ## Chunk 2 Analyze for Trends by Month

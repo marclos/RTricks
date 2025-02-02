@@ -1,55 +1,11 @@
-\documentclass{article}\usepackage[]{graphicx}\usepackage[dvipsnames]{xcolor}
-% maxwidth is the original width if it is less than linewidth
-% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
+\documentclass{article}
 
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-\let\hlipl\hlkwb
-
-\usepackage{framed}
-\makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
-
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+\usepackage[]{graphicx}
+\usepackage[dvipsnames]{xcolor}
 
 \usepackage{alltt}
 \usepackage{natbib}
+\usepackage{bibentry}
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
@@ -62,13 +18,13 @@
 
 \usepackage{geometry}
 % reduce margins
-\geometry{margin=0.75in}
+%\geometry{margin=0.75in}
 
 \usepackage[dvipsnames]{xcolor}
 \colorlet{LightRubineRed}{RubineRed!100}
 \definecolor{mypink2}{RGB}{219, 48, 122}
 
-\title{Guide 5: Communicating Climate Trends -- Combining Imagery and Audio}
+\title{Guide 5: Communicating Climate Stories -- Combining Imagery and Audio}
 \author{Marc Los Huertos}
 \date{\today~(ver. 0.80)}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -87,42 +43,92 @@ Based on what we have learn from research on Social Media, what type of graphics
 
 \subsection{Approach}
 
+We wlll create a YouTube videos on climate change to inform and inspire by presenting a holistic view of the issue, integrating scientific data, climate policy, and community action. The video will begin with a compelling hook to engage viewers, followed by an explanation of key climate data through visualizations like maps, graphs, and animations that highlight global and regional trends. 
+
+%The second section will explore existing climate policies such as the Paris Agreement and carbon pricing, using visual aids to demonstrate their impact. The video will then showcase successful community-driven climate initiatives, featuring interviews with local activists and leaders, along with footage of their projects in action. These community stories will highlight the tangible impact of local efforts, supported by data showing improvements like increased renewable energy adoption or energy efficiency. 
+
+The video might conclude by reinforcing the interconnectedness of data, policy, and community action, allow audience to have a sense of belonging and engage in a community for climate solutions.
+
+Throughout the video, the use of data science and visualization will make complex information accessible, while interviews and real-world examples will personalize the issue and demonstrate the effectiveness of local solutions. Editing tools like Adobe Premiere Pro will be used to create a dynamic and engaging video, integrating A-roll and B-roll to maintain viewer interest. By focusing on the intersection of data, policy, and community action, the video will provide a comprehensive understanding of climate change and inspire viewers to take meaningful steps toward addressing the crisis. The video will emphasize that small actions, when combined, can have a significant impact on combating climate change.
+
+\section{Engaging an Audience}
+
 Using social media to imagine a better world means shifting from merely preaching about issues to actively inspiring and engaging people in envisioning and creating solutions. Here are some strategies to make social media a platform for hope, creativity, and collective action:
 
-1. Tell Stories of Hope and Resilience
-Share Success Stories: Highlight individuals or communities overcoming challenges through innovative solutions (e.g., sustainable farming practices or community microgrid initiatives).
-Visualize the Future: Post artistic renderings, short videos, or animations that depict the world you’re working toward—a city powered by clean energy, vibrant ecosystems, or equitable societies.
-2. Encourage Participation
-Interactive Content: Create polls, challenges, or campaigns that invite people to contribute their ideas, such as “What does a carbon-free neighborhood look like to you?”
-Collaborative Vision Boards: Use platforms like Instagram or Pinterest to crowdsource images and ideas for a sustainable future.
-3. Show, Don’t Just Tell
-Data Visualization: Share accessible graphs, infographics, or animations showing positive trends, like renewable energy adoption or reforestation progress.
-Demonstrate Impact: Post before-and-after visuals or live updates from on-the-ground projects that demonstrate tangible change.
-4. Amplify Diverse Voices
-Platform Local Leaders: Feature voices from communities directly affected by or solving the problems.
-Celebrate Cultural Contributions: Highlight how different cultures envision and contribute to a better world.
-5. Inspire Action Through Creativity
-Collaborative Art Projects: Use hashtags to unite a global audience in co-creating art, poetry, or stories about a sustainable future.
-Gamify Solutions: Share challenges or quizzes that encourage followers to make sustainable choices and share their progress.
-6. Lead With Positivity
-Frame Solutions as Achievable: Focus on what can be done rather than what’s been lost.
-Highlight Everyday Heroes: Share stories of ordinary people making extraordinary contributions to their communities or the planet.
-7. Make it Relatable
-Personal Stories: Share experiences of how individuals or small actions have contributed to larger goals.
-Localized Content: Adapt global messages to resonate with specific audiences by using local examples, languages, or traditions.
-8. Create Space for Dialogue
-Host Live Discussions: Use features like Instagram Live, Twitter Spaces, or Facebook Live to brainstorm solutions with your audience.
-Encourage Constructive Debate: Frame discussions around “What would you do to make this better?” instead of focusing solely on criticism.
-9. Promote Collaborative Activism
-Highlight Collective Efforts: Share campaigns or projects where individuals can join forces, whether it’s planting trees, lobbying for clean energy policies, or reducing waste.
-Celebrate Milestones: Recognize collective achievements to maintain momentum and foster a sense of belonging.
+\begin{itemize}
+
+\item Tell Stories of Hope and Resilience
+\begin{itemize}
+  \item Share Success Stories: Highlight individuals or communities overcoming challenges through innovative solutions (e.g., sustainable farming practices or community microgrid initiatives).
+  \item Visualize the Future: Post artistic renderings, short videos, or animations that depict the world you’re working toward—a city powered by clean energy, vibrant ecosystems, or equitable societies.
+\end{itemize}
+
+\item Encourage Participation
+\begin{itemize}
+  \item Interactive Content: Create polls, challenges, or campaigns that invite people to contribute their ideas, such as ``What does a carbon-free neighborhood look like to you?''
+  \item Collaborative Vision Boards: Use platforms like Instagram or Pinterest to crowdsource images and ideas for a sustainable future.
+\end{itemize}
+
+\item Show, Don't Just Tell
+\begin{itemize}
+  \item Data Visualization: Share accessible graphs, infographics, or animations showing positive trends, like renewable energy adoption or reforestation progress.
+  \item Demonstrate Impact: Post before-and-after visuals or live updates from on-the-ground projects that demonstrate tangible change.
+\end{itemize}
+
+
+\item Amplify Diverse Voices
+\begin{itemize}
+  \item Platform Local Leaders: Feature voices from communities directly affected by or solving the problems.
+  \item Celebrate Cultural Contributions: Highlight how different cultures envision and contribute to a better world. 
+\end{itemize}
+
+\item Inspire Action Through Creativity 
+\begin{itemize}
+  \item Collaborative Art Projects: Use hashtags to unite a global audience in co-creating art, poetry, or stories about a sustainable future.
+  \item Gamify Solutions: Share challenges or quizzes that encourage followers to make sustainable choices and share their progress. 
+\end{itemize}
+
+
+\item Lead With Positivity
+\begin{itemize}
+  \item Frame Solutions as Achievable: Focus on what can be done rather than what’s been lost.
+  \item Highlight Everyday Heroes: Share stories of ordinary people making extraordinary contributions to their communities or the planet.
+\end{itemize}
+
+\item Make it Relatable
+\begin{itemize}
+  \item Personal Stories: Share experiences of how individuals or small actions have contributed to larger goals.
+  \item Localized Content: Adapt global messages to resonate with specific audiences by using local examples, languages, or traditions.
+\end{itemize}
+
+\item Create Space for Dialogue
+\begin{itemize}
+  \item Host Live Discussions: Use features like Instagram Live, Twitter Spaces, or Facebook Live to brainstorm solutions with your audience.
+  \item Encourage Constructive Debate: Frame discussions around ``What would you do to make this better? ''instead of focusing solely on criticism.
+\end{itemize}
+
+\item Promote Collaborative Activism
+\begin{itemize}
+  \item Share Resources: Provide links to petitions, toolkits, or events where followers can take action.
+  \item Highlight Collective Efforts: Share campaigns or projects where individuals can join forces, whether it's planting trees, lobbying for clean energy policies, or reducing waste.
+\end{itemize}
+
+
+\item Celebrate Milestones
+\begin{itemize}
+  \item Acknowledge Progress: Share milestones, anniversaries, or success stories to inspire hope and motivate further action.
+Recognize collective achievements to maintain momentum and foster a sense of belonging.
 By shifting the focus to imagining possibilities and celebrating collective achievements, social media can become a tool for inspiring and co-creating a better future rather than a platform for criticism or despair.
+\end{itemize}
 
-Here are several academic sources that explore how social media can be utilized to envision a better world through participatory storytelling, community engagement, and positive social technologies:
+\end{itemize}
 
-Participatory Storytelling and Community Building on Social Media
-This study analyzes a Facebook-based participatory storytelling program, revealing how local communities co-construct narrative accounts of lived experiences, thereby fostering community engagement and collective envisioning. 
-SAGE JOURNALS
+\subsection{Scholarly Resources}
+
+\citet{podkalicka2010understanding} \ldots
+%Participatory Storytelling and Community Building on Social MediaThis  study analyzes a Facebook-based participatory storytelling program, revealing how local communities co-construct narrative accounts of lived experiences, thereby fostering community engagement and collective envisioning. 
+
+\citet{hou2023sharing} \ldots
 
 Envisioning New Futures of Positive Social Technology
 This workshop introduces Positive Social Technology (Positech), a framework that shifts emphasis toward leveraging social technologies to support and enrich human experiences and connections, moving beyond merely fixing or preventing issues. 
@@ -145,16 +151,16 @@ This study advances communication infrastructure theory by testing the effects o
 TAYLOR \& FRANCIS ONLINE
 
 
-Unfortunately, a linear order of steps (and use of our guides) is not possible. The process of creating a compelling story is iterative and requires some back and forth between processes and guides. 
 
-Nevertheless, for this stage, here's what I suggest: 
 
-\begin{enumerate}
-  \item Explore various methods to display climate data
-  \item Use the following \href{https://docs.google.com/document/d/1GMsAxapAsnqdWhQVDylUcAq3n8MHJtf8hoZwNwessb8/edit?usp=sharing}{Google Doc} to suggest code and/or some functions that can be used to analyze your data. Marc and mentors will meet to see if we can help you with your code.
-\end{enumerate}
+\section{Scripting a Regional Climate Change and Social Change}
 
-\section{Take Home Message}
+
+Effectively communicating climate change through video requires both scientific accuracy and engaging storytelling. A well-structured script ensures clarity, maintains audience interest, and connects local climate experiences to broader global trends. This document provides a step-by-step guide to scripting a regional climate change story for a YouTube video, along with best practices for impactful science communication and basics of video editing using Premiere Pro.
+
+\subsection{Step-by-Step Guide to Writing a Climate Story Script}
+
+\subsubsection{Define the Core Message}  
 
 I suggest that you start with the end in mind. What is the take home message? What do you want the viewer to remember?
 
@@ -165,107 +171,256 @@ I suggest that you start with the end in mind. What is the take home message? Wh
   \item What might a resident of State X do about climate change?
 \end{itemize}
 
-\section{A roll and B roll}
+Before drafting a script, identify the key message you want to convey. Consider the following questions:
+\begin{itemize}
+    \item What regional climate issue will you focus on (e.g., wildfires, sea-level rise, heatwaves, drought)?
+    \item What scientific data supports this issue?
+    \item How does this issue connect to the broader context of climate change?
+    \item What action or awareness do you want viewers to take away?
+\end{itemize}
 
-\subsection{A roll}
+\subsubsection{Structure the Story to Engage}  
 
-The A roll is the primary footage that drives the story. It is the main footage that is used to tell the story.
+A compelling narrative keeps the audience engaged. Here's is example of how one might struture a video to help keep folks engaged::
+\begin{itemize}
+    \item \textbf{Hook (0:00 - 0:30)} – Start with an attention-grabbing question, shocking statistic, or personal anecdote to immediately engage viewers.
+    
+    \item \textbf{Problem Introduction (0:30 - 1:30)} – Introduce the regional climate issue with clear visuals and simple explanations.
+    
+    \item \textbf{Scientific Context (1:30 - 3:00)} – Explain how this issue fits into broader climate change trends using reliable data sources (e.g., NOAA, IPCC, NASA).
+    
+    \item \textbf{Local Impact (3:00 - 4:30)} – Highlight how this issue affects local communities, ecosystems, or economies.
+    
+    \item \textbf{Call to Action (4:30 - 5:00)} – Provide viewers with steps they can take, such as policy advocacy, behavioral changes, or educational resources. I suggest give them a sense of belonging with a community or group who are interested in the same things.
+    
+\end{itemize}
 
-\subsection{B roll}
+\subsubsection{Use Clear and Engaging Language}  
 
-The B roll is the secondary footage that is used to support the A roll. It is often used to show the viewer what the narrator is talking about.
+\begin{itemize}
+    \item Avoid technical jargon and instead use simple, relatable explanations.
+    \item Incorporate storytelling elements, such as personal experiences or community perspectives.
+    \item Use analogies and metaphors to simplify complex concepts (e.g., “The Earth’s atmosphere is like a blanket trapping heat”).
+\end{itemize}
+
+\subsubsection{Make It Visually Engaging}  
+
+Videos should be dynamic and visually appealing. Utilize:
+\begin{itemize}
+    \item A-roll for direct storytelling and expert explanations.
+    \item B-roll to illustrate key points and maintain visual interest.
+    \item Text overlays to reinforce statistics and main ideas.
+    \item Graphics, animations, and real-world footage of environmental changes.
+\end{itemize}
+
+\subsubsection{Add Other Credible Sources}  
+
+Cite reputable scientific institutions, such as:
+\begin{itemize}
+    \item \href{https://www.ipcc.ch/}{Intergovernmental Panel on Climate Change (IPCC)}
+    \item \href{https://climate.nasa.gov/}{NASA Climate Change}
+    \item \href{https://www.noaa.gov/}{National Oceanic and Atmospheric Administration (NOAA)}
+    \item \href{https://www.epa.gov/climate-change}{U.S. Environmental Protection Agency (EPA)}
+\end{itemize}
+
+\subsubsection{Focus on Local Relevance}  
+
+Viewers connect more with stories that feel personal. Highlight real individuals or communities experiencing the effects of climate change in the chosen region.
+
+\subsubsection{Keep It Concise and Focused}  
+
+YouTube videos should balance depth with brevity. Aim for a duration of 5-7 minutes to maintain engagement while providing meaningful information.
+
+\subsubsection{End with a Clear Call to Action}  
+
+Encourage viewers to take specific steps, such as:
+\begin{itemize}
+    \item Supporting local climate policies.
+    \item Reducing personal carbon footprints.
+    \item Spreading awareness through social media or community events.
+\end{itemize}
+
+
+\section{Best Practices for Climate Change Storytelling and Visual Elements}
+
+\subsubsection{Use A-Roll and B-Roll Effectively}  
+
+\begin{description}
+    \item[A-Roll] The A roll is the primary footage that drives the story. It is the main footage that is used to tell the story. The primary footage that includes direct storytelling elements such as a narrator speaking on camera, expert interviews, or personal testimonials. A-roll carries the main message and drives the narrative forward.
+    \item[ \textbf[B-Roll] B-roll helps maintain audience interest, avoids static talking-head footage, and reinforces key messages through engaging visuals. Supplemental footage that visually supports the A-roll by providing context and visual variety. The B roll is the secondary footage that is used to support the A roll. It is often used to show the viewer what the narrator is talking about. B-roll can include:
+    \begin{itemize}
+        \item Footage of extreme weather events (e.g., wildfires, floods, hurricanes).
+        \item Shots of landscapes affected by climate change.
+        \item Maps, graphs, and satellite imagery showing climate trends.
+        \item Clips of people experiencing or responding to climate impacts.
+    \end{itemize}
+\end{description}
+
 
 \newpage
-\section{Script}
+\subsection{Script Template}
 
-\subsection{What are some types of evidence that Climate change is happening in State X?}
+\subsubsection{What are some types of evidence that Climate change is happening in State X?}
+%\geometry{margin=0.75in}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
 \hline
 \textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
-\rule{0in}{2cm} 0:00                 &                       & \\
-\rule{0in}{2cm} 0:20                &                       & \\
-\rule{0in}{2cm} 0:40                &                       & \\
-\rule{0in}{2cm} 1:00                &                       & \\
-\rule{0in}{2cm} 1:20                &                       & \\
-\rule{0in}{2cm} 1:40                &                       & \\
-\rule{0in}{2cm} 2:00                &                       & \\
+\rule{0in}{1.8cm} 0:00                 &                       & \\
+\rule{0in}{1.8cm} 0:20                &                       & \\
+\rule{0in}{1.8cm} 0:40                &                       & \\
+\rule{0in}{1.8cm} 1:00                &                       & \\
+\rule{0in}{1.8cm} 1:20                &                       & \\
+\rule{0in}{1.8cm} 1:40                &                       & \\
+\rule{0in}{1.8cm} 2:00                &                       & \\
 \hline
-
 \end{tabular}
 \end{table}
 
 \newpage
-\subsection{What are the potential impacts of a changing climate on State X's resources/activities?}
+\subsubsection{What are the potential impacts of a changing climate on State X's resources/activities?}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
 \hline
 \textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
-\rule{0in}{2cm} 1:00                 &                       & \\
-\rule{0in}{2cm} 1:20                &                       & \\
-\rule{0in}{2cm} 1:40                &                       & \\
-\rule{0in}{2cm} 2:00                &                       & \\
-\rule{0in}{2cm} 2:20                &                       & \\
-\rule{0in}{2cm} 2:40                &                       & \\
-\rule{0in}{2cm} 3:00                &                       & \\
-\hline
-
-\end{tabular}
-\end{table}
-
-
-\newpage
-\subsection{What is State X doing to mitigate/adapt?}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
-\hline
-\textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
-\rule{0in}{2cm} 2:00                 &                       & \\
-\rule{0in}{2cm} 2:20                &                       & \\
-\rule{0in}{2cm} 2:40                &                       & \\
-\rule{0in}{2cm} 3:00                &                       & \\
-\rule{0in}{2cm} 3:20                &                       & \\
-\rule{0in}{2cm} 3:40                &                       & \\
-\rule{0in}{2cm} 4:00                &                       & \\
+\rule{0in}{1.8cm} 2:00                 &                       & \\
+\rule{0in}{1.8cm} 2:20                &                       & \\
+\rule{0in}{1.8cm} 2:40                &                       & \\
+\rule{0in}{1.8cm} 3:00                &                       & \\
+\rule{0in}{1.8cm} 3:20                &                       & \\
+\rule{0in}{1.8cm} 3:40                &                       & \\
+\rule{0in}{1.8cm} 4:00                &                       & \\
 \hline
 \end{tabular}
 \end{table}
 
 
 \newpage
-\subsection{}
+\subsubsection{What is State X doing to mitigate/adapt?}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
 \hline
 \textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
-\rule{0in}{2cm} 3:00                 &                       & \\
-\rule{0in}{2cm} 3:20                &                       & \\
-\rule{0in}{2cm} 3:40                &                       & \\
-\rule{0in}{2cm} 4:00                &                       & \\
-\rule{0in}{2cm} 4:20                &                       & \\
-\rule{0in}{2cm} 4:40                &                       & \\
-\rule{0in}{2cm} 5:00                &                       & \\
+\rule{0in}{1.8cm} 4:00                 &                       & \\
+\rule{0in}{1.8cm} 4:20                &                       & \\
+\rule{0in}{1.8cm} 4:40                &                       & \\
+\rule{0in}{1.8cm} 5:00                &                       & \\
+\rule{0in}{1.8cm} 5:20                &                       & \\
+\rule{0in}{1.8cm} 5:40                &                       & \\
+\rule{0in}{1.8cm} 6:00                &                       & \\
 \hline
+\end{tabular}
+\end{table}
 
+
+\clearpage
+\subsubsection{What are communities doing to mitigate/adapt?}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
+\hline
+\textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
+\rule{0in}{1.9cm} 6:00                 &                       & \\
+\rule{0in}{1.9cm} 6:20                &                       & \\
+\rule{0in}{1.9cm} 6:40                &                       & \\
+\rule{0in}{1.9cm} 7:00                &                       & \\
+\rule{0in}{1.9cm} 7:20                &                       & \\
+\rule{0in}{1.9cm} 7:40                &                       & \\
+\rule{0in}{1.9cm} 8:00                &                       & \\
+\hline
 \end{tabular}
 \end{table}
 
 \clearpage
-\section{Making a Movie}
+
+\section{Making the Video}
 
 Filming a short movie can take a lot of work. In general, it takes 10 hours of work to produce 1 minute of video. This includes planning, filming, and editing. But if the script is coherent and the B roll is well planned, the process can be much faster. Editting can be the most time consuming part of the process. 
 
 I have found that the best way to edit a movie is to start with the script and the B roll. Then, I add the A roll. Finally, I add the audio. There are lots of software tools available to help with this process and many are free and available on cell phones as apps. However, I also can give you access to the EA studio if you want to use professional software, Adobe Premier Pro. 
 
 In addition, I'll help you with that process. 
+
+\subsection{Basics of Using Adobe Premiere Pro for Video Editing}
+
+Adobe Premiere Pro is a powerful video editing tool that allows you to transform raw footage into a polished, professional video. Here's a basic overview to get started with editing your climate change video:
+
+\subsubsection{Setting Up a New Project}  
+
+When starting a new project:
+\begin{itemize}
+    \item Open Premiere Pro and select \textbf{New Project}.
+    \item Name your project and select a location to save the project file.
+    \item Choose your video settings (e.g., frame rate, resolution). For YouTube, 1080p (1920x1080) at 30 fps is a common setting.
+\end{itemize}
+
+\subsubsection{Importing Footage}  
+
+To add video clips:
+\begin{itemize}
+    \item Select \textbf{File} $>$ \textbf{Import} to bring in your A-roll and B-roll footage.
+    \item Drag and drop the clips into the project timeline.
+    \item Use the \textbf{Media Browser} to locate other media files such as images or audio.
+\end{itemize}
+
+\subsubsection{Editing Your Timeline}  
+
+Once you have your clips in the timeline:
+\begin{itemize}
+    \item Use the \textbf{Razor Tool} to cut clips and remove unnecessary footage.
+    \item Drag clips around in the timeline to adjust their order and pacing.
+    \item Use \textbf{Transitions} (e.g., fade in/out, cross dissolve) between clips to create smooth changes.
+\end{itemize}
+
+\subsubsection{Adding Audio}  
+
+To add audio:
+\begin{itemize}
+    \item Import your background music and sound effects.
+    \item Drag the audio to the audio track in the timeline.
+    \item Adjust the audio levels to ensure your voiceover or interview audio is clear over the background music.
+\end{itemize}
+
+\subsubsection{Adding Titles and Text Overlays}  
+
+To add text:
+\begin{itemize}
+    \item Select the \textbf{Text Tool} and click on the program monitor to create a text box.
+    \item Customize the font, size, and color of the text to fit the theme of your video.
+    \item Use \textbf{Essential Graphics} panel for pre-made templates for more professional-looking titles.
+\end{itemize}
+
+\subsubsection{Color Correction and Effects}  
+
+To improve the look of your video:
+\begin{itemize}
+    \item Use the \textbf{Lumetri Color} panel to adjust exposure, contrast, and color balance.
+    \item Add effects from the \textbf{Effects Panel} to enhance visual interest (e.g., slow motion, sharpen, etc.).
+\end{itemize}
+
+\subsubsection{Exporting Your Final Video}  
+
+When you’re ready to export:
+\begin{itemize}
+    \item Select \textbf{File} $>$ \textbf{Export} $>$ \textbf{Media}.
+    \item Choose the H.264 format for YouTube-compatible files.
+    \item Select the \textbf{YouTube 1080p Full HD} preset, or customize the settings for optimal resolution and file size.
+    \item Click \textbf{Export} to render your video.
+\end{itemize}
+
+
+
+
+
+
+
 
 \clearpage
 \section{Grading Rubric}

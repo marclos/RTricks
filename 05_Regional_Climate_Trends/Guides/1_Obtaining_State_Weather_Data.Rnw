@@ -17,7 +17,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.97)} 
+\date{\today~(ver. 0.99)} 
 
 \begin{document}
 \maketitle
@@ -26,7 +26,7 @@
 
 \subsection{Goals}
 
-Using a list of active weather stations in the United States, you  will download the data from five stations and write weather station data csv files. 
+Using a list of active weather stations in the United States, we will download the data from atleast stations and write weather station data csv files. 
 
 \subsection{Selected History of Climate Science}
 
@@ -38,15 +38,13 @@ The first person to propose the role of CO$_2$ on the Earth's atmosphere was a S
 
 \subsection{Why Look at Individual Stations?}
 
-I don't think there is a single, perfect way to analyze and communicate climate change. But the beauty of the network of stations in the USA and around the world is that these stations record weather as expecienced by local people. And while indiviudual stations may not represent the overall regional and global patterns well, this give us a mechanism to connect local experiences to regional or global processes. 
+I don't believe there is a single, perfect way to analyze and communicate climate change. However, one of the strengths of the global network of weather stations is that they capture weather as experienced by local communities. While individual stations may not always reflect broader regional or global trends, they provide a crucial mechanism for linking local experiences to larger-scale climate processes.
 
-Of course, some may fixate on the local pattern and remain unconvinced of the larger context and for those folks, there may be better ways to communicated climate data. 
+That said, some individuals may focus solely on local patterns and remain unconvinced of the broader context. For those audiences, alternative approaches to communicating climate data may be more effective. Additionally, some may deliberately use local patterns to dismiss or ignore trends observed in other regions.
 
-However, I would be remiss in failing to mention that some may fixate on local patterns and use these patterns to ignore or to dimiss the patterns in other regions. 
+Moreover, the impacts of climate change are highly specific to each region. Even when individuals understand how climate change affects their own community, they may struggle to grasp how different—and often more severe—its effects are on other populations, particularly those that are more vulnerable.
 
-Finally, the impacts of climate change are highly specific to the region in question. Thus, once someone understands the impacts on climate change in their region, they my not be able to appreciate how differnet the climate impacts might affect other peoples, who maybe more vulneratble, around the globe. 
-
-Thus, with these weaknesses in mind, I will pursue this project with an eye to address these other issues at later stages.
+Recognizing these challenges, we can approach this project with an awareness of these limitations and aim to address them in later stages.
 
 \subsection{Approach}
 
@@ -90,12 +88,12 @@ I suggest you do the following to prepare:
 
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
 library(here)
-source(here("04_Regional_Climate_Trends", "Guides", "Guide1functions.R"))
+source(here("05_Regional_Climate_Trends", "Guides", "Guide1functions.R"))
 @
 
 These functions are designed so you don't have to type all the code! But check to see if they work for you, because they can (apparently) break really easily. 
 
-From the Canvas page, go to the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a project called ``Regional\_Climate\_Trends'' and then upload the file to that directory. Please note, avoid spaces in your directory names.
+From the Canvas page, go to the \href{https://github.com/marclos/RTricks/blob/master/05_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a project called ``Regional\_Climate\_Trends'' and then upload the file to that directory. Please note, avoid spaces in your directory names.
 
 Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor pane (Figure~\ref{fig:source_code}).
 
@@ -133,7 +131,7 @@ Example of how to use the function:
 <<echo=TRUE, eval=TRUE>>=
 my.state <- "CA"
 filename.csv <- 
-  "/home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
+  "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
 @
 
@@ -152,7 +150,7 @@ The path to your data folder will be different, I created a directory to separat
 An example of how to use the function: 
 
 <<echo=TRUE, eval=TRUE, results='hide'>>=
-datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
 downloadStations.fun(datapath, my.inventory)
 @ 
 
@@ -172,7 +170,7 @@ To do this open a new file and select R Markdown -- Define a title, author, and 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=1.0\textwidth]{/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/figure/Guide1NewRMarkdown.png}
+\includegraphics[width=1.0\textwidth]{/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/figure/Guide1NewRMarkdown.png}
 \caption{Creating a new R Markdown file.}
 \label{fig:RMarkdown}
 \end{figure}
@@ -190,7 +188,7 @@ I have created an R Markdown file for you to use. It is called MarcsTemplate.Rmd
 
 \subsection{Defining Path \& Read Data}
 
-First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``04\_Regional\_Climate\_Trends").  To get the working directory and filename, we can use the file.choose() function from the console:
+First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``05\_Regional\_Climate\_Trends").  To get the working directory and filename, we can use the file.choose() function from the console:
 
 \begin{verbatim}
 > file.choose()
@@ -199,12 +197,12 @@ First, we install some packages and read in the data. I suggest you create a fol
 Then paste the result in the Rmd file to track the results to define the file name:\footnote{I use a function here() from the ``here library'', but it's a bit tricky to use and you can use that if you prefer.}
 
 <<>>=
-filename = "home/mwl04747/RTricks/04_Regional_Climate_Trends/stations.active.oldest.csv"
+filename = "home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"
 
 
 # OR what I use! see the footnote.
 library(here)
-filename = here("04_Regional_Climate_Trends", "stations.active.oldest.csv")
+filename = here("05_Regional_Climate_Trends", "stations.active.oldest.csv")
 @ 
 
 %suggest you change the name of the file to something more descriptive.
@@ -217,7 +215,7 @@ Here's a map of the weather stations in the dataset. Pretty lame map!  We'll mak
 
 <<>>=
 stations.active.oldest = 
-  read.csv(paste0(here(), "/04_Regional_Climate_Trends/", 
+  read.csv(paste0(here(), "/05_Regional_Climate_Trends/", 
                   "stations.active.oldest.csv"))
 plot(stations.active.oldest$LONGITUDE, 
      stations.active.oldest$LATITUDE, 

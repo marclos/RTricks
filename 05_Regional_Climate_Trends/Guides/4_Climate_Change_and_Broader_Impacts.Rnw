@@ -13,22 +13,70 @@
 \colorlet{LightRubineRed}{RubineRed!100}
 \definecolor{mypink2}{RGB}{219, 48, 122}
 
-\title{Guide 4: Climate Science and Broader Impacts, and Democratic Engagement}
+\title{Guide 4: Climate Science, Broken Information Sources, and Democratic Engagement}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.70)} 
+\date{\today~(ver. 0.75)} 
 
 \begin{document}
 \maketitle
 
 \section{Introduction}
 
+\subsection{Broader Impacts \& NSF}
+
 The broader impacts of climate science are far reaching and include the potential to inform policy, improve our understanding of the natural world, and to provide information to the public that can help them make informed decisions. This document is a guide to help you explore the broader impacts of climate science.
+
+The National Science Foundation (NSF) emphasizes the importance of broader impacts by supporting activities that benefit society and contribute to specific societal outcomes. This project—developing a YouTube video to communicate climate change science—aligns with NSF’s broader impacts in the following ways:
+
+\begin{enumerate}
+    \item \textit{Increasing public scientific literacy and engagement with STEM}.  
+    This video will make climate science more accessible by translating complex climate data into clear, engaging content for a broad audience. By connecting local weather experiences to global climate trends, the video will enhance public understanding of climate change and its long-term implications.
+
+    \item \textit{Enhancing research-based science communication}.  
+    Effective communication of scientific findings is essential for translating research into societal benefits. This project provides hands-on experience in developing digital media to communicate climate science in a compelling and accessible way, helping bridge the gap between researchers and the public.
+
+    \item \textit{Broadening participation of underrepresented groups in STEM}.  
+    By making climate education freely available on a widely used digital platform, this video has the potential to reach diverse audiences, including students and communities that may not have direct access to formal climate education. This aligns with NSF’s goal of expanding STEM participation across different demographic and geographic groups.
+
+    \item \textit{Informing evidence-based decision-making}.  
+    Public understanding of climate change is critical for informed decision-making at personal, community, and policy levels. By providing clear, data-driven explanations, this project contributes to a more scientifically literate society that can engage with climate-related challenges based on evidence rather than misinformation.
+
+    \item \textit{Creating sustainable educational resources with broad reach}.  
+    Unlike traditional classroom lectures or academic publications, a YouTube video remains freely available to educators, students, and the general public over time. This ensures a lasting impact by serving as an ongoing resource for climate education.
+
+    \item \textit{Contributing to societal well-being and resilience}.  
+    Climate change has wide-ranging effects on ecosystems, economies, and communities. By improving climate literacy, this project supports efforts to enhance societal resilience and preparedness for climate-related risks, contributing to long-term societal benefits.
+
+\end{enumerate}
+
+By integrating digital media with climate science communication, this project aligns with NSF’s broader impacts by increasing scientific literacy, expanding participation in STEM, and promoting informed decision-making for the benefit of society.
+
 
 \subsection{Goals}
 
-Create a compelling story for a social media audience. 
+The goal of producing a YouTube video on climate change is to develop clear, engaging, and accessible communication strategies that effectively convey climate science to a broad audience. Climate change is complex, and while scientific data is essential, the way it is presented can determine whether it resonates with viewers or gets overlooked. This project aims to bridge that gap by translating technical concepts into compelling narratives that inform, engage, and inspire action.
 
-Our goal is to provide information to the public that can help them make informed decisions based on the trustworthy analysis of weather data. Using station data analysis from a state of your choosing, along with the EPA Climate Change Status Documents, we describe climate change trends, it's potential impacts on the local community, and what local activists groups are doing to mitigate the impacts of climate change.
+Scripting a regional climate change story for YouTube requires a balance between storytelling, scientific accuracy, and audience engagement. By effectively using A-roll and B-roll, integrating best practices in science communication, and ensuring a strong narrative structure, this project can create an impactful video that educates and inspires viewers to take climate action. Additionally, using Premiere Pro's basic tools, you can create a polished, professional video that effectively communicates your message.
+
+\medskip
+
+\noindent Specifically, this video will:
+
+\begin{description}
+  \item[Connect Local Experiences to Global Climate Trends] By using real-world weather data from local stations, the video will demonstrate how regional patterns fit into the broader context of climate change, helping viewers see the link between their everyday experiences and global shifts.
+
+  \item[Address Common Misconceptions] Many people focus only on short-term or local weather patterns, leading to skepticism about larger climate trends. The video will counteract this by illustrating long-term climate data, historical changes, and the importance of distinguishing between weather and climate.
+
+  \item[Highlight Regional Climate Impacts] Climate change does not affect all regions equally. This project will showcase how climate impacts vary across different locations, emphasizing the disproportionate effects on vulnerable communities while making these issues relatable to a general audience.
+
+  \item[Experiment with Effective Climate Communication] The video will explore different storytelling techniques, visualizations, and narratives to determine which methods are most effective in making climate science understandable and engaging.
+
+  \item[Encourage Action and Awareness] The ultimate goal is not just to inform but to inspire. By providing clear takeaways, practical actions, and relatable examples, the video will aim to motivate viewers to think critically about climate change and consider ways they can contribute to solutions.
+\end{description}
+
+Through this process, we will refine our ability to communicate climate science in a clear and impactful way, ensuring that complex data translates into meaningful understanding. 
+
+This video will serve as both a learning experience and a resource for broader climate education efforts.
 
 \subsection{Approach}
 
@@ -128,9 +176,12 @@ There exists a tension between professionalism and amature content. The professi
 \item more information on state policy/activities
 \end{itemize}
 
-\subsubsection{Practicalities of the Tiktok Platform}
+%\subsubsection{Practicalities of the Tiktok Platform}
 
-In spite of the controversies and issues of privacy, Tictok is a powerful tool for communicating the impacts of climate change. We will load the our video on \href{https://www.tiktok.com/@nor_socal}{my TicTok account} to avoid the privacy issues that might arise from using the Tictok API by students.
+%While Tictok is a powerful tool for communicating the impacts of climate change,
+%we will not be using it. Because of the controversies and issues of privacy, I have deleted my account.
+
+%We will load the our video on \href{https://www.tiktok.com/@nor_socal}{my TicTok account} to avoid the privacy issues that might arise from using the Tictok API by students.
 
 \section{Social Change: Activism and Democratic Institutions}
 
@@ -138,64 +189,7 @@ In spite of the controversies and issues of privacy, Tictok is a powerful tool f
 
 \citet{putnam2000bowling} argues that the decline of social capital in the United States is a result of the decline of civic engagement. This is a problem because social capital is a key ingredient in the functioning of democratic institutions.
 
-\subsection{What is the Role of Social Media in Social Change?}
-
-Social media is a powerful tool for social change. It can be used to organize protests, raise awareness, and mobilize people to take action. It can also be used to spread misinformation and hate speech.
-
-\subsection{What is the Role of Democratic Institutions in Social Change?}
-
-Democratic institutions are essential for social change. They provide a framework for people to express their views, organize, and take action. They also provide a mechanism for resolving conflicts and making decisions.
-
-\subsection{What is the Role of Activism in Social Change?}
-
-Activism is a key driver of social change. It can take many forms, from peaceful protests to civil disobedience. It can also be a powerful tool for raising awareness and mobilizing people to take action.
-
-\subsection{What is the Role of Science in Social Change?}
-
-Science can play a key role in social change. It can provide evidence to support social change efforts, and it can also help to inform policy decisions. However, science can also be used to spread misinformation and undermine social change efforts.
-
-\subsection{What is the Role of the Media in Social Change?}
-
-The media can play a key role in social change. It can help to raise awareness of social issues, and it can also help to shape public opinion. However, the media can also be used to spread misinformation and undermine social change efforts.
-
-\subsection{What is the Role of Education in Social Change?}
-
-Education is a key driver of social change. It can help to raise awareness of social issues, and it can also help to empower people to take action. However, education can also be used to spread misinformation and undermine social change efforts.
-
-\subsection{What is the Role of the Private Sector in Social Change?}
-
-The private sector can play a key role in social change. It can help to raise awareness of social issues, and it can also help to drive innovation and change. However, the private sector can also be driven by profit motives, which can sometimes conflict with social change efforts.
-
-\subsection{What is the Role of the Public Sector in Social Change?}
-
-The public sector can play a key role in social change. It can help to raise awareness of social issues, and it can also help to drive policy change. However, the public sector can also be driven by political motives, which can sometimes conflict with social change efforts.
-
-\subsection{What is the Role of Non-Governmental Organizations in Social Change?}
-
-Non-governmental organizations can play a key role in social change. They can help to raise awareness of social issues, and they can also help to drive policy change. However, non-governmental organizations can also be driven by political motives, which can sometimes conflict with social change efforts.
-
-\subsection{What is the Role of International Organizations in Social Change?}
-
-International organizations can play a key role in social change. They can help to raise awareness of social issues, and they can also help to drive policy change. However, international organizations can also be driven by political motives, which can sometimes conflict with social change efforts.
-
-\subsection{What is the Role of the Individual in Social Change?}
-
-Individuals can play a key role in social change. They can help to raise awareness of social issues, and they can also help to drive policy change. However, individuals can also be driven by personal motives, which can sometimes conflict with social change efforts.
-
-\subsection{What is the Role of Social Movements in Social Change?}
-
-Social movements can play a key role in social change. They can help to raise awareness of social issues, and they can also help to drive policy change. However, social movements can also be driven by political motives, which can sometimes conflict with social change efforts.
-
-
-
-
-
-
-
-%\section{Conclusions}
-
-%Hopefully, this little project has created some mechanisms to appreciate this complexity. 
-
+A strong sense of community belonging can be a powerful force in combating climate change by fostering collective action, shared responsibility, and resilience. When people feel connected to their neighbors and local institutions, they are more likely to participate in sustainability initiatives, advocate for climate policies, and adopt environmentally friendly behaviors. Social norms within close-knit communities can encourage individuals to make sustainable choices, such as reducing waste, adopting clean energy, or using public transportation, as these behaviors become a shared expectation rather than an individual burden. Belonging also strengthens local resilience—communities with strong social ties are better equipped to respond to climate disasters, mobilizing mutual aid, resource-sharing, and local adaptation efforts like urban microgrids or emergency preparedness networks. Furthermore, a deep connection to place fosters environmental stewardship, motivating communities to engage in conservation, urban greening, and climate activism. When local groups organize around climate action, their efforts can scale up to influence broader policies and systemic change. By rebuilding social bonds and reinforcing a collective identity, communities can transform climate action from an individual challenge into a shared commitment, countering the social fragmentation that\citet{putnam2000bowling} described in Bowling Alone.
 
 
 % bibliography section here-------------------------------------------
