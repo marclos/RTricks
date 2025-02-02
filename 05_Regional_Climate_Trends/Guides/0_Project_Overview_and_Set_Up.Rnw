@@ -3,9 +3,9 @@
 \hypersetup{colorlinks=true, linkcolor=blue, filecolor=blue, urlcolor=blue, citecolor=blue}
 
 
-\title{Preparing Regional Weather Data Analysis Project}
+\title{Preparing the Regional Climate Trends Project}
 \author{Marc Los Huertos}
-\date{\today~(ver. 1.00)} % without \date command, current date is supplied
+\date{\today~(ver. 1.01)} % without \date command, current date is supplied
 
 \begin{document}
 \maketitle
@@ -22,14 +22,14 @@ Create a public product (video) that explains climate change trends in a state; 
 \begin{description}
   \item[Project Overview (This Document)] A brief overview of the project and the steps to complete it. In addition, this document, when run selects the oldest active station ID for each state (and territory). Students do not need to run this document, but creates an updated list for them each time it is run. In addition, this document explains some of the R code used to create this list as background information. 
   
-  \item[Guide 1] Data Collection (Download station data from the web and read into R.)
-  \item[Guide 2] Data Processing (Clean and Pre-process Data)
-  \item[Guide 3] Data Analysis (Use R to analyze data (means, trends, etc))
-  \item[Guide 4] Data Visualization (Create visualizations of data)
-  \item[Guide 5] Communicating Project Results (Create a video that explains the data and the results of the analysis.)
+  \item[Guide 1] Data Collection (Download station inventory from the web and read into R)
+  \item[Guide 2] Cleaning and Pre-Processing Weather Station Data (Convert date formats, clean missing data, etc.)
+  \item[Guide 3] Analyzing \& Visual Display of Climate Trends (Analyze data (means, trends, etc) and create compelling visualizations)
+  \item[Guide 4] Climate Science Narratives --- State Initiatives and Community Belonging (Create creative stories that explain climate change trends)
+  \item[Guide 5] Communicating Climate Stories -- Combining Imagery and Audio (Edit a video that explains the data and the results of the analysis.)
 \end{description}
 
-At this point, I have created a DRAFT visual flow chart that displays each stage. I will be adjusting this chart as we progress and refine the R code and project guides. 
+At this point, I created a DRAFT visual flow chart that displays some of the stages. I will be adjusting this chart as we progress, adding detail. Moreover, I'll refine the R code and project guides if we found ambiguities. 
 
 \begin{figure}
   \caption{A flow chart of the project stages.}
@@ -39,14 +39,15 @@ At this point, I have created a DRAFT visual flow chart that displays each stage
 
 \subsection{Approach}
 
-I have created several Guides 1 through 4. Each guide is a Rmarkdown document that explains the steps to complete the project. These guides are designed to be completed in order. %, but it is possible to skip a guide if the data is already available.
+I created several Guides 1 through 5. Each guide is a Rmarkdown document that explains the steps to complete the project. These guides are designed to be completed in order. %, but it is possible to skip a guide if the data is already available.
 
-This particular document has NO code for you to run, but document the process that I used to obtain the data and create a list of stations from you to select from. So, please read this as an informational document and not something to follow. However, there are some insights here about how to find the data and the code that I used to prepare for the project for the class. 
+This particular document has \textbf{no code} for you to run, but documents the source of the data; explains process to obtain the data; and creates a list of stations to be used in Guide 1. Please read this guide as an informational document about our data source. The document includes some insights here about how to find the data and the code that I used to prepare for the project for the class. 
+
 \section{Selecting US Weather Station with Robust Records}
 
 \subsection{Global Weather Station Data}
 
-The GHCNd is the primary source of weather station data. The data is available from the National Centers for Environmental Information (NCEI) at the following URL: \url{https://www.ncei.noaa.gov/pub/data/ghcn/daily/}. The data is available in a variety of formats, including .csv, .dat, and .txt.
+The GHCNd\footnote{Global Historical Climatology Network daily is maintained by the US. Monthly and Annual mean data are also available.} is the primary source of weather station data. The data is available from the National Centers for Environmental Information (NCEI) at the following URL: \url{https://www.ncei.noaa.gov/pub/data/ghcn/daily/}. The data is available in a variety of formats, including .csv, .dat, and .txt.
 
 \subsection{Goals for this Document}
 
@@ -103,15 +104,15 @@ inactive.TMAX = subset(inventory.TMAX, subset=(FIRSTYEAR <= 1850 & LASTYEAR<=202
 @
 
 \begin{figure}
-  \caption{A plot of active global weather stations (GHCN-d). Note the increase in stations over time and spatial distribution. It's a story of the industrialization of Europe and the US and colonialiam.}
+  \caption{A plot of active global weather stations (GHCNd). Note the increase in stations over time and spatial distribution. It's a story of the European industrialization, US Expansion, and colonialism.}
   \label{fig:global-weather-stations}
 <<echo=FALSE>>=
 plot(LATITUDE~LONGITUDE, data=active.TMAX, pch=20, cex=.10, xlab="Longitude", ylab="Latitude", las=1, col="grey70", cex.lab=1.5)
-points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1900), pch=20, cex=.17, col="cornflowerblue")
-points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1890), pch=20, cex=.23, col="blue")
-points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1875), pch=20, cex=.37, col="green")
-points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1865), pch=20, cex=.42, col="red")
-legend("bottomleft", legend=c("<1865", "<1875", "<1890", "<1900", ">=1900"), pch=20, col=c("red", "green", "blue", "cornflowerblue", "grey70"), title="In Operation", cex=1, bty="n")
+points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1900), pch=20, cex=.32, col="cornflowerblue")
+points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1890), pch=20, cex=.38, col="blue")
+points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1875), pch=20, cex=.45, col="green")
+points(LATITUDE~LONGITUDE, data=subset(active.TMAX, subset=FIRSTYEAR<1865), pch=20, cex=.54, col="red")
+legend("bottomleft", legend=c(">=1900", "<1900", "<1890", "<1875", "<1865"), pch=20, col=c("grey70", "cornflowerblue", "blue", "green",  "red"), title="In Operation", cex=1, bty="n")
 @
 \end{figure}
 
