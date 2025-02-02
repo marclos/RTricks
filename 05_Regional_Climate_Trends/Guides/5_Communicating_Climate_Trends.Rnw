@@ -231,11 +231,11 @@ Viewers connect more with stories that feel personal. Highlight real individuals
 
 YouTube videos should balance depth with brevity. Aim for a duration of 5-7 minutes to maintain engagement while providing meaningful information.
 
-\subsubsection{End with a Clear Call to Action}  
+\subsubsection{End with the Value of Community Belonging}  
 
 Encourage viewers to take specific steps, such as:
 \begin{itemize}
-    \item Supporting local climate policies.
+    \item Supporting local climate policies and communites.
     \item Reducing personal carbon footprints.
     \item Spreading awareness through social media or community events.
 \end{itemize}
@@ -260,7 +260,7 @@ Encourage viewers to take specific steps, such as:
 \newpage
 \subsection{Script Template}
 
-\subsubsection{What are some types of evidence that Climate change is happening in State X?}
+\subsubsection{What is the evidence that Climate Change is happening in State X?}
 %\geometry{margin=0.75in}
 
 \begin{table}[h]
@@ -268,13 +268,13 @@ Encourage viewers to take specific steps, such as:
 \begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
 \hline
 \textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
-\rule{0in}{1.8cm} 0:00                 &                       & \\
-\rule{0in}{1.8cm} 0:20                &                       & \\
-\rule{0in}{1.8cm} 0:40                &                       & \\
-\rule{0in}{1.8cm} 1:00                &                       & \\
-\rule{0in}{1.8cm} 1:20                &                       & \\
-\rule{0in}{1.8cm} 1:40                &                       & \\
-\rule{0in}{1.8cm} 2:00                &                       & \\
+\rule{0in}{0.0cm} 0:00                 &                       & \\
+\rule{0in}{2.0cm} 0:20                &                       & \\
+\rule{0in}{2.0cm} 0:40                &                       & \\
+\rule{0in}{2.0cm} 1:00                &                       & \\
+\rule{0in}{2.0cm} 1:20                &                       & \\
+\rule{0in}{2.0cm} 1:40                &                       & \\
+\rule{0in}{2.0cm} 2:00                &                       & \\
 \hline
 \end{tabular}
 \end{table}
@@ -287,13 +287,13 @@ Encourage viewers to take specific steps, such as:
 \begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
 \hline
 \textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
-\rule{0in}{1.8cm} 2:00                 &                       & \\
-\rule{0in}{1.8cm} 2:20                &                       & \\
-\rule{0in}{1.8cm} 2:40                &                       & \\
-\rule{0in}{1.8cm} 3:00                &                       & \\
-\rule{0in}{1.8cm} 3:20                &                       & \\
-\rule{0in}{1.8cm} 3:40                &                       & \\
-\rule{0in}{1.8cm} 4:00                &                       & \\
+\rule{0in}{0.0cm} 2:00                 &                       & \\
+\rule{0in}{2.1cm} 2:20                &                       & \\
+\rule{0in}{2.1cm} 2:40                &                       & \\
+\rule{0in}{2.1cm} 3:00                &                       & \\
+\rule{0in}{2.1cm} 3:20                &                       & \\
+\rule{0in}{2.1cm} 3:40                &                       & \\
+\rule{0in}{2.1cm} 4:00                &                       & \\
 \hline
 \end{tabular}
 \end{table}
@@ -307,33 +307,33 @@ Encourage viewers to take specific steps, such as:
 \begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
 \hline
 \textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
-\rule{0in}{1.8cm} 4:00                 &                       & \\
-\rule{0in}{1.8cm} 4:20                &                       & \\
-\rule{0in}{1.8cm} 4:40                &                       & \\
-\rule{0in}{1.8cm} 5:00                &                       & \\
-\rule{0in}{1.8cm} 5:20                &                       & \\
-\rule{0in}{1.8cm} 5:40                &                       & \\
-\rule{0in}{1.8cm} 6:00                &                       & \\
+\rule{0in}{0.0cm} 4:00                 &                       & \\
+\rule{0in}{2.1cm} 4:20                &                       & \\
+\rule{0in}{2.1cm} 4:40                &                       & \\
+\rule{0in}{2.2cm} 5:00                &                       & \\
+\rule{0in}{2.2cm} 5:20                &                       & \\
+\rule{0in}{2.2cm} 5:40                &                       & \\
+\rule{0in}{2.2cm} 6:00                &                       & \\
 \hline
 \end{tabular}
 \end{table}
 
 
 \clearpage
-\subsubsection{What are communities doing to mitigate/adapt?}
+\subsubsection{How can community belonging to mitigate/adapt to climate change?}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{|p{2cm}|p{6cm}|p{6cm}|}
 \hline
 \textbf{Time Marker} & \textbf{A Roll Audio} & \textbf{B Roll Imagery} \\ \hline
-\rule{0in}{1.9cm} 6:00                 &                       & \\
-\rule{0in}{1.9cm} 6:20                &                       & \\
-\rule{0in}{1.9cm} 6:40                &                       & \\
-\rule{0in}{1.9cm} 7:00                &                       & \\
-\rule{0in}{1.9cm} 7:20                &                       & \\
-\rule{0in}{1.9cm} 7:40                &                       & \\
-\rule{0in}{1.9cm} 8:00                &                       & \\
+\rule{0in}{0.0cm} 6:00                 &                       & \\
+\rule{0in}{2.2cm} 6:20                &                       & \\
+\rule{0in}{2.1cm} 6:40                &                       & \\
+\rule{0in}{2.2cm} 7:00                &                       & \\
+\rule{0in}{2.1cm} 7:20                &                       & \\
+\rule{0in}{2.2cm} 7:40                &                       & \\
+\rule{0in}{2.1cm} 8:00                &                       & \\
 \hline
 \end{tabular}
 \end{table}
