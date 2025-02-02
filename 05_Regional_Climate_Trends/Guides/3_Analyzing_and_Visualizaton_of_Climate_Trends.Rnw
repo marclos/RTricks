@@ -62,10 +62,10 @@ Moreover, I haven't completed every possible analysis yet, but I tried to post t
 \end{enumerate}
 
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
-datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
 library(xtable)
 library(here)
-source(here("04_Regional_Climate_Trends", "Guides", "Guide3functions.R"))
+source(here("05_Regional_Climate_Trends", "Guides", "Guide3functions.R"))
 @
 
 \subsection{R Code with Custom Functions}

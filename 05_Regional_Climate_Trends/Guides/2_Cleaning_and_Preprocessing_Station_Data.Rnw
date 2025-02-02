@@ -15,7 +15,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.92)} 
+\date{\today~(ver. 0.95)} 
 
 \begin{document}
 \maketitle
@@ -24,17 +24,17 @@
 
 \subsection{Goals}
 
-The goal of this guide is to provide a step-by-step process for cleaning and pre-processing weather station data. The data is from the Global Historical Climatology Network (GHCN) Daily dataset. The data is available from the National Oceanic and Atmospheric Administration (NOAA) and is available from the National Centers for Environmental Information (NCEI) at \url{https://www.ncdc.noaa.gov/data-access/land-based-station-data/land-based-datasets/global-historical-climatology-network-ghcn}.
+The goal of this guide is to provide a step-by-step process for cleaning and pre-processing weather station data. The data is from the Global Historical Climatology Network (GHCN) Daily dataset. The data is available from the National Oceanic and Atmospheric Administration (NOAA) and is available from the National Centers for Environmental Information (NCEI) at \url{https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily}.
 
 \subsection{Background}
 
-\subsubsection{What is GHCN-Daily (GNCNd)?}
+\subsubsection{What is GHCN-Daily (GNCN-d)?}
 
 The new dataset is referred to as GHCN-Daily, version 3. The new dataset has a number of improvements over the older dataset, including a more comprehensive and robust quality assurance process. The new dataset also includes more station records and is updated more frequently than the older dataset. 
 
 The new dataset is also available in a more user-friendly format, including a set of pre-packaged data files that are available for download from the NCEI website. However, devoloping instructions to interact with their website is way to time consuming! So, we'll use the R file transfer protocol, via https, to download the data. 
 
-In 2011, there was a major update to the daily updates to the GHCN dataset: \ref{https://www.ncei.noaa.gov/pub/data/ghcn/daily/COOPDaily_announcement_042011.pdf}{IMMEDIATE -- Changes to COOP Daily Form Access}. It's a useful history.
+In 2011, there was a major update to the daily updates to the GHCN dataset: \href{https://www.ncei.noaa.gov/pub/data/ghcn/daily/COOPDaily_announcement_042011.pdf}{IMMEDIATE -- Changes to COOP Daily Form Access}. It's a useful history.
 
 \subsection{Approach}
 
@@ -52,7 +52,7 @@ We need to address several things that might get in the way of our analysis:
 \section{Cleaning and Pre-Processing Functions}
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
 library(here)
-source(here("04_Regional_Climate_Trends", "Guides", "Guide2functions.R"))
+source(here("05_Regional_Climate_Trends", "Guides", "Guide2functions.R"))
 @
 
 \subsection{Before Starting the Process}
@@ -65,7 +65,7 @@ From the Canvas page, go to the Guide2functions.R file and download the file to 
 
 Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
 
-Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide2functions.R}{Guide2functions.R} code and the functions will be loaded into your environment automatically. Be sure the function has been updated to 2024-02-07!
+Run the \href{https://github.com/marclos/RTricks/blob/master/05_Regional_Climate_Trends/Guides/Guide2functions.R}{Guide2functions.R} code and the functions will be loaded into your environment automatically. Be sure the function has been updated to 2025-02-01!
 
 \subsection{Function Descriptions and Use}
 
@@ -88,7 +88,7 @@ Use this function read the stations in the R Environment. %In some sense, this i
 Example of how to use the function:
 
 <<readstations, echo=TRUE, results='hide'>>=
-datafolder = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
+datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
 ReadStations2.fun(datafolder)
 @
 
@@ -104,7 +104,7 @@ ls()
 
 \item[Check the structure of the dataframes]
 
-Using str(), make sure the datasets look right!
+Using \texttt{str()}, make sure the datasets look right!
 
 For example: 
 
@@ -175,6 +175,7 @@ See Section~\ref{subsec:coverage} for more information on how to evaluate the co
 \item[Function to Fix Values (by order of magnitude)]
 
 According the the NOAA website, the csv.gz files have  five core elements include the following units, which we will convert:
+
 \begin{description}
   \item[PRCP =] Precipitation (tenths of mm) $\rightarrow$ mm
   \item[SNOW =] Snowfall (mm)  $\rightarrow$ cm
@@ -222,7 +223,7 @@ If you have any hints of data problems (wacky values, odd patterns), let's sort 
 
 \item[Function to Create Monthly Values and Normals]
 
-For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly totals.\footnote{Brody/Evyln: We need code to exclue months with missing data, these might not be represenative of the month if missing, especically for PRCP!}
+For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly totals.\footnote{Brody: We need code to exclude months with missing data, these might not be represenative of the month if missing, especically for PRCP!}
 
 \begin{center}
 \textbf{Function: \textcolor{Plum}{MonthlyValues.fun()}}
