@@ -8,7 +8,7 @@
 \contentsline {section}{\numberline {2}Analyzing and Visualizing Monthly Trends}{4}{section.2}
 \contentsline {subsection}{\numberline {2.1}Linear Regression: TMAX, TMIN, and PRCP \nobreakspace {} YEAR, by=YEAR}{4}{subsection.2.1}
 \contentsline {subsection}{\numberline {2.2}Plotting a Simple Trend Line}{5}{subsection.2.2}
-\contentsline {subsection}{\numberline {2.3}Marc's Custom Function to Plot a Station Trend}{6}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.3}Marc's Custom Function to Plot a Station Trend}{7}{subsection.2.3}
 \contentsline {subsection}{\numberline {2.4}Acceleraation of Trend in 1975}{10}{subsection.2.4}
 \contentsline {subsection}{\numberline {2.5}Filtering Seasonal Effect}{15}{subsection.2.5}
 \contentsline {subsubsection}{\numberline {2.5.1}Method 1: Filtering by Monthly Mean}{16}{subsubsection.2.5.1}
