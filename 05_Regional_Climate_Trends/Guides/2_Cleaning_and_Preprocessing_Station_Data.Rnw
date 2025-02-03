@@ -15,7 +15,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.98)} 
+\date{\today~(ver. 0.981)} 
 
 \begin{document}
 \maketitle
@@ -202,24 +202,140 @@ NOAA website conducts a very rudimentary data quality check, but every year, we 
 Here are some stuff we'll look for: 
 \begin{description}
   \item[Extreme Values] Plot values with time, is the scale crazy with just a few observations at the extreme?
-  \item[Sudden Shift] ???
-  \item[Note QA/QC Flags] TBD
+  \item[Sudden Shift] A sudden data shift in GHCNd (Global Historical Climatology Network - Daily) could indicate several potential issues or changes in the dataset. Some possible explanations include:  
+
+\begin{enumerate}  
+    \item \textbf{Instrument Changes or Malfunctions} – A shift might result from a change in measurement instruments, sensor recalibration, or instrument failure, leading to discontinuities in recorded values.  
+
+    \item \textbf{Station Relocation} – If a weather station is moved, even slightly, it can cause abrupt changes due to differences in elevation, local microclimates, or exposure.  
+
+    \item \textbf{Changes in Observation Practices} – Adjustments in how data is recorded, such as shifts in time-of-day observation or methodology (e.g., moving from manual readings to automated sensors), can introduce noticeable changes.  
+
+    \item \textbf{Data Quality Issues or Corrections} – The dataset may have been updated to correct errors, remove outliers, or introduce new quality control procedures, affecting trends.  
+
+    \item \textbf{Climatic or Extreme Weather Events} – A real, significant climate event, such as a heatwave, cold snap, or precipitation anomaly, could explain the sudden shift.  
+
+    \item \textbf{Urbanization or Land Use Changes} – Increased urbanization around a station (e.g., heat island effects) or changes in land use (e.g., deforestation) can cause long-term shifts in climate data.  
+
+    \item \textbf{Metadata Errors or Missing Data Fill-ins} – If there are discrepancies in metadata or if missing data is interpolated with estimates, sudden shifts can appear.  
+\end{enumerate} 
+
 \end{description}
 
-Yes, I am still working on this. QA/QC is a big deal and I want to make I can explain it AND make sure the code works.
+If you notice a sudden shift, it's worth cross-referencing station metadata, quality control flags, and surrounding station records to determine whether the change is due to an actual climatic event or a data-related issue.
+
+  \item[QA/QC Flags in GHCNd]
+
+In the GHCNd dataset, Quality Assurance (QA) and Quality Control (QC) flags are used to indicate potential issues or modifications in the data. These flags help users identify values that may be erroneous, adjusted, or estimated.  
+
+\begin{itemize}  
+    \item \textbf{Types of QA/QC Flags:} Each reported data value in GHCNd can have three associated flags:  
+    \begin{itemize}  
+        \item \textbf{Measurement Flag} – Indicates if the data value was derived, adjusted, or estimated.  
+        \item \textbf{Quality Flag} – Identifies if a value failed a quality control check.  
+        \item \textbf{Source Flag} – Specifies the source of the data.  
+    \end{itemize}  
+\end{itemize}  
+
+\begin{itemize}  
+    \item \textbf{Measurement Flags (Optional):} Indicate if the data value was derived, estimated, or adjusted. Some common flags include:  
+\end{itemize}  
+
+\begin{table}[h]  
+    \centering  
+    \begin{tabular}{|c|l|}  
+        \hline  
+        \textbf{Flag} & \textbf{Meaning} \\  
+        \hline  
+        B & Adjusted to remove systematic bias (e.g., urban heat island effects) \\  
+        D & Data value was from a delayed source \\  
+        E & Estimated value \\  
+        I & Derived from an intermediate source \\  
+        M & Missing data \\  
+        Q & Data value adjusted from original observation \\  
+        S & Value was computed from multiple sources \\  
+        T & Trace precipitation (small, nonzero amount) \\  
+        \hline  
+    \end{tabular}  
+    \caption{Measurement Flags in GHCNd}  
+\end{table}  
+
+\begin{itemize}  
+    \item \textbf{Quality Control (QC) Flags:} Indicate if a value has failed a quality check. If no QC flag is present, the value has passed all checks. Common QC flags include:  
+\end{itemize}  
+
+\begin{table}[h]  
+    \centering  
+    \begin{tabular}{|c|l|}  
+        \hline  
+        \textbf{Flag} & \textbf{Meaning} \\  
+        \hline  
+        D & Failed duplicate check \\  
+        G & Failed gap check \\  
+        I & Failed internal consistency check \\  
+        K & Failed streak/frequent-value check \\  
+        L & Failed check on length of multiday period \\  
+        M & Failed climatological outlier check \\  
+        N & Failed plausible value check \\  
+        O & Failed observational consistency check \\  
+        S & Failed spatial consistency check \\  
+        T & Failed temporal consistency check \\  
+        W & Temperature too warm for snow \\  
+        \hline  
+    \end{tabular}  
+    \caption{Quality Control Flags in GHCNd}  
+\end{table}  
+
+\begin{itemize}  
+    \item \textbf{Source Flags:} Indicate the origin of the data, such as manual observations, automated weather stations, or third-party sources. Common flags include:  
+\end{itemize}  
+
+\begin{table}[h]  
+    \centering  
+    \begin{tabular}{|c|l|}  
+        \hline  
+        \textbf{Flag} & \textbf{Meaning} \\  
+        \hline  
+        0-9  & Climate Reference Network (CRN) source code \\  
+        C    & Data from the Cooperative Observer Network (COOP) \\  
+        G    & Data from the Global Summary of the Day (GSOD) \\  
+        H    & Data from hydrological stations \\  
+        R    & Data from air force stations \\  
+        S    & Data from satellite-derived observations \\  
+        Z    & Data from summary statistics \\  
+        \hline  
+    \end{tabular}  
+    \caption{Source Flags in GHCNd}  
+\end{table}  
+
+\begin{itemize}  
+    \item \textbf{Interpreting GHCNd QA/QC Flags:}  
+    \begin{itemize}  
+        \item If a value \textbf{has no QC flag}, it has passed all quality checks.  
+        \item A value with a \textbf{measurement flag "E"} means it was estimated and should be used with caution.  
+        \item A QC flag like \textbf{"M" (outlier check failed)} suggests the value may be erroneous.  
+        \item The \textbf{source flag} helps track where the data originated.  
+    \end{itemize}  
+\end{itemize}  
+
+If you notice unexpected flags, consider cross-referencing metadata, station history, and nearby station records to determine whether the flagged values indicate a real climatic event or a data issue.
+
+
 
 \begin{center}
 \textbf{Function: \textcolor{Plum}{QAQC.fun()}}
 \end{center}
 
+At this point, the function produced graphics and a summary of flags to examine the potential for QA/QC problems -- in part becuase the issues seem rare. Maybe this will be the year where someone finds a problem that we need to address and I'll revise the function accordingly. 
+
 Example of how to use the function:
 
-<<echo=TRUE, results='hide'>>=
+<<echo=TRUE, results='markup'>>=
 QAQC.fun(USC00042294b)
 QAQC.fun(USC00040693b)
 @
 
-If you have any hints of data problems (wacky values, odd patterns), let's sort them out together!
+No flags are reportedhere. If you have any hints of data problems (wacky values, odd patterns), let's sort them out together!
 
 \item[Function to Create Monthly Values and Normals]
 
@@ -297,10 +413,10 @@ I tend to avoid having lots of objects in my R environment. I like to clean up a
 Also, I like to move the final products into csv files. Here's the function to do that. However, I noticed that it' deleting needed files. YIKES! It's also clunky, but not that important at this point, nevertheless, I'll work on it later.So, I suggest you don't run this code until I fix it.
 
 <<cleanup, echo=TRUE, eval=FALSE>>=
-CleanUp.fun(datafolder, USC00042294.anamolies, "USC00042294")
+CleanUp.fun(datafolder, USC00042294.anomalies, "USC00042294")
 @
 
-For now, I am just saving the anamolies data into an RData file that I can use in other Rmd Guides by loading. I doubt you'll need to do that if you use only one Rmd file to knit all the functions together.
+For now, I am just saving the anomalies data into an RData file that I can use in other Rmd Guides by loading. I doubt you'll need to do that if you use only one Rmd file to knit all the functions together.
 
 <<saveRdata>>=
 SaveCleanUp.fun(datafolder)
@@ -362,7 +478,7 @@ print(coverage.fun)
 
 If you have too many stations that don't have enough data, we'll need to download additional stations. I can show you a way to decipher that ahead of time if you'd like to know. Otherwise, I suggest you double the number of stations selected in the code that generated my.inventory. I have increase the number of stations per state to 15, so perhaps that will give you enough to work with.
 
-If you get an error with this function, be sure you are using the correct file -- in our case, it should end with an "a". If you are using the wrong file, you'll get an error.
+If you get an error with this function, be sure you are using the correct file -- in our case, it should end with an ``a''. If you are using the wrong file, you'll get an error.
 
 \subsubsection{Missing Data}
 
@@ -370,7 +486,7 @@ Similar to the problem above, missing data can be a problem. The real issue that
 
 \subsection{Failure to Read csv files}
 
-I noticed that the read 
+I noticed that the read.csv function is not working for some files. I'm not sure why, but I suspect it's because the files are too large. I'll work on this later. For now, let me know if you have any issues with this.
 
 \subsubsection{Plot Anomaly}
 

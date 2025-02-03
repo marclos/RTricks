@@ -5,7 +5,7 @@
 
 \title{Preparing the Regional Climate Trends Project}
 \author{Marc Los Huertos}
-\date{\today~(ver. 1.02)} % without \date command, current date is supplied
+\date{\today~(ver. 1.03)} % without \date command, current date is supplied
 
 \begin{document}
 \maketitle
@@ -20,9 +20,9 @@ Create a public product (video) that explains climate change trends in a state; 
 \subsection{Project Stages}
 
 \begin{description}
-  \item[Project Overview (This Document)] A brief overview of the project and the steps to complete it. In addition, this document, when run selects the oldest active station ID for each state (and territory). Students do not need to run this document, but creates an updated list for them each time it is run. In addition, this document explains some of the R code used to create this list as background information. 
+  \item[Project Overview (This Document)] A brief overview of the project and the steps to complete it. In addition, this Rnw file weaces text and R code that creates an inventory active weather station IDs for each state (and territory). Students do not need to run the R code in this document, but it is available for reference and a learning tool. 
   
-  \item[Guide 1] Data Collection (Download station inventory from the web and read into R)
+  \item[Guide 1] Data Collection (Download weather station data from the web and read into R.
   \item[Guide 2] Cleaning and Pre-Processing Weather Station Data (Convert date formats, clean missing data, etc.)
   \item[Guide 3] Analyzing \& Visual Display of Climate Trends (Analyze data (means, trends, etc) and create compelling visualizations)
   \item[Guide 4] Climate Science Narratives --- State Initiatives and Community Belonging (Create creative stories that explain climate change trends)
@@ -33,16 +33,16 @@ At this point, I created a DRAFT visual flow chart that displays some of the sta
 
 \begin{figure}[h]
 \centering
-  \includegraphics[width=1.2\textwidth]{figure/Climate_Naratives_Visio_Abstract.png}
-  \caption{A flow chart of the project stages.}
+  \includegraphics[width=1.3\textwidth]{figure/Climate_Naratives_Visio_Abstract.png}
+  \caption{A flow chart of the project stages. Custom codes can be created with Marc's help. }
   \label{fig:flow-chart}
 \end{figure}
 
 \subsection{Approach}
 
-I created several Guides 1 through 5. Each guide is a Rmarkdown document that explains the steps to complete the project. These guides are designed to be completed in order. %, but it is possible to skip a guide if the data is already available.
+I created several Guides 1 through 5. Each guide explains steps to complete the project and are designed to be completed in order. %, but it is possible to skip a guide if the data is already available.
 
-This particular document has \textbf{no code} for you to run, but documents the source of the data; explains process to obtain the data; and creates a list of stations to be used in Guide 1. Please read this guide as an informational document about our data source. The document includes some insights here about how to find the data and the code that I used to prepare for the project for the class. 
+Our approach prioritizes documentation and transparency in data sourcing and preparation while also providing executable code. We focus on clearly identifying data sources, detailing the process for obtaining the data, and curating relevant datasets for analysis. My intention is to promote a measure of independence to verify and replicate the data acquisition process. 
 
 \section{Selecting US Weather Station with Robust Records}
 
@@ -52,11 +52,9 @@ The GHCNd\footnote{Global Historical Climatology Network daily is maintained by 
 
 \subsection{Goals for this Document}
 
-This document selects the oldest active weather station for each state (and territory) in the US. The station inventory is available as a .txt file. The file is a fixed width file, which means that each column has a specific width. The file is available at the following URL: \url{https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.txt}.
+This document selects the oldest active weather stations for each state (and territory) in the US. The station inventory is available as a .txt file. The file is a fixed width file, which means that each column has a specific width. The file is available at the following URL: \url{https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.txt}.
 
-But you do not need to follow the steps in this document. This document is for background information only and show how I prepared the list of stations for you to select from. 
-
-Note, it maybe that there are too many missing values in one or more of your stations, then we can use this document to find additional stations, if they exist in the database.
+This particular document has \textbf{no code} for you to run, but documents the source  of  the  data;  explains  process  to  obtain  the  data;  and  creates  a  list  of weather stations  to  be  used  in  Guide  1.   Please  read  this  guide  as  an  informational document  about  our  data  source.   The  document  includes some  insights about how to find climate data and the code that I used to prepare for the project for the class.
 
 \subsection{Download Station Inventory}
 
@@ -121,7 +119,7 @@ legend("bottomleft", legend=c(">=1900", "<1900", "<1890", "<1875", "<1865"), pch
 
 The inventory has a list of stations and map coordinates (latitude and longitude). However, it's not easy to select a region, like a state, from the latitude and longitude values. Thus, we need to merge the inventory with a dataset that includes state names and merge them based on the station ID. 
 
-It's a bit strange, but the dataset, GHCNd includes US states and Canadian Provinces, plus various territories of the US. 
+The dataset, GHCNd includes US states and various territories of the US and, oddly, Canadian Provinces. 
 
 <<read_ghcnd-stations>>=
 station_names = c("ID",             #  1-11   Character   11
@@ -166,7 +164,7 @@ stations.USCan = subset(temp.TMAX, subset=(STATE!="  "))
 
 \subsection{Select Active Stations}
 
-To ensure we can limit our data to stations that are active, we need to subset the data to include only stations that have data from 2024 and later, however, if we don't find enough stations on the state you selected, I have relaxed the criteria to 2023.
+To ensure we can limit our data to stations that are active, we need to subset the data to include only stations that have data from 2024 and later. However, I relaxed the criteria to 2023 since there is a time lag for data to be assimilated for some wether stations.
 
 How many stations are in the state? 'r nrow(stations.USCan)'!
 <<select_active_stations>>=
@@ -207,6 +205,8 @@ At some point, I'd like to ``map'' the stations with actual state boundaries and
 projection that make more sense. For example, what are the stations north of the 
 Equator and 150 E in longitude? 
 
+Maybe I'll  use the \texttt{ggplot2} package to plot the stations in the future. Transforming the data to a \texttt{sf} object would be a good idea, which is designed for mapping data. 
+
 
 <<mapstations>>=
 plot(stations.active.oldest$LONGITUDE, stations.active.oldest$LATITUDE, 
@@ -214,6 +214,8 @@ plot(stations.active.oldest$LONGITUDE, stations.active.oldest$LATITUDE,
 @
 
 \subsection{Write the Active Stations to a CSV File}
+
+To save the active stations to a CSV file, we use the \texttt{write.csv} function.
 
 <<write_stations.active.oldest>>=
 # export file to csv
