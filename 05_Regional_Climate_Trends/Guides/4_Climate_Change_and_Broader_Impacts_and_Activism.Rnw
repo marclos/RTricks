@@ -15,7 +15,7 @@
 
 \title{Guide 4: Climate Science Narratives: Broader Impacts, Broken Information Sources, and Community Belonging}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.79)} 
+\date{\today~(ver. 0.61)} 
 
 \begin{document}
 \maketitle
