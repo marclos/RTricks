@@ -179,7 +179,7 @@ SaveCleanUp.fun <- function(datapath){
 # SaveCleanUp.fun(datafolder)
 
 #-------------------------------------------------------------------------------
-# Function to Save Anamoly Data
+# Function to Save Anomaly Data
 
 # I think this is a good idea, but the path issues are complicated, so 
 # I haven't implemented it yet. 

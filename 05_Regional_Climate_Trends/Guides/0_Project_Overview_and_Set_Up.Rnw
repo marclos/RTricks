@@ -224,6 +224,12 @@ write.csv(stations.active.oldest,
     "stations.active.oldest.csv"))
 @
 
+\subsection{Zip Guides and Functions}
+
+To make the guides and functions available to the user, I made a zip file for them. See Canvas.
+
+
+
 \section{Next Steps}
 \subsection{Estimate Time for Project}
 
