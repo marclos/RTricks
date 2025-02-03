@@ -16,7 +16,7 @@
 
 \title{Guide 3: Analyzing \& Visual Display of Climate Trends}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.71)} 
+\date{\today~(ver. 0.73)} 
 
 \begin{document}
 \maketitle
@@ -36,8 +36,6 @@ The difference between weather and climate is a measure of time. Weather is what
 In general, understanding the climate is a question of averages and ranges, of statistical likelihoods, and of repeated or predictable patterns. Weather, on the other hand, is what we experience on a day-to-day basis, and it mihght vary wildly from minute to minute, hour to hour, day to day, and season to season.
 
 \subsection{Approach}
-
-After Feb 13, I realized that I needed to provide a different structure to help you analyze and display the data. Instead of two separate documents, I have combined the code to analyze and display data in one document. Guide 4 is not completely focused on the script and video process. 
 
 Here's how I might start: Read the EPA summaries and see what stands out as compelling types of analyses. Then read news articles on the region and see what qualifies as "weather" news in the region. 
 
@@ -70,7 +68,7 @@ source(here("05_Regional_Climate_Trends", "Guides", "Guide3functions.R"))
 
 \subsection{R Code with Custom Functions}
 
-From the Canvas page, go to the Guide3functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project.
+From the Canvas page, go to the Guide3functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project. ake sure you have an updated version of the file, this one seems the least stable!
 
 Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
 
@@ -117,7 +115,11 @@ USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
 
 \item[Explore Results] Table~\ref{tab:TMAXtrends} summarizes the monthly trends for TMAX. Admittedly, determining the months with the biggest changes isn't a very good approach for hypothesize testing -- it's more like a fishing expedition, but as long as we understand the difference between an a priori hypothesis and an exploratory analysis, we should be okay if we make appropriate conclusions. 
 
-We would want to evaluate the trends for TMIN and PRCP too! You can use the Environment tab in Rstudio to see the trend results for all three variables withut needing any code. 
+We would want to evaluate the trends for TMIN and PRCP too! You can use the Environment tab in Rstudio to see the trend results for all three variables without needing any code, or use/modify this:
+
+\begin{verbatim}
+USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",]
+\end{verbatim}
 
 \end{description}
 
