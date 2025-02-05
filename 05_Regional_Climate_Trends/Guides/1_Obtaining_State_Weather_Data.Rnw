@@ -17,7 +17,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.99)} 
+\date{\today~(ver. 1.00)} 
 
 \begin{document}
 \maketitle
@@ -77,6 +77,7 @@ I suggest you do the following to prepare:
 \begin{enumerate}
   \item Create a folder for the project, I suggest ``Regional\_Climate\_Trends''. Note that there are no spaces in the folder name. 
   \item Next create a new R markdown file to write your code. Name and save it in your project folder. (For details see Section~\ref{subsec:RMarkdown})
+  \item Create a folder inside the Regional\_Climate\_Trends folder called ``Data``. This will be the location of the data you download.
   \item Download the file oldest.activestation.csv from the Canvas page and upload it to the directory you created in the previous step.
   \item Download the file called Guide1functions.R from the Canvas page and upload it to the directory you created in the previous step. 
   \item Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor window.
@@ -108,7 +109,12 @@ The function have been written to the R Environment and you can close Guide1.fun
 
 \subsection{Creating a Record of Your Commands}
 
-Use the Rmd file to record your R code and comments. This will help you remember what you did and why. See MarcsTemplate.Rmd as a skeleton file. 
+Use the Rmd file to record your R code and comments. This will help you remember what you did and why. See MarcsTemplate.Rmd as a skeleton file. Unfortunately, knit creates it's own session of R -- so the stuff we do in the console isn't available in when you knit. So, we'll have to get R to explicitly load the functions wit each time we knit. It's not hard, but important. In an r block before using other functions, we'll need to add: 
+\begin{verbatim}
+source("Guide1functions.R")
+\end{verbatim}
+
+NOTE: R is case sensitive. AND the function needs to be in quotes.
 
 \subsection{Function Descriptions and Use}
 
@@ -118,9 +124,6 @@ The following functions are used to select the weather stations, download data, 
 
 \item[Subset Inventory Data with my.state]  The inventory data is a list of all the weather stations in the USA, US Territories, and Canada. This function will subset the data to only include the stations in the state of interest.
 
-\begin{center}
-\textbf{Function: \textcolor{Plum}{readInventory.fun()}}
-\end{center}
 
 This function requires two parameters to be set: filename and my.state. See Section~\ref{subsec:readInventory} for more details.
 
@@ -145,7 +148,7 @@ Creates a dataframe called my.inventory that contains the inventory data for the
 
 This functions requires two parameters: data path and name of inventory dataframe (my.inventory). The data path is a folder that you can always get your station data from if you need it. For example, if you need to update the data, you can just download the data from the NOAA website and then read it into R. For more information on this function see Section~\ref{subsec:downloadStations}.
 
-The path to your data folder will be different, I created a directory to separate my data by class year, you don't need that! But it is nice to keep the data in a separate folder so things don't get to hectic.
+The path to your data folder will be different, I created a directory to separate my data by class year, you don't need that! But it is nice to keep neat. Use the ``Data'' folder you created when you set up the project.
 
 An example of how to use the function: 
 
@@ -153,6 +156,12 @@ An example of how to use the function:
 datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
 downloadStations.fun(datapath, my.inventory)
 @ 
+
+Your data path will NOT be mine. First, you can see your working directory with \texttt{getwd()}. But it probably doesn't include the folder you are working in. I suggest you use file.choose() and select any file in the project folder. Then delete the file name and add the ``/Data'', so it might look something like this: 
+
+\begin{verbatim}
+datapath = "/home/XXXXXXXX/Regional_Climate_Trends/Data/"
+\end{verbatim}
 
 This will download the data from the NOAA website and read it into R then written as compresseed gz and uncompressed czv files in your data folder. Check to see that you have both csv.gz and .csv files in your data folder.
 
@@ -254,15 +263,13 @@ print(readInventory.fun)
 
 \subsection{downloadStations.fun}\label{subsec:downloadStations}\section{Download Data from NOAA}
 
-
-
-
-
 Here's the function:
 
 <<show_downloadStation.fun, echo=FALSE>>=
 print(downloadStations.fun)
 @
+
+How do you determine the data path?
 
 \section{Trouble Shooting and Workarounds}
 
