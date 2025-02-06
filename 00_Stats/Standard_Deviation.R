@@ -22,3 +22,10 @@ SS = sum(R1.residual^2, na.rm=TRUE)
 sqrt(SS/N)
   
 sd(R1.nonmissing)
+
+par(las=1)
+boxplot(R1, R2)
+
+round(mean(R1, na.rm = TRUE), 1); round(mean(R2, na.rm = TRUE), 1)
+
+t.test(R1, R2)

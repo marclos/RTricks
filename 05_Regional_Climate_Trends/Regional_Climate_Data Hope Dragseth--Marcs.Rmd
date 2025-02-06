@@ -1,0 +1,125 @@
+---
+title: "Regional_Climate_Trends"
+author: "Hope Dragseth"
+date: "2025-02-05"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Setting Up R:
+
+Frist, I created a folder in R named "Regional_Climate_Trends". I then created a new R markdown file, named it "Regional_Climate_Trends" and saved it. Afterwards, I created a folder inside "Regional_Climate_Trends" and named it "Data". 
+
+
+Downloading Files:
+
+I first downloaded the csv file from Canvas and uploaded it into the "Data" folder. I then downloaded the Guide1functions.R file from Canvas and uploaded it into the "Data" folder. 
+
+
+Uploading Files into R:
+
+I first sourced the Guide1functions.R into R so that the functions were uploaded into my project.
+Next, we assigned a project directory. I first located the file by using the file.choose() command. I then made the objects my.state and filename.csv to better organize my files and data. Next, I created a data frame named "my.inventory"
+
+```{r, eval=FALSE}
+source("~/Regional_Climate_Trends/Data/Guide1functions.R")
+my.state <- "WI"
+filename.csv <- "/home/hldj2024/Regional_Climate_Trends/Data/stations.active.oldest.csv"
+my.inventory <- readInventory.fun(filename.csv, my.state) 
+```
+
+
+```{r marcs1}
+source("~/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions.R")
+my.state <- "WI"
+filename.csv <-  "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"
+my.inventory <- readInventory.fun(filename.csv, my.state)
+
+# this seems to work fine!
+
+```
+
+I then downloaded and read the selected weather station data from NOAA into R using the function downloadStations.fun() after creating a data path. 
+
+```{r}
+# datapath = "/home/hldj2024/Regional_Climate_Trends/Data/"
+
+# marc's path
+datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/"
+downloadStations.fun(datapath, my.inventory)
+
+# with my path, no problem
+```
+
+
+Downloading Weather Station Data:
+
+First, I downloaded the Guide2functions.R file from Canvas and uploaded it into the "Data" folder. I then sourced the Guide2functions.R into R so that the functions were uploaded into my project.
+
+```{r, eval=FALSE}
+source("~/Regional_Climate_Trends/Data/Guide2functions.R")
+```
+
+```{r marcs2, eval=FALSE}
+# wonder if this causes a problem?
+source("~/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R")
+```
+
+
+In order to read the csv files into R by using the function ReadStations2.fun() after creating a data folder. 
+
+```{r}
+datafolder = "/home/hldj2024/Regional_Climate_Trends/Data/"
+datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/"
+ReadStations2.fun(datafolder)
+```
+
+I then listed the objects in the R environment using the ls() function. Afterwards, I checked the structure of the one of the datasets using the str() function just to make sure the datasets looked right. 
+
+```{r}
+ls()
+str(USC00474482)
+```
+
+Cleaning Data:
+
+In order to clean the datasets, I fixed date format and prepared it for the anaylsis stages. In order to pick which datasets I wanted to anaylze, I found which of the datasets had the most observations. This ended up being USW00014898 and USC00472839. 
+
+To fix the dates I converted the date values into ones that R could understand by using the function fixDates.fun() and made objects that represent the datasets with the fixed dates. 
+
+```{r}
+USW00014898a <- fixDates.fun(USW00014898)
+USC00472839a <- fixDates.fun(USC00472839)
+```
+
+I then evaluated the data coverage of both datasets using the function coverage.fun(). I wanted at least 95% coverage for both datasets, and I achieved that. 
+
+```{r}
+coverage.fun(USW00014898a)
+coverage.fun(USC00472839a)
+```
+
+Next, I fixed the values using the function fixValues.fun() and made objects that represent the datasets with the fixed values. 
+
+```{r}
+USW00014898b <- fixValues.fun(USW00014898a)
+USC00472839b <- fixValues.fun(USC00472839a)
+```
+
+I the checked for outliers in the data by using the function QAQC.fun(). No outliers were present.
+
+```{r}
+QAQC.fun(USW00014898b)
+QAQC.fun(USC00472839b)
+```
+
+Then, I created monthly values and normals using the function MonthlyValues.fun() and NormalValues.fun() respectivly. For TMAX and TMIN, I wanted monthly means, for rainfalls, I wanted monthly totals. I made objects that represented these monthly values and normals.
+
+```{r}
+USW00014898.monthly <- MonthlyValues.fun(USW00014898b)
+USC00472839.monthly <- MonthlyValues.fun(USC00472839b)
+```
+
