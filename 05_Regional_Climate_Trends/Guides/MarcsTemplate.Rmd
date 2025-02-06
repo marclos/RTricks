@@ -29,7 +29,7 @@ source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions
 Select State and Read Inventory of Statons
 
 ```{r, chunk1_2}
-my.state = "FL"
+my.state = "WI"
 filename.csv <- "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
 ```
@@ -63,6 +63,7 @@ ReadStations2.fun(datafolder)
 ## Chunk 4 (Fix Date)
 ```{r, chunk2_4}
 USC00042294a <- fixDates.fun(USC00042294)
+USW00014898a <- fixDates.fun(USW00014898)
 
 ```
 
@@ -74,6 +75,7 @@ coverage.fun(USC00042294a)
 ## Chunk 6 Fix Values
 ```{r, chunk2_6}
 USC00042294b <- fixValues.fun(USC00042294a)
+USW00014898b <- fixValues.fun(USW00014898a)
 ```
 
 ## Chunk 7 QAQC
@@ -85,11 +87,17 @@ QAQC.fun(USC00042294b)
 ```{r, chunk2_8}
 USC00042294.monthly <- MonthlyValues.fun(USC00042294b)
 USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
+
+USW00014898.monthly <- MonthlyValues.fun(USW00014898b)
+USW00014898.normals <- MonthlyNormals.fun(USW00014898b)
+
 ```
 
 
 ## Chunk 9 Anomalies
 ```{r, chunk2_9}
+USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
+
 USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
 ```
 
