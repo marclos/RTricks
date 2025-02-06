@@ -15,7 +15,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.981)} 
+\date{\today~(ver. 0.99)} 
 
 \begin{document}
 \maketitle
@@ -83,7 +83,7 @@ The data are now ready to be read into R environment, we will read them in using
 \textbf{Function: \textcolor{Plum}{ReadStations2.fun()}}
 \end{center}
 
-Use this function read the stations in the R Environment. %In some sense, this is a work around for a bug at end end of Guide 1 that I can't figure out how to fix. Be patient, try this and let me know if you have to resort to this, which will help me find the pattern if the Guide 1 bug. 
+Use this function read the stations in the R Environment. 
 
 Example of how to use the function:
 
@@ -92,7 +92,10 @@ datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
 ReadStations2.fun(datafolder)
 @
 
-\item[List the objects in the R environment] The ls() function will list the objects in the R environment. Use this in the console.
+\noindent Remember that datafolder is a path of hierarchical folders and should end with ".../Data/" for your path. Why is mine different? Becuase I often have to help students and want to save the data in a unique path for each spring course.
+
+\item[List the objects in the R environment] The ls() function will list the objects in the R environment. Use this in the console. Notice nothing goes inside 
+the parethesis. 
 
 <<echo=TRUE>>=
 ls()
@@ -104,19 +107,19 @@ ls()
 
 \item[Check the structure of the dataframes]
 
-Using \texttt{str()}, make sure the datasets look right!
+By using \texttt{str()}, we can ensure the datasets look right!
 
-For example: 
+The syntax requires an object, in our case, the object name for a weather stations's data. For example: 
 
 <<stationstructure, echo=FALSE, results='markup'>>=
 str(USC00042294)
 @
 
-What to look for?  Is the object a data.frame?  Doee it have the right number of observations? Are the expected variable names present?  Are the data types correct?  Are values in each variable reasonable?
+What to look for?  Is the object a data.frame?  Does it have the right number of observations? Are the expected variable names present?  Are the data types correct?  Are values in each variable reasonable?
 
-\item[Sorting Stations by Number of Observations]
+\item[Sorting Stations by Number of Observations -- Skip This]
 
-In theory, the stations with the greatest numbrer of observations are the the ones we will want to evaluate. However, we may also want to evaluate stations to cover a geographic range. 
+In theory, the stations with the greatest number of observations are the the ones we will want to evaluate. However, we may also want to evaluate stations to cover a geographic range. 
 
 %For now, let use this function to sort the stations by the number of observations and use this to focus are attention. 
 
@@ -129,7 +132,7 @@ THIS IS A BRAND NEW IDEA FROM WEDNESDAY'S LAB, AND WILL WORK ON THIS FOR NEXT SE
 Example of how to use the function:
 
 <<sortstations, echo=TRUE, results='hide'>>=
-# sortstations.fun() Nor working yet. 
+# sortstations.fun() Not working yet. 
 @
 
 \end{description}
@@ -146,14 +149,14 @@ Next we'll ``clean'' the dataset by fixing the date format and preparing it for 
 \textbf{Function: \textcolor{Plum}{fixDates.fun()}}
 \end{center}
 
-Example of how to use the function (Note: the new dataframe name change with an a following the station.): 
+Example of how to use the function (Note: the new dataframe has a name change with an ``a'' following the station. This is so we can keep the original data and the processed data separate.): 
 
 <<fixdates, echo=TRUE, results='hide'>>=
 USC00042294a <- fixDates.fun(USC00042294)
 USC00040693a <- fixDates.fun(USC00040693)
 @
 
-\item[Evaluation Data Coverage]
+\item[Evaluation Temporal Coverage]
 
 We need to know how much data we have for each station. This is important for the next steps in the process.
 
@@ -188,7 +191,7 @@ According the the NOAA website, the csv.gz files have  five core elements includ
 \textbf{Function: \textcolor{Plum}{fixValues.fun()}}
 \end{center}
 
-Example of how to use the function (Note: the new dataframe name change):
+Example of how to use the function (Note: the new dataframe has a name change with a ``b'' following the station. This is so we can keep the original data and the processed data separate.):
 
 <<fixValues, echo=TRUE, results='hide'>>=
 USC00042294b <- fixValues.fun(USC00042294a)
