@@ -435,7 +435,6 @@ SaveCleanUp.fun(datafolder)
 print(ReadStations2.fun)
 @
 
-This is a paragraph. Take 2?
 
 \subsubsection{Trouble Shooting}
 
