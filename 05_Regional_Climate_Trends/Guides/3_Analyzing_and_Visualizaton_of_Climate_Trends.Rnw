@@ -186,7 +186,14 @@ plotTrend2.fun(USC00042294.anomalies, "PRCP", 1)
 @
 
 
+\textbf{Milestone:} Selected a Month where the TMIN has the steepest slope and plotted the trend line. Submit this to \texttt{Canvas} for the week's reflection. 
+
+\bigskip
+
+
 \noindent {\Large\textcolor{ForestGreen}{You're are done with the basic goals for this guide, go to Guide 4!}}
+
+\bigskip
 
 \section{Advanced Analyses}
 
@@ -203,26 +210,35 @@ For this we'll plot the entire record, with trend line and then overlay another 
 This is code for TMAX ([[1]] and June. I need to use "predict" to get the trend line for the second model that only includes the data after 1975.
 
 <<post1974>>=
-USC00042294.lm = lm(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies[[1]], subset=MONTH==6))
+USC00042294.lm = lm(TMAX.a ~ Ymd, 
+                  data=subset(USC00042294.anomalies[[1]], subset=MONTH==6))
 
 USC00042294.post1975 = subset(USC00042294.anomalies[[1]], subset= YEAR > 1974)
-USC00042294.post1975.lm = lm(TMAX.a ~ Ymd, data=subset(USC00042294.post1975, subset=MONTH==6))
+USC00042294.post1975.lm = lm(TMAX.a ~ Ymd, data=subset(USC00042294.post1975, 
+                                                       subset=MONTH==6))
 
-plot(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies[[1]], subset=MONTH==6), pch=20, cex=.5, col="grey", ylab="Temp Anamoly (°C) ",  main="", xlab="Year", frame.plot=TRUE)
+plot(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies[[1]], 
+                subset=MONTH==6), pch=20, cex=.5, col="grey", 
+                ylab="Temp Anamoly (°C) ",  main="", xlab="Year", 
+                frame.plot=TRUE)
      
 abline(coef(USC00042294.lm), col="black", lwd=1.5)
 
-points(TMAX.a ~ Ymd, data=subset(USC00042294.post1975, subset=MONTH==6), pch=20, cex=.5, col="red")
+points(TMAX.a ~ Ymd, data=subset(USC00042294.post1975, subset=MONTH==6), 
+       pch=20, cex=.5, col="red")
 
 new = seq.Date(from=as.Date("1975-01-01"), to=as.Date("2024-12-31"), by="month")
-new
 
-predict.lm(USC00042294.post1975.lm, interval="confidence")
+\head(new)
+
+head(predict.lm(USC00042294.post1975.lm, interval="confidence"))
 
 
-lines(USC00042294.post1975$Ymd, USC00042294.post1975.lm$fitted.values, col="red", lwd=1.5)
+lines(USC00042294.post1975$Ymd, USC00042294.post1975.lm$fitted.values, 
+      col="red", lwd=1.5)
 
-abline(coef(USC00042294.post1975.lm), col="red", lwd=1.5)
+abline(coef(USC00042294.post1975.lm), 
+       col="red", lwd=1.5)
   
 @
 \subsection{Filtering Seasonal Effect}
@@ -527,7 +543,8 @@ CHCND.leap  = subset(CHCND, select=c(Date, Year, yday, TMAX, TMIN, PRCP),
                      subset=(mmdd=="02-29"))
 names(CHCND.noleap)
 years = seq(min(CHCND$Year), max(CHCND$Year), by=1)
-year.seq = data.frame(Year = years, Col = seq_len(length(seq(min(CHCND$Year), max(CHCND$Year)))))
+year.seq = data.frame(Year = years, 
+                      Col = seq_len(length(seq(min(CHCND$Year), max(CHCND$Year)))))
 
 for(i in min(CHCND.noleap$Year):max(CHCND.noleap$Year)){
       for(j in c(1:59, 61:366)){
@@ -538,8 +555,10 @@ for(i in min(CHCND.noleap$Year):max(CHCND.noleap$Year)){
          CHCND.noleap$TMIN[CHCND.noleap$Year==i & CHCND.noleap$yday == j]
       }
    if(leap_year(i)){
-      TMAX.mat.noleap[60, year.seq$Col[year.seq$Year==i]] <- CHCND.leap$TMAX[CHCND.leap$Year== i & CHCND.leap$yday == 60]
-      TMIN.mat[60, year.seq$Col[year.seq$Year==i]] <- CHCND.leap$TMIN[CHCND.leap$Year== i & CHCND.leap$yday == 60]
+      TMAX.mat.noleap[60, year.seq$Col[year.seq$Year==i]] <- 
+        CHCND.leap$TMAX[CHCND.leap$Year== i & CHCND.leap$yday == 60]
+      TMIN.mat[60, year.seq$Col[year.seq$Year==i]] <- 
+        CHCND.leap$TMIN[CHCND.leap$Year== i & CHCND.leap$yday == 60]
       print(paste0("Added Leap Year", i))
    } else {print(paste0("Process non-leap year ", i))}
 }
@@ -558,7 +577,8 @@ max(CHCND$yday[CHCND$Year==max(CHCND$Year)])
 <<recordtemploop, eval=FALSE, echo=FALSE>>=
 records.png = paste0(fips$State2, "_", stid, "_CHCND_Temp_Records.png")
 
-png(paste0(png_private, records.png), width = 480, height = 280, units = "px", pointsize = 12, bg = "white")
+png(paste0(png_private, records.png), width = 480, height = 280, 
+    units = "px", pointsize = 12, bg = "white")
 
 results<-NULL
 decades <- years[years/10 == floor(years/10)]
@@ -606,7 +626,9 @@ ytics = floor(seq(yrange[1], yrange[2], length.out=tic.no))
 ylabs = as.character(abs(ytics))
 
 par(las=1, xpd=TRUE)
-plot(c(1,nrow(R1)), c(yrange[1], yrange[2]), ty="n", xaxt='n', yaxt='n', xlab="Year", ylab="No. of Record Temps", main="Record Highs and Lows")
+plot(c(1,nrow(R1)), c(yrange[1], yrange[2]), ty="n", 
+     xaxt='n', yaxt='n', xlab="Year", ylab="No. of Record Temps", 
+     main="Record Highs and Lows")
 axis(2,at=ytics, labels=ylabs)
 axis(1,at=xtics, labels=xlabs)
 barplot(height = R1$TMAX, space=0, add = TRUE, axes = FALSE, col="red")
@@ -685,7 +707,8 @@ boxplot(TMAX ~ MONTH, data= station, xlab="Month", ylab="Temperature Anomaly (C)
 <<static_template, eval=FALSE, echo=FALSE>>=
 panel4.png = paste0(fips$State2, "_", stid, "_4panel.png")
               
-png(paste0(png_private, panel4.png), width = 480, height = 480, units = "px", pointsize = 12, bg = "white")
+png(paste0(png_private, panel4.png), width = 480, height = 480, 
+    units = "px", pointsize = 12, bg = "white")
 
 # START ----
 ylim_new=NA
@@ -719,7 +742,8 @@ CHCNDsub = subset(CHCND, CHCND$Year<=i,
 boxplot(TMAX ~ Month.name, data=CHCNDsub, main="", xlab="")
 symbol.y = (par()$yaxp[2])-diff(par()$yaxp[1:2])*.99
 #symbol.y = (par()$yaxp[2])
-with(sumstats[sumstats$Param=="TMAX",], text(Month, symbol.y, Symbol, col="red", cex=1))
+with(sumstats[sumstats$Param=="TMAX",], text(Month, symbol.y, 
+                                        Symbol, col="red", cex=1))
 mtext(paste("Maximum Daily Temp.", min(CHCND$Year), 
       "-", i, GSOM_Longest$name), line=1)
 mtext("(NOTE: Red astrisks correspond to signficant changes)", 
@@ -788,7 +812,8 @@ ytics = floor(seq(yrange[1], yrange[2], length.out=tic.no))
 ylabs = as.character(abs(ytics))
 
 par(las=1, xpd=TRUE)
-plot(c(1,nrow(R1)), c(yrange[1], yrange[2]), ty="n", xaxt='n', yaxt='n', ylab="No. of Record Temps", xlab="", main="Record Highs and Lows")
+plot(c(1,nrow(R1)), c(yrange[1], yrange[2]), ty="n", xaxt='n', 
+     yaxt='n', ylab="No. of Record Temps", xlab="", main="Record Highs and Lows")
 axis(2,at=ytics, labels=ylabs)
 axis(1,at=xtics, labels=xlabs)
 barplot(height = R1$TMAX, space=0, add = TRUE, axes = FALSE, col="red")
@@ -882,7 +907,8 @@ plot(fit2) + plot_pars(fit2, pars = c("cp_1"), type = "dens_overlay")
 
 KISS.png <- paste0(fips$State2, "_", stid, "_KISS.png")
 
-png(paste0(png_private, KISS.png), width = 480, height = 480, units = "px", pointsize = 12, bg = "white")
+png(paste0(png_private, KISS.png), width = 480, height = 480, 
+    units = "px", pointsize = 12, bg = "white")
 
 ylim_new=NA
 for(i in seq(min(GSOM$Year), max(GSOM$Year), by=2)) 
@@ -1120,8 +1146,10 @@ split.screen(rbind(c(.01, 0.99, 0.86, 0.95),
 
 screen(1)
 par(mar=c(0,0,0,0))
-plot(NA, xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=c(0,10), ylim=c(0, 10))
-mtext(paste0(fips$State, " (", GSOM_Longest$name, ")"), side=3, line=-1, cex=1.4)
+plot(NA, xaxt='n',yaxt='n',bty='n',ylab='',xlab='', 
+     xlim=c(0,10), ylim=c(0, 10))
+mtext(paste0(fips$State, " (", GSOM_Longest$name, ")"), 
+      side=3, line=-1, cex=1.4)
 
 screen(2)
 
@@ -1243,13 +1271,15 @@ par(las=1, mfrow=c(1,2), mar= c(4, 4, 2, 1) + 0.1)
 
 Anom.x = seq(min(GSOM2$TMAX.anom), max(GSOM2$TMAX.anom), by=.1)
 plot(Anom.x, dnorm(Anom.x, mean=GSOM.Monthly.Anom.mean.sd$TMAX.anom[1], 
-   sd=GSOM.Monthly.Anom.mean.sd$TMAX.sd.anom[1]), ty="l", col=h.ramp[i], ylab="Density", xlab="TMAX Anomaly")
+   sd=GSOM.Monthly.Anom.mean.sd$TMAX.sd.anom[1]), ty="l", col=h.ramp[i], 
+   ylab="Density", xlab="TMAX Anomaly")
 abline(v=mean(GSOM2$TMAX.anom[GSOM2$Decade==min(GSOM$Decade)]))
 mtext(paste0(fips$State, " ", decade), side=3)
 
 Anom.x = seq(min(GSOM2$TMIN.anom), max(GSOM2$TMIN.anom), by=.1)
 plot(Anom.x, dnorm(Anom.x, mean=GSOM.Monthly.Anom.mean.sd$TMIN.anom[1], 
-   sd=GSOM.Monthly.Anom.mean.sd$TMIN.sd.anom[1]), ty="l", col=h.ramp[i], ylab="Density", xlab="TMIN Anomaly")
+   sd=GSOM.Monthly.Anom.mean.sd$TMIN.sd.anom[1]), ty="l", col=h.ramp[i], 
+   ylab="Density", xlab="TMIN Anomaly")
 abline(v=mean(GSOM2$TMIN.anom[GSOM2$Decade==min(GSOM$Decade)]))
 mtext(paste0(fips$State, " ", decade), side=3)
 }
@@ -1264,20 +1294,24 @@ TMIN.anomaly.decade = aggregate(TMIN.anom ~ Decade, GSOM2,
 
 Anom.x = seq(min(GSOM2$TMIN.anom), max(GSOM2$TMIN.anom), by=.1)
 plot(Anom.x, dnorm(Anom.x, mean=TMIN.anomaly.decade$TMIN.anom[[1,1]], 
-   sd=TMIN.anomaly.decade$TMIN.anom[[1,2]]), ty="l", col=h.ramp[1], ylab="Density", xlab="TMIN Anomaly")
+   sd=TMIN.anomaly.decade$TMIN.anom[[1,2]]), ty="l", col=h.ramp[1], 
+   ylab="Density", xlab="TMIN Anomaly")
 mtext(paste0(fips$State, " ", decade), side=3)
 for(i in 2:nrow(TMIN.anomaly.decade)){
-lines(Anom.x, dnorm(Anom.x, mean=TMIN.anomaly.decade$TMIN.anom[[i,1]], sd=TMIN.anomaly.decade$TMIN.anom[[i,2]]), col=h.ramp[i])
+lines(Anom.x, dnorm(Anom.x, mean=TMIN.anomaly.decade$TMIN.anom[[i,1]], 
+                    sd=TMIN.anomaly.decade$TMIN.anom[[i,2]]), col=h.ramp[i])
 }
 abline(v=mean(GSOM2$TMIN.anom[GSOM2$Decade==min(GSOM$Decade)]), col="blue")
 abline(v=mean(GSOM2$TMIN.anom[GSOM2$Decade==max(GSOM$Decade)]), col="red")
 
 Anom.x = seq(min(GSOM2$TMAX.anom), max(GSOM2$TMAX.anom), by=.1)
 plot(Anom.x, dnorm(Anom.x, mean=TMAX.anomaly.decade$TMAX.anom[[1,1]], 
-   sd=TMAX.anomaly.decade$TMAX.anom[[1,2]]), ty="l", col=h.ramp[1], ylab="Density", xlab="TMAX Anomaly")
+   sd=TMAX.anomaly.decade$TMAX.anom[[1,2]]), ty="l", col=h.ramp[1], 
+   ylab="Density", xlab="TMAX Anomaly")
 mtext(paste0(fips$State, " ", decade), side=3)
 for(i in 2:nrow(TMAX.anomaly.decade)){
-lines(Anom.x, dnorm(Anom.x, mean=TMAX.anomaly.decade$TMAX.anom[[i,1]], sd=TMAX.anomaly.decade$TMAX.anom[[i,2]]), col=h.ramp[i])
+lines(Anom.x, dnorm(Anom.x, mean=TMAX.anomaly.decade$TMAX.anom[[i,1]], 
+                    sd=TMAX.anomaly.decade$TMAX.anom[[i,2]]), col=h.ramp[i])
 }
 abline(v=mean(GSOM2$TMAX.anom[GSOM2$Decade==min(GSOM$Decade)]), col="blue")
 abline(v=mean(GSOM2$TMAX.anom[GSOM2$Decade==max(GSOM$Decade)]), col="red")
@@ -1409,7 +1443,9 @@ ytics = floor(seq(yrange[1], yrange[2], length.out=tic.no))
 ylabs = as.character(abs(ytics))
 
 par(las=1, xpd=TRUE)
-plot(c(1,nrow(R1)), c(yrange[1], yrange[2]), ty="n", xaxt='n', yaxt='n', ylab="No. of Record Temps", xlab="", main="Record Highs and Lows")
+plot(c(1,nrow(R1)), c(yrange[1], yrange[2]), ty="n", 
+     xaxt='n', yaxt='n', ylab="No. of Record Temps", xlab="", 
+     main="Record Highs and Lows")
 axis(2,at=ytics, labels=ylabs)
 axis(1,at=xtics, labels=xlabs)
 barplot(height = R1$TMAX, space=0, add = TRUE, axes = FALSE, col="red")
