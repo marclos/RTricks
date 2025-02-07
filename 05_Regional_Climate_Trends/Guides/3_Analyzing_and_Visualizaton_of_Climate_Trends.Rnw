@@ -16,7 +16,7 @@
 
 \title{Guide 3: Analyzing \& Visual Display of Climate Trends}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.73)} 
+\date{\today~(ver. 0.77)} 
 
 \begin{document}
 \maketitle
@@ -185,7 +185,16 @@ plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
 plotTrend2.fun(USC00042294.anomalies, "PRCP", 1)
 @
 
-\subsection{Acceleraation of Trend in 1975}
+
+\noindent {\Large\textcolor{ForestGreen}{You're are done with the basic goals for this guide, go to Guide 4!}}
+
+\section{Advanced Analyses}
+
+\subsection{Analyses Needed for Unique Situations}
+
+This section includes variius advanced analyses that you can use to explore the data further. For example, the avarage rainfall might not be useful for a desert station, but the number of days with rain might be. Also, we might be more interested in record high temperatures than trendlines of the average. Below are examples of analyses that might be useful for unique situations. However, these often require a bit of time with Marc to sort out how to set up the code. It's no problem for me to help you with this, but it's not as straightforward as the basic analyses.
+
+\subsection{Acceleration of Trend in 1975}
 
 For this analysis, we compare the slope, p-value, and r-squared between the station's entire record and the record starting in January 1, 1975. 
 
