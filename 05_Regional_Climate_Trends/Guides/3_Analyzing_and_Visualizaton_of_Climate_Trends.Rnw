@@ -186,7 +186,7 @@ plotTrend2.fun(USC00042294.anomalies, "PRCP", 1)
 @
 
 
-\textbf{Milestone:} Selected a Month where the TMIN has the steepest slope and plotted the trend line. Submit this to \texttt{Canvas} for the week's reflection. 
+\textbf{Milestone:} Selected a Month where the TMIN, TMAX, and PRCP has the steepest slope (Estimate) and plotted the trend line. Submit this to \texttt{Canvas} for the week's reflection. 
 
 \bigskip
 
