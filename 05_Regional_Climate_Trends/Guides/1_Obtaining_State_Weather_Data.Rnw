@@ -17,7 +17,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 1.01)} 
+\date{\today~(ver. 1.02)} 
 
 \begin{document}
 \maketitle
@@ -64,11 +64,11 @@ R is an open source programming environment that has become one of the most popu
 
 \subsection{Revised Document Structure}
 
-Based on some feedback in the last week, I have re-orgnaized the document with bullets of the steps and then the code. In the following sections, I'll descriptions about ``what the code does and why". But several folks see the text and get tuned out.
+Based on some feedback in the last year, I have re-organized the document with bullets of the steps and then the code. In the following sections, I am adding descriptions about ``what the code does and why". But several folks see the text and get tuned out.
 
 There are two weaknesses with this approach that I can see. First, if the code does not work, you will have a really hard time figuring out why, since you have no idea what the code is supposed to do. Second, if the code works, you will not really be learning any R coding. Just how to copy and paste.
 
-I have created a bunch of functions, which can then be used to collect Let's try this and see how it works! 
+I have created a bunch of functions, which can then be used to collect Let's try this and see how it works! Please read as you go, there subtle things that can go wrong and you need to know what the code is supposed to do.
 
 \subsection{Preparing R for the Project}
 
@@ -76,14 +76,22 @@ I suggest you do the following to prepare:
 
 \begin{enumerate}
   \item Create a folder for the project, I suggest ``Regional\_Climate\_Trends''. Note that there are no spaces in the folder name. 
-  \item Next create a new R markdown file to write your code. Name and save it in your project folder. (For details see Section~\ref{subsec:RMarkdown})
+  \item Next download Marc's Template (an R markdown file) from \texttt{Canvas}. We will use to structure the project, where you can record both your code and explanation of what the code does. To avoid issues later and to make sure this step works, please see the details see Section~\ref{subsec:RMarkdown}). 
   \item Download the file oldest.activestation.csv from the Canvas page and upload it to the directory you created in the previous step.
-  \item Download the file called Guide1functions.R from the Canvas page and upload it to the directory you created in the previous step. 
+  \item Download the file called Guide1functions.R from the Canvas page and upload it to the folder (``Regional\_Climate\_Trends'') you created in the previous step. 
   \item Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor window.
-  \item Create a folder inside the Regional\_Climate\_Trends folder called ``Data``. This will be the location of the data you download.
+  \item Create a folder inside (under) the Regional\_Climate\_Trends folder called ``Data``. This will be the location of the data you download.
 \end{enumerate}
 
 \section{R Functions for Getting Weather Station Data}
+
+\subsection{Creating a Record of Your Commands}
+
+Use the Rmd file to record your R code and comments. This will help you remember what you did and why. See MarcsTemplate.Rmd as a skeleton file. 
+
+Unfortunately, knit creates it's own session of R -- so the stuff we do in the console isn't available in when you knit. So, we'll have to get R to explicitly load the functions wit each time we knit. It's not hard, but important. 
+
+I suggest you start with the R block labelled cars -- removed the code and replace it with the following code:
 
 \subsection{Marc's Custom Functions: Guide1functions.R}
 
@@ -94,27 +102,27 @@ source(here("05_Regional_Climate_Trends", "Guides", "Guide1functions.R"))
 
 These functions are designed so you don't have to type all the code! But check to see if they work for you, because they can (apparently) break really easily. 
 
-From the Canvas page, go to the \href{https://github.com/marclos/RTricks/blob/master/05_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and download the file to your computer. Then upload the file to a directory in Rstudio. I suggest you create a project called ``Regional\_Climate\_Trends'' and then upload the file to that directory. Please note, avoid spaces in your directory names.
+From the Canvas page, go to the \href{https://github.com/marclos/RTricks/blob/master/05_Regional_Climate_Trends/Guides/Guide1functions.R}{Guide1functions.R} code and download the file to your computer. Then upload the file to a directory in Rstudio. %I suggest you create a project called ``Regional\_Climate\_Trends'' and then upload the file to that directory. Please note, avoid spaces in your directory names.
 
-Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor pane (Figure~\ref{fig:source_code}).
+%Open the file in Rstudio and run the code, using the ``source'' action item near the top, right of the editor pane (Figure~\ref{fig:source_code}).
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=1.0\textwidth]{figure/Guide1Source.png}
-\caption{The "source" action item is located in the upper right of the editor window. This will run the entire code with all the functions into the R environment.}
-\label{fig:source_code}
-\end{figure}
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=1.0\textwidth]{figure/Guide1Source.png}
+%\caption{The "source" action item is located in the upper right of the editor window. This will run the entire code with all the functions into the R environment. However, after watching students do this}
+%\label{fig:source_code}
+%\end{figure}
 
-The function have been written to the R Environment and you can close Guide1.functions.R file. We don't need any more. However, if you'd like to see the functions, I have been written out in this document. 
 
-\subsection{Creating a Record of Your Commands}
+%The function have been written to the R Environment and you can close Guide1.functions.R file. We don't need any more. However, if you'd like to see the functions, I have been written out in this document. 
 
-Use the Rmd file to record your R code and comments. This will help you remember what you did and why. See MarcsTemplate.Rmd as a skeleton file. Unfortunately, knit creates it's own session of R -- so the stuff we do in the console isn't available in when you knit. So, we'll have to get R to explicitly load the functions wit each time we knit. It's not hard, but important. In an r block before using other functions, we'll need to add: 
+By placing this in the Rmd file you can run the code and the functions will be available to you. But you must include the whole path (hierarchy of folders) to the file (See Section~\ref{subsec:Folderpaths} for some tips on how to do this). If the file is in the same directory as the Rmd file it will look something like this, where the path can be defined by using \texttt{file.choose()} in the console:
+
 \begin{verbatim}
-source("Guide1functions.R")
+source(``XX/..XXX/Regional_Climate_Trends/Guide1functions.R'')
 \end{verbatim}
 
-NOTE: R is case sensitive. AND the function needs to be in quotes.
+NOTE: R is case sensitive. AND the filepath and file to be in quotes.
 
 \subsection{Function Descriptions and Use}
 
@@ -150,20 +158,22 @@ This functions requires two parameters: data path and name of inventory datafram
 
 The path to your data folder will be different, I created a directory to separate my data by class year, you don't need that! But it is nice to keep neat. Use the ``Data'' folder you created when you set up the project.
 
-An example of how to use the function: 
+An example of how I used the function (for my data and state): 
 
 <<echo=TRUE, eval=TRUE, results='hide'>>=
 datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
 downloadStations.fun(datapath, my.inventory)
 @ 
 
-Your data path will NOT be mine. First, you can see your working directory with \texttt{getwd()}. But it probably doesn't include the folder you are working in. I suggest you use file.choose() and select any file in the project folder. 
+Your data path will NOT be the same as mine. First, you can see your working directory with \texttt{getwd()}. But it probably doesn't include the folder you are working in. I suggest you use file.choose() and select any file in the project folder. 
 
-Then delete the file name (remove the ``stations.active.oldest.csv''!!) and add the ``/Data'', so it might look something like this: 
+Then delete the file name (remove the ``stations.active.oldest.csv''!!) and add the ``/Data/'', so it might look something like this: 
 
 \begin{verbatim}
 datapath = "/home/XXXXXXXX/Regional_Climate_Trends/Data/"
 \end{verbatim}
+
+The / at the end turns out to be important, so include that.
 
 This will download the data from the NOAA website and read it into R then written as compresseed gz and uncompressed czv files in your data folder. Check to see that you have both csv.gz and .csv files in your data folder.
 
@@ -179,7 +189,7 @@ This will download the data from the NOAA website and read it into R then writte
 
 To record your history of R code, I suggest use an Rmarkdown file to keep your code handy. 
 
-To do this open a new file and select R Markdown -- Define a title, author, and output format as PDF. Then save the file (Figure~\ref{fig:RMarkdown}). 
+Normally, we use R Studio to creata a new file and select R Markdown. Then we define a title, author, and output format as PDF. Then save the file in the folder you created earlier (Figure~\ref{fig:RMarkdown}). 
 
 \begin{figure}[h]
 \centering
@@ -189,17 +199,21 @@ To do this open a new file and select R Markdown -- Define a title, author, and 
 \end{figure}
 
 
-Then save the file in your project folder and knit the file to create a PDF. Look at the PDF to see how various parts of the Rmd file were knitted. Notice that there are generally two sections: text and R chunks. As you write th R code, you will can record your code in the R chunks AND develop the output into a document for future reference.
+However, for this prooject, I suggest you use my template and name the file ``ST\_Climate\_Trends--Surname.Rmd'', where ST is the state you selected and Surname is your last name. 
 
-Look carefully at the Rmd file and take note of the following: First, there are chunks of R code separated from the text by a line of three backticks. Second, the R code is written in the chunks and the output is written below the code. Finally, there is a set of backticks at the end of the code chunk. This section is gray and is where you can record your Rcode. I suggest you delete existing the one line of R code inside the existing template chuck.  
+Knit the file to create a PDF. Look at the PDF to see how various parts of the Rmd file were knitted. Notice that there are generally two sections: text and R chunks. As you write th R code, you will can record your code in the R chunks AND develop the output into a document for future reference.
+
+Look carefully at the Rmd file and take note of the following: First, there are chunks of R code separated from the text by a line of three backticks. Second, the R code is written in the chunks and the output is written below the code. Finally, there is a set of backticks at the end of the code chunk. This section is gray and is where you can record your Rcode. 
+
+I suggest you modify the text and use it to guide the process and record issues you have so Marc can make the process eaiser for each iteration!
 
 \subsubsection{R Environment and knitr}
 
-When you knit, R starts a new environment and runs the code in the chunks. But that means the new environment doesn't have the data you have created in your current environment. So, I suggest you use the R markdown to double check that everything is working well. 
+When you knit, R starts a new environment and runs the code in the chunks. But that means the new environment doesn't have the data you might create in the console, which is then in the R environment. So, I suggest you use the R markdown to double check that everything is working well in both the console and in the knit environment.
 
-I have created an R Markdown file for you to use. It is called MarcsTemplate.Rmd. As a template, you can use and change the code as you go. 
+%I created an R Markdown file for you to use. It is called MarcsTemplate.Rmd. As a template, you can use and change the code as you go. 
 
-\subsection{Defining Path \& Read Data}
+\subsection{Defining Path \& Read Data}\label{subsec:Folderpaths}
 
 First, we install some packages and read in the data. I suggest you create a folder for the project (I created one called ``05\_Regional\_Climate\_Trends").  To get the working directory and filename, we can use the file.choose() function from the console:
 
@@ -207,7 +221,7 @@ First, we install some packages and read in the data. I suggest you create a fol
 > file.choose()
 \end{verbatim}
 
-Then paste the result in the Rmd file to track the results to define the file name:\footnote{I use a function here() from the ``here library'', but it's a bit tricky to use and you can use that if you prefer.}
+Then paste the result in the Rmd file to track the results to define the file name:\footnote{I use a function here() from the ``here library'', but it's a bit tricky to use and you can use that if you prefer. Notice that each folder is separated by a comma.}
 
 <<>>=
 filename = "home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"
@@ -217,6 +231,8 @@ filename = "home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.old
 library(here)
 filename = here("05_Regional_Climate_Trends", "stations.active.oldest.csv")
 @ 
+
+Note: the filename is define as the path to find the file and the filename -- the ``path'' is a hierarchical structure of folders to find the path, e.g. room/cabinet/drawer/file.
 
 %suggest you change the name of the file to something more descriptive.
 
@@ -257,7 +273,7 @@ The URL for a description of the data is: \url{https://www.ncdc.noaa.gov/cdo-web
 
 \subsection{readInventory.fun}\label{subsec:readInventory}
 
-This function...
+This function reads the inventory of stations and subsets the data by state.
 
 Here's the function:
 
@@ -265,7 +281,9 @@ Here's the function:
 print(readInventory.fun)
 @
 
-\subsection{downloadStations.fun}\label{subsec:downloadStations}\section{Download Data from NOAA}
+\subsection{downloadStations.fun}\label{subsec:downloadStations}
+
+This function uses the list of 15 weather stations in your state and requests the data to be downloaded from NOAA. As each compressed files arrives on the college's server it is uncompressed (gz --> csv). Pretty handy, eh? Some other stuff that I needed to do was define the column names and then assign them when creating the data frame. 
 
 Here's the function:
 
@@ -281,12 +299,11 @@ I will be getting all the guides working before working on this! But if there ar
 
 \subsection{NA.csv as a duplicate?}
 
-I am not sure why, but in the downloadStations.fun(), the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv.
-If you find a NA.csv in your folder, please let marc or mentors know and we will try to figure out what is going on.
+I am not sure why, but in the downloadStations.fun(), the file is saved as NA.csv. I have no idea why. If you find this, let me know, I'd like to figure out if their is a bug in the code creating this csv. I notices it with some states but not others. It doesn't seem to impact the analysis, but if you find a NA.csv in your folder, please let put a note in the Rmd file to let me know.
 
 \subsection{Download gz files with folder concantentated names}
 
-Five students had this issue on Wednesday, but no one on Tuesday. That less than half the students had this issue is perplexing and I figured out that some students were using old functions, so I updated the functions and changed the Guide fuction file to reflect this change. 
+If the downloaded data have names that include the name of the folder, then I suspect you are missing a ``/'' in the data path. It's an easy fix, but you might want to delete the files and re-run the code to download again with a corrected path, thus name.
 
 \section{rNOAA -- Unsupported and Deprecated Library}
 

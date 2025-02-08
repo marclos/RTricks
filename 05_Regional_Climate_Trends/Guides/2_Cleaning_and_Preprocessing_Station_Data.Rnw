@@ -15,7 +15,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.99)} 
+\date{\today~(ver. 1.0)} 
 
 \begin{document}
 \maketitle
@@ -63,9 +63,14 @@ Before you begin, make sure you have the stations to read into R. Got to the ``F
 
 From the Canvas page, go to the Guide2functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project.
 
-Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
+Add the following code to your Rmd file and run the script to load the functions into your environment:
 
-Run the \href{https://github.com/marclos/RTricks/blob/master/05_Regional_Climate_Trends/Guides/Guide2functions.R}{Guide2functions.R} code and the functions will be loaded into your environment automatically. Be sure the function has been updated to 2025-02-01!
+\begin{verbatim}
+source("/../../Regional_Climate_Trends/Guide2functions.R")
+\end{verbatim}
+
+NOTE: Modify the path to the location of the file in your R file structure!
+
 
 \subsection{Function Descriptions and Use}
 
@@ -173,7 +178,7 @@ coverage.fun(USC00040693a)
 
 In general, we want something like 95\% coverage for the period of record. If you don't have that, please let us know and we'll help you get additional stations with better coverage!
 
-See Section~\ref{subsec:coverage} for more information on how to evaluate the coverage of the data.
+See Section~\ref{subsubsec:coverage} for more information on how to evaluate the coverage of the data.
 
 \item[Function to Fix Values (by order of magnitude)]
 
@@ -338,7 +343,7 @@ QAQC.fun(USC00042294b)
 QAQC.fun(USC00040693b)
 @
 
-No flags are reportedhere. If you have any hints of data problems (wacky values, odd patterns), let's sort them out together!
+No flags are reported here. If you have any hints of data problems (wacky values, odd patterns), let's sort them out together!
 
 \item[Function to Create Monthly Values and Normals]
 

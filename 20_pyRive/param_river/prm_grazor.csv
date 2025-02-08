@@ -1,0 +1,8 @@
+variable;parameter;units;description;value
+;grBenth20;m3/indiv/h;;0.0002
+;toptBenth;°C;;25
+;dtiBenth;°C;;10
+;musselMax;indiv/m2;maximal mussels density;500
+;musselOrderMin;num;minimal order for mussels activity;5
+;musselDecMin;decade;minimal decade for mussels activity;16
+;musselDecMax;decade;maximal decade for mussels activity;30

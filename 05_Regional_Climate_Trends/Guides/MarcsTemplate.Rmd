@@ -9,199 +9,151 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Updated: 2025-02-08
 
-Updated: 2024-02-16
+# R Markdown as a Template
 
+## Generic Markdown Text
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>. I have modified the generic markdown to include the structure and R chunks you might find useful to guide you throuth the process.
+
+## Marc's Template Structure
+
+I like to separate the chucks by Guide and then by the steps in the guide. This way you can see the progression of the project and the steps that were taken. This way I can find easily find where the inevitable error occurred.
+
+## Testing Knit Process
+
+Please click the **Knit** button and name the file as suggested in Guild 1 a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. 
+
+## How to Modify the Template
+
+You will modify the title, author in the preamble. Be careful not to change the formatting. Knit to test afterwards to make sure nothing broke.
+
+## How to Modify the Chucks
+
+For each chuck, try to put in the R code that aligns with each Guide. The titles might not perfectly match, so don't worry if they don't fit exactly. NOTE: the R block labels, the word following r, must be unique or absent. I put them in there to keep track of the R blocks, but this can be a royal pain to troubleshoot if you have a duplicate--so be careful of you copy and paste R blocks.
+
+After you change the chuck, you can evaluate it by clicking the green arrow in the upper right corner of the chuck. I like doing this to test each chuck. Then change the "eval=FASLE" to "eval=TRUE" to run the chuck when you knit. This is an easy step to miss, so be sure to check it for each chuck.
+
+## Recording Errors and Hangups
+
+One of the most valuable parts of the RMarkdown is that allows you to record the errors and hangups you encounter. This is invaluable for troubleshooting for yourself and for others. Especially, as I try to modify the code to improve clarity and functionality!  Plus, learning to articulate the problem is a great way to learn how to solve it -- by defining the problem, you are building skills to solve the problem. Sometimes by just writing it out, you figure out what you were doing wrong, e.g. typos, misnamed variables, wrong path, etc.
 
 # Guide 1
 
-## Chunk 1 Source Guide1fuctions.R
+add some description of what the guide does...
 
-Load Guide Functions
+## Source Guide1fuctions.R
 
-```{r, Guide1_1}
-source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions.R")
+
+NOTE: You will need to modify the path! See Guide 1 for details. 
+
+```{r, Guide1_1, eval=FALSE}
+source("/xXXXX/Regional_Climate_Trends/Guide1functions.R")
 ```
 
-## Chunk 2 Read 
+## Read Inventory
   
+Define State and Read Inventory of Stations
 
-Select State and Read Inventory of Statons
+NOTE: You will need to modify the path for the CSV file. See Guide 1 for details.
 
-```{r, chunk1_2}
-my.state = "WI"
-filename.csv <- "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"
+```{r, chunk1_2, eval=FALSE}
+my.state = "CA"
+filename.csv <- ".../.../Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
 ```
 
-## Chunk 3 Download Stations
-```{r, chunk1_3, results='hide'}
-datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
+## Download Stations
+```{r, chunk1_3, eval=FALSE}
+datapath = "/XXX.../xxxx/Regional_Climate_Trends/Data/"
 downloadStations.fun(datapath, my.inventory)
 ```
 
 # Guide 2
 
-## Chunk 1 Source Guide1fuctions
+add some description of what the guide does...
 
-```{r chunk2_1}
-source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R")
+## Source Guide1fuctions
+
+Be sure to modify the path!
+
+```{r chunk2_1, eval=FALSE}
+source(".../Regional_Climate_Trends/Guide2functions.R")
 ```
 
-## Chunk 2 Read Stations
-```{r, chunk2_2}
-datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
+## Read Stations
+
+Be sure to modify the path!
+```{r, chunk2_2, eval=FALSE}
+datafolder = ".../.../Regional_Climate_Trends/Data/"
 ReadStations2.fun(datafolder)
 ```
 
-## Chunk 3 Sort Stations --> Skip
+## Sort Stations --> Skip
 
 ```{r}
-# sortstations.fun() Nor working yet. 
+# sortstations.fun() Not working yet. 
 ```
 
-## Chunk 4 (Fix Date)
+## Fix Dates
 ```{r, chunk2_4}
-USC00042294a <- fixDates.fun(USC00042294)
-USW00014898a <- fixDates.fun(USW00014898)
+
 
 ```
 
-## Chunk 5 Check Coverage
+## Check Coverage
 ```{r, chunk2_5}
-coverage.fun(USC00042294a)
+
 ```
 
-## Chunk 6 Fix Values
+## Fix Values
 ```{r, chunk2_6}
-USC00042294b <- fixValues.fun(USC00042294a)
-USW00014898b <- fixValues.fun(USW00014898a)
+
 ```
 
-## Chunk 7 QAQC
+## QA/QC
+
 ```{r, chunk2_7}
-QAQC.fun(USC00042294b)
+
 ```
 
 ## Chunk 8 # Monthly Means and Normals
 ```{r, chunk2_8}
-USC00042294.monthly <- MonthlyValues.fun(USC00042294b)
-USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
 
-USW00014898.monthly <- MonthlyValues.fun(USW00014898b)
-USW00014898.normals <- MonthlyNormals.fun(USW00014898b)
 
 ```
 
 
-## Chunk 9 Anomalies
+## Anomalies
 ```{r, chunk2_9}
-USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
 
-USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
 ```
 
 
 # Guide 3
 
-## Chunk 1 Source Guide3fuctions
+add some description of what the guide does...
+
+## Source Guide3fuctions
 
 You might see a note about file not found, this is for Marc, you can ignore.
-```{r, chunk3_1}
-source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide3functions.R")
+```{r, chunk3_1, eval=FALSE}
+source(".../...Regional_Climate_Trends/Guide3functions.R")
 ```
 
-## Chunk 2 Analyze for Trends by Month
+## Analyze for Trends by Month
 ```{r chunk3_2}
-USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
+
 ```
 
-## Chunk 3 TBD
+
+## Plot Trends
 ```{r}
 
-```
-
-# Guide 4
-
-## Chunk 1 Source Guide4functions
-
-You might see a note about file note found, this is for Marc, you can ignore.
-```{r chunk4_1}
-source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide4functions.R")
-```
-
-## Chunk 2 Plot Trend
-```{r}
-plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
 ```
 
 almost done!
-
-
-# Zip Files for Class
-
-Marc's has created a function to zip all the costum functions and active stations file into a zip file for easy download/upload: Guides_Guidefunctions.zip.
-```{r, echo=FALSE}
-zip(zipfile = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guides_Guidefunctions.zip", 
-    files = c("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions.R",
-              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R",
-              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide3functions.R",
-      "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/0_Project_Overview_and_Set_Up.pdf",
-      "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/1_Obtaining_State_Weather_Data.pdf",
-      "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/2_Cleaning_and_Preprocessing_Station_Data.pdf",
-      "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/3_Analyzing_and_Visualizaton_of_Climate_Trends.pdf",
-              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"),
-    flags= "-j")
-```
-
-
-# Putting it together
-
-
-```{r, eval=FALSE}
-# Guide 1
-source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions.R") # 1_1
-
-my.state = "MT"
-filename.csv <- "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv" # 1_1
-my.inventory <- readInventory.fun(filename.csv, my.state) # 1_2
-datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
-downloadStations.fun(datapath, my.inventory) # 1_3
-
-# Guide 2
-source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R") # 2_1
-
-datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP24/"
-ReadStations2.fun(datafolder) # 2_2
-
-#station = 	USC00246918
-#stationID = "USW00054797"
-
-	
-USC00246918a <- fixDates.fun(USC00246918) # 2_4
-coverage.fun(USC00246918a) # 2_5
-USC00246918b <- fixValues.fun(USC00246918a) # 2_6
-QAQC.fun(USC00246918b) # 2_7
-USC00246918.monthly <- MonthlyValues.fun(USC00246918b) # 2_8
-USC00246918.normals <- MonthlyNormals.fun(USC00246918b) # 2_8
-
-USC00246918.anomalies <- MonthlyAnomalies.fun(USC00246918.monthly, USC00246918.normals) # 2_9
-
-# Guide 3
-source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide3functions.R") # 3_1
-USC00246918.trends <- monthlyTrend.fun(USC00246918.anomalies) # 3_2
-plotTrend2.fun(USC00246918.anomalies, "TMIN", 7) # 4_2
-
-
-#Guide 4
-#source("/home/mwl04747/RTricks/04_Regional_Climate_Trends/Guides/Guide4functions.R") # 4_1
-
-```
-
-
-
-
-
 
 
 

@@ -13,36 +13,36 @@
 \contentsline {subsection}{\numberline {3.1}Analyses Needed for Unique Situations}{10}{subsection.3.1}
 \contentsline {subsection}{\numberline {3.2}Acceleration of Trend in 1975}{11}{subsection.3.2}
 \contentsline {subsection}{\numberline {3.3}Filtering Seasonal Effect}{12}{subsection.3.3}
-\contentsline {subsubsection}{\numberline {3.3.1}Method 1: Filtering by Monthly Mean}{12}{subsubsection.3.3.1}
-\contentsline {subsubsection}{\numberline {3.3.2}Method 2: Polynomial Filter}{12}{subsubsection.3.3.2}
-\contentsline {section}{\numberline {4}Extreme Events--Using Daily Records}{12}{section.4}
-\contentsline {subsection}{\numberline {4.1}Complicated Nature of Rainfall Patterns}{12}{subsection.4.1}
+\contentsline {subsubsection}{\numberline {3.3.1}Method 1: Filtering by Monthly Mean}{13}{subsubsection.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.2}Method 2: Polynomial Filter}{13}{subsubsection.3.3.2}
+\contentsline {section}{\numberline {4}Extreme Events--Using Daily Records}{13}{section.4}
+\contentsline {subsection}{\numberline {4.1}Complicated Nature of Rainfall Patterns}{13}{subsection.4.1}
 \contentsline {subsection}{\numberline {4.2}Drought}{13}{subsection.4.2}
-\contentsline {subsection}{\numberline {4.3}Standardized Precipitation Evapotranspiration Index (SPEI)}{13}{subsection.4.3}
-\contentsline {subsubsection}{\numberline {4.3.1}Days in a Row without Rain}{13}{subsubsection.4.3.1}
-\contentsline {subsubsection}{\numberline {4.3.2}Changes in the Rainfall Probability Distributions}{14}{subsubsection.4.3.2}
-\contentsline {subsection}{\numberline {4.4}Record Setting Temperature Records}{14}{subsection.4.4}
-\contentsline {subsection}{\numberline {4.5}KISS}{16}{subsection.4.5}
-\contentsline {subsubsection}{\numberline {4.5.1}Change Point Analysis}{16}{subsubsection.4.5.1}
-\contentsline {subsection}{\numberline {4.6}Temp \& Precipitation Probability}{16}{subsection.4.6}
-\contentsline {subsection}{\numberline {4.7}Using library densEstBayes}{16}{subsection.4.7}
+\contentsline {subsection}{\numberline {4.3}Standardized Precipitation Evapotranspiration Index (SPEI)}{14}{subsection.4.3}
+\contentsline {subsubsection}{\numberline {4.3.1}Days in a Row without Rain}{14}{subsubsection.4.3.1}
+\contentsline {subsubsection}{\numberline {4.3.2}Changes in the Rainfall Probability Distributions}{15}{subsubsection.4.3.2}
+\contentsline {subsection}{\numberline {4.4}Record Setting Temperature Records}{16}{subsection.4.4}
+\contentsline {subsection}{\numberline {4.5}KISS}{17}{subsection.4.5}
+\contentsline {subsubsection}{\numberline {4.5.1}Change Point Analysis}{17}{subsubsection.4.5.1}
+\contentsline {subsection}{\numberline {4.6}Temp \& Precipitation Probability}{17}{subsection.4.6}
+\contentsline {subsection}{\numberline {4.7}Using library densEstBayes}{17}{subsection.4.7}
 \contentsline {subsection}{\numberline {4.8}Probability Distributions}{17}{subsection.4.8}
 \contentsline {subsection}{\numberline {4.9}Evaluating Records}{17}{subsection.4.9}
 \contentsline {subsection}{\numberline {4.10}Export Options}{17}{subsection.4.10}
-\contentsline {section}{\numberline {5}Sea Surface Temperature Data -- SURP PROJECT WAITING TO HAPPEN}{17}{section.5}
-\contentsline {section}{\numberline {6}Satellite Data}{17}{section.6}
-\contentsline {section}{\numberline {7}Ice-Core Data}{17}{section.7}
-\contentsline {section}{\numberline {8}Marc's Custom Functions}{17}{section.8}
-\contentsline {subsection}{\numberline {8.1}monthlyTrend.fun}{17}{subsection.8.1}
-\contentsline {subsubsection}{\numberline {8.1.1}Deprecated Loop Code}{18}{subsubsection.8.1.1}
-\contentsline {section}{\numberline {9}Troubleshooting}{19}{section.9}
-\contentsline {subsection}{\numberline {9.1}Loading and Reading Data into the Knit Environment}{19}{subsection.9.1}
-\contentsline {section}{\numberline {10}Mapping (GIS) and Weather Stations}{20}{section.10}
-\contentsline {subsection}{\numberline {10.1}Simple Mapping of All US and Canada Weather Stations}{20}{subsection.10.1}
-\contentsline {subsection}{\numberline {10.2}Map US Weather Stations}{20}{subsection.10.2}
+\contentsline {section}{\numberline {5}Sea Surface Temperature Data -- SURP PROJECT WAITING TO HAPPEN}{18}{section.5}
+\contentsline {section}{\numberline {6}Satellite Data}{18}{section.6}
+\contentsline {section}{\numberline {7}Ice-Core Data}{18}{section.7}
+\contentsline {section}{\numberline {8}Marc's Custom Functions}{18}{section.8}
+\contentsline {subsection}{\numberline {8.1}monthlyTrend.fun}{18}{subsection.8.1}
+\contentsline {subsubsection}{\numberline {8.1.1}Deprecated Loop Code}{19}{subsubsection.8.1.1}
+\contentsline {section}{\numberline {9}Troubleshooting}{20}{section.9}
+\contentsline {subsection}{\numberline {9.1}Loading and Reading Data into the Knit Environment}{20}{subsection.9.1}
+\contentsline {section}{\numberline {10}Mapping (GIS) and Weather Stations}{21}{section.10}
+\contentsline {subsection}{\numberline {10.1}Simple Mapping of All US and Canada Weather Stations}{21}{subsection.10.1}
+\contentsline {subsection}{\numberline {10.2}Map US Weather Stations}{21}{subsection.10.2}
 \contentsline {subsection}{\numberline {10.3}Simple Mapping of Selected State's 15 oldest, active Weather Stations}{23}{subsection.10.3}
-\contentsline {subsection}{\numberline {10.4}More Complex Mapping of Stations}{23}{subsection.10.4}
-\contentsline {section}{\numberline {11}Mapping Long-term Weather Records}{23}{section.11}
-\contentsline {subsection}{\numberline {11.1}Creating A Basic Trend Plot}{23}{subsection.11.1}
+\contentsline {subsection}{\numberline {10.4}More Complex Mapping of Stations}{24}{subsection.10.4}
+\contentsline {section}{\numberline {11}Mapping Long-term Weather Records}{24}{section.11}
+\contentsline {subsection}{\numberline {11.1}Creating A Basic Trend Plot}{24}{subsection.11.1}
 \contentsline {section}{\numberline {12}Extreme Events--Using Daily Records}{24}{section.12}
 \contentsline {section}{\numberline {13}Conclusions}{24}{section.13}

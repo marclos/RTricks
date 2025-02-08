@@ -31,7 +31,7 @@ if (file.exists(paste0(datapath, "anomalies.RData" ))) {
 }
 
 # test function
-# rm(USC00042294.anamolies)
+# rm(USC00042294.anomalies)
 # datapath = "/home/mwl04747/RTricks/04_Regional_Climate_Trends/Data/SP24/"
 # LoadData.fun(datapath)
 
@@ -135,14 +135,14 @@ plotTrend2.fun <- function(station, element, month) {
     temp = subset(station[[list]], subset=MONTH==month)
     daterange = range(temp$Ymd)
     formula = as.formula("TMAX.a ~ Ymd")
-    ylab="Temperature Anamoly (C)"
+    ylab="Temperature Anomaly (C)"
     main1="Maximum Temperature"
   } else if(element == "TMIN"){
     list = 2
     temp = subset(station[[list]], subset=MONTH==month)
     daterange = range(temp$Ymd)
     formula = as.formula("TMIN.a ~ Ymd") 
-    ylab="Temperature Anamoly (C)"
+    ylab="Temperature Anomaly (C)"
     main1="Minimum Temperature"
   } else if(element == "PRCP"){
     list = 3
@@ -150,7 +150,7 @@ plotTrend2.fun <- function(station, element, month) {
     daterange = range(temp$Ymd)
     formula = as.formula("PRCP.a ~ Ymd")
     main1="Precipitation"
-    ylab="Precipitation Anamoly (mm)"
+    ylab="Precipitation Anomaly (mm)"
   }
   
   temp.lm <- lm(formula, data=temp)
