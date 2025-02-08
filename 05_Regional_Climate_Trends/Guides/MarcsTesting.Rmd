@@ -144,13 +144,15 @@ Marc's has created a function to zip all the costum functions and active station
 ```{r, echo=FALSE}
 zip(zipfile = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guides_Guidefunctions.zip", 
     files = c("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions.R",
-              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R",
-              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide3functions.R",
+      "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R",
+      "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide3functions.R",
       "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/0_Project_Overview_and_Set_Up.pdf",
       "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/1_Obtaining_State_Weather_Data.pdf",
       "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/2_Cleaning_and_Preprocessing_Station_Data.pdf",
       "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/3_Analyzing_and_Visualizaton_of_Climate_Trends.pdf",
-              "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"),
+      "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/MarcsTemplate.Rmd",      
+      "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"),
+    
     flags= "-j")
 ```
 
