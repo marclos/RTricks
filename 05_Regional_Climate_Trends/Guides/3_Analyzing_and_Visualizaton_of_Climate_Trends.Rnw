@@ -16,7 +16,7 @@
 
 \title{Guide 3: Analyzing \& Visual Display of Climate Trends}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.77)} 
+\date{\today~(ver. 0.88)} 
 
 \begin{document}
 \maketitle
@@ -68,13 +68,17 @@ source(here("05_Regional_Climate_Trends", "Guides", "Guide3functions.R"))
 
 \subsection{R Code with Custom Functions}
 
-From the Canvas page, go to the Guide3functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project. ake sure you have an updated version of the file, this one seems the least stable!
+From the Canvas page, go to the Guide3functions.R file and download the file to your computer. Then upload the file to Rstudio directory you are using for the project. 
 
-Open the file in Rstudio and run the code, using the ``source''. button near the top of the editor window.
+Add the following code to your Rmd file and run the script to load the functions into your environment:
 
-Run the \href{https://github.com/marclos/RTricks/blob/master/04_Regional_Climate_Trends/Guides/Guide3functions.R}{Guide3functions.R} code and the functions will be loaded into your environment automatically and are designed to help you analyze your station data.
+\begin{verbatim}
+source("/../../Regional_Climate_Trends/Guide2functions.R")
+\end{verbatim}
 
-the Guide3functions.R file is living file -- so I suggest you check on the updates to the file every few days to see if there have been improvments. 
+NOTE: Modify the path to the location of the file in your R file structure!
+
+The Guide3functions.R file is living file (less stable than Guide 1 and Guide 2  functions) -- so I suggest you check on the updates to the file every few days to see if there have been improvements if you want to access the advanced analysis subsections. 
 
 As we get further into the project, these code chunks may require tweaking because of the questions you are interested for your location falls outside the design of the custom functions. Please let Marc or the mentors know to get assistance tweaking the code!
 
@@ -107,13 +111,13 @@ In this section, we'll discuss how we might analyze the trends in the data by mo
 \textbf{Function: \textcolor{Plum}{Function: monthlyTrend.fun()}}
 \end{center}
 
-\item[Example of how to use the function] Here's an example using the list of station dataframes anomalies. Note: I have often spelled the word anamoly wrong!
+\item[Example of how to use the function] Here's an example using the list of station dataframes anomalies. Note: I have often spelled the word anamoly wrong! I don't want to break the functions in the middle of the year, so we'll just have to live with it!
 
 <<echo=TRUE, results='hide'>>=
 USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
 @
 
-\item[Explore Results] Table~\ref{tab:TMAXtrends} summarizes the monthly trends for TMAX. Admittedly, determining the months with the biggest changes isn't a very good approach for hypothesize testing -- it's more like a fishing expedition, but as long as we understand the difference between an a priori hypothesis and an exploratory analysis, we should be okay if we make appropriate conclusions. 
+\item[Explore Results] Table~\ref{tab:TMAXtrends} summarizes the monthly trends for TMAX. Admittedly, determining the months with the biggest changes isn't a very good approach for hypothesize testing -- it's more like a fishing expedition, but as long as we understand the difference between an \emph{a priori} hypothesis and an exploratory analysis, we should be okay if we make appropriate conclusions. 
 
 We would want to evaluate the trends for TMIN and PRCP too! You can use the Environment tab in Rstudio to see the trend results for all three variables without needing any code, or use/modify this:
 
@@ -125,18 +129,14 @@ USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",]
 
 <<echo=FALSE, results='asis', fig.cap="TMAX Trends X">>=
 xtable(USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",], caption = "TMAX Trends", label="tab:TMAXtrends")
-# print command?
-#c(1,7,4:6)], digits=c(0,0,4,2,4,3), caption="TMIN Trends"
-# print(TMAX.xtbl)
 
-#, type="latex", comment=FALSE, caption="TMAX Trends by Month", label = "tab:TMAXtrends")
 @
 
 \subsection{Plotting a Simple Trend Line}
 
 Here's an example of how to plot a simple trend line for TMIN for January. We are getting ahead of ourselves here, but it's a good example of how to plot a trend line and some of the back and forth we'll need to do between analysis and presentation. 
 
-I suggest you select the element/month with the strongest signal. I selected TMIN and January because it had a strong signal ), i.e. highly significant with a p-value << 0.05.  
+I suggest you select the element/month with the strongest signal. I selected TMIN and January because it had a strong signal ), i.e. highly significant with a p-value $<<$ 0.05.  
 <<>>=
 par(mar=c(5,5,3,4), las=1, mfrow=c(1,1))
       
@@ -169,7 +169,7 @@ I have a custom function that will plot the trend line for you. It's a bit more 
 \textbf{Function: \textcolor{Plum}{Function: plotTrend.fun()}}
 \end{center}
 
-\item[Example of how to use the function] Here's an example using the list of station dataframes anomalies. Note: I have often spelled the word anomaly wrong!
+\item[Example of how to use the function] Here's an example using the list of station dataframes anomalies. 
 
 <<echo=TRUE, results='hide'>>=
 plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
@@ -229,7 +229,7 @@ points(TMAX.a ~ Ymd, data=subset(USC00042294.post1975, subset=MONTH==6),
 
 new = seq.Date(from=as.Date("1975-01-01"), to=as.Date("2024-12-31"), by="month")
 
-\head(new)
+#head(new)
 
 head(predict.lm(USC00042294.post1975.lm, interval="confidence"))
 
@@ -299,7 +299,7 @@ We can look for trends in monthly averages, number of days without rain (importa
 
 In addition, the definition of extreme events is highly regionaally specific. Thus, if this is of interest, let us know and we'll help you develop code!
 
-<<eval=FALSE, echo=FALSE>>=
+<<r complicatedrain, eval=FALSE, echo=FALSE>>=
 PRCP.Total = aggregate(PRCP~Year, data=CHCND, sum, na.rm=T)
 PRCP.Season.Total = aggregate(PRCP~Season+Year, data=CHCND, sum, na.rm=T)
 @
@@ -335,7 +335,7 @@ I don't know if we can do this yet, but I am working on the code to develop the 
 
 One proxy for drought is a long period without rain. This is a bit tricky because it's not just the number of days without rain, but the number of days without rain in a row. So, I found a function call rle() that counts the number of days in a row without rain.
 
-<<show_droughtCount.fun, echo=FALSE>>=
+<<r show_droughtCount.fun, echo=FALSE>>=
 print(droughtCount.fun)
 @
 
@@ -379,7 +379,7 @@ text(min(Drought.run$Year, na.rm=T), max(Drought.run$lengths, na.rm=T),
 
 In this example, we could either use rnorm or a kernel density estimate, for each 10 years or 20 years segmments and see if there is a difference over time. In general, these can be pretty compelling. But it's the mean that is really driving the analysis, so that might be something to look at by decade to see if there is a trend. 
 
-<<eval=TRUE, echo=FALSE, results='hide'>>=
+<<r raindistribution, eval=TRUE, echo=FALSE, results='hide'>>=
 #library(lubridate)
 #load("USC00042294b.RData")
 station = subset(USC00040693.anomalies$PRCP)
@@ -691,7 +691,7 @@ plot(TMIN.a ~ YEAR, data= station, type="p", col="grey", pch=19,
 TMIN.March.lm = lm(TMIN.a ~ YEAR, data= station)
 abline(coef(TMIN.March.lm), col="red" )
 
-%\item Box Plot of TMAX.
+#\item Box Plot of TMAX.
 
 
 station = subset(USC00042294.anomalies[[1]])
@@ -699,7 +699,7 @@ station = subset(USC00042294.anomalies[[1]])
 boxplot(TMAX ~ MONTH, data= station, xlab="Month", ylab="Temperature Anomaly (C)", 
         main="TMAX Data", col="grey")
                  
-    )
+@
 
 
 
@@ -837,7 +837,7 @@ Keeping it simple is critical in communicating scientific information. In this s
 \subsubsection{Change Point Analysis}
 First, TMIN and TMAX and change point analysis, I need to do some background in this, but I used this method in a recent paper with co-author, but I didn't do that part of the analysis, so more reading is needed (\url{https://cran.r-project.org/web/packages/mcp/readme/README.html}).
 
-<<echo=FALSE, eval=FALSE>>=
+<<r changepoint, echo=FALSE, eval=FALSE>>=
 
 dyn.load('/opt/jags/4.3.1/lib/libjags.so.4')
 library(mcp)
@@ -903,7 +903,7 @@ plot(fit2) + plot_pars(fit2, pars = c("cp_1"), type = "dens_overlay")
 
 %Let's create a figure that simplifies the narrative, if we can!
 
-<<KISS, eval=FALSE, echo=FALSE>>=
+<<r KISS, eval=FALSE, echo=FALSE>>=
 
 KISS.png <- paste0(fips$State2, "_", stid, "_KISS.png")
 
@@ -987,7 +987,7 @@ To highlight the patterns of change, it might be useful to analyze how the proba
 
 We might start with decade bins, or 20 years bins (scores) to simplify  the analysis. 
 
-<<normalPDF, echo=FALSE, eval=FALSE>>=
+<<r normalPDF, echo=FALSE, eval=FALSE>>=
 library(wesanderson)
 
 h.ramp <- rev(heat.colors(length(unique(GSOM2$Score))+1))[-1]

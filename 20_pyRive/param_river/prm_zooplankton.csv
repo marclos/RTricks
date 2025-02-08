@@ -1,0 +1,17 @@
+variable;parameter;units;description;value
+ZOR;mumax20;h-1;max growth rate;0.025
+ZOC;mumax20;h-1;max growth rate;0.015
+ZOR;Kphy;mgC/l;1/2 saturation constant to phyto;0.1
+ZOC;Kphy;mgC/l;1/2 saturation constant to phyto;0.1
+ZOR;phy0;mgC/l;threshold phyto concentration;0.1
+ZOC;phy0;mgC/l;threshold phyto concentration;0.1
+ZOR;grmax20;h-1;maximal grazing rate;0.1
+ZOC;grmax20;h-1;maximal grazing rate;0.05
+ZOR;kd20;h-1;mortality rate;0.007
+ZOC;kd20;h-1;mortality rate;0.007
+ZOR;topt;°C;optimal temperature;25
+ZOC;topt;°C;optimal temperature;25
+ZOR;dti;°C;range of temperature;10
+ZOC;dti;°C;range of temperature;10
+ZOR;vs;m/h;sinking rate;0.02
+ZOC;vs;m/h;sinking rate;0.02

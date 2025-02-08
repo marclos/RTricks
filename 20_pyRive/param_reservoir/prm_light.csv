@@ -1,0 +1,5 @@
+variable;parameter;units;description;value
+;luminosityAvg;µE/m².sec;average luminosity;471
+;luminosityRange;%;luminosity range;0.53
+;photoperiodAvg;h;average photoperiod;12
+;photoperiodRange;%;photoperiod range;0.375

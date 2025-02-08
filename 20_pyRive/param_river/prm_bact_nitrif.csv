@@ -1,0 +1,18 @@
+variable;parameter;units;description;value
+AOB;mumax20;h-1;max growth rate;0.07
+NOB;mumax20;h-1;max growth rate;0.05
+AOB;kO2;mgO2/l;1/2 saturation constant for O2;0.64
+NOB;kO2;mgO2/l;1/2 saturation constant for O2;1.088
+AOB;kNH4;mgN/l;1/2 saturation constant for NH4;0.75
+NOB;kNO2;mgN/l;1/2 saturation constant for NO2;0.05
+AOB;y;mgC/mgN;growth yield;0.07
+NOB;y;mgC/mgN;growth yield;0.02
+AOB;kd20;h-1;mortality rate;0.005
+NOB;kd20;h-1;mortality rate;0.005
+AOB;vs;m/h;sinking rate;0.005
+NOB;vs;m/h;sinking rate;0.005
+AOB;topt;°C;optimal temperature;23
+NOB;topt;°C;optimal temperature;23
+AOB;dti;°C;range of temperature;18
+NOB;dti;°C;range of temperature;18
+;pNden;mgN-N2O / mgN-NO3;fraction of denitrification  in N2O;0.025

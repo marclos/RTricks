@@ -1,0 +1,46 @@
+variable;parameter;units;description;value
+DIA;kmax20;h-1;maximal rate of photosynth.;0.2
+GRA;kmax20;h-1;maximal rate of photosynth.;0.25
+CYA;kmax20;h-1;maximal rate of photosynth.;0.1
+DIA;alf;h-1(µEm-2s-1)-1;initial slope of P/I curve;0.0012
+GRA;alf;h-1(µEm-2s-1)-1;initial slope of P/I curve;0.0012
+CYA;alf;h-1(µEm-2s-1)-1;initial slope of P/I curve;0.0012
+DIA;srmax20;h-1;maximal rate of reserve synthesis;0.15
+GRA;srmax20;h-1;maximal rate of reserve synthesis;0.2
+CYA;srmax20;h-1;maximal rate of reserve synthesis;0.075
+DIA;ks;sd;1/2 saturation constant;0.06
+GRA;ks;sd;1/2 saturation constant;0.06
+CYA;ks;sd;1/2 saturation constant;0.06
+DIA;kcr20;h-1;rate of R catabolism;0.2
+GRA;kcr20;h-1;rate of R catabolism;0.2
+CYA;kcr20;h-1;rate of R catabolism;0.2
+DIA;mumax20;h-1;max growth rate;0.05
+GRA;mumax20;h-1;max growth rate;0.05
+CYA;mumax20;h-1;max growth rate;0.025
+DIA;kpp;mgP/l;1/2 saturation constant for P uptake;0.0155
+GRA;kpp;mgP/l;1/2 saturation constant for P uptake;0.062
+CYA;kpp;mgP/l;1/2 saturation constant for P uptake;0.062
+DIA;kpn;mgN/l;1/2 saturation constant for N uptake;0.014
+GRA;kpn;mgN/l;1/2 saturation constant for N uptake;0.014
+CYA;kpn;mgN/l;1/2 saturation constant for N uptake;0.014
+DIA;kpsi;mgSi/l;1/2 saturation constant for Si uptake;0.196
+GRA;kpsi;mgSi/l;1/2 saturation constant for Si uptake;0
+CYA;kpsi;mgSi/l;1/2 saturation constant for Si uptake;0
+DIA;maint20;h-1;maintenance coefficient;0.002
+GRA;maint20;h-1;maintenance coefficient;0.002
+CYA;maint20;h-1;maintenance coefficient;0.002
+DIA;cesp;sd;;0.5
+GRA;cesp;sd;;0.5
+CYA;cesp;sd;;0.5
+DIA;kd20;h-1;mortality rate;0.025
+GRA;kd20;h-1;mortality rate;0.035
+CYA;kd20;h-1;mortality rate;0.006
+DIA;vs;m/h;sinking rate;0.006
+GRA;vs;m/h;sinking rate;0.001
+CYA;vs;m/h;sinking rate;0.006
+DIA;topt;°C;optimal temperature;21
+GRA;topt;°C;optimal temperature;37
+CYA;topt;°C;optimal temperature;37
+DIA;dti;°C;range of temperature;13
+GRA;dti;°C;range of temperature;15
+CYA;dti;°C;range of temperature;12
