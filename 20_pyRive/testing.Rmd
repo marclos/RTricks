@@ -16,7 +16,10 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
-summary(cars)
+# reticulate::install_python(version = '3.9')
+virtualenv_create("r-reticulate")
+
+py_run_file("/home/mwl04747/RTricks/20_pyRive/rive/Rive.py")
 ```
 
 ## Including Plots
