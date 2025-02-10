@@ -73,7 +73,7 @@ From the Canvas page, go to the Guide3functions.R file and download the file to 
 Add the following code to your Rmd file and run the script to load the functions into your environment:
 
 \begin{verbatim}
-source("/../../Regional_Climate_Trends/Guide2functions.R")
+source("/../../Regional_Climate_Trends/Guide3functions.R")
 \end{verbatim}
 
 NOTE: Modify the path to the location of the file in your R file structure!
