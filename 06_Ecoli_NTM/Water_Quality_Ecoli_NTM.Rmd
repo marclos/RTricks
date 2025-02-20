@@ -1,6 +1,6 @@
 ---
-title: "Water Quality -- E. coli and NTM"
-runningheader: "Water Quality" # only for pdf output
+title: "Water Quality -- Total Coliform, E. coli and NTM Analysis Guide"
+runningheader: "Water Quality Analysis Guide" # only for pdf output
 subtitle: "RTricks: #1" # only for html output
 author: "Marc Los Huertos"
 date: "`r Sys.Date()`"
@@ -91,7 +91,7 @@ We will use an ANOVA for this analysis. Basically, this tests to see if location
 Steps to Create an Rmd/PDF
 
 1. Create a new R Markdown document in R Studio.
-2. Add a title, author, and date to the YAML header.
+2. Add a title, author, and date which will be written into the YAML header; seletect the output format as PDF.
 3. Save the file in a new folder called `Water_Quality_Ecoli_NTM`.
 4. Knit to make sure it works.
 5. Get rid of all the template text (but don't lose the set up r chunk), we'll need that.
