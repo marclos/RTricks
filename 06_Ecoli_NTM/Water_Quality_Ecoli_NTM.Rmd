@@ -1,6 +1,6 @@
 ---
 title: "Water Quality -- E. coli and NTM"
-runningheader: "EA30 Guide Title" # only for pdf output
+runningheader: "Water Quality" # only for pdf output
 subtitle: "RTricks: #1" # only for html output
 author: "Marc Los Huertos"
 date: "`r Sys.Date()`"
@@ -71,6 +71,73 @@ Nontuberculous Mycobacteria (NTM) are a diverse group of mycobacterial species t
 ## Vulnerable Populations
 
 - Children, the elderly, and individuals with compromised immune systems are at higher risk of severe outcomes.
+
+# E coli Analysis Guide
+
+## Sampling and Analysis
+
+See SOP 23 for detailed instructions on water sampling and analysis for *E. coli*. Key steps include:
+
+1. **Sample Collection**: Use sterile containers to collect water samples from designated sites.
+2. **Sample Preservation**: Keep samples cold (4°C) during transport to the lab to prevent bacterial growth.
+3. **Analysis Methods**: Perform membrane filtration or IDEXX Quanti-Tray tests to quantify *E. coli* levels.
+
+## Statistical Analysis
+
+We will use an ANOVA for this analysis. Basically, this tests to see if locations are the same. If the p-value is less than 0.05, then they are not the same. 
+
+## Data Analysis Process
+
+Steps to Create an Rmd/PDF
+
+1. Create a new R Markdown document in R Studio.
+2. Add a title, author, and date to the YAML header.
+3. Save the file in a new folder called `Water_Quality_Ecoli_NTM`.
+4. Knit to make sure it works.
+5. Get rid of all the template text (but don't lose the set up r chunk), we'll need that.
+5. Write an introduction to the topic of *E. coli* in water.
+
+
+Steps to Download & Clean Up Google Sheet Data 
+
+1. Download the data from the Google Sheet as a csv file Using the Data Export table (marc's cleaned version)
+2. Upload into R studio into your `Water_Quality_Ecoli_NTM` folder'.
+
+Steps to Use R  code for E. Coli MPN (See marc's R script below...)
+
+1. Read Data
+2. Check data and Recalculate Diluted Value
+3. Run ANOVA
+
+```{r}
+# Read Data (use file.choose() to get the path!)
+MPN_data.csv = "/home/mwl04747/RTricks/06_Ecoli_NTM/Marc's fake data form demo.csv"
+MPN_data <- read.csv(MPN_data.csv)
+
+# Check data and Recalculate Diluted Value
+MPN_data$TC_MPN = MPN_data$TotalColiform
+MPN_data$EC_MPN = MPN_data$Ecoli
+
+MPN_data$TC_MPN[MPN_data$Dilution=="Diluted"] <- 
+  MPN_data$TotalColiform[MPN_data$Dilution=="Diluted"] *10
+MPN_data$EC_MPN[MPN_data$Dilution=="Diluted"] <- 
+  MPN_data$Ecoli[MPN_data$Dilution=="Diluted"] *10
+
+
+# Run ANOVA
+aov_result <- aov(TC_MPN ~ Site_ID, data = MPN_data) 
+# Notice that I did this ONLY for total coliform, you need to do it for Ecoli as well.
+
+summary(aov_result)
+
+```
+
+4. Interpret the results of the ANOVA test.
+
+If the Pr(>F) value is less than 0.05, then the locations are not the same with respect to the MPN.
+
+5. Write a conclusion based on the results of the analysis.
+
 
 
 # Health Impacts of NTM
