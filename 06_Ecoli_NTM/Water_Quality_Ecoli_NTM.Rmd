@@ -84,7 +84,11 @@ See SOP 23 for detailed instructions on water sampling and analysis for *E. coli
 
 ## Statistical Analysis
 
-We will use an ANOVA for this analysis. Basically, this tests to see if locations are the same. If the p-value is less than 0.05, then they are not the same. 
+We will use an ANOVA for this analysis. Basically, this tests to see if locations are the same. If the p-value is less than 0.05, then they are not the same. What is an ANOVA? It stands for Analysis of Variance. It is a way to test if the means of different groups are the same.
+
+In R it is relatively easy to specfic using the aov() function, where aov stands for Analysis of Variance. The arguments to the aov() function are a formula that describes the model and the data frame that contains the data, as aov(response ~ factor, data=dataframe). The response is the dependent (NTM) variable, and the factor is the independent variable (Site_ID or Location).
+
+Preparing the cleaning the data take the most time!
 
 ## Data Analysis Process
 
