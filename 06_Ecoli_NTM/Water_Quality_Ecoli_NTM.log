@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018) (preloaded format=xelatex 2023.7.1)  20 FEB 2025 13:16
+This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018) (preloaded format=xelatex 2023.7.1)  20 FEB 2025 16:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1078,7 +1078,7 @@ ions can lead to HUS, a life-threatening
 *************************************************
 * fontspec warning: "addfontfeatures-ignored"
 * 
-* \addfontfeature(s) ignored on line 269; it cannot be used with a font that
+* \addfontfeature(s) ignored on line 270; it cannot be used with a font that
 * wasn't selected by a fontspec command.
 *  
 *  The current font is "\TU/lmr/m/n/10 ".
@@ -1088,20 +1088,29 @@ ions can lead to HUS, a life-threatening
 *************************************************
 * fontspec warning: "addfontfeatures-ignored"
 * 
-* \addfontfeature(s) ignored on line 341; it cannot be used with a font that
+* \addfontfeature(s) ignored on line 344; it cannot be used with a font that
 * wasn't selected by a fontspec command.
 *  
 *  The current font is "\TU/lmr/m/n/10 ".
 *   The requested feature is "LetterSpace=10". 
 *************************************************
 [3]
-Overfull \hbox (29.25pt too wide) in paragraph at lines 350--350
+Overfull \hbox (29.25pt too wide) in paragraph at lines 360--360
 []\TU/lmtt/m/n/10 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 '
  ' 1[] 
  []
 
-
-Overfull \hbox (0.67001pt too wide) in paragraph at lines 426--429
+*************************************************
+* fontspec warning: "addfontfeatures-ignored"
+* 
+* \addfontfeature(s) ignored on line 426; it cannot be used with a font that
+* wasn't selected by a fontspec command.
+*  
+*  The current font is "\TU/lmr/m/n/10 ".
+*   The requested feature is "LetterSpace=10". 
+*************************************************
+[4]
+Overfull \hbox (0.67001pt too wide) in paragraph at lines 436--439
 []\TU/lmr/bx/n/10 Tap Water\TU/lmr/m/n/10 : Household water supplies can harbor
  NTM in biofilms 
  []
@@ -1109,17 +1118,7 @@ Overfull \hbox (0.67001pt too wide) in paragraph at lines 426--429
 *************************************************
 * fontspec warning: "addfontfeatures-ignored"
 * 
-* \addfontfeature(s) ignored on line 429; it cannot be used with a font that
-* wasn't selected by a fontspec command.
-*  
-*  The current font is "\TU/lmr/m/n/10 ".
-*   The requested feature is "LetterSpace=10". 
-*************************************************
-[4]
-*************************************************
-* fontspec warning: "addfontfeatures-ignored"
-* 
-* \addfontfeature(s) ignored on line 505; it cannot be used with a font that
+* \addfontfeature(s) ignored on line 498; it cannot be used with a font that
 * wasn't selected by a fontspec command.
 *  
 *  The current font is "\TU/lmr/m/n/10 ".
@@ -1127,22 +1126,22 @@ Overfull \hbox (0.67001pt too wide) in paragraph at lines 426--429
 *************************************************
 [5]
 No file Water_Quality_Ecoli_NTM.bbl.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 524.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 534.
 *************************************************
 * fontspec warning: "addfontfeatures-ignored"
 * 
-* \addfontfeature(s) ignored on line 524; it cannot be used with a font that
+* \addfontfeature(s) ignored on line 534; it cannot be used with a font that
 * wasn't selected by a fontspec command.
 *  
 *  The current font is "\TU/lmr/m/n/10 ".
 *   The requested feature is "LetterSpace=10". 
 *************************************************
 [6]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 524.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 534.
 (./Water_Quality_Ecoli_NTM.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 524.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 524.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 524.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 534.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 534.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 534.
  ) 
 Here is how much of TeX's memory you used:
  22603 strings out of 494986
