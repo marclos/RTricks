@@ -104,8 +104,9 @@ Steps to Create an Rmd/PDF
 
 Steps to Download & Clean Up Google Sheet Data 
 
-1. Download the data from the Google Sheet as a csv file Using the Data Export table (marc's cleaned version)
-2. Upload into R studio into your `Water_Quality_Ecoli_NTM` folder'.
+1. Before downloading, I suggest you make sure the site names are consistent; i.e. same spelling and capitalization uses. Make sure the controls have have the word control as "Control". See marc's fake data set as a template, and check the Export Data table for the consistent.
+2. Download the data from the Google Sheet as a csv file Using the Data Export table (marc's cleaned version)
+3. Upload into R studio into your `Water_Quality_Ecoli_NTM` folder'.
 
 Steps to Use R  code for E. Coli MPN (See marc's R script below...)
 
@@ -117,6 +118,9 @@ Steps to Use R  code for E. Coli MPN (See marc's R script below...)
 # Read Data (use file.choose() to get the path!)
 MPN_data.csv = "/home/mwl04747/RTricks/06_Ecoli_NTM/Marc's fake data form demo.csv"
 MPN_data <- read.csv(MPN_data.csv)
+
+# Remove Controls
+MPN_data <- MPN_data[!grepl("Control", MPN_data$Site_ID),]
 
 # Check data and Recalculate Diluted Value
 MPN_data$TC_MPN = MPN_data$TotalColiform
