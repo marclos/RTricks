@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018) (preloaded format=xelatex 2023.7.1)  20 FEB 2025 17:07
+This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018) (preloaded format=xelatex 2023.7.1)  21 FEB 2025 17:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1095,7 +1095,7 @@ ions can lead to HUS, a life-threatening
 *   The requested feature is "LetterSpace=10". 
 *************************************************
 [3]
-Overfull \hbox (29.25pt too wide) in paragraph at lines 369--369
+Overfull \hbox (29.25pt too wide) in paragraph at lines 370--370
 []\TU/lmtt/m/n/10 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 '
  ' 1[] 
  []
@@ -1103,14 +1103,14 @@ Overfull \hbox (29.25pt too wide) in paragraph at lines 369--369
 *************************************************
 * fontspec warning: "addfontfeatures-ignored"
 * 
-* \addfontfeature(s) ignored on line 425; it cannot be used with a font that
+* \addfontfeature(s) ignored on line 414; it cannot be used with a font that
 * wasn't selected by a fontspec command.
 *  
 *  The current font is "\TU/lmr/m/n/10 ".
 *   The requested feature is "LetterSpace=10". 
 *************************************************
 [4]
-Overfull \hbox (0.67001pt too wide) in paragraph at lines 445--448
+Overfull \hbox (0.67001pt too wide) in paragraph at lines 446--449
 []\TU/lmr/bx/n/10 Tap Water\TU/lmr/m/n/10 : Household water supplies can harbor
  NTM in biofilms 
  []
@@ -1118,7 +1118,7 @@ Overfull \hbox (0.67001pt too wide) in paragraph at lines 445--448
 *************************************************
 * fontspec warning: "addfontfeatures-ignored"
 * 
-* \addfontfeature(s) ignored on line 494; it cannot be used with a font that
+* \addfontfeature(s) ignored on line 492; it cannot be used with a font that
 * wasn't selected by a fontspec command.
 *  
 *  The current font is "\TU/lmr/m/n/10 ".
@@ -1126,22 +1126,22 @@ Overfull \hbox (0.67001pt too wide) in paragraph at lines 445--448
 *************************************************
 [5]
 No file Water_Quality_Ecoli_NTM.bbl.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 543.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 544.
 *************************************************
 * fontspec warning: "addfontfeatures-ignored"
 * 
-* \addfontfeature(s) ignored on line 543; it cannot be used with a font that
+* \addfontfeature(s) ignored on line 544; it cannot be used with a font that
 * wasn't selected by a fontspec command.
 *  
 *  The current font is "\TU/lmr/m/n/10 ".
 *   The requested feature is "LetterSpace=10". 
 *************************************************
 [6]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 543.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 544.
 (./Water_Quality_Ecoli_NTM.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 543.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 543.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 543.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 544.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 544.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 544.
  ) 
 Here is how much of TeX's memory you used:
  22603 strings out of 494986
