@@ -126,10 +126,11 @@ MPN_data <- MPN_data[!grepl("Control", MPN_data$Site_ID),]
 MPN_data$TC_MPN = MPN_data$TotalColiform
 MPN_data$EC_MPN = MPN_data$Ecoli
 
-MPN_data$TC_MPN[MPN_data$Dilution=="Diluted"] <- 
-  MPN_data$TotalColiform[MPN_data$Dilution=="Diluted"] *10
-MPN_data$EC_MPN[MPN_data$Dilution=="Diluted"] <- 
-  MPN_data$Ecoli[MPN_data$Dilution=="Diluted"] *10
+# Make sure the character string ="Diluted, 1:10" matches for each row that was diluted.
+MPN_data$TC_MPN[MPN_data$Dilution=="Diluted, 1:10"] <- 
+  MPN_data$TotalColiform[MPN_data$Dilution=="Diluted, 1:10"] *10
+MPN_data$EC_MPN[MPN_data$Dilution=="Diluted, 1:10"] <- 
+  MPN_data$Ecoli[MPN_data$Dilution=="Diluted, 1:10"] *10
 
 
 # Run ANOVA
