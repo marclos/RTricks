@@ -1,0 +1,242 @@
+---
+title: "Testing Compost Maturity"
+runningheader: "Compost Maturity" # only for pdf output
+subtitle: "RTricks: Compost Maturity" # only for html output
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_html: default
+bibliography: skeleton.bib
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(tufte)
+# invalidate cache when the tufte version changes
+knitr::opts_chunk$set(cache.extra = packageVersion('tufte'))
+options(htmltools.dir.version = FALSE)
+```
+
+# Introduction
+
+##Broader Impacts
+
+Research on compost maturity has significant implications across agriculture, environmental management, waste reduction, and public health. In agriculture, mature compost enhances soil structure, fertility, and water retention, boosting crop yields and reducing reliance on synthetic fertilizers and pesticides. It also supports climate-resilient farming by improving soil carbon sequestration and drought tolerance, promoting sustainable practices in changing environmental conditions.
+
+In waste management, optimizing compost maturity diverts organic waste from landfills, reducing methane emissions and contributing to a circular economy by transforming waste into valuable resources. Efficient composting processes stabilize organic matter more quickly, recovering nutrients while enhancing waste system sustainability.
+
+Environmentally, mature compost minimizes greenhouse gas emissions, prevents nutrient leaching, and protects water quality. It rehabilitates degraded lands, restores ecological balance, and replaces synthetic fertilizers, mitigating the impacts of fossil fuel-based agricultural inputs. These benefits make compost a key tool for environmental restoration and emission reductions.
+
+Public health also benefits from compost maturity. Properly matured compost eliminates pathogens, reduces odor, and limits volatile organic compound emissions, improving air quality and safety. In agriculture, it minimizes contamination risks, supporting healthier food systems and reducing public health concerns
+
+# Procedures
+
+## Methods to Measure Compost Maturity Using Solvita’s Paddles
+
+The Solvita Compost Maturity Test is a widely recognized tool for assessing compost stability and maturity. It provides a straightforward, reliable method for evaluating the quality of compost by measuring the biological activity and carbon dioxide (CO$_2$) and ammonia (NH$_3$) emissions. Here's how to use Solvita paddles to measure compost maturity:
+
+1. Prepare the Compost Sample
+
+Collect Representative Compost: Take a composite sample from various parts of the compost pile to ensure it accurately represents the batch. Avoid sections with excess moisture or contamination.
+
+Moisture Adjustment: Ensure the compost is at an appropriate moisture level (approximately 50% moisture content). To test, the compost should feel damp but not release water when squeezed.
+
+2. Set Up the Test
+
+Select the Testing Container: Use a sealed jar or a Solvita-approved container to create a controlled environment for gas emissions.
+
+Place Compost in the Jar: Fill the container with the appropriate amount of compost (usually 100-150 grams), leaving space for air circulation.
+
+Insert the Solvita Paddle: Place the paddle carefully in the jar, ensuring it does not come into direct contact with the compost. The paddle should sit securely to allow accurate gas measurement.
+
+3. Conduct the Test
+
+Seal the Container: Close the container tightly to prevent outside air from affecting the readings.
+
+Incubation Period: Allow the container to sit undisturbed for 4-24 hours at room temperature. The duration depends on the specific test protocol and the compost's expected activity level.
+
+Color Change Observation: After the incubation period, examine the Solvita paddle for color changes. Each paddle has a color-coded scale corresponding to CO~2 and NH~3 levels, indicating compost maturity.
+
+
+4. Interpret the Results
+
+CO~2 and NH~3 Scales: Match the paddle colors to the provided Solvita chart to determine CO~2 respiration and NH~3 release levels. Lower emissions indicate greater stability and maturity.
+
+Maturity Index: Combine the CO~2 and NH~3 results to calculate the Solvita Compost Maturity Index, typically ranging from 1 (very immature) to 8 (fully mature).
+
+Maturity Assessment: Compost with a Solvita score of 6 or higher is generally considered mature and suitable for most agricultural applications.
+
+5. Enter Data
+
+Record the Results: Use the Google sheet/form [Google sheet/form](https://docs.google.com/spreadsheets/d/1wYLDoMcA3uw72L3gGVfufBirzfddarFF658vp56rBdI/edit?usp=sharing) to enter the data. 
+
+6. Document and Repeat
+
+Record Data: Document the test results, including the compost batch, sample date, moisture level, and Solvita score.
+
+Re-test if Needed: For borderline results or when composting conditions change significantly, repeat the test to ensure consistency.
+
+
+## Notes and Best Practices
+
+Consistency: Always follow the same sampling and testing protocols to maintain accuracy.
+
+Supplementary Tests: Pair Solvita testing with other assessments (e.g., temperature, pH, or C/N ratio) for a comprehensive evaluation of compost quality.
+
+Safety: Handle compost samples with gloves and work in a well-ventilated area to avoid exposure to gases.
+
+By following these steps, the Solvita paddle test provides an efficient way to measure compost maturity, helping to ensure its suitability for agricultural, landscaping, or restoration use.
+
+
+# t-test: Comparing Two Treatments
+
+## What is a t-test?
+
+A t-test is a statistical method used to compare the means of two groups to determine if they are significantly different from each other. It tests the null hypothesis that the means of the two groups are equal against the alternative hypothesis that they are different. The t-test is commonly used in research to assess the impact of an intervention, treatment, or condition on a continuous dependent variable.
+
+## Types of t-tests
+
+- Independent Samples t-test: Compares the means of two independent groups (e.g., treatment vs. control) to determine if they differ significantly.
+
+- Paired Samples t-test: Compares the means of two related groups (e.g., before vs. after treatment) to assess the intervention's effect within the
+
+## Assumptions of t-tests
+
+1. The dependent variable is continuous and normally distributed.
+
+2. The independent variable is categorical with two levels (for independent samples t-test).
+
+3. The observations are independent of each other.
+
+4. The variances of the two groups are approximately equal (homogeneity of variances).
+
+## How to Perform a t-test
+
+1. Define the null and alternative hypotheses:
+
+- Null Hypothesis (H0): The means of the two groups are equal.
+
+- Alternative Hypothesis (Ha): The means of the two groups are different.
+
+2. Select the appropriate type of t-test based on the study design (independent or paired samples).
+
+3. Calculate the t-statistic using the formula:
+
+t = (mean1 - mean2) / (standard error)
+
+4. Determine the degrees of freedom (df) based on the sample sizes of the two groups.
+
+5. Look up the critical t-value in the t-distribution table or use statistical software to find the p-value associated with the t-statistic.
+
+6. Compare the p-value to the significance level (α) to make a decision:
+
+- If p < α, reject the null hypothesis and conclude that the means are significantly different.
+
+- If p ≥ α, fail to reject the null hypothesis and conclude that there is no significant difference between the means.
+
+7. Using R to conduct a t-test:
+
+Using fake data! 
+```{r}
+# Generate fake data for two groups
+set.seed(123)
+group1 <- rnorm(n = 30, mean = 10, sd = 2)
+group2 <- rnorm(n = 30, mean = 12, sd = 2)
+
+# Independent Samples t-test
+t.test(x = group1, y = group2, alternative = "two.sided", var.equal = TRUE)
+```
+
+
+
+
+7. Report the results, including the t-statistic, degrees of freedom, p-value, and conclusion.
+
+By following these steps, researchers can use t-tests to compare two treatments or conditions and determine if they have a significant impact on the outcome variable.
+
+
+# Analysis of Variance: Testing Multiple Treatments
+
+## What is ANOVA?
+
+ANOVA (Analysis of Variance) is a statistical method used to compare the means of three or more groups to determine if at least one group mean is significantly different from the others. It tests the null hypothesis that all group means are equal against the alternative hypothesis that at least one group mean is different. ANOVA is widely used in experiments and observational studies to analyze the impact of categorical independent variables on a continuous dependent variable.
+
+## Types of ANOVA
+
+- One-Way ANOVA: Compares means across one categorical independent variable with multiple levels (e.g., different fertilizers on plant growth).
+
+- Two-Way ANOVA: Compares means across two independent variables and evaluates their interaction effects (e.g., fertilizers and watering frequency on plant growth).
+
+- Repeated Measures ANOVA: Used when the same subjects are measured multiple times under different conditions.
+
+## Assumptions of ANOVA
+1. The dependent variable is continuous and normally distributed.
+
+2. The independent variable(s) consist of two or more categorical, independent groups.
+
+3. Homogeneity of variances (equal variance across groups).
+
+4. Observations are independent.
+
+## Coding in R
+
+```{r}
+# Load necessary libraries
+library(knitr) # For formatting
+library(ggplot2) # Optional, for visualization
+```
+
+
+```{r}
+# Example dataset: Plant growth across different fertilizers
+data <- data.frame(
+  Fertilizer = rep(c("A", "B", "C"), each = 10),
+  Growth = c(rnorm(10, mean = 20, sd = 2), 
+             rnorm(10, mean = 25, sd = 2), 
+             rnorm(10, mean = 30, sd = 2))
+)
+head(data) # Display the first few rows of the data
+```
+
+```{r}
+# Boxplot to visualize differences in groups
+ggplot(data, aes(x = Fertilizer, y = Growth)) +
+  geom_boxplot(fill = c("skyblue", "orange", "green")) +
+  theme_minimal() +
+  labs(title = "Plant Growth by Fertilizer Type", x = "Fertilizer", y = "Growth")
+
+```
+
+
+```{r}
+# Perform ANOVA
+anova_result <- aov(Growth ~ Fertilizer, data = data)
+summary(anova_result)
+
+```
+
+
+
+```{r}
+# 1. Normality of residuals
+shapiro.test(residuals(anova_result))
+
+# 2. Homogeneity of variances (Levene's test)
+#library(car) # For Levene's test
+#leveneTest(Growth ~ Fertilizer, data = data)
+```
+
+```{r}
+# Provide interpretation based on ANOVA and Tukey HSD results
+#kable(summary(anova_result), caption = "ANOVA Results")
+#kable(tukey_result$Fertilizer, caption = "Tukey HSD Results")
+
+```
+
+
