@@ -16,10 +16,10 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
-NH3_immature <- c()
-NH3_mature <- c()
-CO2_immature <- c()
-CO2_mature <- c()
+NH3_immature <- c(5, 5, 5)
+NH3_mature <- c(5, 5, 5)
+CO2_immature <- c(6.17, 5.37, 6.24)
+CO2_mature <- c(7.84, 7.66, 7.78)
 ```
 
 ## t.test()
@@ -28,13 +28,18 @@ You can also embed plots, for example:
 
 ### Free Ammmonia
 
-```{r ttest, echo=FALSE}
-t.test(NH3_immature, NH3_mature)
+```{r ttestNH3, echo=FALSE}
+# you can remove the comment to get this to run, but 
+# the test fails because of lack of variance
+
+# t.test(NH3_immature, NH3_mature)
 ```
+
+Test fails because of lack of variance... maybe it will change on Wed night.
 
 ### Carbon Dioxide Respiration
 
-```{r ttest, echo=FALSE}
+```{r ttestCO2, echo=FALSE}
 t.test(CO2_immature, CO2_mature)
 ```
 
