@@ -1,0 +1,35 @@
+Team,Site_ID,Date,Dilution,TotalColiform,Ecoli
+Salix,Lab Control,,None,298.7,131.7
+Salix,Lab Control,,None,0,0
+Salix,Seal Court,,None,658.6,0
+Salix,Seal Court,,None,368.1,1
+Salix,Seal Court,,"Diluted, 1:10",79.4,0
+Salix,Seal Court,,"Diluted, 1:10",129.6,0
+Ceanothus ,Lab Control,,None,0,0
+Ceanothus ,Lab Control,,None,231,231
+Ceanothus ,Pomona Bioswale,,None,133.4,2
+Ceanothus ,Pomona Bioswale,,None,533.5,9.8
+Ceanothus ,Pomona Bioswale,,"Diluted, 1:10",870.4,2
+Ceanothus ,Pomona Bioswale,,"Diluted, 1:10",616.7,2
+Catostomus,Frank Well,2/19/25,None,378.4,3
+Catostomus,Frank Well,2/19/25,None,360.9,0
+Catostomus,Frank Well,2/19/25,"Diluted, 1:10",133.6,0
+Catostomus,Frank Well,2/19/25,"Diluted, 1:10",145.5,0
+Catostomus,Lab Control,2/19/25,None,124.3,0
+Catostomus,Lab Control,2/19/25,None,0,0
+Melozone,Lab Control,2/19/25,None,110,0
+Melozone,Lab Control,2/19/25,None,0,0
+Melozone,Seal Court,2/19/25,"Diluted, 1:10",150,0
+Melozone,Seal Court,2/19/25,"Diluted, 1:10",157.6,0
+Melozone,Seal Court,2/19/25,None,640.5,0
+Melozone,Seal Court,2/19/25,None,960.6,0
+Exilliscelis,phake lake ,2/19/25,None,665.3,0
+Exilliscelis,phake lake,2/19/25,none,467.4,0
+Exilliscelis,phake lake,2/19/25,"Diluted, 1:10",344.1,0
+Exilliscelis,phake lake,2/19/25,"Diluted, 1:10",214.2,0
+Arctostaphylos ,pHake Lake,2/18/25,,,
+Arctostaphylos ,pHake Lake,2/19/25,,,
+Arctostaphylos ,pHake Lake,2/20/25,,,
+Arctostaphylos ,pHake Lake,2/21/25,,,
+Arctostaphylos ,pHake Lake,2/22/25,,,
+Arctostaphylos ,pHake Lake,2/23/25,,,
