@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018) (preloaded format=xelatex 2023.7.1)  25 FEB 2025 20:26
+This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018) (preloaded format=xelatex 2023.7.1)  26 FEB 2025 21:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1098,9 +1098,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 *************************************************
 [3]
 Missing character: There is no α in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no α in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no ≥ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no α in font [lmroman10-regular]:mapping=tex-text;!
 
 Overfull \hbox (50.25pt too wide) in paragraph at lines 405--405
 []\TU/lmtt/m/n/10 ## alternative hypothesis: true difference in means is not eq

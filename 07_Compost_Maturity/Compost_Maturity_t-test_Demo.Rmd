@@ -136,9 +136,9 @@ t = (mean1 - mean2) / (standard error)
 
 6. Compare the p-value to the significance level (α) to make a decision:
 
-- If p < α, reject the null hypothesis and conclude that the means are significantly different.
+- If p < $\alpha$, reject the null hypothesis and conclude that the means are significantly different.
 
-- If p ≥ α, fail to reject the null hypothesis and conclude that there is no significant difference between the means.
+- If p ≥ $\alpha$, fail to reject the null hypothesis and conclude that there is no significant difference between the means.
 
 7. Using R to conduct a t-test:
 
