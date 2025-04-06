@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  5 APR 2025 21:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  6 APR 2025 12:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -843,7 +843,7 @@ e
 [1
 
 {/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}]
-<figure/Gauge_height.png, id=38, 1924.18875pt x 1585.925pt>
+<figure/Gauge_height.png, id=46, 1924.18875pt x 1585.925pt>
 File: figure/Gauge_height.png Graphic file (type png)
 <use figure/Gauge_height.png>
 Package pdftex.def Info: figure/Gauge_height.png  used on input line 128. on in
@@ -893,96 +893,98 @@ File: ts1pplj.fd 2004/09/06 font definitions for TS1/pplj.
 )
 LaTeX Font Info:    Font shape `T1/pplj/bx/n' in size <10> not available
 (Font)              Font shape `T1/pplj/b/n' tried instead on input line 138.
-<figure/Discharge.png, id=39, 2368.85pt x 1527.7075pt>
+<figure/Discharge.png, id=47, 2368.85pt x 1527.7075pt>
 File: figure/Discharge.png Graphic file (type png)
 <use figure/Discharge.png>
 Package pdftex.def Info: figure/Discharge.png  used on input line 147. on input
  line 147.
 Package pdftex.def Info: Requested size: 143.96829pt x 92.84735pt on input line
  147.
-<figure/USGS_Discharge_20250405.png, id=41, 2112.89375pt x 1455.4375pt>
+<figure/USGS_Discharge_20250405.png, id=49, 2112.89375pt x 1455.4375pt>
 File: figure/USGS_Discharge_20250405.png Graphic file (type png)
 <use figure/USGS_Discharge_20250405.png>
 Package pdftex.def Info: figure/USGS_Discharge_20250405.png  used on input line
  161. on input line 161.
 Package pdftex.def Info: Requested size: 311.98766pt x 214.90836pt on input lin
 e 161.
- [2 <./figure/Gauge_height.png (PNG copy)> <./figure/Discharge.png (PNG copy)>]
- [3 <./figure/USGS_Discharge_20250405.png (PNG copy)>]
-LaTeX Font Info:    Try loading font information for T1+fvm on input line 216.
+LaTeX Font Info:    Try loading font information for T1+fvm on input line 164.
 
 (/usr/share/texlive/texmf-dist/tex/latex/bera/t1fvm.fd
 File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
 )
 LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 8.50006pt on input line 216.
+(Font)              scaled to size 6.80005pt on input line 164.
+ [2 <./figure/Gauge_height.png (PNG copy)> <./figure/Discharge.png (PNG copy)>]
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 8.50006pt on input line 188.
+ [3 <./figure/USGS_Discharge_20250405.png (PNG copy)>]
 LaTeX Font Info:    Font shape `T1/fvm/m/it' in size <10> not available
-(Font)              Font shape `T1/fvm/m/sl' tried instead on input line 217.
+(Font)              Font shape `T1/fvm/m/sl' tried instead on input line 222.
 LaTeX Font Info:    Font shape `T1/fvm/m/sl' will be
-(Font)              scaled to size 8.50006pt on input line 217.
+(Font)              scaled to size 8.50006pt on input line 222.
 LaTeX Font Info:    Font shape `T1/fvm/bx/n' in size <10> not available
-(Font)              Font shape `T1/fvm/b/n' tried instead on input line 218.
+(Font)              Font shape `T1/fvm/b/n' tried instead on input line 223.
 LaTeX Font Info:    Font shape `T1/fvm/b/n' will be
-(Font)              scaled to size 8.50006pt on input line 218.
+(Font)              scaled to size 8.50006pt on input line 223.
 
-Overfull \hbox (30.84134pt too wide) in paragraph at lines 218--218
+Overfull \hbox (30.84134pt too wide) in paragraph at lines 223--223
 [][]\T1/fvm/b/n/10 if[] []\T1/fvm/m/n/10 ([][]![][]\T1/fvm/b/n/10 require[][]\T
 1/fvm/m/n/10 (e1071))[] []\T1/fvm/b/n/10 install.packages[][]\T1/fvm/m/n/10 ([]
 []"e1071"[][],[] []dependencies[] []=[] []TRUE[][])[][] 
  []
 
 
-Overfull \hbox (15.49023pt too wide) in paragraph at lines 226--226
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 231--231
 [][]\T1/fvm/m/n/10 discharge[] []<-[] []\T1/fvm/b/n/10 c[][]\T1/fvm/m/n/10 ([][
 ]400[][],[] []520[][],[] []610[][],[] []700[][],[] []650[][],[] []720[][],[] []
 800[][],[] []750[][],[] []680[][],[] []670[][])[][] 
  []
 
 
-Overfull \hbox (46.19244pt too wide) in paragraph at lines 236--236
+Overfull \hbox (46.19244pt too wide) in paragraph at lines 241--241
 [][]\T1/fvm/m/sl/10 # Step 4: Define return periods and calculate exceedance pr
 obabilities[][] 
  []
 
 
-Overfull \hbox (30.84134pt too wide) in paragraph at lines 238--238
+Overfull \hbox (30.84134pt too wide) in paragraph at lines 243--243
 [][]\T1/fvm/m/n/10 P[] []<-[] []1[] []-[] []1[] []/[] []T[]                    
          []\T1/fvm/m/sl/10 # Exceedance probability[][] 
  []
 
 
-Overfull \hbox (35.95837pt too wide) in paragraph at lines 239--239
+Overfull \hbox (35.95837pt too wide) in paragraph at lines 244--244
 [][]\T1/fvm/m/n/10 z[] []<-[] []\T1/fvm/b/n/10 qnorm[][]\T1/fvm/m/n/10 (P)[]   
                            []\T1/fvm/m/sl/10 # Standard normal variate[][] 
  []
 
 
-Overfull \hbox (56.42651pt too wide) in paragraph at lines 242--242
+Overfull \hbox (56.42651pt too wide) in paragraph at lines 247--247
 [][]\T1/fvm/m/n/10 K[] []<-[] []z[] []+[] []( (z[][]^[][]2[] []-[] []1[][])[] [
 ]*[] []skew_logQ )[] []/[] []6[]    []\T1/fvm/m/sl/10 # Pearson III frequency f
 actor[][] 
  []
 
 
-Overfull \hbox (66.66058pt too wide) in paragraph at lines 245--245
+Overfull \hbox (66.66058pt too wide) in paragraph at lines 250--250
 [][]\T1/fvm/m/n/10 Q_est[] []<-[] []10[][]^[][]logQ_est[]                      
 []\T1/fvm/m/sl/10 # Convert back to original scale[][] 
  []
 
 [4]
-Overfull \hbox (0.13913pt too wide) in paragraph at lines 277--277
+Overfull \hbox (0.13913pt too wide) in paragraph at lines 282--282
 []\T1/fvm/m/n/10 ## % latex table generated in R 4.2.2 by xtable 1.8-4 package[
 ] 
  []
 
 
-Overfull \hbox (15.49023pt too wide) in paragraph at lines 277--277
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 282--282
 []\T1/fvm/m/n/10 ##  & Return\_Period & Exceedance\_Prob & Discharge\_Estimate 
 \\[] 
  []
 
 [5]
-Overfull \hbox (250.87384pt too wide) in paragraph at lines 327--327
+Overfull \hbox (250.87384pt too wide) in paragraph at lines 332--332
 [][]\T1/fvm/b/n/10 barplot[][]\T1/fvm/m/n/10 (tmp[][]$[][]Discharge,[] []names.
 arg[][]=[][]\T1/fvm/b/n/10 format[][]\T1/fvm/m/n/10 (tmp[][]$[][]year,[] []"%Y"
 [][]),[] []tcl[][]=[] []-[][]0.3[][],[] []xaxt[][]=[][]"n"[][],[] []ylim[][]=[]
@@ -990,15 +992,15 @@ arg[][]=[][]\T1/fvm/b/n/10 format[][]\T1/fvm/m/n/10 (tmp[][]$[][]year,[] []"%Y"
 []""[][],[] []las[][]=[][]1[][])[][] 
  []
 
-LaTeX Font Info:    Try loading font information for TS1+fvm on input line 331.
+LaTeX Font Info:    Try loading font information for TS1+fvm on input line 336.
 
 (/usr/share/texlive/texmf-dist/tex/latex/bera/ts1fvm.fd
 File: ts1fvm.fd 2004/09/07 scalable font definitions for TS1/fvm.
 )
 LaTeX Font Info:    Font shape `TS1/fvm/m/n' will be
-(Font)              scaled to size 8.50006pt on input line 331.
+(Font)              scaled to size 8.50006pt on input line 336.
 
-Overfull \hbox (66.66058pt too wide) in paragraph at lines 331--331
+Overfull \hbox (66.66058pt too wide) in paragraph at lines 336--336
 [][]\T1/fvm/b/n/10 arrow.plot[][]\T1/fvm/m/n/10 ([][]50[][],[] []15600[][],[] [
 ]90[][],[] []12000[][],[] []arrow.ex[][]=[][]14[][],[] []length[][]=[][].1[][],
 [] []col[][]=[][]\TS1/fvm/m/n/10 '\T1/fvm/m/n/10 red\TS1/fvm/m/n/10 '[][]\T1/fv
@@ -1006,129 +1008,130 @@ m/m/n/10 ,[] []lwd[][]=[][]3[][])[][]
  []
 
 
-Overfull \hbox (15.49023pt too wide) in paragraph at lines 344--344
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 349--349
 [][]\T1/fvm/m/sl/10 # Sample annual peak discharge data (in cubic meters per se
 cond)[][] 
  []
 
 
-Overfull \hbox (15.49023pt too wide) in paragraph at lines 345--345
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 350--350
 [][]\T1/fvm/m/n/10 discharge[] []<-[] []\T1/fvm/b/n/10 c[][]\T1/fvm/m/n/10 ([][
 ]400[][],[] []520[][],[] []610[][],[] []700[][],[] []650[][],[] []720[][],[] []
 800[][],[] []750[][],[] []680[][],[] []670[][])[][] 
  []
 
 [6]
-Overfull \hbox (0.13913pt too wide) in paragraph at lines 418--418
+Overfull \hbox (0.13913pt too wide) in paragraph at lines 423--423
 []\T1/fvm/m/n/10 ## % latex table generated in R 4.2.2 by xtable 1.8-4 package[
 ] 
  []
 
 [7]
-<figure/flood_plot-1.pdf, id=88, pagebox=cropbox, 505.89pt x 505.89pt>
+<figure/flood_plot-1.pdf, id=98, pagebox=cropbox, 505.89pt x 505.89pt>
 File: figure/flood_plot-1.pdf Graphic file (type pdf)
 <use figure/flood_plot-1.pdf>
-Package pdftex.def Info: figure/flood_plot-1.pdf  used on input line 428. on in
-put line 428.
+Package pdftex.def Info: figure/flood_plot-1.pdf  used on input line 433. on in
+put line 433.
 Package pdftex.def Info: Requested size: 312.00435pt x 312.00435pt on input lin
-e 428.
+e 433.
 
-Overfull \hbox (12.00435pt too wide) in paragraph at lines 428--430
+Overfull \hbox (12.00435pt too wide) in paragraph at lines 433--435
 [][] 
  []
 
 [8 <./figure/flood_plot-1.pdf>]
-Overfull \hbox (107.59686pt too wide) in paragraph at lines 486--486
+Overfull \hbox (107.59686pt too wide) in paragraph at lines 491--491
 [][]\T1/fvm/b/n/10 plot[][]\T1/fvm/m/n/10 (annualpeak[][]$[][]peak_dt, annualpe
 ak[][]$[][]peak_va,[] []type[][]=[][]"p"[][],[] []pch[][]=[][]19[][],[] []cex[]
 []=[][].7[][],[] []col[][]=[][]"blue"[][],[][] 
  []
 
 
-Overfull \hbox (76.89465pt too wide) in paragraph at lines 487--487
+Overfull \hbox (76.89465pt too wide) in paragraph at lines 492--492
 []     []\T1/fvm/m/n/10 xlab[][]=[][]"Date"[][],[] []ylab[][]=[][]"Peak Dischar
 ge (cfs)"[][],[] []main[][]=[][]"Annual Peak Discharge"[][])[][] 
  []
 
 
-Overfull \hbox (25.7243pt too wide) in paragraph at lines 489--489
+Overfull \hbox (25.7243pt too wide) in paragraph at lines 494--494
 [][]\T1/fvm/b/n/10 legend[][]\T1/fvm/m/n/10 ([][]"topright"[][],[] []legend[][]
 =[][]\T1/fvm/b/n/10 c[][]\T1/fvm/m/n/10 ([][]"Annual Peak Discharge"[][],[] []"
 2025 Qmax"[][]),[][] 
  []
 
 
-Overfull \hbox (30.84134pt too wide) in paragraph at lines 490--490
+Overfull \hbox (30.84134pt too wide) in paragraph at lines 495--495
 []       []\T1/fvm/m/n/10 col[][]=[][]\T1/fvm/b/n/10 c[][]\T1/fvm/m/n/10 ([][]"
 blue"[][],[] []"red"[][]),[] []pch[][]=[][]\T1/fvm/b/n/10 c[][]\T1/fvm/m/n/10 (
 [][]19[][],[] []NA[][]),[] []cex[] []=[] [].7[][],[] []lty[][]=[][]\T1/fvm/b/n/
 10 c[][]\T1/fvm/m/n/10 ([][]NA[][],[] []2[][]))[][] 
  []
 
-<figure/unnamed-chunk-7-1.pdf, id=100, pagebox=cropbox, 505.89pt x 505.89pt>
+[9]
+<figure/unnamed-chunk-7-1.pdf, id=116, pagebox=cropbox, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-7-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-7-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-7-1.pdf  used on input line 493. 
-on input line 493.
+Package pdftex.def Info: figure/unnamed-chunk-7-1.pdf  used on input line 498. 
+on input line 498.
 Package pdftex.def Info: Requested size: 312.00435pt x 312.00435pt on input lin
-e 493.
+e 498.
 
-Overfull \hbox (12.00435pt too wide) in paragraph at lines 493--495
+Overfull \hbox (12.00435pt too wide) in paragraph at lines 498--500
 [][] 
  []
 
-[9]
-Overfull \hbox (66.66058pt too wide) in paragraph at lines 527--527
+
+Overfull \hbox (66.66058pt too wide) in paragraph at lines 532--532
 [][]\T1/fvm/m/n/10 period1[] []<-[][]\T1/fvm/b/n/10 subset[][]\T1/fvm/m/n/10 (a
 nnualpeak, peak_dt[][]>=[][]dt_range[[][]1[][]][] []&[] []peak_dt[][]<=[][]"201
 0-12-31"[][])[][] 
  []
 
 
-Overfull \hbox (66.66058pt too wide) in paragraph at lines 528--528
+Overfull \hbox (66.66058pt too wide) in paragraph at lines 533--533
 [][]\T1/fvm/m/n/10 period2[] []<-[][]\T1/fvm/b/n/10 subset[][]\T1/fvm/m/n/10 (a
 nnualpeak, peak_dt[][]>=[][]"2010-12-31"[] []&[] []peak_dt[][]<=[][]dt_range[[]
 []2[][]])[][] 
  []
 
 [10 <./figure/unnamed-chunk-7-1.pdf>]
-Overfull \hbox (71.77762pt too wide) in paragraph at lines 543--543
+Overfull \hbox (71.77762pt too wide) in paragraph at lines 548--548
 []     []\T1/fvm/m/n/10 col[][]=[][]"blue"[][],[] []xlab[][]=[][]"Date"[][],[] 
 []ylab[][]=[][]"Peak Discharge (cfs)"[][],[] []main[][]=[][]"Period 1"[][])[][]
  
  []
 
 
-Overfull \hbox (66.66058pt too wide) in paragraph at lines 545--545
+Overfull \hbox (66.66058pt too wide) in paragraph at lines 550--550
 []     []\T1/fvm/m/n/10 col[][]=[][]"red"[][],[] []xlab[][]=[][]"Date"[][],[] [
 ]ylab[][]=[][]"Peak Discharge (cfs)"[][],[] []main[][]=[][]"Period 2"[][])[][] 
 
  []
 
-<figure/unnamed-chunk-11-1.pdf, id=119, pagebox=cropbox, 505.89pt x 505.89pt>
+<figure/unnamed-chunk-11-1.pdf, id=129, pagebox=cropbox, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-11-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-11-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-11-1.pdf  used on input line 572.
- on input line 572.
+Package pdftex.def Info: figure/unnamed-chunk-11-1.pdf  used on input line 577.
+ on input line 577.
 Package pdftex.def Info: Requested size: 480.0061pt x 480.0061pt on input line 
-572.
+577.
 
-LaTeX Warning: Float too large for page by 68.14915pt on input line 574.
+LaTeX Warning: Float too large for page by 68.14915pt on input line 579.
 
 
-Overfull \hbox (30.84134pt too wide) in paragraph at lines 587--587
+Overfull \hbox (30.84134pt too wide) in paragraph at lines 592--592
 [][]\T1/fvm/m/sl/10 ### Locate the column of your data set that has the peak di
 scharges[][] 
  []
 
 
-Overfull \hbox (71.77762pt too wide) in paragraph at lines 588--588
+Overfull \hbox (71.77762pt too wide) in paragraph at lines 593--593
 [][]\T1/fvm/m/sl/10 ### You can see that peak discharges are stored in the 6th 
 column (peak_va)[][] 
  []
 
 
-Overfull \hbox (184.35239pt too wide) in paragraph at lines 595--595
+Overfull \hbox (184.35239pt too wide) in paragraph at lines 600--600
 [][]\T1/fvm/m/n/10 graphlab[] []=[] []\T1/fvm/b/n/10 paste[][]\T1/fvm/m/n/10 ([
 ][]\T1/fvm/b/n/10 range[][]\T1/fvm/m/n/10 ([][]\T1/fvm/b/n/10 format[][]\T1/fvm
 /m/n/10 ([][]\T1/fvm/b/n/10 as.Date[][]\T1/fvm/m/n/10 (period1[][]$[][]peak_dt,
@@ -1137,14 +1140,14 @@ Overfull \hbox (184.35239pt too wide) in paragraph at lines 595--595
  []
 
 
-Overfull \hbox (20.60727pt too wide) in paragraph at lines 618--618
+Overfull \hbox (20.60727pt too wide) in paragraph at lines 623--623
 []          []\T1/fvm/m/n/10 14[][],[][]15[][],[][]16[][],[][]17[][],[][]18[][]
 ,[][]19[][],[][]20[][],[][]25[][],[][]30[][],[][]35[][],[][]40[][],[][]45[][],[
 ][]50[][],[][]60[][],[][]70[][],[][]80[][],[][]90[][],[][]100[][])[][] 
  []
 
 
-Overfull \hbox (51.30948pt too wide) in paragraph at lines 620--620
+Overfull \hbox (51.30948pt too wide) in paragraph at lines 625--625
 []          []\T1/fvm/m/n/10 NA[][],[][]NA[][],[][]NA[][],[][]15[][],[][]NA[][]
 ,[][]NA[][],[][]NA[][],[][]NA[][],[][]20[][],[][]NA[][],[][]30[][],[][]NA[][],[
 ][]NA[][],[][]NA[][],[][]50[][],[][]NA[][],[][]NA[][],[][]NA[][],[][]NA[][],[][
@@ -1152,49 +1155,258 @@ Overfull \hbox (51.30948pt too wide) in paragraph at lines 620--620
  []
 
 
-Overfull \hbox (46.19244pt too wide) in paragraph at lines 626--626
+Overfull \hbox (46.19244pt too wide) in paragraph at lines 631--631
 [][]\T1/fvm/m/sl/10 # Fit a line by method of moments, along with 95% confidenc
 e intervals[][] 
  []
 
 [11] [12 <./figure/unnamed-chunk-11-1.pdf>]
-<figure/unnamed-chunk-13-1.pdf, id=135, pagebox=cropbox, 505.89pt x 505.89pt>
+<figure/unnamed-chunk-13-1.pdf, id=145, pagebox=cropbox, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-13-1.pdf Graphic file (type pdf)
 <use figure/unnamed-chunk-13-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-13-1.pdf  used on input line 642.
- on input line 642.
+Package pdftex.def Info: figure/unnamed-chunk-13-1.pdf  used on input line 647.
+ on input line 647.
 Package pdftex.def Info: Requested size: 480.0061pt x 480.0061pt on input line 
-642.
-<figure/WhiteRiver.png, id=136, 2871.72874pt x 1394.20876pt>
+647.
+<figure/WhiteRiver.png, id=146, 2871.72874pt x 1394.20876pt>
 File: figure/WhiteRiver.png Graphic file (type png)
 <use figure/WhiteRiver.png>
-Package pdftex.def Info: figure/WhiteRiver.png  used on input line 649. on inpu
-t line 649.
+Package pdftex.def Info: figure/WhiteRiver.png  used on input line 654. on inpu
+t line 654.
 Package pdftex.def Info: Requested size: 311.99126pt x 151.47006pt on input lin
-e 649.
- [13] [14 <./figure/unnamed-chunk-13-1.pdf>] (./Flood_Return_Inverval.bbl
+e 654.
+ [13] [14 <./figure/unnamed-chunk-13-1.pdf>] [15 <./figure/WhiteRiver.png (PNG 
+copy)>]
+Overfull \hbox (0.13913pt too wide) in paragraph at lines 685--685
+[][]\T1/fvm/m/n/10 site03287500[] []<-[] []\T1/fvm/b/n/10 getAnnualPeak.fun[][]
+\T1/fvm/m/n/10 (mysite, startDate, endDate)[][] 
+ []
+
+
+Overfull \hbox (61.54355pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##  $ site_no      : chr  "03287500" "03287500" "03287500" "03
+287500" ...[] 
+ []
+
+
+Overfull \hbox (143.4161pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##  $ peak_va      : num  41600 47800 76900 59800 76400 29600 
+57600 68000 70800 33400 ...[] 
+ []
+
+
+Overfull \hbox (61.54355pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##  $ gage_ht      : num  16.7 19 32.2 25.1 29.6 12.7 24 27 28
+.5 14.5 ...[] 
+ []
+
+
+Overfull \hbox (51.30948pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##  - attr(*, "queryTime")= POSIXct[1:1], format: "2025-04-06 
+12:58:14"[] 
+ []
+
+
+Overfull \hbox (348.0975pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##  - attr(*, "url")= chr "https://nwis.waterdata.usgs.gov/usa
+/nwis/peak/?site_no=03287500&range_selection=date_range&format=rdb"[] 
+ []
+
+
+Overfull \hbox (61.54355pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##   ..$ date                       : chr "Sun, 06 Apr 2025 19
+:58:13 GMT"[] 
+ []
+
+
+Overfull \hbox (41.07541pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##   ..$ content-type               : chr "text/plain; charset
+=UTF-8"[] 
+ []
+
+
+Overfull \hbox (445.32117pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##  - attr(*, "comment")= chr [1:72] "#" "# U.S. Geological Su
+rvey" "# National Water Information System" "# Retrieved: 2025-04-06 15:58:13 E
+DT" ...[] 
+ []
+
+
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##  - attr(*, "siteInfo")=\TS1/fvm/m/n/10 '\T1/fvm/m/n/10 data
+.frame\TS1/fvm/m/n/10 '\T1/fvm/m/n/10 : 1 obs. of  42 variables:[] 
+ []
+
+
+Overfull \hbox (92.24576pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##   ..$ station_nm           : chr "KENTUCKY RIVER AT LOCK 4 
+AT FRANKFORT, KY"[] 
+ []
+
+
+Overfull \hbox (35.95837pt too wide) in paragraph at lines 796--796
+[]\T1/fvm/m/n/10 ##   ..$ instruments_cd       : chr "NNNNYNNNNNNNNNNNNNNNNNNNN
+NNNNN"[] 
+ []
+
+[16
+
+]
+Underfull \vbox (badness 10000) detected at line 797
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 797
+ []
+
+[17]
+<figure/unnamed-chunk-17-1.pdf, id=176, pagebox=cropbox, 505.89pt x 505.89pt>
+File: figure/unnamed-chunk-17-1.pdf Graphic file (type pdf)
+<use figure/unnamed-chunk-17-1.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-17-1.pdf  used on input line 809.
+ on input line 809.
+Package pdftex.def Info: Requested size: 312.00435pt x 312.00435pt on input lin
+e 809.
+
+Overfull \hbox (12.00435pt too wide) in paragraph at lines 809--811
+[][] 
+ []
+
+[18]
+Overfull \hbox (1.06984pt too wide) in paragraph at lines 812--813
+\T1/pplj/m/n/10 based on his-toric and re-cend data. I cre-ated a "list" of two
+ dataframes, 
+ []
+
+<figure/unnamed-chunk-19-1.pdf, id=181, pagebox=cropbox, 505.89pt x 505.89pt>
+File: figure/unnamed-chunk-19-1.pdf Graphic file (type pdf)
+<use figure/unnamed-chunk-19-1.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-19-1.pdf  used on input line 838.
+ on input line 838.
+Package pdftex.def Info: Requested size: 480.0061pt x 480.0061pt on input line 
+838.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[19 <./figure/unnamed-chunk-17-1.pdf>] [20 <./figure/unnamed-chunk-19-1.pdf>]
+Overfull \hbox (41.07541pt too wide) in paragraph at lines 871--871
+[]\T1/fvm/m/n/10 ## getAnnualPeak.fun <- function (site, startDate = "", endDat
+e = "")[] 
+ []
+
+
+Overfull \hbox (25.7243pt too wide) in paragraph at lines 871--871
+[]\T1/fvm/m/n/10 ##     annualpeak = annualpeak[complete.cases(annualpeak$peak_
+va),[] 
+ []
+
+
+Overfull \hbox (25.7243pt too wide) in paragraph at lines 871--871
+[]\T1/fvm/m/n/10 ##     annualpeak = annualpeak[complete.cases(annualpeak$peak_
+dt),[] 
+ []
+
+
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##     graphlab = paste(range(format(as.Date(annualpeak$peak_d
+t,[] 
+ []
+
+
+Overfull \hbox (10.3732pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##     Ttick = c(1.001, 1.01, 1.1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9
+,[] 
+ []
+
+
+Overfull \hbox (25.7243pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##         10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30,
+ 35,[] 
+ []
+
+
+Overfull \hbox (20.60727pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##     xtlab = c(1.001, 1.01, 1.1, 1.5, 2, NA, NA, 5, NA, NA, 
+NA,[] 
+ []
+
+
+Overfull \hbox (25.7243pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##         NA, 10, NA, NA, NA, NA, 15, NA, NA, NA, NA, 20, NA,
+ 30,[] 
+ []
+
+
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##     KTtick = -(sqrt(6)/pi) * (0.5772 + log(log(Ttick/(Ttick
+ -[] 
+ []
+
+
+Overfull \hbox (61.54355pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##     se = (sd(Q) * sqrt((1 + 1.14 * KTtick + 1.1 * KTtick^2)
+))/sqrt(nQ)[] 
+ []
+
+
+Overfull \hbox (66.66058pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##     plot(y, Q, ylab = expression("Annual Peak Flow (cfs)"),
+ xaxt = "n",[] 
+ []
+
+
+Overfull \hbox (46.19244pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##         xlab = "Return Period, T (year)", ylim = c(0, va_ra
+nge[2]),[] 
+ []
+
+
+Overfull \hbox (92.24576pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##         xlim = c(xmin, xmax), pch = 21, bg = "orange", main
+ = paste(site_no,[] 
+ []
+
+
+Overfull \hbox (10.3732pt too wide) in paragraph at lines 949--949
+[]\T1/fvm/m/n/10 ##     abline(h = seq(0, va_range[2], length.out = 6), lty = 3
+,[] 
+ []
+
+[21
+
+]
+Underfull \vbox (badness 10000) detected at line 950
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 950
+ []
+
+[22] Excluding 'comment' comment. Excluding 'comment' comment. [23]
+(./Flood_Return_Inverval.bbl
 
 Package natbib Warning: Empty `thebibliography' environment on input line 3.
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 663.
- [15 <./figure/WhiteRiver.png (PNG copy)>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 663.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1047.
+ [24]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1047.
  (./Flood_Return_Inverval.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 663.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 663.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1047.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1047.
+
 Package rerunfilecheck Info: File `Flood_Return_Inverval.out' has not changed.
-(rerunfilecheck)             Checksum: 92A0FBAE79928721E0DEB810B0C855FE;995.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 663.
+(rerunfilecheck)             Checksum: 90D20C431F4A23D1997B7797CCE3D248;1455.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1047.
  ) 
 Here is how much of TeX's memory you used:
- 14118 strings out of 494917
- 198469 string characters out of 6180699
- 313124 words of memory out of 5000000
- 17063 multiletter control sequences out of 15000+600000
- 52986 words of font info for 90 fonts, out of 8000000 for 9000
+ 14160 strings out of 494917
+ 199182 string characters out of 6180699
+ 324558 words of memory out of 5000000
+ 17087 multiletter control sequences out of 15000+600000
+ 57840 words of font info for 103 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 45i,11n,45p,729b,445s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 45i,12n,45p,729b,571s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
@@ -1207,10 +1419,10 @@ e/texmf-dist/fonts/type1/public/bera/fvmro8a.pfb></usr/share/texlive/texmf-dist
 /fonts/type1/urw/palatino/uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /urw/palatino/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatin
 o/uplri8a.pfb>
-Output written on Flood_Return_Inverval.pdf (15 pages, 8372471 bytes).
+Output written on Flood_Return_Inverval.pdf (24 pages, 8410613 bytes).
 PDF statistics:
- 209 PDF objects out of 1000 (max. 8388607)
- 166 compressed objects within 2 object streams
- 42 named destinations out of 1000 (max. 500000)
- 1113 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 277 PDF objects out of 1000 (max. 8388607)
+ 220 compressed objects within 3 object streams
+ 56 named destinations out of 1000 (max. 500000)
+ 1139 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -35,7 +35,7 @@
 
 \title{Flood Interval Analysis}
 \author{EA030}
-\date{\today~ver. 0.12}
+\date{\today~ver. 0.32}
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 % \graphicspath{{graphics/}}
 
@@ -59,9 +59,18 @@ This handout provides an overview of hydrology, focusing on the USGS streamgagin
 \end{abstract}
 
 % Setting up the margins, etc for R
-<<echo = FALSE, results = "hide">>=
+<<echo = FALSE, results = "hide", message=FALSE>>=
 options(width=60)
 # rm(list = ls())
+library(here)
+source(here("11_Flood_Return_Interval", "return_interval_functions.R"))
+
+pretty <- function(fun){
+    captured <- capture.output(fun)
+    captured[1] <- paste(as.character(substitute(fun)), "<-", captured[1])
+
+    cat(paste(captured, collapse="\n"))
+}
 @
 
 \section{Hydrology Basics}
@@ -114,7 +123,7 @@ Return periods are used in engineering and environmental planning. Civil enginee
 \begin{figure}
 	\centering
 		\includegraphics[width=1.00\textwidth]{figure/USGS_Discharge_20250405.png}
-		\caption{USGS National Water Dashboard -- Realtime Streamflow, April 5, 2025. Back dots signinify highest discharge on record as of access date. Open pink circles signify flood risks.}
+		\caption{USGS National Water Dashboard -- Realtime Streamflow, April 5, 2025. Back dots signinify highest discharge on record as of access date. Open pink circles signify flood risks. Source: \url{https://dashboard.waterdata.usgs.gov/app/nwd/en/}.}
 	\label{fig:USGS_Discharge_20250405}
 \end{figure}
 
@@ -139,6 +148,11 @@ T = \frac{n + 1}{m}
 \end{itemize*}
 
 This method does not assume any underlying distribution.
+
+\begin{verbatim}
+# test implementaton in R --- TBA
+
+\end{verbatim}
 
 \subsection{2. Gumbel Distribution (Extreme Value Type I)}
 
@@ -338,7 +352,7 @@ mysite <- "07061000"
 startDate = ""
 endDate = ""
 annualpeak<-readNWISpeak(mysite, startDate, endDate)
-Qmax_2025 = 179000 #4/5/2025 11 CDT
+Qmax_2025 = 180000 #4/5/2025 11 CDT
 
 names(annualpeak)[1:5]
 @
@@ -551,6 +565,231 @@ abline(h=Qmax_2025, lty=3, lwd=2, col="red")
 	\label{fig:White River}
 \end{figure}
 
+\clearpage
+\section{Using Functions to Plot Flood Return Intervals}
+
+We have three functions prepared for today's activities -- which is partially 
+based on the current flooding situation in the US. 
+
+First, we define a site based on the USGS gage number. 
+
+<<>>=
+mysite <- "03287500"
+startDate = ""
+endDate = ""
+Qmax_2025 = 113000 #4/6/2025 1 pm CDT
+splitdate = "2000-01-01"
+@
+
+Using a function, we'll create a data frame with the site number in the name
+so we can track the file easier. 
+
+<<>>=
+site03287500 <- getAnnualPeak.fun(mysite, startDate, endDate)
+@ 
+
+As always, let's check the data frame to make sure it looks correct.
+
+<<>>=
+head(site03287500)
+str(site03287500)
+@
+
+Now let's see what the flood return interval looks like for the flooding this week. 
+
+<<>>=
+par(mfrow=c(1,1))
+plot_floodreturn.fun(site03287500, Qmax_2025)
+@
+
+Finally, we'll split the data and look at how the record changes based on historic and recend data. I created a "list" of two dataframes, but then had to separate them so they would work with my function. See if you can spot the problem with this when you look at the y-axis.
+
+<<>>=
+# Split Data
+periodlist = splitdata.fun(site03287500, splitdate)
+period1 = periodlist[[1]]
+period2 = periodlist[[2]]
+@
+
+We often use plotted data to evaluate the flood risk, relative to the record. In 
+each case, we can determine the relative severity of flood based on the historic
+record and relative to potential changes in landuse.
+
+\begin{verbatim}
+plot_floodreturn.fun(period1, Qmax_2025)
+plot_floodreturn.fun(period2, Qmax_2025)
+\end{verbatim}
+
+\begin{figure*}[h]
+%<<out.height='2in', out.width='4in'>>=
+<<echo=FALSE>>=
+par(mfrow=c(1,2))
+plot_floodreturn.fun(period1, Qmax_2025)
+plot_floodreturn.fun(period2, Qmax_2025)
+@
+\end{figure*}
+
+\clearpage
+
+\section{Guide Function Details}
+
+\subsection{Get Annual Peak Flow Data Function}
+
+This function retrieves annual peak flow data from the USGS NWIS database. It requires the USGS gage number as input and can optionally take start and end dates to filter the data. The function returns a data frame containing the annual peak flow data.
+
+The function also removes any rows with missing values in the peak flow or date columns to ensure that the data is clean and ready for analysis.
+
+usage: (getAnnualPeak.fun(site, startDate=``'', endDate=``'')
+
+Site is the USGS gage number, startDate and endDate are optional arguments. If not provided, the function will return all available data.
+
+<<show_getAnnualPeak.fun, echo=FALSE>>=
+pretty(getAnnualPeak.fun)
+@
+
+
+<<echo=FALSE, eval=FALSE>>=
+getAnnualPeak.fun<- function(site, startDate="", endDate=""){
+  # Load required libraries
+  library(dataRetrieval)
+  library(ggplot2)
+  suppressMessages(library(dplyr))
+  
+    annualpeak <- readNWISpeak(site, startDate, endDate)
+    annualpeak = annualpeak[complete.cases(annualpeak$peak_va),]
+    annualpeak = annualpeak[complete.cases(annualpeak$peak_dt),]
+  return(annualpeak)
+  }
+@ 
+
+\subsection{Split Data Function}
+
+<<>>=
+splitdata.fun<- function(annualpeak, splitdate){
+  
+    period1 = annualpeak[annualpeak$peak_dt < splitdate,]
+    period2 = annualpeak[annualpeak$peak_dt >= splitdate,]
+    periodlist = list(period1, period2)
+  return(periodlist)
+}
+@
+
+\subsection{Plot Flood Return Interval }
+
+
+usage: (plot\_floodreturn.fun(annualpeak.df, Q\_max)
+
+
+
+<<show_plot_floodreturn.fun, echo=FALSE>>=
+pretty(plot_floodreturn.fun)
+@
+
+\begin{comment}
+<<>>=
+
+# Function to Plot Return Interval
+
+plot_floodreturn.fun <- function(annualpeak, Qmax_2025){
+  
+graphlab = paste(range(format(as.Date(
+  annualpeak$peak_dt, format="%d/%m/%Y"),"%Y")), 
+  collapse = "-")
+
+Q = annualpeak$peak_va
+va_range = range(annualpeak$peak_va)
+site_no = annualpeak$site_no[1]
+
+#Generate plotting positions
+n = length(Q)
+r = n + 1 - rank(Q)  # highest Q has rank r = 1
+T = (n + 1)/r
+
+# Set up x axis tick positions and labels
+Ttick = c(1.001,1.01,1.1,1.5,2,3,4,5,6,7,8,9,10,11,12,13,14,
+          15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100)
+xtlab = c(1.001,1.01,1.1,1.5,2,NA,NA,5,NA,NA,NA,NA,10,NA,NA,
+          NA,NA,15,NA,NA,NA,NA,20,NA,30,NA,NA,NA,50,NA,NA,NA,NA,100)
+y = -log(-log(1 - 1/T))
+ytick = -log(-log(1 - 1/Ttick))
+xmin = min(min(y),min(ytick))
+xmax = max(ytick)
+
+# Fit a line by method of moments, along with 95% confidence intervals
+KTtick = -(sqrt(6)/pi)*(0.5772 + log(log(Ttick/(Ttick-1))))
+QTtick = mean(Q) + KTtick*sd(Q) 
+nQ = length(Q)
+se = (sd(Q)*sqrt((1+1.14*KTtick + 1.1*KTtick^2)))/sqrt(nQ) 
+LB = QTtick - qt(0.975, nQ - 1)*se
+UB = QTtick + qt(0.975, nQ - 1)*se
+max = max(UB)
+Qmax = max(QTtick)
+
+
+# Plot peak flow series with Gumbel axis
+plot(y, Q,
+     ylab = expression( "Annual Peak Flow (cfs)" ) ,
+     xaxt = "n", xlab = "Return Period, T (year)",
+     ylim = c(0, va_range[2]),
+     xlim = c(xmin, xmax),
+     pch = 21, bg = "orange",
+     main = paste(site_no, graphlab)
+)  
+par(cex = 0.65)
+axis(1, at = ytick, labels = as.character(xtlab))
+
+# Add fitted line and confidence limits
+lines(ytick, QTtick, col = "black", lty=1, lwd=2)  
+lines(ytick, LB, col = "blue", lty = 1, lwd=1.5)
+lines(ytick, UB, col = "red", lty = 1, lwd=1.5)  
+
+# Draw grid lines
+abline(v = ytick, lty = 3, col="light gray")             
+abline(h = seq(0, va_range[2], length.out=6), lty = 3,col="light gray") 
+par(cex = 1)
+
+abline(h=Qmax_2025, lty=3, lwd=2, col="red")
+}
+
+
+
+@
+
+\end{comment}
+
+
+
+
+
+
+\begin{comment}
+
+\subsection{Create a function to calculate the Gumbel distribution}
+
+<<echo=FALSE, eval=FALSE>>=
+# Create a function to calculate the Gumbel distribution
+gumbel <- function(x, mu, beta) {
+  return(1 - exp(-exp(-(x - mu)/beta)))
+}
+  
+# Create a function to calculate the Gumbel distribution with a threshold
+gumbel_threshold <- function(x, mu, beta, threshold) {
+  return(1 - exp(-exp(-(x - mu)/beta)) * (x > threshold))
+}
+
+# Create a function to calculate the Gumbel distribution with a threshold and return period
+gumbel_return_period <- function(x, mu, beta, threshold, T) {
+  return(1 - exp(-exp(-(x - mu)/beta)) * (x > threshold) * (T > 1))
+}
+\subsection{Create a function to calculate the Gumbel distribution with a threshold and return period}
+<<echo=FALSE>>=
+# Create a function to calculate the Gumbel distribution with a threshold and return period
+gumbel_return_period <- function(x, mu, beta, threshold, T) {
+  return(1 - exp(-exp(-(x - mu)/beta)) * (x > threshold) * (T > 1))
+}
+@
+
+\end{comment}
 
 \newpage
 \addcontentsline{toc}{section}{References}
