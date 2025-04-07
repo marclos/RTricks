@@ -103,7 +103,7 @@
 \begin{frame}{Analysis Steps}
     \begin{itemize}
         \item Select Site from USGS database.
-        \item Download peak flow data (make sure it has a long record, +30 years.
+        \item Make sure it has a long record, +30 years.
         \item Create new folder in Rstudio Server
         \item Upload data to R
         \item Download marc's R functions from github.com
@@ -112,14 +112,19 @@
 \end{frame}
 
 
-\begin{frame}{Analysis Steps}
+\begin{frame}[fragile]{Analysis Steps}
     \begin{itemize}
-        \item Create Rmd File
+        \item Create Rmd File -- type all your code into the Rdm file!
         \item get path for R functions
-        \item Add R block with source("path/return\_interval\_functions.R")
-        \item define station ID, dates, peak flow for 2025
+        \item Add R block that includes
+    \begin{verbatim}
+    source("path/return_interval_functions.R")
+    \end{verbatim}
+        \item assign mysite (use quotes!)
+        \item assign Q\_max (as highest peak flow of interest in 2025
         \item obtain peak flow data using function
-        \item plot (if time, split data and plot)
+        \item plot the data using function
+        \item if time, split data and plot two time frames
     \end{itemize}
 \end{frame}
 
