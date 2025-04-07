@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  6 APR 2025 17:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  7 APR 2025 09:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1238,104 +1238,96 @@ dt),[]
  []
 
 
-Overfull \hbox (0.13913pt too wide) in paragraph at lines 805--805
+Overfull \hbox (0.13913pt too wide) in paragraph at lines 810--810
 []\T1/fvm/m/n/10 ##     period1 = annualpeak[annualpeak$peak_dt < splitdate, ][
 ] 
  []
 
 
-Overfull \hbox (5.25616pt too wide) in paragraph at lines 805--805
+Overfull \hbox (5.25616pt too wide) in paragraph at lines 810--810
 []\T1/fvm/m/n/10 ##     period2 = annualpeak[annualpeak$peak_dt >= splitdate, ]
 [] 
- []
-
-
-Overfull \hbox (15.49023pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##     graphlab = paste(range(format(as.Date(annualpeak$peak_d
-t,[] 
- []
-
-
-Overfull \hbox (10.3732pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##     Ttick = c(1.001, 1.01, 1.1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9
-,[] 
- []
-
-
-Overfull \hbox (25.7243pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##         10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30,
- 35,[] 
- []
-
-
-Overfull \hbox (20.60727pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##     xtlab = c(1.001, 1.01, 1.1, 1.5, 2, NA, NA, 5, NA, NA, 
-NA,[] 
- []
-
-
-Overfull \hbox (25.7243pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##         NA, 10, NA, NA, NA, NA, 15, NA, NA, NA, NA, 20, NA,
- 30,[] 
- []
-
-
-Overfull \hbox (15.49023pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##     KTtick = -(sqrt(6)/pi) * (0.5772 + log(log(Ttick/(Ttick
- -[] 
- []
-
-
-Overfull \hbox (61.54355pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##     se = (sd(Q) * sqrt((1 + 1.14 * KTtick + 1.1 * KTtick^2)
-))/sqrt(nQ)[] 
- []
-
-
-Overfull \hbox (66.66058pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##     plot(y, Q, ylab = expression("Annual Peak Flow (cfs)"),
- xaxt = "n",[] 
- []
-
-
-Overfull \hbox (46.19244pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##         xlab = "Return Period, T (year)", ylim = c(0, va_ra
-nge[2]),[] 
- []
-
-
-Overfull \hbox (92.24576pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##         xlim = c(xmin, xmax), pch = 21, bg = "orange", main
- = paste(site_no,[] 
- []
-
-
-Overfull \hbox (10.3732pt too wide) in paragraph at lines 862--862
-[]\T1/fvm/m/n/10 ##     abline(h = seq(0, va_range[2], length.out = 6), lty = 3
-,[] 
  []
 
 [18
 
 ]
-Underfull \vbox (badness 10000) detected at line 863
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##     graphlab = paste(range(format(as.Date(annualpeak$peak_d
+t,[] 
  []
 
 
-Underfull \vbox (badness 10000) detected at line 863
+Overfull \hbox (10.3732pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##     Ttick = c(1.001, 1.01, 1.1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9
+,[] 
+ []
+
+
+Overfull \hbox (25.7243pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##         10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30,
+ 35,[] 
+ []
+
+
+Overfull \hbox (20.60727pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##     xtlab = c(1.001, 1.01, 1.1, 1.5, 2, NA, NA, 5, NA, NA, 
+NA,[] 
+ []
+
+
+Overfull \hbox (25.7243pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##         NA, 10, NA, NA, NA, NA, 15, NA, NA, NA, NA, 20, NA,
+ 30,[] 
+ []
+
+
+Overfull \hbox (15.49023pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##     KTtick = -(sqrt(6)/pi) * (0.5772 + log(log(Ttick/(Ttick
+ -[] 
+ []
+
+
+Overfull \hbox (61.54355pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##     se = (sd(Q) * sqrt((1 + 1.14 * KTtick + 1.1 * KTtick^2)
+))/sqrt(nQ)[] 
+ []
+
+
+Overfull \hbox (66.66058pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##     plot(y, Q, ylab = expression("Annual Peak Flow (cfs)"),
+ xaxt = "n",[] 
+ []
+
+
+Overfull \hbox (46.19244pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##         xlab = "Return Period, T (year)", ylim = c(0, va_ra
+nge[2]),[] 
+ []
+
+
+Overfull \hbox (92.24576pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##         xlim = c(xmin, xmax), pch = 21, bg = "orange", main
+ = paste(site_no,[] 
+ []
+
+
+Overfull \hbox (10.3732pt too wide) in paragraph at lines 872--872
+[]\T1/fvm/m/n/10 ##     abline(h = seq(0, va_range[2], length.out = 6), lty = 3
+,[] 
  []
 
 [19] Excluding 'comment' comment. Excluding 'comment' comment. [20]
 (./Flood_Return_Inverval.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 960.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 970.
  [21]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 960.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 970.
  (./Flood_Return_Inverval.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 960.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 960.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 970.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 970.
 Package rerunfilecheck Info: File `Flood_Return_Inverval.out' has not changed.
 (rerunfilecheck)             Checksum: 1A30FC9F9F0A37E70BEA6CBBE41DDF56;1249.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 960.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 970.
  ) 
 Here is how much of TeX's memory you used:
  14203 strings out of 494917
@@ -1357,7 +1349,7 @@ e/texmf-dist/fonts/type1/public/bera/fvmro8a.pfb></usr/share/texlive/texmf-dist
 /fonts/type1/urw/palatino/uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /urw/palatino/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatin
 o/uplri8a.pfb>
-Output written on Flood_Return_Inverval.pdf (21 pages, 8524816 bytes).
+Output written on Flood_Return_Inverval.pdf (21 pages, 8526034 bytes).
 PDF statistics:
  289 PDF objects out of 1000 (max. 8388607)
  231 compressed objects within 3 object streams
