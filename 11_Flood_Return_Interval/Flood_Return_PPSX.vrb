@@ -1,0 +1,14 @@
+\frametitle{Analysis Steps}
+\begin{itemize}
+        \item Create Rmd File -- type all your code into the Rdm file!
+        \item get path for R functions
+        \item Add R block that includes
+    \begin{verbatim}
+    source("path/return_interval_functions.R")
+    \end{verbatim}
+        \item assign mysite (use quotes!)
+        \item assign Q\_max (as highest peak flow of interest in 2025
+        \item obtain peak flow data using function
+        \item plot the data using function
+        \item if time, split data and plot two time frames
+    \end{itemize}
