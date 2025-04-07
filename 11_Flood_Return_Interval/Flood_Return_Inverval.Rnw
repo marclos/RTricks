@@ -35,7 +35,7 @@
 
 \title{Flood Frequncy Analysis}
 \author{EA030}
-\date{\today~ver. 0.42}
+\date{\today~ver. 0.48}
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 % \graphicspath{{graphics/}}
 
@@ -702,17 +702,27 @@ getAnnualPeak.fun<- function(site, startDate="", endDate=""){
 
 \subsection{Split Data Function}
 
+The annual peak data frame is the output from the getAnnualPeak function. The splitdate is a string in the format ``YYYY-MM-DD'' that indicates the date to split the data.
+
+The function splits the data into two periods: one before the split date and one after. It returns a list containing two data frames, each representing the respective period.
 
 \textbf{usage:} periodlist <- function(annualpeak, splitdate)
+
+The function takes the annual peak data frame and the split date as input. It returns a list containing two data frames, each representing the respective period.
 
 <<show_splitdata.fun, echo=FALSE>>=
 pretty(splitdata.fun)
 @
 
-\subsection{Plot Flood Return Interval }
+\subsection{Plot Flood Return Interval}
 
+The plot\_floodreturn function takes the annual peak data frame and a maximum flow value for this year (Qmax\_2025) as input. It generates a plot showing the flood return interval based on the annual peak flow data. The function calculates the plotting positions, return intervals, and confidence limits for the fitted line.
+
+The function also includes options for customizing the plot, such as setting the x-axis and y-axis limits, adding grid lines, and drawing confidence intervals. 
 
 \textbf{usage:} (plot\_floodreturn.fun(annualpeak.df, Q\_max)
+
+The function takes the annual peak data frame and the maximum flow value (Qmax\_2025) as input. It generates a plot showing the flood return interval based on the annual peak flow data. 
 
 <<show_plot_floodreturn.fun, echo=FALSE>>=
 pretty(plot_floodreturn.fun)

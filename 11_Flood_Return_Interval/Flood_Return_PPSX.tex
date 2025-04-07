@@ -1,0 +1,126 @@
+\documentclass{beamer}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\title{Flood Return Interval Analysis}
+\author{EA30}
+\date{\today}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Introduction}
+\begin{itemize}
+\item Flood return interval analysis is used in hydrology to estimate the likelihood of flood events.
+\item It helps in infrastructure planning, risk assessment, and environmental studies.
+\item Based on statistical analysis of historical flood data
+\item Key concepts include return period, annual exceedance probability, and plotting position.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Key Definitions}
+\begin{itemize}
+\item \textbf{Return Period (T):} The average interval of time between floods of a certain magnitude or greater.
+\item \textbf{Annual Exceedance Probability (AEP):} The probability that a flood of a certain magnitude will be equaled or exceeded in any given year.
+\end{itemize}
+\vspace{0.5cm}
+\[
+  T = \frac{1}{P}
+  \quad \text{or} \quad
+  P = \frac{1}{T}
+  \]
+\end{frame}
+
+\begin{frame}{Data Requirements}
+\begin{itemize}
+\item Annual peak discharge data for a river or stream.
+\item Data should span multiple decades for reliable analysis.
+\item Quality control and consistency checks are essential.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Plotting Position Formula}
+\begin{itemize}
+\item Used to estimate return periods from ranked data.
+\item Common formula: \textbf{Weibull's Formula}
+        \[
+        T = \frac{n+1}{m}
+        \]
+        where:
+        \begin{itemize}
+            \item $n$ = number of years of record
+            \item $m$ = rank of the flood (1 = highest)
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Example Calculation}
+    \begin{itemize}
+        \item 10 years of peak discharge data
+        \item Rank the largest flood (m=1)
+        \item Return period: 
+        \[
+        T = \frac{10 + 1}{1} = 11 \text{ years}
+        \]
+        \item This flood has a 1 in 11 chance (9.1\%) of occurring each year.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Limitations}
+    \begin{itemize}
+        \item Assumes stationarity (climate does not change over time).
+        \item Sensitive to outliers and record length.
+        \item Doesn't predict exact timing, only probability.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Applications}
+    \begin{itemize}
+        \item Designing bridges, culverts, and levees.
+        \item Floodplain zoning and insurance.
+        \item Climate change impact studies.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+    \begin{itemize}
+        \item Flood return interval analysis is a critical tool in hydrology.
+        \item Helps quantify flood risk based on historical data.
+        \item Should be combined with modern models and climate data for future projections.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{References}
+    \begin{itemize}
+        \item Chow, V.T., Maidment, D.R., and Mays, L.W. (1988). \textit{Applied Hydrology}.
+        \item USGS Water Resources: \url{https://water.usgs.gov/}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Analysis Steps}
+    \begin{itemize}
+        \item Select Site from USGS database.
+        \item Download peak flow data (make sure it has a long record, +30 years.
+        \item Create new folder in Rstudio Server
+        \item Upload data to R
+        \item Download marc's R functions from github.com
+        \item Upload marc's R script functions to Rstudio
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Analysis Steps}
+    \begin{itemize}
+        \item Create Rmd File
+        \item get path for R functions
+        \item Add R block with source("path/return\_interval\_functions.R")
+        \item define station ID, dates, peak flow for 2025
+        \item obtain peak flow data using function
+        \item plot (if time, split data and plot)
+    \end{itemize}
+\end{frame}
+
+\end{document}
