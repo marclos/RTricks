@@ -1,0 +1,989 @@
+\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+%\geometry{showframe}% for debugging purposes -- displays the margins
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, linktocpage}
+\usepackage{multicol}
+\usepackage{comment}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{booktabs}
+
+\newenvironment{itemize*}%
+  {\begin{itemize}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{itemize}}
+	
+\newenvironment{enumerate*}%
+  {\begin{enumerate}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{enumerate}}
+	
+	\newenvironment{description*}%
+  {\begin{description}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{description}}
+
+
+\title{Flood Frequncy Analysis}
+\author{EA030}
+\date{\today~ver. 0.78}
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+% \graphicspath{{graphics/}}
+
+
+
+% \SweaveOpts{prefix.string=graphics/plot} % Created a "graphics" subdirectory to 
+
+\setsidenotefont{\color{blue}}
+% \setcaptionfont{hfont commandsi}
+% \setmarginnotefont{\color{blue}}
+% \setcitationfont{\color{gray}}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle% this prints the handout title, author, and date
+\begin{abstract}
+\noindent 
+This handout provides an overview of hydrology, focusing on the USGS streamgaging network and the analysis of flood intervals. It covers the basics of hydrology, the significance of stream flow hydrographs, and the concept of flood return intervals. The handout also includes practical examples and visualizations to illustrate these concepts.
+\end{abstract}
+
+% Setting up the margins, etc for R
+
+
+\section{Hydrology Basics}
+
+Hydrology is the scientific study of the movement, distribution, and quality of water on Earth. Its roots trace back to ancient civilizations such as Mesopotamia, Egypt, India, and China, where early societies managed water for agriculture, transportation, and flood control using observational knowledge and basic engineering like canals and embankments.
+
+Hydrology began to formalize as a science in the 17th and 18th centuries with pioneers like Pierre Perrault and Edmund Halley, who quantified rainfall and streamflow. By the 19th century, the rise of civil engineering demanded more precise understanding of water systems for designing infrastructure. Today, hydrology is an interdisciplinary field integrating tools like GIS, remote sensing, and computer models to address modern challenges such as flood risk, water security, and climate change.
+
+NOTE: Need to add a discussion of stationarity \citep{merz2021causes,shao2024research, pielke2009collateral}.
+
+\subsection{USGS Stations and Methods}
+
+The United States Geological Survey (USGS) plays a central role in monitoring water resources across the country. As part of its mission to provide impartial scientific information about the natural environment, the USGS operates one of the world’s most extensive and long-standing networks of streamgages, which are used to monitor river and streamflow conditions in real time.
+
+The USGS streamgaging network consists of over 10,000 active stations located throughout the United States, including Alaska, Hawaii, and U.S. territories. These stations collect continuous data on stream discharge, stage (water height), temperature, and sometimes sediment or water quality. Many stations transmit data via satellite or radio every 15 to 60 minutes, making real-time information publicly available through the USGS National Water Information System (NWIS).
+
+This network supports a wide range of applications, including flood forecasting, drought monitoring, water resource management, ecological studies, infrastructure design, and emergency response. Federal, state, and local agencies, as well as private sector users and researchers, rely heavily on USGS data for planning and decision-making.
+
+%# https://waterdata.usgs.gov/nwis/measurements?site_no=03287500&agency_cd=USGS&format=rdb
+
+\begin{marginfigure}
+	\centering
+		\includegraphics[width=1.00\textwidth]{figure/Gauge_height.png}
+		\caption{Gauge Height}
+	\label{fig:gauge_ht}
+\end{marginfigure}
+
+\subsection{Stream Flow (Discharge) Hydrograph}
+
+A hydrograph displays how river discharge responds to a rainfall event. Its key components include:
+
+\begin{itemize}
+  \item \textbf{Rising Limb:} The initial increase in discharge as rainfall runoff enters the river system.
+  \item \textbf{Peak Discharge:} The maximum flow rate reached during the event, often corresponding to flood risk.
+  \item \textbf{Lag Time:} The delay between peak rainfall and peak discharge, influenced by land use and basin characteristics.
+  \item \textbf{Falling Limb:} The decline in flow as water drains away and returns to normal levels.
+  \item \textbf{Base Flow:} The underlying groundwater-fed flow present before and after the storm.
+\end{itemize}
+
+\begin{marginfigure}
+	\centering
+		\includegraphics[width=1.00\textwidth]{figure/Discharge.png}
+		\caption{Discharge (cubic feet per second) at USGS streamgage 03295890, Brashears Creek at Taylorsville, KY. The hydrograph shows the response of streamflow to a rainfall event on April 5, 2025. The rising limb indicates increasing discharge as runoff enters the river system, while the peak discharge represents the maximum flow rate reached during the event. The falling limb shows the decline in flow as water drains away and returns to normal levels. Base flow is the underlying groundwater-fed flow present before and after the storm. The gauge height is also shown in Figure \ref{fig:gauge_ht}.}
+	\label{fig:discharge}
+\end{marginfigure}
+
+
+\subsection{Flood Return Interval}
+
+Flood intervals, also known as return periods, estimate how often extreme flood events are likely to occur. These estimates are critical for evaluating flood risk and informing infrastructure design, emergency planning, and land-use decisions. By understanding flood frequency, communities can build safer systems and reduce vulnerability to damaging events.
+
+Return periods are used in engineering and environmental planning. Civil engineers design infrastructure like bridges and dams based on specific flood intervals (e.g., 100-year floods). Urban planners and insurance programs such as FEMA's National Flood Insurance Program use them to guide development and define hazard zones. Scientists also apply flood interval data to study ecosystems and assess climate-related changes in flood behavior.
+
+\begin{figure}
+	\centering
+		\includegraphics[width=1.00\textwidth]{figure/USGS_Discharge_20250405.png}
+		\caption{USGS National Water Dashboard -- Realtime Streamflow, April 5, 2025. Back dots signinify highest discharge on record as of access date. Open pink circles signify flood risks. Source: \url{https://dashboard.waterdata.usgs.gov/app/nwd/en/}.}
+	\label{fig:USGS_Discharge_20250405}
+\end{figure}
+
+Broadly speaking, flood frequency analysis (FFA) can be conducted using two main approaches based on the assumed behavior of floods over time: stationary FFA (S-FFA) and nonstationary FFA (NS-FFA). In S-FFA, flood events are typically assumed to be independent and identically distributed (i.i.d.), implying that they originate from a stationary stochastic process. This assumption entails that the statistical properties of flood extremes—such as mean, variance, and distribution—remain constant over time \citep{villarini2009flood}. However, mounting evidence suggests that this assumption may no longer hold due to various anthropogenic and environmental factors, including climate change \citep{milly2008stationarity}, land use and land cover changes, and alterations in water infrastructure and management practices such as dam operations \citep{merz2012hess}. These dynamic influences necessitate the adoption of NS-FFA approaches, which allow the statistical characteristics of floods to vary over time in response to covariates.
+
+\section{Methods for Estimating Flood Intervals}
+
+There are several methods used in hydrology to estimate flood intervals or return periods. These methods vary in complexity and applicability depending on the available data and purpose. Below are some of the most common approaches:
+
+\subsection{1. Empirical Method (Plotting Position Formula)}
+
+This is the simplest method and involves ranking annual peak discharges and applying a plotting position, where the return period \( T \) is defined as:
+
+\[
+T = \frac{n + 1}{m}
+\]
+
+
+\noindent where:
+\begin{itemize*}
+  \item \( n \) is the number of years of data
+  \item \( m \) is the rank (1 = largest)
+\end{itemize*}
+
+This method does not assume any underlying distribution.
+
+\newthought{R Code Example}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Below is an R code chunk that demonstrates how to }
+\hlcom{# calculate flood intervals using annual peak discharge data.}
+
+\hlcom{# Sample annual peak discharge data (in cubic meters per second)}
+\hlstd{discharge} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{400}\hlstd{,} \hlnum{520}\hlstd{,} \hlnum{610}\hlstd{,} \hlnum{700}\hlstd{,} \hlnum{650}\hlstd{,} \hlnum{720}\hlstd{,} \hlnum{800}\hlstd{,} \hlnum{750}\hlstd{,} \hlnum{680}\hlstd{,} \hlnum{670}\hlstd{)}
+
+\hlcom{# Sort in descending order}
+\hlstd{sorted_discharge} \hlkwb{<-} \hlkwd{sort}\hlstd{(discharge,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlcom{# Rank and return period}
+\hlstd{rank} \hlkwb{<-} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(sorted_discharge)}
+\hlstd{n} \hlkwb{<-} \hlkwd{length}\hlstd{(discharge)}
+\hlstd{return_period} \hlkwb{<-} \hlstd{(n} \hlopt{+} \hlnum{1}\hlstd{)} \hlopt{/} \hlstd{rank}
+
+\hlcom{# Create a data frame}
+\hlstd{flood_data} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}
+  \hlkwc{Rank} \hlstd{= rank,}
+  \hlkwc{Discharge} \hlstd{= sorted_discharge,}
+  \hlkwc{Return_Period} \hlstd{= return_period}
+\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Below is the table of calculated return periods for each ranked discharge.
+
+% latex table generated in R 4.2.2 by xtable 1.8-4 package
+% Mon Apr  7 13:06:31 2025
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrr}
+  \hline
+ & Rank & Discharge & Return\_Period \\ 
+  \hline
+1 &   1 & 800.00 & 11.00 \\ 
+  2 &   2 & 750.00 & 5.50 \\ 
+  3 &   3 & 720.00 & 3.67 \\ 
+  4 &   4 & 700.00 & 2.75 \\ 
+  5 &   5 & 680.00 & 2.20 \\ 
+  6 &   6 & 670.00 & 1.83 \\ 
+  7 &   7 & 650.00 & 1.57 \\ 
+  8 &   8 & 610.00 & 1.38 \\ 
+  9 &   9 & 520.00 & 1.22 \\ 
+  10 &  10 & 400.00 & 1.10 \\ 
+   \hline
+\end{tabular}
+\caption{Flood Return Period Table} 
+\end{table}
+
+
+
+\begin{marginfigure}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/flood_plot-1} 
+\end{knitrout}
+\caption{Discharge versus return period on a semi-logarithmic scale.}
+\end{marginfigure}
+
+\subsection{2. Gumbel Distribution (Extreme Value Type I)}
+
+\begin{marginfigure}
+	\centering
+		\includegraphics[width=1.00\textwidth]{figure/Gumbel-Density.png}
+		\caption{Gumbel Density Distribution.}
+	\label{fig:Gumbel}
+\end{marginfigure}
+
+A commonly used theoretical distribution for modeling annual maxima is the Gumbel distribution. The return period is related to the probability of exceedance \( P \) as:
+
+\[
+P = \frac{1}{T}
+\]
+
+The Gumbel cumulative distribution function (CDF) is:
+
+\[
+F(x) = \exp\left[-\exp\left(-\frac{x - \mu}{\beta}\right)\right]
+\]
+
+Where \( \mu \) is the location parameter and \( \beta \) is the scale parameter. These can be estimated using method of moments or maximum likelihood.
+
+\newthought{R Code Example}
+
+\begin{verbatim}
+# test implementaton in R --- TBD
+\end{verbatim}
+
+\subsection{3. Log-Pearson Type III Distribution}
+
+This method is widely recommended in the United States for flood frequency analysis. It applies a Pearson Type III distribution to the log-transformed discharge data.
+
+The Log-Pearson Type III distribution (LP3) is a statistical distribution used in hydrologic frequency analysis, particularly for flood frequency analysis, to model the probability of extreme events. It's a generalized gamma distribution that accounts for skewness, making it suitable for data that isn't normally distributed.
+
+The procedure involves:
+
+\begin{itemize*}
+  \item Taking the logarithm of the discharge data
+  \item Calculating the mean, standard deviation, and skewness
+  \item Using these to estimate quantiles for different return periods
+\end{itemize*}
+
+\newthought{R Code Example}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Needs to be explained with details for each line... :-)}
+\hlcom{# Load necessary library}
+\hlkwa{if} \hlstd{(}\hlopt{!}\hlkwd{require}\hlstd{(e1071))} \hlkwd{install.packages}\hlstd{(}\hlstr{"e1071"}\hlstd{,} \hlkwc{dependencies} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: e1071}}\begin{alltt}
+\hlkwd{library}\hlstd{(e1071)}  \hlcom{# for skewness function}
+
+\hlcom{# Step 1: Input annual peak discharge data (in m^3/s)}
+\hlstd{discharge} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{400}\hlstd{,} \hlnum{520}\hlstd{,} \hlnum{610}\hlstd{,} \hlnum{700}\hlstd{,} \hlnum{650}\hlstd{,} \hlnum{720}\hlstd{,} \hlnum{800}\hlstd{,} \hlnum{750}\hlstd{,} \hlnum{680}\hlstd{,} \hlnum{670}\hlstd{)}
+
+\hlcom{# Step 2: Log-transform the discharge data}
+\hlstd{logQ} \hlkwb{<-} \hlkwd{log10}\hlstd{(discharge)}
+
+\hlcom{# Step 3: Compute statistics of log-values}
+\hlstd{mean_logQ} \hlkwb{<-} \hlkwd{mean}\hlstd{(logQ)}
+\hlstd{sd_logQ}   \hlkwb{<-} \hlkwd{sd}\hlstd{(logQ)}
+\hlstd{skew_logQ} \hlkwb{<-} \hlkwd{skewness}\hlstd{(logQ)}
+
+\hlcom{# Step 4: Define return periods and calculate exceedance probabilities}
+\hlstd{T} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{10}\hlstd{,} \hlnum{25}\hlstd{,} \hlnum{50}\hlstd{,} \hlnum{100}\hlstd{)}              \hlcom{# Return periods}
+\hlstd{P} \hlkwb{<-} \hlnum{1} \hlopt{-} \hlnum{1} \hlopt{/} \hlstd{T}                             \hlcom{# Exceedance probability}
+\hlstd{z} \hlkwb{<-} \hlkwd{qnorm}\hlstd{(P)}                              \hlcom{# Standard normal variate}
+
+\hlcom{# Step 5: Apply Log-Pearson Type III quantile formula}
+\hlstd{K} \hlkwb{<-} \hlstd{z} \hlopt{+} \hlstd{( (z}\hlopt{^}\hlnum{2} \hlopt{-} \hlnum{1}\hlstd{)} \hlopt{*} \hlstd{skew_logQ )} \hlopt{/} \hlnum{6}    \hlcom{# Pearson III frequency factor}
+
+\hlstd{logQ_est} \hlkwb{<-} \hlstd{mean_logQ} \hlopt{+} \hlstd{K} \hlopt{*} \hlstd{sd_logQ}       \hlcom{# Estimated logQ}
+\hlstd{Q_est} \hlkwb{<-} \hlnum{10}\hlopt{^}\hlstd{logQ_est}                      \hlcom{# Convert back to original scale}
+
+\hlcom{# Combine results in a table}
+\hlstd{lp3_results} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}
+  \hlkwc{Return_Period} \hlstd{= T,}
+  \hlkwc{Exceedance_Prob} \hlstd{=} \hlkwd{round}\hlstd{(P,} \hlnum{4}\hlstd{),}
+  \hlkwc{Discharge_Estimate} \hlstd{=} \hlkwd{round}\hlstd{(Q_est,} \hlnum{2}\hlstd{)}
+\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+% latex table generated in R 4.2.2 by xtable 1.8-4 package
+% Mon Apr  7 13:06:31 2025
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrr}
+  \hline
+ & Return\_Period & Exceedance\_Prob & Discharge\_Estimate \\ 
+  \hline
+1 & 2.00 & 0.50 & 663.81 \\ 
+  2 & 5.00 & 0.80 & 766.28 \\ 
+  3 & 10.00 & 0.90 & 808.48 \\ 
+  4 & 25.00 & 0.96 & 842.30 \\ 
+  5 & 50.00 & 0.98 & 857.23 \\ 
+  6 & 100.00 & 0.99 & 865.72 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+
+\subsection{4. Bayesian Methods}
+
+Bayesian approaches allow incorporating prior information and uncertainty in parameter estimates. They are especially useful for short or regional datasets and are implemented via MCMC simulations.
+
+
+
+\newthought{R Code Example}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(nsRFA)}
+\hlkwd{set.seed}\hlstd{(}\hlnum{2988}\hlstd{)}
+\hlstd{serie} \hlkwb{<-} \hlkwd{rand.GEV}\hlstd{(}\hlnum{120}\hlstd{,} \hlkwc{xi}\hlstd{=}\hlnum{40}\hlstd{,} \hlkwc{alfa}\hlstd{=}\hlnum{20}\hlstd{,} \hlkwc{k}\hlstd{=}\hlopt{-}\hlnum{0.4}\hlstd{)}
+\hlstd{serie100} \hlkwb{<-} \hlstd{serie[}\hlnum{1}\hlopt{:}\hlnum{100}\hlstd{]}
+\hlstd{serie100[serie100} \hlopt{<} \hlnum{250}\hlstd{]} \hlkwb{<-} \hlnum{NA}
+\hlstd{serie20} \hlkwb{<-} \hlstd{serie[}\hlnum{101}\hlopt{:}\hlnum{120}\hlstd{]}
+\hlstd{serie} \hlkwb{<-} \hlkwd{c}\hlstd{(serie100, serie20)}
+
+
+\hlkwd{plot}\hlstd{(serie,} \hlkwc{type}\hlstd{=}\hlstr{"h"}\hlstd{,} \hlkwc{ylim}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{600}\hlstd{),} \hlkwc{xlab}\hlstd{=}\hlstr{""}\hlstd{,}
+     \hlkwc{ylab}\hlstd{=}\hlstr{"Annual flood peaks [m3/s]"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{3}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlkwc{h}\hlstd{=}\hlnum{0}\hlstd{)}
+\hlkwd{points}\hlstd{(serie100,} \hlkwc{col}\hlstd{=}\hlnum{2}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-3-1} 
+\end{knitrout}
+
+\subsection{5. Regional Frequency Analysis (RFA)}
+
+Instead of analyzing one site in isolation, RFA uses data from multiple similar sites in a region to improve flood frequency estimates. The Index Flood method is a popular RFA technique.
+
+\subsection{6. Generalized Extreme Value (GEV) Distribution}
+
+GEV unifies the Gumbel, Fr\'{e}échet, and Weibull families under one formulation:
+
+\[
+F(x) = \exp\left\{ -\left[ 1 + \xi \left(\frac{x - \mu}{\sigma} \right) \right]^{-1/\xi} \right\}
+\]
+
+Where:
+\begin{itemize*}
+  \item \( \mu \) is the location
+  \item \( \sigma \) is the scale
+  \item \( \xi \) is the shape parameter
+\end{itemize*}
+
+
+These methods are often evaluated based on goodness-of-fit tests, diagnostic plots, and expert judgment.
+
+
+\newthought{R Code Example}
+
+\begin{verbatim}
+# test implementaton in R --- TBD
+\end{verbatim}
+
+\section{Examples with R -- Estimating Flood Return Invervals}
+
+\subsection{Annual Peak Flow versus Daily Discharge}
+
+TBD
+
+
+
+
+\subsection{Using USGS Annual Peak Flow Data}
+
+\subsection{Load Required Packages}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### STEP 1}
+\hlcom{### Loading two specific packages into RWater}
+\hlkwd{library}\hlstd{(dataRetrieval)}
+\hlcom{# library(xts)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Obtain Data from USGS}
+
+\begin{figure}
+	\centering
+		\includegraphics[width=1.00\textwidth]{figure/WhiteRiver.png}
+		\caption{White River, Arkansas, USGS gage 07052500. Annual peak flow frequency analysis for the period 2000-2025 (left) and 1980-2000 (right). The red dashed line indicates the 2025 projected peak flow.}
+	\label{fig:White River}
+\end{figure}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### STEP 2}
+\hlcom{### Get the Peak Annual Discharge}
+\hlstd{mysite} \hlkwb{<-} \hlstr{"07061000"}
+\hlstd{startDate} \hlkwb{=} \hlstr{""}
+\hlstd{endDate} \hlkwb{=} \hlstr{""}
+\hlstd{annualpeak}\hlkwb{<-}\hlkwd{readNWISpeak}\hlstd{(mysite, startDate, endDate)}
+
+\hlkwd{names}\hlstd{(annualpeak)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]}
+\end{alltt}
+\begin{verbatim}
+## [1] "agency_cd" "site_no"   "peak_dt"   "peak_tm"  
+## [5] "peak_va"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Define Qmax for 2025}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### STEP 3}
+\hlstd{Qmax_2025} \hlkwb{=} \hlnum{180000} \hlcom{#4/5/2025 11 CDT}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\subsection{Plot Data}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### STEP 4}
+\hlcom{### Plot the data}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{1}\hlstd{))}
+\hlkwd{plot}\hlstd{(annualpeak}\hlopt{$}\hlstd{peak_dt, annualpeak}\hlopt{$}\hlstd{peak_va,} \hlkwc{type}\hlstd{=}\hlstr{"p"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{.7}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"blue"}\hlstd{,}
+     \hlkwc{xlab}\hlstd{=}\hlstr{"Date"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Peak Discharge (cfs)"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Annual Peak Discharge"}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlkwc{h}\hlstd{=Qmax_2025,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{2}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlstr{"topright"}\hlstd{,} \hlkwc{legend}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"Annual Peak Discharge"}\hlstd{,} \hlstr{"2025 Qmax"}\hlstd{),}
+       \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"blue"}\hlstd{,} \hlstr{"red"}\hlstd{),} \hlkwc{pch}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{19}\hlstd{,} \hlnum{NA}\hlstd{),} \hlkwc{cex} \hlstd{=} \hlnum{.7}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{NA}\hlstd{,} \hlnum{2}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-1} 
+\end{knitrout}
+
+
+
+\subsection{Determine Station Records Ranges}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### STEP 5}
+\hlstd{annualpeak} \hlkwb{=} \hlstd{annualpeak[}\hlkwd{complete.cases}\hlstd{(annualpeak}\hlopt{$}\hlstd{peak_va),]}
+\hlstd{annualpeak} \hlkwb{=} \hlstd{annualpeak[}\hlkwd{complete.cases}\hlstd{(annualpeak}\hlopt{$}\hlstd{peak_dt),]}
+\hlstd{dt_range} \hlkwb{=} \hlkwd{range}\hlstd{(annualpeak}\hlopt{$}\hlstd{peak_dt);dt_range}
+\end{alltt}
+\begin{verbatim}
+## [1] "1904-03-27" "2024-07-18"
+\end{verbatim}
+\begin{alltt}
+\hlstd{va_range} \hlkwb{=} \hlkwd{range}\hlstd{(annualpeak}\hlopt{$}\hlstd{peak_va); va_range}
+\end{alltt}
+\begin{verbatim}
+## [1]  22400 382000
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Split Data into Two Periods}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### STEP 6}
+\hlcom{### Split the downloaded data into two periods}
+\hlstd{period1} \hlkwb{<-}\hlkwd{subset}\hlstd{(annualpeak, peak_dt}\hlopt{>=}\hlstd{dt_range[}\hlnum{1}\hlstd{]} \hlopt{&} \hlstd{peak_dt}\hlopt{<=}\hlstr{"2010-12-31"}\hlstd{)}
+\hlstd{period2} \hlkwb{<-}\hlkwd{subset}\hlstd{(annualpeak, peak_dt}\hlopt{>=}\hlstr{"2010-12-31"} \hlopt{&} \hlstd{peak_dt}\hlopt{<=}\hlstd{dt_range[}\hlnum{2}\hlstd{])}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## NOT RUN -- just an example}
+\hlcom{### STEP 5}
+\hlcom{### Split the plot window in two columns}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{))}
+
+\hlkwd{plot}\hlstd{(period1}\hlopt{$}\hlstd{peak_dt, period1}\hlopt{$}\hlstd{peak_va,} \hlkwc{type}\hlstd{=}\hlstr{"p"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}
+     \hlkwc{col}\hlstd{=}\hlstr{"blue"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"Date"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Peak Discharge (cfs)"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Period 1"}\hlstd{)}
+\hlkwd{plot}\hlstd{(period2}\hlopt{$}\hlstd{peak_dt, period2}\hlopt{$}\hlstd{peak_va,} \hlkwc{type}\hlstd{=}\hlstr{"p"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}
+     \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"Date"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Peak Discharge (cfs)"}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{"Period 2"}\hlstd{)}
+\hlcom{### Add a legend}
+\hlkwd{legend}\hlstd{(}\hlstr{"topright"}\hlstd{,} \hlkwc{legend}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"Period 1"}\hlstd{,} \hlstr{"Period 2"}\hlstd{),}
+       \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"blue"}\hlstd{,} \hlstr{"red"}\hlstd{),} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{figure*}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Added ylim for the figures to match}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{2}\hlstd{))}
+
+\hlkwd{plot}\hlstd{(period1}\hlopt{$}\hlstd{peak_dt, period1}\hlopt{$}\hlstd{peak_va,} \hlkwc{type}\hlstd{=}\hlstr{"p"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}
+     \hlkwc{col}\hlstd{=}\hlstr{"blue"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"Date"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Peak Discharge (cfs)"}\hlstd{,}
+     \hlkwc{main}\hlstd{=}\hlstr{"Period 1"}\hlstd{,} \hlkwc{ylim}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{, va_range[}\hlnum{2}\hlstd{]))}
+\hlkwd{plot}\hlstd{(period2}\hlopt{$}\hlstd{peak_dt, period2}\hlopt{$}\hlstd{peak_va,} \hlkwc{type}\hlstd{=}\hlstr{"p"}\hlstd{,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}
+     \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"Date"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Peak Discharge (cfs)"}\hlstd{,}
+     \hlkwc{main}\hlstd{=}\hlstr{"Period 2"}\hlstd{,} \hlkwc{ylim}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{, va_range[}\hlnum{2}\hlstd{]))}
+\hlcom{### Add a legend}
+\hlkwd{legend}\hlstd{(}\hlstr{"topright"}\hlstd{,} \hlkwc{legend}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"Period 1"}\hlstd{,} \hlstr{"Period 2"}\hlstd{),}
+       \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"blue"}\hlstd{,} \hlstr{"red"}\hlstd{),} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-12-1} 
+\end{knitrout}
+\end{figure*}
+
+\subsection{Fit Peak Flow with `Method of Moments`}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### STEP 7}
+\hlcom{### Perform Flood Frequency Analysis }
+\hlcom{### Locate the column of your data set that has the peak discharges}
+\hlcom{### You can see that peak discharges are stored in the 6th column (peak_va)}
+
+\hlstd{Q} \hlkwb{=} \hlstd{period1}\hlopt{$}\hlstd{peak_va}
+\hlcom{# extract year from date range??}
+\hlcom{# Q$peak_dt = as.Date(period1$peak_dt, format="%Y")}
+
+\hlcom{# format(as.Date(period1$peak_dt, format="%d/%m/%Y"),"%Y")}
+\hlstd{graphlab} \hlkwb{=} \hlkwd{paste}\hlstd{(}\hlkwd{range}\hlstd{(}\hlkwd{format}\hlstd{(}\hlkwd{as.Date}\hlstd{(period1}\hlopt{$}\hlstd{peak_dt,} \hlkwc{format}\hlstd{=}\hlstr{"%d/%m/%Y"}\hlstd{),}\hlstr{"%Y"}\hlstd{)),} \hlkwc{collapse} \hlstd{=} \hlstr{"-"}\hlstd{)}
+
+\hlcom{# Generate plotting positions}
+\hlstd{n} \hlkwb{=} \hlkwd{length}\hlstd{(Q); n}
+\end{alltt}
+\begin{verbatim}
+## [1] 81
+\end{verbatim}
+\begin{alltt}
+\hlstd{r} \hlkwb{=} \hlstd{n} \hlopt{+} \hlnum{1} \hlopt{-} \hlkwd{rank}\hlstd{(Q);} \hlkwd{head}\hlstd{(r)}  \hlcom{# highest Q has rank r = 1}
+\end{alltt}
+\begin{verbatim}
+## [1] 14 24 18  9 21 42
+\end{verbatim}
+\begin{alltt}
+\hlstd{T} \hlkwb{=} \hlstd{(n} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{/}\hlstd{r;} \hlkwd{head}\hlstd{(T)}
+\end{alltt}
+\begin{verbatim}
+## [1] 5.857143 3.416667 4.555556 9.111111 3.904762 1.952381
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Set up x axis tick positions and labels}
+\hlstd{Ttick} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{1.001}\hlstd{,}\hlnum{1.01}\hlstd{,}\hlnum{1.1}\hlstd{,}\hlnum{1.5}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{3}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{6}\hlstd{,}\hlnum{7}\hlstd{,}\hlnum{8}\hlstd{,}\hlnum{9}\hlstd{,}\hlnum{10}\hlstd{,}\hlnum{11}\hlstd{,}\hlnum{12}\hlstd{,}\hlnum{13}\hlstd{,}
+    \hlnum{14}\hlstd{,}\hlnum{15}\hlstd{,}\hlnum{16}\hlstd{,}\hlnum{17}\hlstd{,}\hlnum{18}\hlstd{,}\hlnum{19}\hlstd{,}\hlnum{20}\hlstd{,}\hlnum{25}\hlstd{,}\hlnum{30}\hlstd{,}\hlnum{35}\hlstd{,}\hlnum{40}\hlstd{,}\hlnum{45}\hlstd{,}\hlnum{50}\hlstd{,}\hlnum{60}\hlstd{,}\hlnum{70}\hlstd{,}\hlnum{80}\hlstd{,}\hlnum{90}\hlstd{,}\hlnum{100}\hlstd{)}
+\hlstd{xtlab} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{1.001}\hlstd{,}\hlnum{1.01}\hlstd{,}\hlnum{1.1}\hlstd{,}\hlnum{1.5}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{10}\hlstd{,}\hlnum{NA}\hlstd{,}
+    \hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{15}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{20}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{30}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{50}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{100}\hlstd{)}
+\hlstd{y} \hlkwb{=} \hlopt{-}\hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(}\hlnum{1} \hlopt{-} \hlnum{1}\hlopt{/}\hlstd{T))}
+\hlstd{ytick} \hlkwb{=} \hlopt{-}\hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(}\hlnum{1} \hlopt{-} \hlnum{1}\hlopt{/}\hlstd{Ttick))}
+\hlstd{xmin} \hlkwb{=} \hlkwd{min}\hlstd{(}\hlkwd{min}\hlstd{(y),}\hlkwd{min}\hlstd{(ytick))}
+\hlstd{xmax} \hlkwb{=} \hlkwd{max}\hlstd{(ytick)}
+
+\hlcom{# Fit a line by method of moments, along with 95% confidence intervals}
+\hlstd{KTtick} \hlkwb{=} \hlopt{-}\hlstd{(}\hlkwd{sqrt}\hlstd{(}\hlnum{6}\hlstd{)}\hlopt{/}\hlstd{pi)}\hlopt{*}\hlstd{(}\hlnum{0.5772} \hlopt{+} \hlkwd{log}\hlstd{(}\hlkwd{log}\hlstd{(Ttick}\hlopt{/}\hlstd{(Ttick}\hlopt{-}\hlnum{1}\hlstd{))))}
+\hlstd{QTtick} \hlkwb{=} \hlkwd{mean}\hlstd{(Q)} \hlopt{+} \hlstd{KTtick}\hlopt{*}\hlkwd{sd}\hlstd{(Q)}
+\hlstd{nQ} \hlkwb{=} \hlkwd{length}\hlstd{(Q)}
+\hlstd{se} \hlkwb{=} \hlstd{(}\hlkwd{sd}\hlstd{(Q)}\hlopt{*}\hlkwd{sqrt}\hlstd{((}\hlnum{1}\hlopt{+}\hlnum{1.14}\hlopt{*}\hlstd{KTtick} \hlopt{+} \hlnum{1.1}\hlopt{*}\hlstd{KTtick}\hlopt{^}\hlnum{2}\hlstd{)))}\hlopt{/}\hlkwd{sqrt}\hlstd{(nQ)}
+\hlstd{LB} \hlkwb{=} \hlstd{QTtick} \hlopt{-} \hlkwd{qt}\hlstd{(}\hlnum{0.975}\hlstd{, nQ} \hlopt{-} \hlnum{1}\hlstd{)}\hlopt{*}\hlstd{se}
+\hlstd{UB} \hlkwb{=} \hlstd{QTtick} \hlopt{+} \hlkwd{qt}\hlstd{(}\hlnum{0.975}\hlstd{, nQ} \hlopt{-} \hlnum{1}\hlstd{)}\hlopt{*}\hlstd{se}
+\hlstd{max} \hlkwb{=} \hlkwd{max}\hlstd{(UB)}
+\hlstd{Qmax} \hlkwb{=} \hlkwd{max}\hlstd{(QTtick)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{figure*}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-1} 
+\end{knitrout}
+\end{figure*}
+
+
+\clearpage
+\section{Using Functions to Plot Flood Return Intervals}
+
+We have three functions prepared for today's activities -- which is partially 
+based on the current flooding situation in the US. 
+
+\begin{enumerate}
+  \item For the functions to work, we need to ``Install'' a library. Go to ``Packages'' and 
+``Install Packages'' and type in the following: \texttt{dataRetrieval}.  This will install 
+the libary in R -- the function will call the library and use it.
+
+  \item Assign the site based on the USGS Station ID number and some other vectors. 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{mysite} \hlkwb{<-} \hlstr{"03287500"}        \hlcom{# notice this is in quotes!!!}
+\hlstd{startDate} \hlkwb{=} \hlstr{""}              \hlcom{# by leaving blank it takes the first record}
+\hlstd{endDate} \hlkwb{=} \hlstr{""}                \hlcom{# by leaving blank it takes the last record}
+\hlstd{Qmax_2025} \hlkwb{=} \hlnum{113000}          \hlcom{# Max flow of Kentucky River 4/6/2025 1 pm CDT}
+\hlstd{splitdate} \hlkwb{=} \hlstr{"2000-01-01"}    \hlcom{# I decided that 20 year was a good split}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+  \item Using a function, we'll create a data frame with the site number in the name
+so we can track the file easier. 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{site03287500} \hlkwb{<-} \hlkwd{getAnnualPeak.fun}\hlstd{(mysite, startDate, endDate)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Some dates could not be converted to a valid date, and were returned as NA}}\end{kframe}
+\end{knitrout}
+
+I often get a warning about returning NA values. I think we can ignore this warning.
+
+  \item As always, let's check the data frame to make sure it looks correct. Notice the
+syntax between the too methods is different -- can you spot the difference?
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{head}\hlstd{(site03287500)[,}\hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{7}\hlstd{)]}
+\end{alltt}
+\begin{verbatim}
+##    agency_cd  site_no    peak_dt peak_va gage_ht
+## 6       USGS 03287500 1895-01-19   41600    16.7
+## 7       USGS 03287500 1896-03-20   47800    19.0
+## 8       USGS 03287500 1897-02-24   76900    32.2
+## 9       USGS 03287500 1898-01-23   59800    25.1
+## 10      USGS 03287500 1899-03-08   76400    29.6
+## 11      USGS 03287500 1900-03-22   29600    12.7
+\end{verbatim}
+\begin{alltt}
+\hlkwd{str}\hlstd{(site03287500[,}\hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{7}\hlstd{)])}
+\end{alltt}
+\begin{verbatim}
+## 'data.frame':	125 obs. of  5 variables:
+##  $ agency_cd: chr  "USGS" "USGS" "USGS" "USGS" ...
+##  $ site_no  : chr  "03287500" "03287500" "03287500" "03287500" ...
+##  $ peak_dt  : Date, format: "1895-01-19" ...
+##  $ peak_va  : num  41600 47800 76900 59800 76400 29600 57600 68000 70800 33400 ...
+##  $ gage_ht  : num  16.7 19 32.2 25.1 29.6 12.7 24 27 28.5 14.5 ...
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\item Let's see what the flood return interval looks like for the flooding this week. 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{1}\hlstd{))}   \hlcom{# This resets the plotting area to one plot}
+\hlkwd{plot_floodreturn.fun}\hlstd{(site03287500, Qmax_2025)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-18-1} 
+\end{knitrout}
+
+\item Call marc over and discuss on to interpret the data.
+
+\item Split the data and look at how the record changes based on historic and recend data. I created a "list" of two dataframes, but then had to separate them so they would work with my function. See if you can spot the problem with this when you look at the y-axis.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Split Data}
+\hlstd{periodlist} \hlkwb{=} \hlkwd{splitdata.fun}\hlstd{(site03287500, splitdate)}
+\hlstd{period1} \hlkwb{=} \hlstd{periodlist[[}\hlnum{1}\hlstd{]]}
+\hlstd{period2} \hlkwb{=} \hlstd{periodlist[[}\hlnum{2}\hlstd{]]}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\item Plot two flood return intervals on the same graph.
+
+\begin{verbatim}
+par(mfrow=c(1,2))   # This resets the plotting area to two plots
+plot_floodreturn.fun(period1, Qmax_2025)
+plot_floodreturn.fun(period2, Qmax_2025)
+\end{verbatim}
+
+\begin{figure*}[h]
+%<<out.height='2in', out.width='4in'>>=
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-20-1} 
+\end{knitrout}
+\end{figure*}
+
+\end{enumerate}
+
+\clearpage
+
+\subsection{Guide Function Details}
+
+\begin{description}
+  \item[Get Annual Peak Flow Data Function]
+
+This function retrieves annual peak flow data from the USGS NWIS database. It requires the USGS gage number as input and can optionally take start and end dates to filter the data. The function returns a data frame containing the annual peak flow data.
+
+The function also removes any rows with missing values in the peak flow or date columns to ensure that the data is clean and ready for analysis.
+
+\textbf{usage:} df <- getAnnualPeak.fun(site, startDate=``'', endDate=``'')
+
+Site is the USGS gage number, startDate and endDate are optional arguments. If not provided, the function will return all available data.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## getAnnualPeak.fun <- function (site, startDate = "", endDate = "") 
+## {
+##     library(dataRetrieval)
+##     annualpeak <- readNWISpeak(site, startDate, endDate)
+##     annualpeak = annualpeak[complete.cases(annualpeak$peak_va), 
+##         ]
+##     annualpeak = annualpeak[complete.cases(annualpeak$peak_dt), 
+##         ]
+##     return(annualpeak)
+## }
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+
+
+\item[Split Data Function]
+
+The annual peak data frame is the output from the getAnnualPeak function. The splitdate is a string in the format ``YYYY-MM-DD'' that indicates the date to split the data.
+
+The function splits the data into two periods: one before the split date and one after. It returns a list containing two data frames, each representing the respective period.
+
+\textbf{usage:} periodlist <- function(annualpeak, splitdate)
+
+The function takes the annual peak data frame and the split date as input. It returns a list containing two data frames, each representing the respective period.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## splitdata.fun <- function (annualpeak, splitdate) 
+## {
+##     period1 = annualpeak[annualpeak$peak_dt < splitdate, ]
+##     period2 = annualpeak[annualpeak$peak_dt >= splitdate, ]
+##     periodlist = list(period1, period2)
+##     return(periodlist)
+## }
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\item[Plot Flood Return Interval]
+
+The plot\_floodreturn function takes the annual peak data frame and a maximum flow value for this year (Qmax\_2025) as input. It generates a plot showing the flood return interval based on the annual peak flow data. The function calculates the plotting positions, return intervals, and confidence limits for the fitted line.
+
+The function also includes options for customizing the plot, such as setting the x-axis and y-axis limits, adding grid lines, and drawing confidence intervals. 
+
+\textbf{usage:} (plot\_floodreturn.fun(annualpeak.df, Q\_max)
+
+The function takes the annual peak data frame and the maximum flow value (Qmax\_2025) as input. It generates a plot showing the flood return interval based on the annual peak flow data. 
+
+\end{description}
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## plot_floodreturn.fun <- function (annualpeak, Qmax_2025) 
+## {
+##     graphlab = paste(range(format(as.Date(annualpeak$peak_dt, 
+##         format = "%d/%m/%Y"), "%Y")), collapse = "-")
+##     Q = annualpeak$peak_va
+##     va_range = range(annualpeak$peak_va)
+##     site_no = annualpeak$site_no[1]
+##     n = length(Q)
+##     r = n + 1 - rank(Q)
+##     T = (n + 1)/r
+##     Ttick = c(1.001, 1.01, 1.1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 
+##         10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 35, 
+##         40, 45, 50, 60, 70, 80, 90, 100)
+##     xtlab = c(1.001, 1.01, 1.1, 1.5, 2, NA, NA, 5, NA, NA, NA, 
+##         NA, 10, NA, NA, NA, NA, 15, NA, NA, NA, NA, 20, NA, 30, 
+##         NA, NA, NA, 50, NA, NA, NA, NA, 100)
+##     y = -log(-log(1 - 1/T))
+##     ytick = -log(-log(1 - 1/Ttick))
+##     xmin = min(min(y), min(ytick))
+##     xmax = max(ytick)
+##     KTtick = -(sqrt(6)/pi) * (0.5772 + log(log(Ttick/(Ttick - 
+##         1))))
+##     QTtick = mean(Q) + KTtick * sd(Q)
+##     nQ = length(Q)
+##     se = (sd(Q) * sqrt((1 + 1.14 * KTtick + 1.1 * KTtick^2)))/sqrt(nQ)
+##     LB = QTtick - qt(0.975, nQ - 1) * se
+##     UB = QTtick + qt(0.975, nQ - 1) * se
+##     max = max(UB)
+##     Qmax = max(QTtick)
+##     plot(y, Q, ylab = expression("Annual Peak Flow (cfs)"), xaxt = "n", 
+##         xlab = "Return Period, T (year)", ylim = c(0, va_range[2]), 
+##         xlim = c(xmin, xmax), pch = 21, bg = "orange", main = paste(site_no, 
+##             graphlab))
+##     par(cex = 0.65)
+##     axis(1, at = ytick, labels = as.character(xtlab))
+##     lines(ytick, QTtick, col = "black", lty = 1, lwd = 2)
+##     lines(ytick, LB, col = "blue", lty = 1, lwd = 1.5)
+##     lines(ytick, UB, col = "red", lty = 1, lwd = 1.5)
+##     abline(v = ytick, lty = 3, col = "light gray")
+##     abline(h = seq(0, va_range[2], length.out = 6), lty = 3, 
+##         col = "light gray")
+##     par(cex = 1)
+##     abline(h = Qmax_2025, lty = 3, lwd = 2, col = "red")
+## }
+## <bytecode: 0x9e64c78>
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{comment}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Function to Plot Return Interval}
+
+\hlstd{plot_floodreturn.fun} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{annualpeak}\hlstd{,} \hlkwc{Qmax_2025}\hlstd{)\{}
+
+\hlstd{graphlab} \hlkwb{=} \hlkwd{paste}\hlstd{(}\hlkwd{range}\hlstd{(}\hlkwd{format}\hlstd{(}\hlkwd{as.Date}\hlstd{(}
+  \hlstd{annualpeak}\hlopt{$}\hlstd{peak_dt,} \hlkwc{format}\hlstd{=}\hlstr{"%d/%m/%Y"}\hlstd{),}\hlstr{"%Y"}\hlstd{)),}
+  \hlkwc{collapse} \hlstd{=} \hlstr{"-"}\hlstd{)}
+
+\hlstd{Q} \hlkwb{=} \hlstd{annualpeak}\hlopt{$}\hlstd{peak_va}
+\hlstd{va_range} \hlkwb{=} \hlkwd{range}\hlstd{(annualpeak}\hlopt{$}\hlstd{peak_va)}
+\hlstd{site_no} \hlkwb{=} \hlstd{annualpeak}\hlopt{$}\hlstd{site_no[}\hlnum{1}\hlstd{]}
+
+\hlcom{#Generate plotting positions}
+\hlstd{n} \hlkwb{=} \hlkwd{length}\hlstd{(Q)}
+\hlstd{r} \hlkwb{=} \hlstd{n} \hlopt{+} \hlnum{1} \hlopt{-} \hlkwd{rank}\hlstd{(Q)}  \hlcom{# highest Q has rank r = 1}
+\hlstd{T} \hlkwb{=} \hlstd{(n} \hlopt{+} \hlnum{1}\hlstd{)}\hlopt{/}\hlstd{r}
+
+\hlcom{# Set up x axis tick positions and labels}
+\hlstd{Ttick} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{1.001}\hlstd{,}\hlnum{1.01}\hlstd{,}\hlnum{1.1}\hlstd{,}\hlnum{1.5}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{3}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{6}\hlstd{,}\hlnum{7}\hlstd{,}\hlnum{8}\hlstd{,}\hlnum{9}\hlstd{,}\hlnum{10}\hlstd{,}\hlnum{11}\hlstd{,}\hlnum{12}\hlstd{,}\hlnum{13}\hlstd{,}\hlnum{14}\hlstd{,}
+          \hlnum{15}\hlstd{,}\hlnum{16}\hlstd{,}\hlnum{17}\hlstd{,}\hlnum{18}\hlstd{,}\hlnum{19}\hlstd{,}\hlnum{20}\hlstd{,}\hlnum{25}\hlstd{,}\hlnum{30}\hlstd{,}\hlnum{35}\hlstd{,}\hlnum{40}\hlstd{,}\hlnum{45}\hlstd{,}\hlnum{50}\hlstd{,}\hlnum{60}\hlstd{,}\hlnum{70}\hlstd{,}\hlnum{80}\hlstd{,}\hlnum{90}\hlstd{,}\hlnum{100}\hlstd{)}
+\hlstd{xtlab} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{1.001}\hlstd{,}\hlnum{1.01}\hlstd{,}\hlnum{1.1}\hlstd{,}\hlnum{1.5}\hlstd{,}\hlnum{2}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{10}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}
+          \hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{15}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{20}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{30}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{50}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{NA}\hlstd{,}\hlnum{100}\hlstd{)}
+\hlstd{y} \hlkwb{=} \hlopt{-}\hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(}\hlnum{1} \hlopt{-} \hlnum{1}\hlopt{/}\hlstd{T))}
+\hlstd{ytick} \hlkwb{=} \hlopt{-}\hlkwd{log}\hlstd{(}\hlopt{-}\hlkwd{log}\hlstd{(}\hlnum{1} \hlopt{-} \hlnum{1}\hlopt{/}\hlstd{Ttick))}
+\hlstd{xmin} \hlkwb{=} \hlkwd{min}\hlstd{(}\hlkwd{min}\hlstd{(y),}\hlkwd{min}\hlstd{(ytick))}
+\hlstd{xmax} \hlkwb{=} \hlkwd{max}\hlstd{(ytick)}
+
+\hlcom{# Fit a line by method of moments, along with 95% confidence intervals}
+\hlstd{KTtick} \hlkwb{=} \hlopt{-}\hlstd{(}\hlkwd{sqrt}\hlstd{(}\hlnum{6}\hlstd{)}\hlopt{/}\hlstd{pi)}\hlopt{*}\hlstd{(}\hlnum{0.5772} \hlopt{+} \hlkwd{log}\hlstd{(}\hlkwd{log}\hlstd{(Ttick}\hlopt{/}\hlstd{(Ttick}\hlopt{-}\hlnum{1}\hlstd{))))}
+\hlstd{QTtick} \hlkwb{=} \hlkwd{mean}\hlstd{(Q)} \hlopt{+} \hlstd{KTtick}\hlopt{*}\hlkwd{sd}\hlstd{(Q)}
+\hlstd{nQ} \hlkwb{=} \hlkwd{length}\hlstd{(Q)}
+\hlstd{se} \hlkwb{=} \hlstd{(}\hlkwd{sd}\hlstd{(Q)}\hlopt{*}\hlkwd{sqrt}\hlstd{((}\hlnum{1}\hlopt{+}\hlnum{1.14}\hlopt{*}\hlstd{KTtick} \hlopt{+} \hlnum{1.1}\hlopt{*}\hlstd{KTtick}\hlopt{^}\hlnum{2}\hlstd{)))}\hlopt{/}\hlkwd{sqrt}\hlstd{(nQ)}
+\hlstd{LB} \hlkwb{=} \hlstd{QTtick} \hlopt{-} \hlkwd{qt}\hlstd{(}\hlnum{0.975}\hlstd{, nQ} \hlopt{-} \hlnum{1}\hlstd{)}\hlopt{*}\hlstd{se}
+\hlstd{UB} \hlkwb{=} \hlstd{QTtick} \hlopt{+} \hlkwd{qt}\hlstd{(}\hlnum{0.975}\hlstd{, nQ} \hlopt{-} \hlnum{1}\hlstd{)}\hlopt{*}\hlstd{se}
+\hlstd{max} \hlkwb{=} \hlkwd{max}\hlstd{(UB)}
+\hlstd{Qmax} \hlkwb{=} \hlkwd{max}\hlstd{(QTtick)}
+
+
+\hlcom{# Plot peak flow series with Gumbel axis}
+\hlkwd{plot}\hlstd{(y, Q,}
+     \hlkwc{ylab} \hlstd{=} \hlkwd{expression}\hlstd{(} \hlstr{"Annual Peak Flow (cfs)"} \hlstd{) ,}
+     \hlkwc{xaxt} \hlstd{=} \hlstr{"n"}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Return Period, T (year)"}\hlstd{,}
+     \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{, va_range[}\hlnum{2}\hlstd{]),}
+     \hlkwc{xlim} \hlstd{=} \hlkwd{c}\hlstd{(xmin, xmax),}
+     \hlkwc{pch} \hlstd{=} \hlnum{21}\hlstd{,} \hlkwc{bg} \hlstd{=} \hlstr{"orange"}\hlstd{,}
+     \hlkwc{main} \hlstd{=} \hlkwd{paste}\hlstd{(site_no, graphlab)}
+\hlstd{)}
+\hlkwd{par}\hlstd{(}\hlkwc{cex} \hlstd{=} \hlnum{0.65}\hlstd{)}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{at} \hlstd{= ytick,} \hlkwc{labels} \hlstd{=} \hlkwd{as.character}\hlstd{(xtlab))}
+
+\hlcom{# Add fitted line and confidence limits}
+\hlkwd{lines}\hlstd{(ytick, QTtick,} \hlkwc{col} \hlstd{=} \hlstr{"black"}\hlstd{,} \hlkwc{lty}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{2}\hlstd{)}
+\hlkwd{lines}\hlstd{(ytick, LB,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{1.5}\hlstd{)}
+\hlkwd{lines}\hlstd{(ytick, UB,} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{1.5}\hlstd{)}
+
+\hlcom{# Draw grid lines}
+\hlkwd{abline}\hlstd{(}\hlkwc{v} \hlstd{= ytick,} \hlkwc{lty} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"light gray"}\hlstd{)}
+\hlkwd{abline}\hlstd{(}\hlkwc{h} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{, va_range[}\hlnum{2}\hlstd{],} \hlkwc{length.out}\hlstd{=}\hlnum{6}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{3}\hlstd{,}\hlkwc{col}\hlstd{=}\hlstr{"light gray"}\hlstd{)}
+\hlkwd{par}\hlstd{(}\hlkwc{cex} \hlstd{=} \hlnum{1}\hlstd{)}
+
+\hlkwd{abline}\hlstd{(}\hlkwc{h}\hlstd{=Qmax_2025,} \hlkwc{lty}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{)}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\end{comment}
+
+
+
+
+
+
+\begin{comment}
+
+\subsection{Create a function to calculate the Gumbel distribution}
+
+
+
+
+\end{comment}
+
+\newpage
+\addcontentsline{toc}{section}{References}
+%\printbibliography
+\bibliographystyle{apalike} 
+%\renewcommand\bibname{References}{}
+\bibliography{../references} % Use the references.bib file to create the bibliography	
+
+
+\end{document}
+
+
+
