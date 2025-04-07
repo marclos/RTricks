@@ -33,9 +33,9 @@
   {\end{description}}
 
 
-\title{Flood Interval Analysis}
+\title{Flood Frequncy Analysis}
 \author{EA030}
-\date{\today~ver. 0.32}
+\date{\today~ver. 0.42}
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
 % \graphicspath{{graphics/}}
 
@@ -79,6 +79,8 @@ Hydrology is the scientific study of the movement, distribution, and quality of 
 
 Hydrology began to formalize as a science in the 17th and 18th centuries with pioneers like Pierre Perrault and Edmund Halley, who quantified rainfall and streamflow. By the 19th century, the rise of civil engineering demanded more precise understanding of water systems for designing infrastructure. Today, hydrology is an interdisciplinary field integrating tools like GIS, remote sensing, and computer models to address modern challenges such as flood risk, water security, and climate change.
 
+NOTE: Need to add a discussion of stationarity \citep{merz2021causes,shao2024research, pielke2009collateral}.
+
 \subsection{USGS Stations and Methods}
 
 The United States Geological Survey (USGS) plays a central role in monitoring water resources across the country. As part of its mission to provide impartial scientific information about the natural environment, the USGS operates one of the world’s most extensive and long-standing networks of streamgages, which are used to monitor river and streamflow conditions in real time.
@@ -86,6 +88,8 @@ The United States Geological Survey (USGS) plays a central role in monitoring wa
 The USGS streamgaging network consists of over 10,000 active stations located throughout the United States, including Alaska, Hawaii, and U.S. territories. These stations collect continuous data on stream discharge, stage (water height), temperature, and sometimes sediment or water quality. Many stations transmit data via satellite or radio every 15 to 60 minutes, making real-time information publicly available through the USGS National Water Information System (NWIS).
 
 This network supports a wide range of applications, including flood forecasting, drought monitoring, water resource management, ecological studies, infrastructure design, and emergency response. Federal, state, and local agencies, as well as private sector users and researchers, rely heavily on USGS data for planning and decision-making.
+
+%# https://waterdata.usgs.gov/nwis/measurements?site_no=03287500&agency_cd=USGS&format=rdb
 
 \begin{marginfigure}
 	\centering
@@ -116,7 +120,7 @@ A hydrograph displays how river discharge responds to a rainfall event. Its key 
 
 \subsection{Flood Return Interval}
 
-lood intervals, also known as return periods, estimate how often extreme flood events are likely to occur. These estimates are critical for evaluating flood risk and informing infrastructure design, emergency planning, and land-use decisions. By understanding flood frequency, communities can build safer systems and reduce vulnerability to damaging events.
+Flood intervals, also known as return periods, estimate how often extreme flood events are likely to occur. These estimates are critical for evaluating flood risk and informing infrastructure design, emergency planning, and land-use decisions. By understanding flood frequency, communities can build safer systems and reduce vulnerability to damaging events.
 
 Return periods are used in engineering and environmental planning. Civil engineers design infrastructure like bridges and dams based on specific flood intervals (e.g., 100-year floods). Urban planners and insurance programs such as FEMA's National Flood Insurance Program use them to guide development and define hazard zones. Scientists also apply flood interval data to study ecosystems and assess climate-related changes in flood behavior.
 
@@ -127,6 +131,7 @@ Return periods are used in engineering and environmental planning. Civil enginee
 	\label{fig:USGS_Discharge_20250405}
 \end{figure}
 
+Broadly speaking, flood frequency analysis (FFA) can be conducted using two main approaches based on the assumed behavior of floods over time: stationary FFA (S-FFA) and nonstationary FFA (NS-FFA). In S-FFA, flood events are typically assumed to be independent and identically distributed (i.i.d.), implying that they originate from a stationary stochastic process. This assumption entails that the statistical properties of flood extremes—such as mean, variance, and distribution—remain constant over time \citep{villarini2009flood}. However, mounting evidence suggests that this assumption may no longer hold due to various anthropogenic and environmental factors, including climate change \citep{milly2008stationarity}, land use and land cover changes, and alterations in water infrastructure and management practices such as dam operations \citep{merz2012hess}. These dynamic influences necessitate the adoption of NS-FFA approaches, which allow the statistical characteristics of floods to vary over time in response to covariates.
 
 \section{Methods for Estimating Flood Intervals}
 
@@ -141,7 +146,7 @@ T = \frac{n + 1}{m}
 \]
 
 
-\noindent Where:
+\noindent where:
 \begin{itemize*}
   \item \( n \) is the number of years of data
   \item \( m \) is the rank (1 = largest)
@@ -149,12 +154,58 @@ T = \frac{n + 1}{m}
 
 This method does not assume any underlying distribution.
 
-\begin{verbatim}
-# test implementaton in R --- TBA
+\newthought{R Code Example}
 
-\end{verbatim}
+<<flood_analysis, echo=TRUE, results='hide'>>=
+# Below is an R code chunk that demonstrates how to 
+# calculate flood intervals using annual peak discharge data.
+
+# Sample annual peak discharge data (in cubic meters per second)
+discharge <- c(400, 520, 610, 700, 650, 720, 800, 750, 680, 670)
+
+# Sort in descending order
+sorted_discharge <- sort(discharge, decreasing = TRUE)
+
+# Rank and return period
+rank <- 1:length(sorted_discharge)
+n <- length(discharge)
+return_period <- (n + 1) / rank
+
+# Create a data frame
+flood_data <- data.frame(
+  Rank = rank,
+  Discharge = sorted_discharge,
+  Return_Period = return_period
+)
+
+@
+
+Below is the table of calculated return periods for each ranked discharge.
+
+<<r flood_table, echo=FALSE, results='asis'>>=
+library(xtable)
+xtable(flood_data, caption = "Flood Return Period Table", digits = 2)
+@
+
+
+\begin{marginfigure}
+<<flood_plot, echo=FALSE>>=
+plot(return_period, sorted_discharge, log = "x", type = "b",
+     xlab = "Return Period (years)", ylab = "Discharge (m^3/s)",
+     main = "Flood Frequency Curve", col = "blue", pch = 19)
+grid()
+@
+\caption{Discharge versus return period on a semi-logarithmic scale.}
+\end{marginfigure}
 
 \subsection{2. Gumbel Distribution (Extreme Value Type I)}
+
+\begin{marginfigure}
+	\centering
+		\includegraphics[width=1.00\textwidth]{figure/Gumbel-Density.png}
+		\caption{Gumbel Density Distribution.}
+	\label{fig:Gumbel}
+\end{marginfigure}
 
 A commonly used theoretical distribution for modeling annual maxima is the Gumbel distribution. The return period is related to the probability of exceedance \( P \) as:
 
@@ -170,9 +221,19 @@ F(x) = \exp\left[-\exp\left(-\frac{x - \mu}{\beta}\right)\right]
 
 Where \( \mu \) is the location parameter and \( \beta \) is the scale parameter. These can be estimated using method of moments or maximum likelihood.
 
+\newthought{R Code Example}
+
+\begin{verbatim}
+# test implementaton in R --- TBD
+\end{verbatim}
+
 \subsection{3. Log-Pearson Type III Distribution}
 
-This method is widely recommended in the United States for flood frequency analysis. It applies a Pearson Type III distribution to the log-transformed discharge data. The procedure involves:
+This method is widely recommended in the United States for flood frequency analysis. It applies a Pearson Type III distribution to the log-transformed discharge data.
+
+The Log-Pearson Type III distribution (LP3) is a statistical distribution used in hydrologic frequency analysis, particularly for flood frequency analysis, to model the probability of extreme events. It's a generalized gamma distribution that accounts for skewness, making it suitable for data that isn't normally distributed.
+
+The procedure involves:
 
 \begin{itemize*}
   \item Taking the logarithm of the discharge data
@@ -180,8 +241,10 @@ This method is widely recommended in the United States for flood frequency analy
   \item Using these to estimate quantiles for different return periods
 \end{itemize*}
 
-<<>>=
+\newthought{R Code Example}
 
+<<>>=
+# Needs to be explained with details for each line... :-)
 # Load necessary library
 if (!require(e1071)) install.packages("e1071", dependencies = TRUE)
 library(e1071)  # for skewness function
@@ -217,7 +280,7 @@ lp3_results <- data.frame(
 
 @
 
-<<example, echo=FALSE, results='tex'>>=
+<<example, echo=FALSE, results='asis'>>=
 library(xtable)
 print(xtable(lp3_results))
 @
@@ -225,6 +288,25 @@ print(xtable(lp3_results))
 \subsection{4. Bayesian Methods}
 
 Bayesian approaches allow incorporating prior information and uncertainty in parameter estimates. They are especially useful for short or regional datasets and are implemented via MCMC simulations.
+
+
+
+\newthought{R Code Example}
+<<>>=
+library(nsRFA)
+set.seed(2988)
+serie <- rand.GEV(120, xi=40, alfa=20, k=-0.4)
+serie100 <- serie[1:100]
+serie100[serie100 < 250] <- NA
+serie20 <- serie[101:120]
+serie <- c(serie100, serie20)
+
+
+plot(serie, type="h", ylim=c(0, 600), xlab="", 
+     ylab="Annual flood peaks [m3/s]", lwd=3)
+abline(h=0)
+points(serie100, col=2)
+@
 
 \subsection{5. Regional Frequency Analysis (RFA)}
 
@@ -248,11 +330,20 @@ Where:
 
 These methods are often evaluated based on goodness-of-fit tests, diagnostic plots, and expert judgment.
 
-\section{Using R to Estimate Flood Return Invervals}
 
-\subsection{Annual Peak Flow}
+\newthought{R Code Example}
 
-<<eval=FALSE>>=
+\begin{verbatim}
+# test implementaton in R --- TBD
+\end{verbatim}
+
+\section{Examples with R -- Estimating Flood Return Invervals}
+
+\subsection{Annual Peak Flow versus Daily Discharge}
+
+TBD
+
+<<eval=FALSE, echo=FALSE>>=
 # Eel River Max Dishcharge for USGS Record
 library(fields)
 # Use Stream_Hydrography_Analysis to create Eel.df
@@ -274,87 +365,42 @@ arrow.plot(50, 15600, 90, 12000, arrow.ex=14, length=.1, col='red', lwd=3)
 text(36, 15200, "1964", col='red', cex=1)
 @
 
-\subsection{Basic Example}
 
-Below is an R code chunk that demonstrates how to calculate flood intervals using annual peak discharge data.
-
-<<flood_analysis, echo=TRUE, results='hide'>>=
-
-# Sample annual peak discharge data (in cubic meters per second)
-discharge <- c(400, 520, 610, 700, 650, 720, 800, 750, 680, 670)
-
-# Sort in descending order
-sorted_discharge <- sort(discharge, decreasing = TRUE)
-
-# Rank and return period
-rank <- 1:length(sorted_discharge)
-n <- length(discharge)
-return_period <- (n + 1) / rank
-
-# Create a data frame
-flood_data <- data.frame(
-  Rank = rank,
-  Discharge = sorted_discharge,
-  Return_Period = return_period
-)
-
-@
-
-
-<<>>=
-
-# Print table
-print(flood_data)
-
-@
-
-
-\section{Flood Data Table}
-
-Below is the table of calculated return periods for each ranked discharge.
-
-<<r flood_table, echo=FALSE>>=
-library(xtable)
-xtable(flood_data, caption = "Flood Return Period Table", digits = 2)
-@
-
-\section*{Flood Frequency Plot}
-
-The following plot shows the discharge against its return period on a semi-logarithmic scale.
-
-<<flood_plot, echo=FALSE>>=
-plot(return_period, sorted_discharge, log = "x", type = "b",
-     xlab = "Return Period (years)", ylab = "Discharge (m^3/s)",
-     main = "Flood Frequency Curve", col = "blue", pch = 19)
-grid()
-@
-
-
-\section{Using USGS Data}
+\subsection{Using USGS Annual Peak Flow Data}
 
 \subsection{Load Required Packages}
 <<>>=
 ### STEP 1
-
-
-### STEP 2
 ### Loading two specific packages into RWater
 library(dataRetrieval) 
-library(xts)
+# library(xts)
 @
 
-\subsection{Load Data}
+\subsection{Obtain Data from USGS}
+
+\begin{figure}
+	\centering
+		\includegraphics[width=1.00\textwidth]{figure/WhiteRiver.png}
+		\caption{White River, Arkansas, USGS gage 07052500. Annual peak flow frequency analysis for the period 2000-2025 (left) and 1980-2000 (right). The red dashed line indicates the 2025 projected peak flow.}
+	\label{fig:White River}
+\end{figure}
 
 <<>>=
-### STEP 3
+### STEP 2
 ### Get the Peak Annual Discharge
 mysite <- "07061000"
 startDate = ""
 endDate = ""
 annualpeak<-readNWISpeak(mysite, startDate, endDate)
-Qmax_2025 = 180000 #4/5/2025 11 CDT
 
 names(annualpeak)[1:5]
+@
+
+\subsection{Define Qmax for 2025}
+
+<<>>=
+### STEP 3
+Qmax_2025 = 180000 #4/5/2025 11 CDT
 @
 
 
@@ -373,10 +419,10 @@ legend("topright", legend=c("Annual Peak Discharge", "2025 Qmax"),
 
 
 
-\subsection{Determine Station Records Ranges ()}
-
+\subsection{Determine Station Records Ranges}
 
 <<>>=
+### STEP 5
 annualpeak = annualpeak[complete.cases(annualpeak$peak_va),]
 annualpeak = annualpeak[complete.cases(annualpeak$peak_dt),]
 dt_range = range(annualpeak$peak_dt);dt_range
@@ -386,7 +432,7 @@ va_range = range(annualpeak$peak_va); va_range
 \subsection{Split Data into Two Periods}
 
 <<>>=
-### STEP 4
+### STEP 6
 ### Split the downloaded data into two periods
 period1 <-subset(annualpeak, peak_dt>=dt_range[1] & peak_dt<="2010-12-31")
 period2 <-subset(annualpeak, peak_dt>="2010-12-31" & peak_dt<=dt_range[2])
@@ -430,11 +476,8 @@ legend("topright", legend=c("Period 1", "Period 2"),
 \subsection{Fit Peak Flow with `Method of Moments`}
 
 
-
-
-
 <<>>=
-### STEP 6
+### STEP 7
 ### Perform Flood Frequency Analysis 
 ### Locate the column of your data set that has the peak discharges
 ### You can see that peak discharges are stored in the 6th column (peak_va)
@@ -453,9 +496,9 @@ T = (n + 1)/r; head(T)
 
 # Set up x axis tick positions and labels
 Ttick = c(1.001,1.01,1.1,1.5,2,3,4,5,6,7,8,9,10,11,12,13,
-          14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100)
+    14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100)
 xtlab = c(1.001,1.01,1.1,1.5,2,NA,NA,5,NA,NA,NA,NA,10,NA,
-          NA,NA,NA,15,NA,NA,NA,NA,20,NA,30,NA,NA,NA,50,NA,NA,NA,NA,100)
+    NA,NA,NA,15,NA,NA,NA,NA,20,NA,30,NA,NA,NA,50,NA,NA,NA,NA,100)
 y = -log(-log(1 - 1/T))
 ytick = -log(-log(1 - 1/Ttick))
 xmin = min(min(y),min(ytick))
@@ -513,8 +556,10 @@ r = n + 1 - rank(Q)  # highest Q has rank r = 1
 T = (n + 1)/r
 
 # Set up x axis tick positions and labels
-Ttick = c(1.001,1.01,1.1,1.5,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100)
-xtlab = c(1.001,1.01,1.1,1.5,2,NA,NA,5,NA,NA,NA,NA,10,NA,NA,NA,NA,15,NA,NA,NA,NA,20,NA,30,NA,NA,NA,50,NA,NA,NA,NA,100)
+Ttick = c(1.001,1.01,1.1,1.5,2,3,4,5,6,7,8,9,10,11,12,13,
+      14,15,16,17,18,19,20,25,30,35,40,45,50,60,70,80,90,100)
+xtlab = c(1.001,1.01,1.1,1.5,2,NA,NA,5,NA,NA,NA,NA,10,NA,
+      NA,NA,NA,15,NA,NA,NA,NA,20,NA,30,NA,NA,NA,50,NA,NA,NA,NA,100)
 y = -log(-log(1 - 1/T))
 ytick = -log(-log(1 - 1/Ttick))
 xmin = min(min(y),min(ytick))
@@ -558,13 +603,6 @@ abline(h=Qmax_2025, lty=3, lwd=2, col="red")
 \end{figure*}
 
 
-\begin{figure}
-	\centering
-		\includegraphics[width=1.00\textwidth]{figure/WhiteRiver.png}
-		\caption{White River, Arkansas, USGS gage 07052500. Annual peak flow frequency analysis for the period 2000-2025 (left) and 1980-2000 (right). The red dashed line indicates the 2025 projected peak flow.}
-	\label{fig:White River}
-\end{figure}
-
 \clearpage
 \section{Using Functions to Plot Flood Return Intervals}
 
@@ -591,8 +629,8 @@ site03287500 <- getAnnualPeak.fun(mysite, startDate, endDate)
 As always, let's check the data frame to make sure it looks correct.
 
 <<>>=
-head(site03287500)
-str(site03287500)
+head(site03287500)[,c(1:3,5,7)]
+str(site03287500[,c(1:3,5,7)])
 @
 
 Now let's see what the flood return interval looks like for the flooding this week. 
@@ -639,7 +677,7 @@ This function retrieves annual peak flow data from the USGS NWIS database. It re
 
 The function also removes any rows with missing values in the peak flow or date columns to ensure that the data is clean and ready for analysis.
 
-usage: (getAnnualPeak.fun(site, startDate=``'', endDate=``'')
+\textbf{usage:} df <- getAnnualPeak.fun(site, startDate=``'', endDate=``'')
 
 Site is the USGS gage number, startDate and endDate are optional arguments. If not provided, the function will return all available data.
 
@@ -664,22 +702,17 @@ getAnnualPeak.fun<- function(site, startDate="", endDate=""){
 
 \subsection{Split Data Function}
 
-<<>>=
-splitdata.fun<- function(annualpeak, splitdate){
-  
-    period1 = annualpeak[annualpeak$peak_dt < splitdate,]
-    period2 = annualpeak[annualpeak$peak_dt >= splitdate,]
-    periodlist = list(period1, period2)
-  return(periodlist)
-}
+
+\textbf{usage:} periodlist <- function(annualpeak, splitdate)
+
+<<show_splitdata.fun, echo=FALSE>>=
+pretty(splitdata.fun)
 @
 
 \subsection{Plot Flood Return Interval }
 
 
-usage: (plot\_floodreturn.fun(annualpeak.df, Q\_max)
-
-
+\textbf{usage:} (plot\_floodreturn.fun(annualpeak.df, Q\_max)
 
 <<show_plot_floodreturn.fun, echo=FALSE>>=
 pretty(plot_floodreturn.fun)
