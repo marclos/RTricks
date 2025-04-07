@@ -1,4 +1,55 @@
-# sss
+# Flood Frequency Functions
+# Marc Los Huertos
+# April 4, 2024
+# Version 1.0
+
+
+# Get Annual Peak Flow Data Function
+# Need one library; I think!
+
+# Remeber -- you much "source()" this file to load functions into the R environment
+
+# This function gets the annual peak flow data from the USGS NWIS database. It will
+# return a data frame with the annual peak flow data. The function takes three arguments:
+# site: the USGS site number
+# startDate: the start date for the data (optional)
+# endDate: the end date for the data (optional)
+# The function will return a data frame, but must include an assignment statement
+# to save the data. The function will also remove any rows with missing values in the
+# peak flow or date columns. 
+
+getAnnualPeak.fun<- function(site, startDate="", endDate=""){
+  # Load required libraries
+  library(dataRetrieval)
+#  library(ggplot2)
+#  suppressMessages(library(dplyr))
+  
+  annualpeak <- readNWISpeak(site, startDate, endDate)
+  annualpeak = annualpeak[complete.cases(annualpeak$peak_va),]
+  annualpeak = annualpeak[complete.cases(annualpeak$peak_dt),]
+  return(annualpeak)
+}
+
+# Split Data Function
+# This function splits the annual peak data into two periods based on a date.
+# It creates a list of two data frames, which is a pain to deal with, but it's 
+# the most effecient in the day that I wrote this function.
+
+# NOTE: returns a list of two data frames, i.e. need assign list name!
+
+splitdata.fun<- function(annualpeak, splitdate){
+  
+  period1 = annualpeak[annualpeak$peak_dt < splitdate,]
+  period2 = annualpeak[annualpeak$peak_dt >= splitdate,]
+  periodlist = list(period1, period2)
+  return(periodlist)
+}
+
+
+# This is a complicated function, luckily, I was able to get some of the code
+# from ChatGPT.  I think it is a good example of how to use the function
+# to create a plot of the flood return interval.  It is a little bit of a mess
+# but it works. I hope to fix it and make it better for 2026.
 
 plot_floodreturn.fun <- function(annualpeak, Qmax_2025){
   
@@ -61,27 +112,4 @@ plot_floodreturn.fun <- function(annualpeak, Qmax_2025){
   abline(h=Qmax_2025, lty=3, lwd=2, col="red")
 }
 
-
-# Get Annual Peak Flow Data Function
-
-  getAnnualPeak.fun<- function(site, startDate="", endDate=""){
-    # Load required libraries
-    library(dataRetrieval)
-    library(ggplot2)
-    suppressMessages(library(dplyr))
-    
-    annualpeak <- readNWISpeak(site, startDate, endDate)
-    annualpeak = annualpeak[complete.cases(annualpeak$peak_va),]
-    annualpeak = annualpeak[complete.cases(annualpeak$peak_dt),]
-    return(annualpeak)
-  }
-
-# Split Data Function
-  # This function splits the annual peak data into two periods based on a date
-    splitdata.fun<- function(annualpeak, splitdate){
-      
-      period1 = annualpeak[annualpeak$peak_dt < splitdate,]
-      period2 = annualpeak[annualpeak$peak_dt >= splitdate,]
-      periodlist = list(period1, period2)
-      return(periodlist)
-    }
+# End of Function File
