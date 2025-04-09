@@ -618,6 +618,7 @@ the libary in R -- the function will call the library and use it.
 
 <<>>=
 mysite <- "03287500"        # notice this is in quotes!!!
+mysite <- "10126000"
 startDate = ""              # by leaving blank it takes the first record
 endDate = ""                # by leaving blank it takes the last record
 Qmax_2025 = 113000          # Max flow of Kentucky River 4/6/2025 1 pm CDT
