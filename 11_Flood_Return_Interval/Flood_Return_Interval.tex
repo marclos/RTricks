@@ -222,7 +222,7 @@ This method does not assume any underlying distribution.
 Below is the table of calculated return periods for each ranked discharge.
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Mon Apr  7 13:06:31 2025
+% Mon Apr  7 13:46:58 2025
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrr}
@@ -344,7 +344,7 @@ The procedure involves:
 \end{knitrout}
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Mon Apr  7 13:06:31 2025
+% Mon Apr  7 13:46:59 2025
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrr}
@@ -665,6 +665,7 @@ the libary in R -- the function will call the library and use it.
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{mysite} \hlkwb{<-} \hlstr{"03287500"}        \hlcom{# notice this is in quotes!!!}
+\hlstd{mysite} \hlkwb{<-} \hlstr{"10126000"}
 \hlstd{startDate} \hlkwb{=} \hlstr{""}              \hlcom{# by leaving blank it takes the first record}
 \hlstd{endDate} \hlkwb{=} \hlstr{""}                \hlcom{# by leaving blank it takes the last record}
 \hlstd{Qmax_2025} \hlkwb{=} \hlnum{113000}          \hlcom{# Max flow of Kentucky River 4/6/2025 1 pm CDT}
@@ -681,9 +682,7 @@ so we can track the file easier.
 \begin{alltt}
 \hlstd{site03287500} \hlkwb{<-} \hlkwd{getAnnualPeak.fun}\hlstd{(mysite, startDate, endDate)}
 \end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Some dates could not be converted to a valid date, and were returned as NA}}\end{kframe}
+\end{kframe}
 \end{knitrout}
 
 I often get a warning about returning NA values. I think we can ignore this warning.
@@ -697,24 +696,24 @@ syntax between the too methods is different -- can you spot the difference?
 \hlkwd{head}\hlstd{(site03287500)[,}\hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{7}\hlstd{)]}
 \end{alltt}
 \begin{verbatim}
-##    agency_cd  site_no    peak_dt peak_va gage_ht
-## 6       USGS 03287500 1895-01-19   41600    16.7
-## 7       USGS 03287500 1896-03-20   47800    19.0
-## 8       USGS 03287500 1897-02-24   76900    32.2
-## 9       USGS 03287500 1898-01-23   59800    25.1
-## 10      USGS 03287500 1899-03-08   76400    29.6
-## 11      USGS 03287500 1900-03-22   29600    12.7
+##   agency_cd  site_no    peak_dt peak_va gage_ht
+## 1      USGS 10126000 1950-04-23    5920   13.36
+## 2      USGS 10126000 1951-02-11    7180   14.83
+## 3      USGS 10126000 1952-05-03    7200   14.69
+## 4      USGS 10126000 1953-06-11    3510    9.97
+## 5      USGS 10126000 1954-04-16    2570    8.11
+## 6      USGS 10126000 1955-04-20    2850    8.91
 \end{verbatim}
 \begin{alltt}
 \hlkwd{str}\hlstd{(site03287500[,}\hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{7}\hlstd{)])}
 \end{alltt}
 \begin{verbatim}
-## 'data.frame':	125 obs. of  5 variables:
+## 'data.frame':	68 obs. of  5 variables:
 ##  $ agency_cd: chr  "USGS" "USGS" "USGS" "USGS" ...
-##  $ site_no  : chr  "03287500" "03287500" "03287500" "03287500" ...
-##  $ peak_dt  : Date, format: "1895-01-19" ...
-##  $ peak_va  : num  41600 47800 76900 59800 76400 29600 57600 68000 70800 33400 ...
-##  $ gage_ht  : num  16.7 19 32.2 25.1 29.6 12.7 24 27 28.5 14.5 ...
+##  $ site_no  : chr  "10126000" "10126000" "10126000" "10126000" ...
+##  $ peak_dt  : Date, format: "1950-04-23" ...
+##  $ peak_va  : num  5920 7180 7200 3510 2570 2850 4130 5080 4340 3970 ...
+##  $ gage_ht  : num  13.36 14.83 14.69 9.97 8.11 ...
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -884,7 +883,7 @@ The function takes the annual peak data frame and the maximum flow value (Qmax\_
 ##     par(cex = 1)
 ##     abline(h = Qmax_2025, lty = 3, lwd = 2, col = "red")
 ## }
-## <bytecode: 0x9e64c78>
+## <bytecode: 0x8f5acd0>
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
