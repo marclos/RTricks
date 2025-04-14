@@ -1,0 +1,87 @@
+---
+title: "Fish Abundance Analysis"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read data into R
+
+```{r}
+fish.csv = "/home/mwl04747/RTricks/13_coastal_fish/coastal_data.csv"
+fish <- read.csv(fish.csv)
+
+str(fish)
+```
+
+# Multiple linear regression
+
+```{r}
+# Fit a multiple linear regression model
+fish.lm <- lm(fish_abundance ~ water_temp + salinity + pH + dissolved_oxygen, data = fish)
+
+summary(fish.lm)
+
+par(mfrow=c(2,2))
+# Diagnostic plots
+
+```
+
+## Diagnostics -- Checking Assumptions
+
+```{r}
+# Diagnostic plots
+par(mfrow = c(2, 2))
+plot(fish.lm)
+
+
+# Check multicollinearity (VIF)
+library(car)
+vif(fish.lm)
+
+```
+
+
+#  Plot Water temp and DO
+
+```{r}
+par(mfrow= c(1,1))
+
+plot(fish_abundance ~ water_temp + salinity + pH + dissolved_oxygen, data = fish)
+
+plot(fish_abundance ~ water_temp, data = fish)
+
+plot(fish_abundance ~ water_temp, data = fish,
+     xlab = "Water Temperature (C)",
+     ylab = "Fish Abundance",
+     main = "Fish Abundance vs Water Temperature",
+     pch = 19,
+     col = "blue")
+# Add regression line
+temp.lm <- lm(fish_abundance ~ water_temp, data = fish)
+
+abline(temp.lm, col = "red")
+
+
+```
+
+## Fancy Plots!
+
+```{r}
+library(ggplot2)
+# Visualizing relationships
+ggplot(fish, aes(x = dissolved_oxygen, y = fish_abundance)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Fish Abundance vs Dissolved Oxygen")
+
+ggplot(fish, aes(x = salinity, y = fish_abundance)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Fish Abundance vs Salinity")
+
+```
