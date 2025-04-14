@@ -9,22 +9,146 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## R Read Data
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
+stickytrap.csv <- "/home/mwl04747/RTricks/12_Sticky_Traps/insect_sticky_trap_counts_15_traps.csv"
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+stickytrap.df <- read.csv(stickytrap.csv)
 
-```{r cars}
-summary(cars)
+head(stickytrap.df)
+
+names(stickytrap.df)<- c("Trap", "Distance", "Species", "Count")
+
+str(stickytrap.df)
+
+```
+# Boxplot
+
+```{r}
+# using r base
+boxplot(Count ~ Species, data = stickytrap.df)
+
+boxplot(Count ~ Distance, data = stickytrap.df)
+
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+# Linear Model
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+  
+# using r base
+lm1 <- lm(Count ~ Species + Distance, data = stickytrap.df)
+summary(lm1)
+anova(lm1)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Linear Model for each species
+
+```{r}
+# using r base
+
+lm2 <- lm(Count ~ Distance, data = subset(stickytrap.df, subset = Species == "Aedes aegypti"))
+anova(lm2)
+
+```
+
+
+# create a loop of species
+```{r}
+species <- unique(stickytrap.df$Species)
+
+#species
+
+for (i in 1:length(species)) {
+  print(species[i])
+}
+```
+
+
+
+plot with points
+
+```{r}
+for (i in 1:length(species)) {
+  temp.df <- subset(stickytrap.df, subset = Species == species[i])
+plot (Count ~ Distance, data = temp.df)
+  print(species[i])
+}
+
+```
+
+
+## Single Plot with Muplple Line
+
+
+# plot counts by distance but don't put points on the plot but scale xlim and ylim
+```{r}
+plot(Count ~ Distance, data = stickytrap.df, 
+     xlim = c(0, 40),
+     ylim = c(0, 45),
+     type = "n",
+     main = "Sticky Trap Counts",
+     xlab = "Distance",
+     ylab = "Count",
+     cex.main = 1.2)
+
+for (i in 1:length(species)) {
+  points(Count ~ Distance, data = subset(stickytrap.df, subset=Species == species[i]),
+         col = i,
+         pch = 20)
+}
+```
+
+
+# plot counts by distance but don't put points on the plot but scale xlim and ylim
+## Avoid psuedo replication
+
+```{r}
+
+# calculate mean and sd for each species
+stickytrap.mean <- aggregate(Count ~ Species + Distance, data = stickytrap.df, FUN = mean)
+
+stickytrap.sd <- aggregate(Count ~ Species + Distance, data = stickytrap.df, FUN = sd)
+
+
+plot(Count ~ Distance, data = stickytrap.mean, 
+     xlim = c(0, 40),
+     ylim = c(0, 30),
+     type = "n",
+     main = "Sticky Trap Counts",
+     xlab = "Distance",
+     ylab = "Count",
+     cex.main = 1.2)
+
+for (i in 1:length(species)) {
+  points(Count ~ Distance, data = subset(stickytrap.mean, subset=Species == species[i]),
+         col = i,
+         pch = 20)
+  lines(Count ~ Distance, data = subset(stickytrap.mean, subset=Species == species[i]),
+         col = i)
+}
+```
+
+## Using ggplot2
+
+```{r}
+
+
+# plot counts by distance for each species with ggplot2, with a linear model for each species
+library(ggplot2)
+
+# plot counts by distance for each species with ggplot2, with a linear model for each species
+# add legend
+ggplot(stickytrap.df, aes(x = Distance, y = Count, color = factor(Species))) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+#  facet_wrap(~ Species) +
+  labs(title = "Sticky Trap Counts",
+       x = "Distance",
+       y = "Count") +
+  theme(legend.position = "topright",,
+        legend.text = element_text(size = 8))
+# add legend
+```
