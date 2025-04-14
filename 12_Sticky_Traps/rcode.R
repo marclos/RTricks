@@ -92,17 +92,16 @@ library(ggplot2)
 
 # plot counts by distance for each species with ggplot2, with a linear model for each species
 # add legend
-ggplot(sticktraps.df, aes(x = Distance, y = Count, color = Species)) +
-  geom_point() +
+ggplot(sticktraps.df, aes(x = Distance, y = Count, color = factor(Species))) +
+  geom_point() + 
   geom_smooth(method = "lm", se = FALSE) +
+#  facet_wrap(~ Species) +
   labs(title = "Sticky Trap Counts",
        x = "Distance",
        y = "Count") +
-  theme_minimal() +
-  theme(legend.position = "topright",
-        legend.title = element_blank(),
+  theme(legend.position = "topright",,
         legend.text = element_text(size = 8))
-  
+# add legend
 
 
   
