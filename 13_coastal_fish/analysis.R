@@ -26,6 +26,11 @@ plot(model)
 
 # Check multicollinearity (VIF)
 vif(model)
+par(mfrow= c(1,1))
+
+plot(fish_abundance ~ water_temp + salinity + pH + dissolved_oxygen, data = data)
+
+plot(fish_abundance ~ water_temp, data = data)
 
 # Visualizing relationships
 ggplot(data, aes(x = dissolved_oxygen, y = fish_abundance)) +
