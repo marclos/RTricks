@@ -1,0 +1,63 @@
+---
+title: "Ascombe"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Let's check out some funky data!
+
+```{r cars}
+anscombe.csv="/home/mwl04747/RTricks/00_Stats/Anscombe_files/ansombe.csv"
+anscombe = read.csv(anscombe.csv)
+
+names(anscombe)
+```
+
+
+## Summary of the linear model
+
+Identical statistics for each linear model!
+
+```{r}
+lm1 <- lm(y1 ~ x1, data = anscombe); summary(lm1)
+lm2 <- lm(y2 ~ x2, data = anscombe); summary(lm2)
+lm3 <- lm(y3 ~ x3, data = anscombe); summary(lm3)
+lm4 <- lm(y4 ~ x4, data = anscombe); summary(lm4)
+```
+
+
+## Including Plots
+
+But the plots show major assumption issues.
+
+```{r pressure, echo=FALSE}
+par(mfrow=c(2,2))
+plot(y1 ~ x1, data = anscombe, main="I")
+abline(coef(lm1), col="red")
+plot(y2 ~ x2, data = anscombe, main="II")
+abline(coef(lm2), col="red")
+plot(y3 ~ x3, data = anscombe, main="III")
+abline(coef(lm3), col="red")
+plot(y4 ~ x4, data = anscombe, main="IV")
+abline(coef(lm4), col="red")
+```
+## Plot Linear Model -- Diagnostic Plots
+
+Confirmed by the diagnostic plots.
+
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm1)
+plot(lm2)
+plot(lm3)
+plot(lm4)
+```
+
