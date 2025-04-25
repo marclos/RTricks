@@ -1,0 +1,23 @@
+---
+title: "Group 3: Storm Events and Water Impairments"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Hypotheses
+
+## Data Set
+
+
+## Summary Stats
+
+## Hypothesis Tests
+
+
+## Plots
