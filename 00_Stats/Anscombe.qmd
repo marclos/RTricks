@@ -49,6 +49,7 @@ plot(Anscombe$x4, Anscombe$y4, main="IV")
 ```
 
 ## Linear Model Coefficents
+
 ```{r}
 lm1 <- lm(y1 ~ x1, data = Anscombe)
 lm2 <- lm(y2 ~ x2, data = Anscombe)
@@ -115,4 +116,3 @@ plot(lm3)
 par(mfrow=c(2,2))
 plot(lm4)
 ```
-
