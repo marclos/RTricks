@@ -1,0 +1,23 @@
+---
+title: "Group 6: Land-use Impacts on Biodiversity along FW-Coastal Gradients"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Hypotheses
+
+## Data Set
+
+
+## Summary Stats
+
+## Hypothesis Tests
+
+
+## Plots
