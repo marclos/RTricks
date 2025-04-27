@@ -25,7 +25,84 @@ set.seed(123)       # reproducibility
 This document performs a Before-After-Control-Impact (BACI) analysis using simulated data.
 The goal is to detect whether an environmental impact causes a change relative to a control site.
 
-## Hypotheses
+BACI analysis, which stands for Before-After, Control-Impact, is a research design used to assess the effects of a treatment or intervention on a population or environment. In R, it can be performed using various statistical models and packages. The core principle is to compare a "control" group (impact group) with an "impact" group (intervention group) both before and after the treatment. 
+
+
+Here's a more detailed explanation of BACI analysis and how it can be implemented in R:
+
+### Understanding BACI Design:
+
+1. **Before-After**: This refers to the time periods before and after the intervention or treatment. The "before" period serves as a baseline for comparison, while the "after" period allows researchers to observe any changes that may have occurred due to the intervention.
+
+2. **Control-Impact**: The "control" group is a reference group that is not subjected to the intervention, while the "impact" group is exposed to the treatment or intervention. This allows researchers to assess whether any observed changes in the impact group can be attributed to the intervention rather than other external factors.
+
+
+### Statistical Modeling in R:
+
+--t.test 
+We can test the difference between the means of two groups (e.g., before and after) using a t-test. This is a simple approach but may not be suitable for all data types or distributions -- but was will be testing the "delta" or change between treatments. Probably the simpliest to run!
+
+-- Simple Linear Models (See Hypothesis w/ Fake Data):
+For simple BACI analyses, a linear model can be used to assess the differences between groups and time periods. The model can include interaction terms to test for differences in slopes or intercepts between the control and impact groups.
+
+-- Generalized Linear Models (GLMs):
+For many BACI analyses, a GLM is a suitable model to fit the data. The model can incorporate factors like "before/after" and "control/impact" as independent variables, and the dependent variable will be the measured outcome of interest.
+
+
+-- Mixed-Effects Models:
+If there are hierarchical structures in your data (e.g., multiple sites, replicates, etc.), a mixed-effects model may be more appropriate. These models account for random effects, such as site-specific variability, that can affect the outcome.
+
+
+### Some Complex Approaches
+
+#### Create experimental data of random values
+
+```{r}
+# Load necessary packages
+library(lme4)  # For mixed models
+
+# Example data (replace with your own data)
+data <- data.frame(
+  site = factor(rep(c("Control", "Impact"), each = 20)),
+  time = c(factor(rep(c("Before", "After"), each = 10)), factor(rep(c("Before", "After"), each = 10))),
+  outcome = c(rnorm(10, mean = 6, sd = 2), rnorm(10, mean = 4, sd = 2), 
+              rnorm(10, mean = 5, sd = 2), rnorm(10, mean = 3, sd = 2))  # Example outcome variable
+)
+```
+
+#### Using GLM
+
+```{r}
+# Fit a GLM (can be adjusted based on your data)
+model <- glm(outcome ~ site * time, data = data)
+summary(model)
+```
+
+
+#### Mixed-Effects Model
+
+```{r}
+# Fit a mixed model (if you have nested data)
+# Example data with site as a random effect
+data$conc <- factor(rep(rep(c("Low", "High"), each = 5),4))
+model_mixed <- lmer(outcome ~ site * time + (1 | conc), data = data)
+null_model <- lmer(outcome ~ (1 | conc), data = data)
+summary(model_mixed)
+
+anova(model_mixed, null_model)
+```
+
+
+## Group Hypotheses
+
+Bokashi will be a more efficient method to reduce pesticide concentrations in decomposed
+green waste.
+
+
+-The bokashi samples will see a greater decrease in absorption level compared to the
+control group and traditional composting group samples after 2 weeks of breakdown
+
+NOTE: No one cares about absorbance, that's a proxy for concentration; please revise to test concentration...
 
 ## Data Set
 
@@ -38,7 +115,13 @@ names(group1data)
 unique(group1data$Treatment)
 unique(group1data$Before.After)
 ```
-## Removing Water -- since that is a correction, not a factor
+
+
+NOTE: Misspelled concentration... suggest you come up with one word column names and factors () (## Removing Water -- since that is a correction, not a factor. I suggest this is Concentration_Initial and then you can have Concentration_Final as a column.
+
+Really, intial will be use to "correct" final values; perhaps we want to test the difference between the two, but I think we want to test the difference between the bokashi and compost treatments.
+
+
 ```{r}
 
 # Remove water
@@ -49,6 +132,8 @@ group1data <- group1data %>%
 # Check the data
 unique(group1data$Treatment)
 ```
+Pretty sure zero concentration (control) is also not a treatment but will be used as a correction factor... please correct fake data to preprocess that. Or we can use R if that would be something you'd like to do... probably take us an hour or so of working together to do that. But it excel it could take 10 min.
+
 
 ```{r}
 # Make sure site and time are factors
@@ -81,9 +166,7 @@ summary_stats
 ```
 
 
-## Hypothesis Tests
-
-waiting to see hypotheses!
+## Hypothesis Tests w/Fake Data
 
 ```{r}
 # Fit a linear model
