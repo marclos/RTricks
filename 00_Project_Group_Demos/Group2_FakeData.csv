@@ -1,0 +1,55 @@
+Sample ID,Treatment ,Before/After,Concentraion (ppm),Absorption
+B1ZB,Bokashi,Before,0,0.045
+B2ZB,Bokashi,Before,0,0.021
+B3ZB,Bokashi,Before,0,0.034
+B1FB,Bokashi,Before,5,0.241
+B2FB,Bokashi,Before,5,0.223
+B3FB,Bokashi,Before,5,0.234
+B1TB,Bokashi,Before,10,0.461
+B2TB,Bokashi,Before,10,0.452
+B3TB,Bokashi,Before,10,0.443
+C1ZB,Compost,Before,0,0.056
+C2ZB,Compost,Before,0,0.067
+C3ZB,Compost,Before,0,0.045
+C1FB,Compost,Before,5,0.372
+C2FB,Compost,Before,5,0.354
+C3FB,Compost,Before,5,0.316
+C1TB,Compost,Before,10,0.563
+C2TB,Compost,Before,10,0.554
+C3TB,Compost,Before,10,0.539
+W1ZB,Water (control),Before,0,0.017
+W2ZB,Water (control),Before,0,0.043
+W3ZB,Water (control),Before,0,0.023
+W1FB,Water (control),Before,5,0.234
+W2FB,Water (control),Before,5,0.246
+W3FB,Water (control),Before,5,0.199
+W1TB,Water (control),Before,10,0.331
+W2TB,Water (control),Before,10,0.389
+W3TB,Water (control),Before,10,0.301
+B1ZA,Bokashi,After,0,0.051
+B2ZA,Bokashi,After,0,0.025
+B3ZA,Bokashi,After,0,0.044
+B1FA,Bokashi,After,5,0.153
+B2FA,Bokashi,After,5,0.161
+B3FA,Bokashi,After,5,0.112
+B1TA,Bokashi,After,10,0.154
+B2TA,Bokashi,After,10,0.151
+B3TA,Bokashi,After,10,0.134
+C1ZA,Compost,After,0,0.086
+C2ZA,Compost,After,0,0.077
+C3ZA,Compost,After,0,0.045
+C1FA,Compost,After,5,0.261
+C2FA,Compost,After,5,0.254
+C3FA,Compost,After,5,0.231
+C1TA,Compost,After,10,0.323
+C2TA,Compost,After,10,0.342
+C3TA,Compost,After,10,0.321
+W1ZA,Water (control),After,0,0.027
+W2ZA,Water (control),After,0,0.053
+W3ZA,Water (control),After,0,0.033
+W1FA,Water (control),After,5,0.298
+W2FA,Water (control),After,5,0.256
+W3FA,Water (control),After,5,0.183
+W1TA,Water (control),After,10,0.345
+W2TA,Water (control),After,10,0.401
+W3TA,Water (control),After,10,0.304
