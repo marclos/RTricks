@@ -5,19 +5,136 @@ date: "`r Sys.Date()`"
 output: pdf_document
 ---
 
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# Load libraries
+
+library(ggplot2)
+library(dplyr)
+library(broom)      # for tidy model summaries
+#library(kableExtra) # for nice tables
+set.seed(123)       # reproducibility
+
+
 ```
 
+## Introduction
+
+This document performs a Before-After-Control-Impact (BACI) analysis using simulated data.
+The goal is to detect whether an environmental impact causes a change relative to a control site.
 
 ## Hypotheses
 
 ## Data Set
 
+```{r}
+# Load the data
+fakedata.csv = "/home/mwl04747/RTricks/00_Project_Group_Demos/Group2_FakeData.csv"
+group1data = read.csv(fakedata.csv, header = TRUE)
+str(group1data)
+names(group1data)
+unique(group1data$Treatment)
+unique(group1data$Before.After)
+```
+## Removing Water -- since that is a correction, not a factor
+```{r}
+
+# Remove water
+group1data <- group1data %>%
+  filter(Treatment != "Water (control)")
+# Remove the "Water" treatment
+
+# Check the data
+unique(group1data$Treatment)
+```
+
+```{r}
+# Make sure site and time are factors
+group1data <- group1data %>%
+  mutate(Treatment = factor(Treatment),
+         Before.After = factor(Before.After),
+         Concentraion..ppm. = factor(Concentraion..ppm.))
+
+# Check the data
+str(group1data)
+group1data[sample(1:nrow(group1data), 8), ]
+```
+
 
 ## Summary Stats
 
+Fake data isn't really working -- since you don't have any variance with ppm. We are not going reporting absorbance values, but I'll do this now, since it looks like there is some variance there.
+
+```{r}
+# Summarize the data
+summary_stats <- group1data %>%
+  group_by(Treatment, Before.After, Concentraion..ppm.) %>%
+  summarise(
+    mean = mean(Absorption),
+    sd = sd(Absorption),
+    n = n()
+  ) %>%
+  ungroup()
+summary_stats
+```
+
+
 ## Hypothesis Tests
+
+waiting to see hypotheses!
+
+```{r}
+# Fit a linear model
+model <- lm(Absorption ~ Treatment + Concentraion..ppm. * Before.After, data = group1data)
+# Summarize the model
+anova(model)
+
+
+model_summary <- tidy(model)
+model_summary
+
+
+# Key interaction term:
+key_interaction <- coef(model)["Treatmentimpact:Before.Afterafter"]
+
+```
+
 
 
 ## Plots
+```{r}
+ggplot(group1data, aes(x = Before.After, y = Absorption, color = Treatment, group = Treatment)) +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun = mean, geom = "point") +
+  labs(
+    title = "BACI Design: Mean Measured Values",
+    subtitle = "Before and After at Control vs Impact Sites",
+    y = "Measured Value",
+    x = "Time",
+    color = "Treatment"
+  ) +
+  scale_color_manual(values = c("control" = "#1f77b4", "impact" = "#d62728")) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom")
+```
+
+
+
+
+5. Conclusion
+The analysis suggests:
+
+There was a decrease in the measured value at the impact site after the event.
+
+The significant site × time interaction supports a likely effect of the environmental disturbance.
+
+6. Appendix (Optional)
+You can improve the model by considering:
+
+Mixed models (lmer) if you have random effects (e.g., multiple sites)
+
+Repeated measures ANOVA
+
+Adding covariates (e.g., weather, seasonality)
