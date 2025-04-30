@@ -9,15 +9,74 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Correlation Tests
+
+A correlation test in R is used to evaluate the strength and direction of a relationship between two numeric variables. The most common correlation test is Pearson’s correlation, but others include Spearman’s and Kendall’s if the data isn’t normally distributed.
+
+Here’s a simple example using Pearson’s correlation with the built-in cor.test() function in R.
+
+
+See [Correlation Test Tutorial](https://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r)
+
+### An example
+
+```{r}
+# Sample data
+height <- c(160, 165, 170, 175, 180)
+weight <- c(55, 60, 65, 70, 75)
+
+# Perform Pearson correlation test
+cor.test(height, weight, method = "pearson")
+
+```
+
+cor: 0.9984 → Strong positive correlation
+
+p-value: 0.000635 → Very small, so the result is statistically significant
+
+95% CI: [0.9771, 0.9999] → We're 95% confident the true correlation lies in this interval.
+
 
 ## Hypotheses
 
 ## Data Set
+```{r}
+
+group3.csv = "/home/mwl04747/RTricks/00_Project_Group_Demos/Group3_FakData.csv"
+riohonda = read.csv(group3.csv)
+head(riohonda)
+names(riohonda) = c("ID", "Date", "Phosphate", "Ammonia")
 
 
+```
+
+
+```{r}
+#install.packages("ggpubr")
+
+library(ggpubr)
+library(ggplot2)
+
+
+```
 ## Summary Stats
 
+```{r}
+summary(riohonda)
+```
+
+
+
 ## Hypothesis Tests
+```{r}
+
+cor(riohonda$Ammonia, riohonda$Phosphate,  method = "pearson")
+
+```
+
+
+
+
 
 
 ## Plots
