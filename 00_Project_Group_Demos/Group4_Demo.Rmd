@@ -9,10 +9,31 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+A correlation matrix in R is a table showing correlation coefficients between many variables. Each cell in the table shows the correlation between two variables. The value is between -1 and 1:
+
++1: Perfect positive correlation
+
+0: No correlation
+
+–1: Perfect negative correlation
 
 ## Hypotheses
 
 ## Data Set
+
+```{r}
+group4.csv <- "/home/mwl04747/RTricks/00_Project_Group_Demos/Group4_FakeData.csv"
+prado = read.csv(group4.csv)
+head(prado)
+
+prado_clean = prado[,c(5:11)]
+head(prado_clean)
+res <- cor(prado_clean)
+round(res, 2)
+
+
+```
+
 
 
 ## Summary Stats
