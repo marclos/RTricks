@@ -8,16 +8,145 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+## Introduction
+
+The \textbf{Shannon-Weaver Index}, also known as the \textbf{Shannon-Wiener Index} or simply the \textbf{Shannon Diversity Index}, is a widely used metric in ecology for measuring biodiversity. It incorporates both species richness and evenness into a single value.
+
+\section*{Historical Background}
+
+\begin{itemize}
+    \item \textbf{1948}: Claude Shannon introduced the concept of \textit{entropy} in his paper \textit{``A Mathematical Theory of Communication''}, where he quantified the uncertainty in a message source using:
+    \[
+    H = -\sum p_i \log_2 p_i
+    \]
+    
+    \item \textbf{Warren Weaver} later helped interpret and popularize this theory, leading to the combined attribution as the \textbf{Shannon-Weaver Index}.
+    
+    \item In the \textbf{1950s--60s}, ecologists adapted the entropy formula to describe biodiversity, treating species as symbols and their relative abundances as probabilities.
+    
+    \item Sometimes incorrectly referred to as the \textbf{Shannon-Wiener Index} due to confusion with Norbert Wiener.
+\end{itemize}
+
+## Implemented in R
+
+
+```{r}
+group6.csv = "/home/mwl04747/RTricks/00_Project_Group_Demos/Group6_FakeData.csv"
+
+# Read in the data
+group6 = read.csv(group6.csv, header = TRUE)
+
+# check read data
+head(group6)
+names(group6)
+```
+
+## Calculating Shannon-diversity index
+
+### Definition
+
+The Shannon Diversity Index (also known as the Shannon-Wiener or Shannon-Weaver Index) is a measure of biodiversity that accounts for both species richness and species evenness. It is defined mathematically as:
+
+\[
+H' = -\sum_{i=1}^{S} p_i \ln p_i
+\]
+
+\noindent Where:
+\begin{itemize}
+    \item \( H' \) is the Shannon diversity index.
+    \item \( S \) is the total number of species.
+    \item \( p_i \) is the proportion of individuals belonging to the \( i \)-th species.
+    \item \( \ln \) is the natural logarithm.
+\end{itemize}
+
+### Calculation Steps
+
+To calculate the index:
+\begin{enumerate}
+    \item Count the total number of individuals across all species, denoted \( N \).
+    \item For each species \( i \), calculate the proportion \( p_i = \frac{n_i}{N} \), where \( n_i \) is the number of individuals in species \( i \).
+    \item Plug each \( p_i \) into the formula and compute the sum.
+\end{enumerate}
+
+\section*{Alternate Formula Using Counts}
+
+Using species counts directly:
+
+\[
+H' = -\sum_{i=1}^{S} \left( \frac{n_i}{N} \ln \frac{n_i}{N} \right)
+\]
+
+### Example Calculation in R
+
+```{r}
+
+library(vegan)
+
+# Example data: rows = sites, columns = species counts
+species_data <- matrix(
+  c(5, 10, 15,
+    8, 12, 10),
+  nrow = 2,
+  byrow = TRUE
+)
+
+# Calculate Shannon index
+shannon_index <- diversity(species_data, index = "shannon")
+
+# Print result
+print(shannon_index)
+```
+
+
+The \texttt{diversity()} function defaults to the Shannon index when \texttt{index = "shannon"}. It computes the index for each row (e.g., sample or site).
+
+## Example Calculation with Fake Data!
+
+  
+```{r}
+# Load the required library
+library(vegan)
+# Calculate the Shannon diversity index
+shannon_diversity = function(data) {
+  # Remove any rows with NA values
+  data = na.omit(data)
+  
+  # Calculate the Shannon diversity index
+  shannon_index = diversity(data, index = "shannon")
+  
+  return(shannon_index)
+  
+}
+
+```
+
+```{r}
+# Calculate the Shannon diversity index for phytoplankton and fish from group6 data
+shannon_diversity_phytoplankton <- shannon_diversity(group6[, c("Athecate.dinoflagellates", "Thecate.dinoflagellates", "Silicoflagellates", "Diatoms")]); shannon_diversity_phytoplankton
+
+shannon_diversity_fish <- shannon_diversity(group6[, c("Coccolithophores", "Centrarchidae", "Salmonidae", "Cyprinidae", "Serranidae", "Sciaenidae")]); 
+
+str(shannon_diversity_fish)
+
+fish = as.data.frame(shannon_diversity_fish); fish
+fish$Location = group6$X; fish
+
+## Let's add the location to dataframe
+
+shannon_diversity_phytoplankton$Location = group6$X; shannon_diversity_phytoplankton
+
+
+```
+
+## Combine with WQ data! super neat dataset -- great job!!
+
 
 
 ## Hypotheses
 
-## Data Set
+How do phytoplankton and fish diversity vary with sampling location?
 
 
-## Summary Stats
-
-## Hypothesis Tests
 
 
 ## Plots
