@@ -47,6 +47,14 @@ riohonda = read.csv(group3.csv)
 head(riohonda)
 names(riohonda) = c("ID", "Date", "Phosphate", "Ammonia")
 
+data2.csv = "/home/mwl04747/RTricks/00_Project_Group_Demos/Group3_FakeData2.csv"
+data2 = read.csv(data2.csv); 
+
+names(data2) = c("ID", "Distance", "Date", "Phosphate", "Ammonia",  "Nitrate")
+
+
+
+
 
 ```
 
@@ -63,6 +71,8 @@ library(ggplot2)
 
 ```{r}
 summary(riohonda)
+summary(data2)
+
 ```
 
 
@@ -72,6 +82,10 @@ summary(riohonda)
 
 cor(riohonda$Ammonia, riohonda$Phosphate,  method = "pearson")
 
+# Create correlation matrix
+
+
+
 ```
 
 
@@ -80,3 +94,13 @@ cor(riohonda$Ammonia, riohonda$Phosphate,  method = "pearson")
 
 
 ## Plots
+
+```{r}
+plot(Phosphate ~ Distance, data=data2)
+abline(coef(lm(Phosphate ~ Distance, data=data2)), col="red")
+
+summary(lm(Phosphate ~ Distance, data=data2))
+```
+
+
+k
