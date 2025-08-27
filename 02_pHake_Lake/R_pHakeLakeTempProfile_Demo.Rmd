@@ -106,18 +106,18 @@ plot(Depth~Temperature, data=temp)
 ```
 5. Add title, adjust y-axis limits:
 ```{r Addtitle}
-plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(6,0), 
-     main="pHake Lake Temperature Profile (Jan 16, 2024)")
+plot(Depth~Temperature, data=temp, las=1, ty="b", ylim=c(6,0), 
+     main="pHake Lake Temperature Profile (Aug 26, 2025)")
 ```
 
 5. Define units with axes labels:
 ```{r Addlabels}
-plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(6,0), ylab="Depth (M)", 
-xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Jan 16, 2024)")
+plot(Depth~Temperature, data=temp, las=1, ty="b", ylim=c(6,0), ylab="Depth (M)", 
+xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Aug 26, 2025)")
 ```
 
 I had to copy and paste the degree symbol, there are better ways to do that, but 
-it's complictated -- so do this to keep it simple for now. 
+it's complicated -- so do this to keep it simple for now. 
 
 ## Prepare the Rmd file for ``Weekly Milestone'' submission
 
@@ -142,3 +142,22 @@ for an explanation.
 
 1. Click on the two files in the "Files" tab in the lower right panel of RStudio and then click on the "More" tab and select "Export".  This will zip and download the files to your computer.
 2. Submit to Canvas (first question on weekly quiz)!
+
+# Optional Ddition
+
+## Add Oxygen as a Second Graph
+
+1. Create a new R chunk below the temperature profile plot.
+2. Create a plot of Oxygen vs Depth using the same format as the temperature profile.
+```{r OxygenProfile, echo=TRUE}
+mfrow=c(2,1) # set up for two plots in one column
+plot(Depth~Temperature, data=temp, las=1, ty="b", ylim=c(6,0), ylab="Depth (M)",
+xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Aug 26, 2025)")
+
+plot(Depth~Oxygen, data=temp, las=1, ty="b", ylim=c(6,0), ylab="Depth (M)",
+xlab="Oxygen (mg/L)", main="pHake Lake Oxygen Profile (Aug 26, 2025)")
+
+```
+
+
+
