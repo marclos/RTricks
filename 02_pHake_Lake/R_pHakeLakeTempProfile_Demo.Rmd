@@ -1,7 +1,7 @@
 ---
 title: "Visualizing pHake Lake Temperature Profiles"
 author: "Marc Los Huertos"
-date: "2025-01-18 (ver. 1.0)"
+date: "2025-01-18 (ver. 1.2)"
 output: pdf_document
 ---
 
@@ -149,7 +149,7 @@ for an explanation.
 
 1. Create a new R chunk below the temperature profile plot.
 2. Create a plot of Oxygen vs Depth using the same format as the temperature profile.
-```{r OxygenProfile, echo=TRUE}
+```{r OxygenProfile, echo=TRUE, eval=FALSE}
 mfrow=c(2,1) # set up for two plots in one column
 plot(Depth~Temperature, data=temp, las=1, ty="b", ylim=c(6,0), ylab="Depth (M)",
 xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Aug 26, 2025)")
