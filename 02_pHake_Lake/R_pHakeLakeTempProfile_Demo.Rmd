@@ -49,7 +49,8 @@ file.choose() # we use this to determine the path and filename
 3. Put the code in the Rmd file--i suggest you put at the end in a new r block.
 
 ```{r importCSV, echo=TRUE}
-temp.csv <- "/home/mwl04747/RTricks/02_pHake_Lake/G0.csv" # change this to your path...
+temp.csv <- "/home/mwl04747/RTricks/02_pHake_Lake/Fall 2025 Temperature Profile Data Entry - Aug 2025.csv" # change this to your path...
+#temp.csv <- "/home/mwl04747/RTricks/02_pHake_Lake/G0.csv" # change this to your path...
 temp = read.csv(temp.csv) # This creates a data frame in R called temp
 temp # prints out dataframe
 ```
@@ -69,6 +70,8 @@ ls() # list the object in the environment
 names(temp) # list the column names
 str(temp) # list the structure of the data frame
 head(temp) # list the first 6 rows of the data frame
+# sort by depth
+temp = temp[order(temp$Depth),] # sort the data frame by depth
 
 ```
 2. If the code works, add a comment line for each function to explain what it does. Comments begin with a #.
@@ -103,13 +106,13 @@ plot(Depth~Temperature, data=temp)
 ```
 5. Add title, adjust y-axis limits:
 ```{r Addtitle}
-plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(14,0), 
+plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(6,0), 
      main="pHake Lake Temperature Profile (Jan 16, 2024)")
 ```
 
 5. Define units with axes labels:
 ```{r Addlabels}
-plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(14,0), ylab="Depth (M)", 
+plot(Depth~Temperature, data=temp, las=1, ty="l", ylim=c(6,0), ylab="Depth (M)", 
 xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Jan 16, 2024)")
 ```
 
