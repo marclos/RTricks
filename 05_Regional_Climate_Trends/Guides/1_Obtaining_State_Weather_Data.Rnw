@@ -17,7 +17,7 @@
 
 \title{Guide 1: Obtaining State Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 1.02)} 
+\date{\today~(ver. 1.03)} 
 
 \begin{document}
 \maketitle
@@ -59,16 +59,18 @@ We use these data to select for a station with a long record for each state in t
 \subsubsection{R Programming Language}
 
 R is an open source programming environment that has become one of the most popular tools for statisticians and data scientists. Capitalizing on the open source framework, a wide range of libraries or packages have been developed to facilitate data processing, analysis, and graphical displays. 
+I created a bunch of functions, which can then be used to collect Let's try this and see how it works! Please read as you go, there subtle things that can go wrong and you need to know what the code is supposed to do.
 
 %For the project we'll use a few packages that need to be installed and loaded. Using the lower right panel, you can install the packages by clicking on the "Packages" tab and then "Install" and then type in the package name and click "Install".
 
 \subsection{Revised Document Structure}
 
-Based on some feedback in the last year, I have re-organized the document with bullets of the steps and then the code. In the following sections, I am adding descriptions about ``what the code does and why". But several folks see the text and get tuned out.
+Based on some feedback in the last year, I re-organized the document with bullets of the steps and then the code. After the sections that show you how to process the data, I added descriptions about ``what the code does and why".
+
+I suggest you look at these sections after running the code, but I put them in the end so it doesn't distract you from the main steps.
 
 There are two weaknesses with this approach that I can see. First, if the code does not work, you will have a really hard time figuring out why, since you have no idea what the code is supposed to do. Second, if the code works, you will not really be learning any R coding. Just how to copy and paste.
 
-I have created a bunch of functions, which can then be used to collect Let's try this and see how it works! Please read as you go, there subtle things that can go wrong and you need to know what the code is supposed to do.
 
 \subsection{Preparing R for the Project}
 
@@ -85,7 +87,31 @@ I suggest you do the following to prepare:
 
 \section{R Functions for Getting Weather Station Data}
 
-\subsection{Creating a Record of Your Commands}
+\subsection{Creating a Record of Your Commands w/R Markdown}
+
+To record your history of R code, I suggest use an Rmarkdown file to keep your code handy. 
+
+Normally, we use R Studio to creata a new file and select R Markdown. Then we define a title, author, and output format as PDF. Then save the file in the folder you created earlier (Figure~\ref{fig:RMarkdown}). 
+ 
+\begin{figure}[h]
+\centering
+\includegraphics[width=1.0\textwidth]{/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/figure/Guide1NewRMarkdown.png}
+\caption{Creating a new R Markdown file.}
+\label{fig:RMarkdown}
+\end{figure}
+
+
+However, for this prooject, I suggest you use my template and name the file ``ST\_Climate\_Trends--Surname.Rmd'', where ST is the state you selected and Surname is your last name. 
+
+Knit the file to create a PDF. Look at the PDF to see how various parts of the Rmd file were knitted. Notice that there are generally two sections: text and R chunks. As you write th R code, you will can record your code in the R chunks AND develop the output into a document for future reference.
+
+Look carefully at the Rmd file and take note of the following: First, there are chunks of R code separated from the text by a line of three backticks. Second, the R code is written in the chunks and the output is written below the code. Finally, there is a set of backticks at the end of the code chunk. This section is gray and is where you can record your Rcode. 
+
+I suggest you modify the text and use it to guide the process and record issues you have so Marc can make the process eaiser for each iteration!
+
+\subsubsection{R Environment and knitr}
+
+When you knit, R starts a new environment and runs the code in the chunks. But that means the new environment doesn't have the data you might create in the console, which is then in the R environment. So, I suggest you use the R markdown to double check that everything is working well in both the console and in the knit environment.
 
 Use the Rmd file to record your R code and comments. This will help you remember what you did and why. See MarcsTemplate.Rmd as a skeleton file. 
 
@@ -140,7 +166,7 @@ I suggest you use file.choose() and assign filename.csv to the path and name of 
 Example of how to use the function:
 
 <<echo=TRUE, eval=TRUE>>=
-my.state <- "CA"
+my.state <- "NV"
 filename.csv <- 
   "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
@@ -158,10 +184,10 @@ This functions requires two parameters: data path and name of inventory datafram
 
 The path to your data folder will be different, I created a directory to separate my data by class year, you don't need that! But it is nice to keep neat. Use the ``Data'' folder you created when you set up the project.
 
-An example of how I used the function (for my data and state): 
+An example of how I used the function (for my data and state) In this case, I am using Nevada: 
 
 <<echo=TRUE, eval=TRUE, results='hide'>>=
-datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
+datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/FA25/"
 downloadStations.fun(datapath, my.inventory)
 @ 
 
@@ -170,7 +196,7 @@ Your data path will NOT be the same as mine. First, you can see your working dir
 Then delete the file name (remove the ``stations.active.oldest.csv''!!) and add the ``/Data/'', so it might look something like this: 
 
 \begin{verbatim}
-datapath = "/home/XXXXXXXX/Regional_Climate_Trends/Data/"
+datapath = "/home/Regional_Climate_Trends/Data/"
 \end{verbatim}
 
 The / at the end turns out to be important, so include that.
@@ -179,39 +205,11 @@ This will download the data from the NOAA website and read it into R then writte
 
 \end{description}
 
-\noindent {\Large\textcolor{ForestGreen}{You're are done with this guide, go to Guide 2!}}
+\noindent {\Large\textcolor{ForestGreen}{You're done processing the code in this Guide 1! I suggest you review the code below and then go to Guide 2.}}
 
 \bigskip
 
 \section{Explaining the Process and Code}
-
-\subsection{Working with a R Markdown File}\label{subsec:RMarkdown}
-
-To record your history of R code, I suggest use an Rmarkdown file to keep your code handy. 
-
-Normally, we use R Studio to creata a new file and select R Markdown. Then we define a title, author, and output format as PDF. Then save the file in the folder you created earlier (Figure~\ref{fig:RMarkdown}). 
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=1.0\textwidth]{/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/figure/Guide1NewRMarkdown.png}
-\caption{Creating a new R Markdown file.}
-\label{fig:RMarkdown}
-\end{figure}
-
-
-However, for this prooject, I suggest you use my template and name the file ``ST\_Climate\_Trends--Surname.Rmd'', where ST is the state you selected and Surname is your last name. 
-
-Knit the file to create a PDF. Look at the PDF to see how various parts of the Rmd file were knitted. Notice that there are generally two sections: text and R chunks. As you write th R code, you will can record your code in the R chunks AND develop the output into a document for future reference.
-
-Look carefully at the Rmd file and take note of the following: First, there are chunks of R code separated from the text by a line of three backticks. Second, the R code is written in the chunks and the output is written below the code. Finally, there is a set of backticks at the end of the code chunk. This section is gray and is where you can record your Rcode. 
-
-I suggest you modify the text and use it to guide the process and record issues you have so Marc can make the process eaiser for each iteration!
-
-\subsubsection{R Environment and knitr}
-
-When you knit, R starts a new environment and runs the code in the chunks. But that means the new environment doesn't have the data you might create in the console, which is then in the R environment. So, I suggest you use the R markdown to double check that everything is working well in both the console and in the knit environment.
-
-%I created an R Markdown file for you to use. It is called MarcsTemplate.Rmd. As a template, you can use and change the code as you go. 
 
 \subsection{Defining Path \& Read Data}\label{subsec:Folderpaths}
 

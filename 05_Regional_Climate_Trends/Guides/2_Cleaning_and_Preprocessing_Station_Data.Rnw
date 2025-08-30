@@ -15,7 +15,7 @@
 
 \title{Guide 2: Cleaning and Pre-Processing Weather Station Data}
 \author{Marc Los Huertos}
-\date{\today~(ver. 1.0)} 
+\date{\today~(ver. 1.01)} 
 
 \begin{document}
 \maketitle
@@ -93,11 +93,11 @@ Use this function read the stations in the R Environment.
 Example of how to use the function:
 
 <<readstations, echo=TRUE, results='hide'>>=
-datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
+datafolder = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/FA25/"
 ReadStations2.fun(datafolder)
 @
 
-\noindent Remember that datafolder is a path of hierarchical folders and should end with ".../Data/" for your path. Why is mine different? Becuase I often have to help students and want to save the data in a unique path for each spring course.
+\noindent Remember that datafolder is a path of hierarchical folders and should end with ".../Data/" for your path. Why is mine different? Because I often have to help students and want to save the data in a unique path for each spring course.
 
 \item[List the objects in the R environment] The ls() function will list the objects in the R environment. Use this in the console. Notice nothing goes inside 
 the parethesis. 
@@ -117,7 +117,7 @@ By using \texttt{str()}, we can ensure the datasets look right!
 The syntax requires an object, in our case, the object name for a weather stations's data. For example: 
 
 <<stationstructure, echo=FALSE, results='markup'>>=
-str(USC00042294)
+str(USW00024128)
 @
 
 What to look for?  Is the object a data.frame?  Does it have the right number of observations? Are the expected variable names present?  Are the data types correct?  Are values in each variable reasonable?
@@ -157,8 +157,8 @@ Next we'll ``clean'' the dataset by fixing the date format and preparing it for 
 Example of how to use the function (Note: the new dataframe has a name change with an ``a'' following the station. This is so we can keep the original data and the processed data separate.): 
 
 <<fixdates, echo=TRUE, results='hide'>>=
-USC00042294a <- fixDates.fun(USC00042294)
-USC00040693a <- fixDates.fun(USC00040693)
+USW00024128a <- fixDates.fun(USW00024128)
+# USC00040693a <- fixDates.fun(USC00040693)
 @
 
 \item[Evaluation Temporal Coverage]
@@ -172,8 +172,8 @@ We need to know how much data we have for each station. This is important for th
 Example of how to use the function: 
 
 <<checkcoverage, echo=TRUE, results='hide'>>=
-coverage.fun(USC00042294a)
-coverage.fun(USC00040693a)
+coverage.fun(USW00024128a)
+#coverage.fun(USC00040693a)
 @
 
 In general, we want something like 95\% coverage for the period of record. If you don't have that, please let us know and we'll help you get additional stations with better coverage!
@@ -199,8 +199,8 @@ According the the NOAA website, the csv.gz files have  five core elements includ
 Example of how to use the function (Note: the new dataframe has a name change with a ``b'' following the station. This is so we can keep the original data and the processed data separate.):
 
 <<fixValues, echo=TRUE, results='hide'>>=
-USC00042294b <- fixValues.fun(USC00042294a)
-USC00040693b <- fixValues.fun(USC00040693a)
+USW00024128b <- fixValues.fun(USW00024128a)
+# USC00040693b <- fixValues.fun(USC00040693a)
 @
 
 \item[Checking for Outliers]
@@ -339,8 +339,8 @@ At this point, the function produced graphics and a summary of flags to examine 
 Example of how to use the function:
 
 <<echo=TRUE, results='markup'>>=
-QAQC.fun(USC00042294b)
-QAQC.fun(USC00040693b)
+QAQC.fun(USW00024128b)
+# QAQC.fun(USC00040693b)
 @
 
 No flags are reported here. If you have any hints of data problems (wacky values, odd patterns), let's sort them out together!
@@ -360,10 +360,10 @@ For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly total
 Example of how to use the functions:
 
 <<monthymeans_normals, echo=TRUE, results='hide'>>=
-USC00042294.monthly <- MonthlyValues.fun(USC00042294b)
-USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
-USC00040693.monthly <- MonthlyValues.fun(USC00040693b)
-USC00040693.normals <- MonthlyNormals.fun(USC00040693b)
+USW00024128.monthly <- MonthlyValues.fun(USW00024128b)
+USW00024128.normals <- MonthlyNormals.fun(USW00024128b)
+#USC00040693.monthly <- MonthlyValues.fun(USC00040693b)
+#USC00040693.normals <- MonthlyNormals.fun(USC00040693b)
 @
 
 \item[Function to Create Anomalies]
@@ -371,10 +371,10 @@ USC00040693.normals <- MonthlyNormals.fun(USC00040693b)
 Example of how to use the function:
 
 <<anomalies, echo=TRUE, results='hide'>>=
-USC00042294.anomalies <- 
-  MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
-USC00040693.anomalies <- 
-  MonthlyAnomalies.fun(USC00040693.monthly, USC00040693.normals)
+USW00024128.anomalies <- 
+  MonthlyAnomalies.fun(USW00024128.monthly,USW00024128.normals)
+#USC00040693.anomalies <- 
+#  MonthlyAnomalies.fun(USC00040693.monthly, USC00040693.normals)
 @
 
 \end{description}
@@ -392,18 +392,18 @@ Getting into the data is a bit tricky. The datasets is a list of dataframes. Eac
 The get access to each you use the following code:
 
 \begin{itemize}
-  \item \verb|USC00042294.anomalies[[1]]| for TMAX
-  \item \verb|USC00042294.anomalies[[2]]| for TMIN
-  \item \verb|USC00042294.anomalies[[3]]| for PRCP
+  \item \verb|USW00024128.anomalies[[1]]| for TMAX
+  \item \verb|USW00024128.anomalies[[2]]| for TMIN
+  \item \verb|USW00024128.anomalies[[3]]| for PRCP
 \end{itemize}
 
 \begin{figure}
 <<plotanomalies, echo=FALSE>>=
 # plot the data
 par(mfrow=c(3,1), mar=c(4,5,3,2))
-plot(TMAX.a ~ Ymd, data=USC00042294.anomalies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Maximum Temperature Change")
-plot(TMIN.a ~ Ymd, data=USC00042294.anomalies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Minimum Temperature Change")
-plot(PRCP.a ~ Ymd, data=USC00042294.anomalies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anamoly (C)", main="Monthly Precipiation Change")
+plot(TMAX.a ~ Ymd, data=USW00024128.anomalies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Maximum Temperature Change")
+plot(TMIN.a ~ Ymd, data=USW00024128.anomalies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Minimum Temperature Change")
+plot(PRCP.a ~ Ymd, data=USW00024128.anomalies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anamoly (C)", main="Monthly Precipiation Change")
 @
 \caption{Here's a quick test to see if my data are coming out as expected and as a preview.}
 
@@ -421,7 +421,7 @@ I tend to avoid having lots of objects in my R environment. I like to clean up a
 Also, I like to move the final products into csv files. Here's the function to do that. However, I noticed that it' deleting needed files. YIKES! It's also clunky, but not that important at this point, nevertheless, I'll work on it later.So, I suggest you don't run this code until I fix it.
 
 <<cleanup, echo=TRUE, eval=FALSE>>=
-CleanUp.fun(datafolder, USC00042294.anomalies, "USC00042294")
+CleanUp.fun(datafolder, USW00024128.anomalies, "USW00024128")
 @
 
 For now, I am just saving the anomalies data into an RData file that I can use in other Rmd Guides by loading. I doubt you'll need to do that if you use only one Rmd file to knit all the functions together.
@@ -448,7 +448,7 @@ The function fails to read some csv files into the R environment for a variety o
 To work around the issues, we'll have to read the csv filed directly. Here's how an example of how we might do it:
 
 \begin{verbatim}
-USC00042294 <- read.csv("data/USC00042294.csv")
+USW00024128 <- read.csv("data/USW00024128.csv")
 \end{verbatim}
 
 
@@ -559,17 +559,17 @@ In addition, I have written some custom functions to evaluate the dataframes we 
 \item Does these object exist?
 
 <<dfexists, eval=TRUE>>=
-df_exists("USC00042294b")
+df_exists("USW00024128b")
 @
 
 \item What are the names within the dataframe?
 <<df_names, echo=TRUE>>=
-df_names(USC00042294b)
+df_names(USW00024128b)
 @
 
 \item What are the first few rows of the dataframe?
 <<df_head, echo=TRUE>>=
-df_head(USC00042294.anomalies)
+df_head(USW00024128.anomalies)
 @
 
 
