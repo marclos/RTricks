@@ -5,7 +5,7 @@
 
 \title{Preparing the Regional Climate Trends Project}
 \author{Marc Los Huertos}
-\date{\today~(ver. 1.03)} % without \date command, current date is supplied
+\date{\today~(ver. 1.04)} % without \date command, current date is supplied
 
 \begin{document}
 \maketitle
@@ -20,9 +20,9 @@ Create a public product (video) that explains climate change trends in a state; 
 \subsection{Project Stages}
 
 \begin{description}
-  \item[Project Overview (This Document)] A brief overview of the project and the steps to complete it. In addition, this Rnw file weaces text and R code that creates an inventory active weather station IDs for each state (and territory). Students do not need to run the R code in this document, but it is available for reference and a learning tool. 
+  \item[Project Overview (This Document)] A brief overview of the project and the steps to complete it. In addition, this Rnw file weaves text and R code that creates an inventory active weather station IDs for each state (and territory). Students do not need to run the R code in this document, but it is available for reference and a learning tool. 
   
-  \item[Guide 1] Data Collection (Download weather station data from the web and read into R.
+  \item[Guide 1] Data Collection (Download weather station data from the Boxfolder and read into R.
   \item[Guide 2] Cleaning and Pre-Processing Weather Station Data (Convert date formats, clean missing data, etc.)
   \item[Guide 3] Analyzing \& Visual Display of Climate Trends (Analyze data (means, trends, etc) and create compelling visualizations)
   \item[Guide 4] Climate Science Narratives --- State Initiatives and Community Belonging (Create creative stories that explain climate change trends)
@@ -42,7 +42,9 @@ At this point, I created a DRAFT visual flow chart that displays some of the sta
 
 I created several Guides 1 through 5. Each guide explains steps to complete the project and are designed to be completed in order. %, but it is possible to skip a guide if the data is already available.
 
-Our approach prioritizes documentation and transparency in data sourcing and preparation while also providing executable code. We focus on clearly identifying data sources, detailing the process for obtaining the data, and curating relevant datasets for analysis. My intention is to promote a measure of independence to verify and replicate the data acquisition process. 
+Our approach prioritizes documentation and transparency in data sourcing and preparation while also providing executable code. 
+
+%We focus on clearly identifying data sources, detailing the process for obtaining the data, and curating relevant datasets for analysis. My intention is to promote a measure of independence to verify and replicate the data acquisition process. 
 
 \section{Selecting US Weather Station with Robust Records}
 
@@ -82,6 +84,7 @@ str(inventory)
 @
 
 
+
 \subsection{Selecting Active (and inactive) Weather Stations with Maximum Daily Temperature Readings}
 
 
@@ -99,7 +102,7 @@ str(inventory.TMAX)
 # Subset Active Stations (observations that include 2024 and more recent)
 active.TMAX = subset(inventory.TMAX, subset=LASTYEAR>=2024); str(inventory.TMAX)
 # Subset Inactive and Old Stations)
-inactive.TMAX = subset(inventory.TMAX, subset=(FIRSTYEAR <= 1850 & LASTYEAR<=2023)); str(inactive.TMAX)
+inactive.TMAX = subset(inventory.TMAX, subset=(FIRSTYEAR <= 1850 & LASTYEAR<=2024)); str(inactive.TMAX)
 @
 
 \begin{figure}
@@ -257,7 +260,7 @@ $^2$ TBD.}
 \begin{tabular}{|l|c|p{8cm}|}
 \hline
 \textbf{Task/Guide}     & \textbf{Time (min)} & \textbf{Resources} (Notes) \\ \hline \hline
-Guide \#1                 & x                   & Rstudio, R code, NOAA website$^1$   \\ \hline
+Guide \#1                 & 45                  & Rstudio, R code, NOAA website$^1$   \\ \hline
 
 Guide \#2                 & x                   & Rstudio, R code  \\ \hline
 

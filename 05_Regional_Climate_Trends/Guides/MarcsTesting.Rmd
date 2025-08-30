@@ -9,13 +9,13 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Template Updated: 2025-08-30
 
-Updated: 2024-02-16
-
+This template cannot be run without making substantion changes. However, it does provide the skeleton and some of the code needed to complete the project, in particular the sourcing of the functions and the order of operations.
 
 # Guide 1
 
-## Chunk 1 Source Guide1fuctions.R
+## Chunk 1 Source Guide1functions.R
 
 Load Guide Functions
 
@@ -25,24 +25,23 @@ source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide1functions
 
 ## Chunk 2 Read 
   
-
-Select State and Read Inventory of Statons
+Select State and Read Inventory of Stations. In my example, I have selected Nevada (NV).
 
 ```{r, chunk1_2}
-my.state = "WI"
+my.state = "NV"
 filename.csv <- "/home/mwl04747/RTricks/05_Regional_Climate_Trends/stations.active.oldest.csv"
 my.inventory <- readInventory.fun(filename.csv, my.state)
 ```
 
 ## Chunk 3 Download Stations
 ```{r, chunk1_3, results='hide'}
-datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
+datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/FA25/"
 downloadStations.fun(datapath, my.inventory)
 ```
 
 # Guide 2
 
-## Chunk 1 Source Guide1fuctions
+## Chunk 1 Source Guide2functions
 
 ```{r chunk2_1}
 source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide2functions.R")
@@ -62,8 +61,8 @@ ReadStations2.fun(datafolder)
 
 ## Chunk 4 (Fix Date)
 ```{r, chunk2_4}
-USC00042294a <- fixDates.fun(USC00042294)
-USW00014898a <- fixDates.fun(USW00014898)
+USW00024128a <- fixDates.fun(USW00024128)
+#USW00014898a <- fixDates.fun(USW00014898)
 
 ```
 
@@ -74,31 +73,31 @@ coverage.fun(USC00042294a)
 
 ## Chunk 6 Fix Values
 ```{r, chunk2_6}
-USC00042294b <- fixValues.fun(USC00042294a)
-USW00014898b <- fixValues.fun(USW00014898a)
+USW00024128b <- fixValues.fun(USW00024128a)
+# USW00014898b <- fixValues.fun(USW00014898a)
 ```
 
 ## Chunk 7 QAQC
 ```{r, chunk2_7}
-QAQC.fun(USC00042294b)
+QAQC.fun(USW00024128b)
 ```
 
 ## Chunk 8 # Monthly Means and Normals
 ```{r, chunk2_8}
-USC00042294.monthly <- MonthlyValues.fun(USC00042294b)
-USC00042294.normals <- MonthlyNormals.fun(USC00042294b)
+USW00024128.monthly <- MonthlyValues.fun(USW00024128b)
+USW00024128.normals <- MonthlyNormals.fun(USW00024128b)
 
-USW00014898.monthly <- MonthlyValues.fun(USW00014898b)
-USW00014898.normals <- MonthlyNormals.fun(USW00014898b)
+# USW00014898.monthly <- MonthlyValues.fun(USW00014898b)
+# USW00014898.normals <- MonthlyNormals.fun(USW00014898b)
 
 ```
 
 
 ## Chunk 9 Anomalies
 ```{r, chunk2_9}
-USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
+USW00024128.anomalies <- MonthlyAnomalies.fun(USW00024128.monthly, USW00024128.normals)
 
-USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
+#USC00042294.anomalies <- MonthlyAnomalies.fun(USC00042294.monthly, USC00042294.normals)
 ```
 
 
@@ -113,7 +112,7 @@ source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide3functions
 
 ## Chunk 2 Analyze for Trends by Month
 ```{r chunk3_2}
-USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
+USW00024128.trends <- monthlyTrend.fun(USW00024128.anomalies)
 ```
 
 ## Chunk 3 TBD
@@ -132,7 +131,7 @@ source("/home/mwl04747/RTricks/05_Regional_Climate_Trends/Guides/Guide4functions
 
 ## Chunk 2 Plot Trend
 ```{r}
-plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
+plotTrend2.fun(USW00024128.anomalies, "TMIN", 7)
 ```
 
 almost done!
