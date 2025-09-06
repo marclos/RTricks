@@ -46,6 +46,7 @@ We need to address several things that might get in the way of our analysis:
   \item Convert units (VALUE: PRCP = 0.1 mm, TMAX/TMIN = 0.1 C)
   \item Evaluate missing data (Coverage.fun)
   \item Evaluate for Outliers (QACQ.fun)
+  \item Visualize data using ggplot2 (PlotStation.fun)
   \item Other stuff?? We will see what we need to do as we go along. The data evolve each year.
 \end{enumerate}
 
@@ -345,6 +346,11 @@ QAQC.fun(USW00024128b)
 
 No flags are reported here. If you have any hints of data problems (wacky values, odd patterns), let's sort them out together!
 
+<<echo=TRUE, results='markup'>>=
+QAQC2.fun(USW00024128b)
+# QAQC.fun(USC00040693b)
+@
+
 \item[Function to Create Monthly Values and Normals]
 
 For TMAX and TMIN, we want monthly means, for rainfall, we'll want monthly totals.\footnote{Brody: We need code to exclude months with missing data, these might not be represenative of the month if missing, especically for PRCP!}
@@ -403,12 +409,71 @@ The get access to each you use the following code:
 par(mfrow=c(3,1), mar=c(4,5,3,2))
 plot(TMAX.a ~ Ymd, data=USW00024128.anomalies[[1]], type="p", col="red", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Maximum Temperature Change")
 plot(TMIN.a ~ Ymd, data=USW00024128.anomalies[[2]], type="p", col="blue", pch=19, cex=.2, las=1, xlab="Year", ylab="Temperature Anamoly (C)", main="Monthly Minimum Temperature Change")
-plot(PRCP.a ~ Ymd, data=USW00024128.anomalies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anamoly (C)", main="Monthly Precipiation Change")
+plot(PRCP.a ~ Ymd, data=USW00024128.anomalies[[3]], type="p", col="green", pch=19, cex=.2, las=1, xlab="Year", ylab="Precipitation Anamoly (cm)", main="Monthly Precipiation Change")
 @
 \caption{Here's a quick test to see if my data are coming out as expected and as a preview.}
 
 %You can think of this as simply \verb plot(y~x, data=station)and build from there if you are interested.}
 \end{figure}
+
+\subsection{Plotting the Results with ggplot2}
+
+\subsubsection{Why is marc learning and teaching ggplot2?}
+
+I have been using R for a long time, and I have used base R graphics for most of that time. However, I have found that ggplot2 offers several advantages that make it worth learning and teaching:
+
+\begin{description}
+  \item[Consistency and Clarity] ggplot2 is built upon the ``Grammar of Graphics,'' a systematic framework for describing and building plots. This provides a logical and consistent way to map data variables to visual aesthetics (like color, shape, size) and geometric objects (like points, lines, bars). This systematic approach makes it easier to understand how plots are constructed and to create complex visualizations.
+
+\item[Layered Approach] Plots in ggplot2 are built layer by layer. You start with a base plot and then add layers for geometric objects (e.g., geom\_point(), geom\_line()), statistical transformations (e.g., stat\_smooth()), scales, coordinate systems, and themes. This modularity offers immense flexibility and control over every aspect of the plot.
+
+\item[Customization and Aesthetics] ggplot2 offers extensive customization options for plot elements, including colors, fonts, labels, legends, and themes. This allows for the creation of publication-quality graphics with a high degree of aesthetic control.
+
+\item[Faceting] The ability to easily create ``facets'' (sub-plots based on different subsets of the data) is a powerful feature for exploring relationships within data and comparing groups.
+
+\item[Consistency and Reusability] The consistent syntax and layered structure make ggplot2 code highly reusable. Once you understand the grammar, you can apply the same principles to create a wide variety of plots, and modifications to the underlying data or desired plot type require minimal changes to the code.
+
+\item[Integration with Tidyverse] ggplot2 is a core package within the Tidyverse, a collection of R packages designed for data science. This integration allows for seamless data manipulation and visualization workflows.
+
+\item[Community and Resources] Due to its popularity, ggplot2 benefits from a large and active community, providing extensive documentation, online resources, and support for users.
+
+\end{description}
+
+
+\begin{figure}
+<<ggplotanomalies, echo=FALSE, fig.width=8, fig.height=10, results='hide', message=FALSE, warning=FALSE>>=
+# Combine the anomalies into a single data frame for plotting
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+TMAX.a <- USW00024128.anomalies[[1]] %>%
+  select(Ymd, TMAX.a) %>%
+  mutate(Variable = "TMAX")
+TMIN.a <- USW00024128.anomalies[[2]] %>%
+  select(Ymd, TMIN.a) %>%
+  mutate(Variable = "TMIN")
+PRCP.a <- USW00024128.anomalies[[3]] %>%
+  select(Ymd, PRCP.a) %>%
+  mutate(Variable = "PRCP")
+anomalies_long <- bind_rows(TMAX.a, TMIN.a, PRCP.a) %>%
+  pivot_longer(cols = c(TMAX.a, TMIN.a, PRCP.a), names_to = "Anomaly", values_to = "Value")
+# Plot the anomalies using ggplot2
+
+ggplot(anomalies_long, aes(x = Ymd, y = Value, color = Variable)) +
+  geom_point(alpha = 0.3, size = 0.5) +
+  geom_smooth(method = "loess", se = FALSE) +
+  facet_wrap(~ Variable, scales = "free_y", ncol = 1) +
+  labs(title = "Monthly Climate Anomalies for USW00024128",
+       x = "Year",
+       y = "Anomaly") +
+  theme_minimal() +
+  theme(legend.position = "none")
+@
+\caption{Here's a quick test to see if my data are coming out as expected and as a preview.}
+%You can think of this as simply \verb plot(y~x, data=station)and build from there if you are interested.}
+\end{figure}
+
 
 \textcolor{Periwinkle}{\Large Your are done with this guide, now take a break, a walk, and enjoy some screen free downtime. Next, go to Guide 3!}
 
@@ -497,7 +562,7 @@ I noticed that the read.csv function is not working for some files. I'm not sure
 
 \subsubsection{Plot Anomaly}
 
-Graphic has lots of issues. more next time!  But here's a start.
+Graphic has lots of issues and I am converting to ggplot (2025-26)!! -- ut here's a start.
 
 <<quickplotcheck, eval=FALSE>>=
 options(scipen=5)
@@ -512,7 +577,7 @@ temp.lm = lm(ANOMALY ~ YEAR, data = subset(station1.TMAX, MONTH == 1))
 abline(coef(temp.lm), col = "red")
 @
 
-We can see huge periods of time where no data was collecged. Yikes! I don't think I can use this station.
+We can see huge periods of time where no data was collected. Yikes! I don't think I can use this station.
 
 My custom functions are probably sensitive to missing values, need to work on that!
 

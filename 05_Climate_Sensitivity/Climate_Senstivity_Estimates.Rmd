@@ -1,0 +1,158 @@
+---
+title: "Climate Sensitivity Estimates"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#Install the required package
+install.packages('googlesheets4')
+#Load the required library 
+library(googlesheets4)
+library(tidyverse)
+library(lubridate)
+library(scales)
+```
+
+## Data Source
+
+```{r import}
+# X <- read_sheet("https://docs.google.com/spreadsheets/d/1Bw2XU3FCw9a__Z5Y9YGfCWU-ohzuhFJ8_gcGyIsTECE/edit?gid=0#gid=0")
+
+ECS.df <- read.csv("C:\\Users\\mwl04747\\Box\\1. Teaching\\EA030\\Sessions\\05d_GWP\\ECS_Graphics\\ECS Studies.csv")
+
+head(ECS.df)
+
+pal <- data.frame(type = unique(ECS.df$type),
+                  color = c("#1f77b4", "#1f77b4", "#2ca02c", "#d62728", "#9467bd"))
+pal
+
+# LOESS fits for mean, min and max estimates over year
+span_val <- 0.5
+mean_fit  <- loess(mean ~ year, data = ECS.df, span = span_val, degree = 2, na.action = na.exclude)
+min_fit   <- loess(min  ~ year, data = ECS.df, span = span_val, degree = 2, na.action = na.exclude)
+max_fit   <- loess(max  ~ year, data = ECS.df, span = span_val, degree = 2, na.action = na.exclude)
+
+grid <- tibble(year = seq(min(ECS.df$year), max(ECS.df$year), length.out = 400))
+
+fit_df <- grid %>%
+  mutate(
+    mean_fit = predict(mean_fit, newdata =grid),
+    min_fit  = predict(min_fit,  newdata = grid),
+    max_fit = predict(max_fit, newdata = grid)
+  ) %>%
+  mutate(
+    min_env  = pmin(min_fit, max_fit, na.rm = TRUE),
+    max_env = pmax(min_fit, max_fit, na.rm = TRUE)
+  )
+
+head(fit_df)
+
+```
+
+## Including Plots
+
+Compilation of climate sensitivity studies adapted from Knutti et al 2017 and extended through May 2018 based on a Google Scholar search of “climate sensitivity”. Dots show the best estimate of sensitivity from each study, which may be mean, median, or other metric, depending on the study. Bars show the uncertainty range, which may be one sigma, 90%, or two sigma depending on the study. The black dotted line represents a smoothed LOESS fit to the best estimates, while the grey range shows similar fits to the high and low estimates.
+
+```{r pressure, echo=FALSE, eval=FALSE}
+# Carbon Brief–style climate sensitivity compilation (fixed geom_ribbon x-mapping)
+library(tidyverse)
+library(lubridate)
+library(scales)
+
+# Example data (replace with your full compilation)
+studies <- tribble(
+  ~author,                ~year, ~month, ~best, ~low, ~high, ~type,           ~unc_type,
+  "Knutti et al.",        2017,      6,   3.0,   2.0,  4.0,  "Synthesis",      "likely",
+  "Sherwood et al.",      2014,      1,   3.2,   2.0,  4.5,  "Synthesis",      "likely",
+  "Aldrin et al.",        2012,      3,   2.0,   1.1,  4.3,  "Observations",   "5–95%",
+  "Otto et al.",          2013,      5,   2.0,   1.5,  2.8,  "Observations",   "5–95%",
+  "Roe & Armour",         2011,      7,   3.0,   2.0,  4.5,  "Theory/Models",  "likely",
+  "Lewis & Curry",        2015,      9,   1.6,   1.0,  2.6,  "Observations",   "5–95%",
+  "PALEO Example",        2006,      2,   2.5,   1.5,  4.0,  "Palaeoclimate",  "likely",
+  "Andrews et al.",       2012,     10,   2.7,   2.0,  3.5,  "Models",         "±1σ",
+  "Lewis & Curry",        2018,      5,   1.5,   1.2,  1.8,  "Observations",   "5–95%"
+)
+
+# Prepare date / decimal year
+studies <- studies %>%
+  mutate(
+    month = if_else(is.na(month), 6L, month),
+    pub_date = make_date(year, month, 1),
+    dec_year = decimal_date(pub_date)
+  ) %>%
+  arrange(pub_date)
+
+# LOESS fits for best, low, and high estimates over time
+span_val <- 0.5
+best_fit  <- loess(best ~ dec_year, data = studies, span = span_val, degree = 2, na.action = na.exclude)
+low_fit   <- loess(low  ~ dec_year, data = studies, span = span_val, degree = 2, na.action = na.exclude)
+high_fit  <- loess(high ~ dec_year, data = studies, span = span_val, degree = 2, na.action = na.exclude)
+
+grid <- tibble(dec_year = seq(min(studies$dec_year), max(studies$dec_year), length.out = 400))
+fit_df <- grid %>%
+  mutate(
+    best_fit = predict(best_fit, newdata = grid),
+    low_fit  = predict(low_fit,  newdata = grid),
+    high_fit = predict(high_fit, newdata = grid)
+  ) %>%
+  mutate(
+    low_env  = pmin(low_fit, high_fit, na.rm = TRUE),
+    high_env = pmax(low_fit, high_fit, na.rm = TRUE)
+  )
+
+pal <- c(
+  "Models" = "#1f77b4",
+  "Theory/Models" = "#1f77b4",
+  "Observations" = "#2ca02c",
+  "Palaeoclimate" = "#d62728",
+  "Synthesis" = "#9467bd"
+)
+
+p <- ggplot(studies, aes(x = dec_year)) +
+  # LOESS envelope — include x mapping explicitly (fit_df has dec_year)
+  geom_ribbon(
+    data = fit_df,
+    aes(x = dec_year, ymin = low_env, ymax = high_env),
+    inherit.aes = FALSE, fill = "grey70", alpha = 0.4
+  ) +
+  # Dotted LOESS for best — include x mapping explicitly
+  geom_line(
+    data = fit_df,
+    aes(x = dec_year, y = best_fit),
+    inherit.aes = FALSE, linetype = "dotted", size = 1, color = "black"
+  ) +
+  # Uncertainty ranges per study (inherits x = dec_year from top-level aes)
+  geom_linerange(aes(ymin = low, ymax = high, color = type), alpha = 0.7, size = 0.6) +
+  # Best-estimate points
+  geom_point(aes(y = best, fill = type),
+             shape = 21, color = "white", stroke = 0.3, size = 2.8, alpha = 0.95) +
+  scale_color_manual(values = pal, guide = "none") +
+  scale_fill_manual(values = pal) +
+  scale_x_continuous("Publication year",
+                     breaks = pretty_breaks(n = 8),
+                     labels = function(x) floor(x)) +
+  ylab(expression("Equilibrium climate sensitivity (°C per CO"[2]*" doubling)")) +
+  labs(
+    title = "Climate sensitivity estimates and uncertainties (example dataset)",
+    subtitle = "Dots = best estimates • Bars = reported uncertainty ranges\nDotted line = LOESS on best estimates • Grey band = LOESS fits to high/low bounds",
+    caption = "Adapted after Knutti et al. (2017) and extended through May 2018."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+print(p)
+# Optional: save
+# ggsave("climate_sensitivity_carbonbrief_style_fixed.png", p, width = 10, height = 6, dpi = 300)
+
+
+```
+
+
