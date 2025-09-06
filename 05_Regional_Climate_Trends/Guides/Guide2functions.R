@@ -56,7 +56,7 @@ fixValues.fun <- function(station){
 #-------------------------------------------------------------------------------
 # QA/QC Function
 QAQC.fun <- function(station){
-  par(mfrow=c(1,1)) # chnaged this from 3 to 1 because of window size issues
+  par(mfrow=c(1,1)) # changed this from 3 to 1 because of window size issues
   plot(VALUE ~ Ymd, data = subset(station, 
       subset=ELEMENT=="PRCP"), type = "l", col = "blue", 
     main = "Time Series of Daily PRCP", xlab = "Date", ylab = "PRCP (mm)")
@@ -70,6 +70,31 @@ QAQC.fun <- function(station){
   station = subset(station, M.FLAG != "")
   station = subset(station, S.FLAG != "")
   return(station)
+}
+
+#-------------------------------------------------------------------------------
+# QA/QC Function
+QAQC2.fun <- function(station){
+  par(mfrow=c(1,1)) # changed this from 3 to 1 because of window size issues
+  # converting function to use ggplot2
+  library(ggplot2)
+  ggplot(subset(station, ELEMENT=="PRCP"), aes(x=Ymd, y=VALUE)) +
+    geom_line(color="blue") +
+    labs(title="Time Series of Daily PRCP", x="Date", y="PRCP (mm)") +
+    theme_minimal()
+  ggplot(subset(station, ELEMENT=="TMAX"), aes(x=Ymd, y=VALUE)) +
+    geom_line(color="blue") +
+    labs(title="Time Series of Daily TMAX", x="Date", y="TMAX (C)") +
+    theme_minimal()
+  ggplot(subset(station, ELEMENT=="TMIN"), aes(x=Ymd, y=VALUE)) +
+    geom_line(color="blue") +
+    labs(title="Time Series of Daily TMIN", x="Date", y="TMIN (C)") +
+    theme_minimal()
+  
+  #station = subset(station, Q.FLAG != "")
+  #station = subset(station, M.FLAG != "")
+  #station = subset(station, S.FLAG != "")
+  #return(station)
 }
 
 #-------------------------------------------------------------------------------
