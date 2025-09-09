@@ -21,7 +21,7 @@
 \contentsline {subsection}{\numberline {4.3}Standardized Precipitation Evapotranspiration Index (SPEI)}{14}{subsection.4.3}
 \contentsline {subsubsection}{\numberline {4.3.1}Days in a Row without Rain}{14}{subsubsection.4.3.1}
 \contentsline {subsubsection}{\numberline {4.3.2}Changes in the Rainfall Probability Distributions}{15}{subsubsection.4.3.2}
-\contentsline {subsection}{\numberline {4.4}Record Setting Temperature Records}{16}{subsection.4.4}
+\contentsline {subsection}{\numberline {4.4}Record Setting Temperature Records}{15}{subsection.4.4}
 \contentsline {subsection}{\numberline {4.5}KISS}{17}{subsection.4.5}
 \contentsline {subsubsection}{\numberline {4.5.1}Change Point Analysis}{17}{subsubsection.4.5.1}
 \contentsline {subsection}{\numberline {4.6}Temp \& Precipitation Probability}{17}{subsection.4.6}
@@ -29,7 +29,7 @@
 \contentsline {subsection}{\numberline {4.8}Probability Distributions}{17}{subsection.4.8}
 \contentsline {subsection}{\numberline {4.9}Evaluating Records}{17}{subsection.4.9}
 \contentsline {subsection}{\numberline {4.10}Export Options}{17}{subsection.4.10}
-\contentsline {section}{\numberline {5}Sea Surface Temperature Data -- SURP PROJECT WAITING TO HAPPEN}{18}{section.5}
+\contentsline {section}{\numberline {5}Sea Surface Temperature Data -- SURP PROJECT WAITING TO HAPPEN}{17}{section.5}
 \contentsline {section}{\numberline {6}Satellite Data}{18}{section.6}
 \contentsline {section}{\numberline {7}Ice-Core Data}{18}{section.7}
 \contentsline {section}{\numberline {8}Marc's Custom Functions}{18}{section.8}
@@ -41,7 +41,7 @@
 \contentsline {subsection}{\numberline {10.1}Simple Mapping of All US and Canada Weather Stations}{21}{subsection.10.1}
 \contentsline {subsection}{\numberline {10.2}Map US Weather Stations}{21}{subsection.10.2}
 \contentsline {subsection}{\numberline {10.3}Simple Mapping of Selected State's 15 oldest, active Weather Stations}{23}{subsection.10.3}
-\contentsline {subsection}{\numberline {10.4}More Complex Mapping of Stations}{24}{subsection.10.4}
+\contentsline {subsection}{\numberline {10.4}More Complex Mapping of Stations}{23}{subsection.10.4}
 \contentsline {section}{\numberline {11}Mapping Long-term Weather Records}{24}{section.11}
 \contentsline {subsection}{\numberline {11.1}Creating A Basic Trend Plot}{24}{subsection.11.1}
 \contentsline {section}{\numberline {12}Extreme Events--Using Daily Records}{24}{section.12}
