@@ -16,7 +16,7 @@
 
 \title{Guide 3: Analyzing \& Visual Display of Climate Trends}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.88)} 
+\date{\today~(ver. 0.90)} 
 
 \begin{document}
 \maketitle
@@ -60,7 +60,7 @@ Moreover, I haven't completed every possible analysis yet, but I tried to post t
 \end{enumerate}
 
 <<setup, echo=FALSE, results='hide', message=FALSE>>=
-datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/SP25/"
+datapath = "/home/mwl04747/RTricks/05_Regional_Climate_Trends/Data/FA25/"
 library(xtable)
 library(here)
 source(here("05_Regional_Climate_Trends", "Guides", "Guide3functions.R"))
@@ -113,8 +113,8 @@ In this section, we'll discuss how we might analyze the trends in the data by mo
 
 \item[Example of how to use the function] Here's an example using the list of station dataframes anomalies. Note: I have often spelled the word anamoly wrong! I don't want to break the functions in the middle of the year, so we'll just have to live with it!
 
-<<echo=TRUE, results='hide'>>=
-USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
+<<createtends, echo=TRUE, results='hide'>>=
+USW00024128.trends <- monthlyTrend.fun(USW00024128.anomalies)
 @
 
 \item[Explore Results] Table~\ref{tab:TMAXtrends} summarizes the monthly trends for TMAX. Admittedly, determining the months with the biggest changes isn't a very good approach for hypothesize testing -- it's more like a fishing expedition, but as long as we understand the difference between an \emph{a priori} hypothesis and an exploratory analysis, we should be okay if we make appropriate conclusions. 
@@ -122,13 +122,13 @@ USC00042294.trends <- monthlyTrend.fun(USC00042294.anomalies)
 We would want to evaluate the trends for TMIN and PRCP too! You can use the Environment tab in Rstudio to see the trend results for all three variables without needing any code, or use/modify this:
 
 \begin{verbatim}
-USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",]
+USW00024128.trends[USW00024128.trends$ELEMENT=="TMAX",]
 \end{verbatim}
 
 \end{description}
 
-<<echo=FALSE, results='asis', fig.cap="TMAX Trends X">>=
-xtable(USC00042294.trends[USC00042294.trends$ELEMENT=="TMAX",], caption = "TMAX Trends", label="tab:TMAXtrends")
+<<trendstable, echo=FALSE, results='asis', fig.cap="TMAX Trends X">>=
+xtable(USW00024128.trends[USW00024128.trends$ELEMENT=="TMAX",], caption = "TMAX Trends", label="tab:TMAXtrends")
 
 @
 
@@ -140,7 +140,7 @@ I suggest you select the element/month with the strongest signal. I selected TMI
 <<>>=
 par(mar=c(5,5,3,4), las=1, mfrow=c(1,1))
       
-plot(TMIN.a ~ Ymd, data=subset(USC00042294.anomalies$TMIN, 
+plot(TMIN.a ~ Ymd, data=subset(USW00024128.anomalies$TMIN, 
     MONTH==1), las=1, pch=20, cex=.5, col="grey", 
     ylab="Temp Anamoly (°C) ", 
     main="", 
@@ -151,11 +151,13 @@ plot(TMIN.a ~ Ymd, data=subset(USC00042294.anomalies$TMIN,
   subtitle <- c("Trend Line: 2.0/100 yrs; p-value = 0.004, r2 = 0.006")
   mtext(subtitle, side=3, line=0, cex=1.0, col="red")
   
-USC00042294.lm = lm(TMIN.a ~ Ymd, data=subset(USC00042294.anomalies$TMIN, 
+USW00024128.lm = lm(TMIN.a ~ Ymd, data=subset(USW00024128.anomalies$TMIN, 
     MONTH==1))
 
-abline(coef(USC00042294.lm), col="red", lwd=1.5)
+abline(coef(USW00024128.lm), col="red", lwd=1.5)
 @
+
+
 
 \subsection{Marc's Custom Function to Plot a Station Trend}
 
@@ -172,17 +174,17 @@ I have a custom function that will plot the trend line for you. It's a bit more 
 \item[Example of how to use the function] Here's an example using the list of station dataframes anomalies. 
 
 <<echo=TRUE, results='hide'>>=
-plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
+plotTrend2.fun(USW00024128.anomalies, "TMIN", 7)
 @
 
 \item[Explore Results] I suggest you look carefully at the plots for hidden trends. In this case, look how the temperature really starts warming after the 1960s. I don't know that that means, but seems important!
 
 \end{description}
 
-<<>>=
-plotTrend2.fun(USC00042294.anomalies, "TMAX", 6)
-plotTrend2.fun(USC00042294.anomalies, "TMIN", 7)
-plotTrend2.fun(USC00042294.anomalies, "PRCP", 1)
+<<plot3trends>>=
+plotTrend2.fun(USW00024128.anomalies, "TMAX", 6)
+plotTrend2.fun(USW00024128.anomalies, "TMIN", 7)
+plotTrend2.fun(USW00024128.anomalies, "PRCP", 1)
 @
 
 
@@ -210,34 +212,34 @@ For this we'll plot the entire record, with trend line and then overlay another 
 This is code for TMAX ([[1]] and June. I need to use "predict" to get the trend line for the second model that only includes the data after 1975.
 
 <<post1974>>=
-USC00042294.lm = lm(TMAX.a ~ Ymd, 
-                  data=subset(USC00042294.anomalies[[1]], subset=MONTH==6))
+USW00024128.lm = lm(TMAX.a ~ Ymd, 
+                  data=subset(USW00024128.anomalies[[1]], subset=MONTH==6))
 
-USC00042294.post1975 = subset(USC00042294.anomalies[[1]], subset= YEAR > 1974)
-USC00042294.post1975.lm = lm(TMAX.a ~ Ymd, data=subset(USC00042294.post1975, 
+USW00024128.post1975 = subset(USW00024128.anomalies[[1]], subset= YEAR > 1974)
+USW00024128.post1975.lm = lm(TMAX.a ~ Ymd, data=subset(USW00024128.post1975, 
                                                        subset=MONTH==6))
 
-plot(TMAX.a ~ Ymd, data=subset(USC00042294.anomalies[[1]], 
+plot(TMAX.a ~ Ymd, data=subset(USW00024128.anomalies[[1]], 
                 subset=MONTH==6), pch=20, cex=.5, col="grey", 
                 ylab="Temp Anamoly (°C) ",  main="", xlab="Year", 
                 frame.plot=TRUE)
      
-abline(coef(USC00042294.lm), col="black", lwd=1.5)
+abline(coef(USW00024128.lm), col="black", lwd=1.5)
 
-points(TMAX.a ~ Ymd, data=subset(USC00042294.post1975, subset=MONTH==6), 
+points(TMAX.a ~ Ymd, data=subset(USW00024128.post1975, subset=MONTH==6), 
        pch=20, cex=.5, col="red")
 
 new = seq.Date(from=as.Date("1975-01-01"), to=as.Date("2024-12-31"), by="month")
 
 #head(new)
 
-head(predict.lm(USC00042294.post1975.lm, interval="confidence"))
+head(predict.lm(USW00024128.post1975.lm, interval="confidence"))
 
 
-lines(USC00042294.post1975$Ymd, USC00042294.post1975.lm$fitted.values, 
+lines(USW00024128.post1975$Ymd, USW00024128.post1975.lm$fitted.values, 
       col="red", lwd=1.5)
 
-abline(coef(USC00042294.post1975.lm), 
+abline(coef(USW00024128.post1975.lm), 
        col="red", lwd=1.5)
   
 @
