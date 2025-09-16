@@ -26,7 +26,7 @@
 
 \title{Guide 5: Communicating Climate Stories -- Combining Imagery and Audio}
 \author{Marc Los Huertos}
-\date{\today~(ver. 0.55)}
+\date{\today~(ver. 0.59)}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 \maketitle
