@@ -490,7 +490,9 @@ Statistical significance is just the first step. Now we need to think ecological
 \begin{enumerate*}
     \item Explain in your own words: What does a Monte Carlo simulation do, and why might it be preferred over traditional parametric tests (like t-tests) for ecological datasets with small sample sizes?\sidenote{Hint: Think about the assumptions each method requires and how randomization creates a null distribution.}
     
-    \item What is the null hypothesis in this study? Based on your p-value and the visualization of the null distribution, what do you conclude about ant nest density in Field versus Forest habitats? Be sure to address both statistical significance and potential biological/ecological importance.\sidenote{Consider: Is a statistically significant result always ecologically meaningful?}
+    \item What is the null hypothesis in the ant study? Based on your p-value and the visualization of the null distribution, what do you conclude about ant nest density in Field versus Forest habitats? Be sure to address both statistical significance and potential biological/ecological importance.\sidenote{Consider: Is a statistically significant result always ecologically meaningful?}
+    
+  \item What is the null hypothesis in radioactivity "hits" in ground water wells study? Based on your p-value and the visualization of the null distribution, what do you conclude about ground water well types: drinking vs. non-drinking? Be sure to address both statistical significance and potential biological/ecological importance.\sidenote{Again, Consider: Is a statistically significant result always ecologically meaningful or adequate to protect public health?}
 \end{enumerate*}
 
 \section{Additional Resources}
@@ -502,4 +504,30 @@ Statistical significance is just the first step. Now we need to think ecological
     \item \textbf{Advanced:} Explore the \texttt{coin} package in R for permutation tests
 \end{itemize*}
 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## [1] "Raw Data:"
+##       Well_Type Hits
+## 1      Drinking    3
+## 2      Drinking    5
+## 3      Drinking   17
+## 4      Drinking    2
+## 5      Drinking    6
+## 6  Non-Drinking   12
+## 7  Non-Drinking   15
+## 8  Non-Drinking   18
+## 9  Non-Drinking   14
+## 10 Non-Drinking   16
+## 11 Non-Drinking   13
+## 12 Non-Drinking    4
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-1} 
+\end{knitrout}
 \end{document}

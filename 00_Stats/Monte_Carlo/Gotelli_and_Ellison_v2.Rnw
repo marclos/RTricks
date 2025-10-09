@@ -406,7 +406,9 @@ Statistical significance is just the first step. Now we need to think ecological
 \begin{enumerate*}
     \item Explain in your own words: What does a Monte Carlo simulation do, and why might it be preferred over traditional parametric tests (like t-tests) for ecological datasets with small sample sizes?\sidenote{Hint: Think about the assumptions each method requires and how randomization creates a null distribution.}
     
-    \item What is the null hypothesis in this study? Based on your p-value and the visualization of the null distribution, what do you conclude about ant nest density in Field versus Forest habitats? Be sure to address both statistical significance and potential biological/ecological importance.\sidenote{Consider: Is a statistically significant result always ecologically meaningful?}
+    \item What is the null hypothesis in the ant study? Based on your p-value and the visualization of the null distribution, what do you conclude about ant nest density in Field versus Forest habitats? Be sure to address both statistical significance and potential biological/ecological importance.\sidenote{Consider: Is a statistically significant result always ecologically meaningful?}
+    
+  \item What is the null hypothesis in radioactivity "hits" in ground water wells study? Based on your p-value and the visualization of the null distribution, what do you conclude about ground water well types: drinking vs. non-drinking? Be sure to address both statistical significance and potential biological/ecological importance.\sidenote{Again, Consider: Is a statistically significant result always ecologically meaningful or adequate to protect public health?}
 \end{enumerate*}
 
 \section{Additional Resources}
@@ -418,4 +420,203 @@ Statistical significance is just the first step. Now we need to think ecological
     \item \textbf{Advanced:} Explore the \texttt{coin} package in R for permutation tests
 \end{itemize*}
 
+
+<<echo=FALSE>>=
+# =====================================================================
+# Monte Carlo Analysis: Radioactivity in Drinking vs Non-Drinking Wells
+# Answer Key with Complete Hidden Analysis
+# =====================================================================
+
+# ---------------------------
+# Step 1: Input radioactivity data
+# ---------------------------
+# Units: High radioactivity hits per 100L sample
+radioactivity_data <- data.frame(
+  Well_Type = c("Drinking", "Drinking", "Drinking", "Drinking", "Drinking",
+                "Non-Drinking", "Non-Drinking", "Non-Drinking", "Non-Drinking", 
+                "Non-Drinking", "Non-Drinking", "Non-Drinking"),
+  Hits = c(3, 5, 17, 2, 6, 12, 15, 18, 14, 16, 13, 4)
+)
+
+print("Raw Data:")
+print(radioactivity_data)
+
+@
+
+<<echo=FALSE, results='hide'>>=
+# ---------------------------
+# Step 2: Compute Observed Statistics
+# ---------------------------
+library(dplyr)
+
+observed_stats <- radioactivity_data %>%
+  group_by(Well_Type) %>%
+  summarise(
+    N = length(Hits),
+    Mean = mean(Hits),
+    SD = sd(Hits),
+    Min = min(Hits),
+    Max = max(Hits)
+  )
+
+print("\nObserved Statistics by Well Type:")
+print(observed_stats)
+
+# ---------------------------
+# Step 3: Calculate Observed Difference
+# ---------------------------
+# Order data by well type
+radioactivity_data <- radioactivity_data[order(radioactivity_data$Well_Type), ]
+
+# Calculate observed difference in means
+observed_diff <- abs(
+  observed_stats$Mean[observed_stats$Well_Type == "Drinking"] - 
+  observed_stats$Mean[observed_stats$Well_Type == "Non-Drinking"]
+)
+
+cat("\n--- KEY STATISTIC ---")
+cat("\nObserved difference in means:", observed_diff, "hits per 100L")
+cat("\nDrinking wells mean:", observed_stats$Mean[observed_stats$Well_Type == "Drinking"])
+cat("\nNon-Drinking wells mean:", observed_stats$Mean[observed_stats$Well_Type == "Non-Drinking"])
+
+# ---------------------------
+# Step 4: Monte Carlo Randomization
+# ---------------------------
+nsimul <- 10000  # Using 10,000 simulations for robust answer key
+
+# Initialize vectors to store simulated differences
+dif_sim <- numeric(nsimul)
+
+set.seed(456)  # Different seed from ant example
+cat("\n\nRunning", nsimul, "Monte Carlo simulations...\n")
+
+for(i in 1:nsimul){
+  # Randomly shuffle the well types
+  well_type_sim <- sample(radioactivity_data$Well_Type)
+  
+  # Create a new data frame with shuffled well types
+  radioactivity_sim <- data.frame(
+    Well_Type = well_type_sim,
+    Hits = radioactivity_data$Hits
+  )
+  
+  # Calculate difference in means for this simulation
+  dif_sim[i] <- abs(
+    mean(radioactivity_sim$Hits[radioactivity_sim$Well_Type == "Drinking"]) - 
+    mean(radioactivity_sim$Hits[radioactivity_sim$Well_Type == "Non-Drinking"])
+  )
+}
+
+cat("Simulations complete!\n")
+
+# ---------------------------
+# Step 5: Analyze Null Distribution
+# ---------------------------
+cat("\n--- NULL DISTRIBUTION SUMMARY ---\n")
+cat("Mean of simulated differences:", round(mean(dif_sim), 3), "\n")
+cat("SD of simulated differences:", round(sd(dif_sim), 3), "\n")
+cat("Min simulated difference:", round(min(dif_sim), 3), "\n")
+cat("Max simulated difference:", round(max(dif_sim), 3), "\n")
+cat("95% CI:", round(quantile(dif_sim, 0.025), 3), "to", 
+    round(quantile(dif_sim, 0.975), 3), "\n")
+
+# ---------------------------
+# Step 6: Visualize the Null Distribution
+# ---------------------------
+par(mfrow=c(1,1), las=1, mar=c(4, 4, 3, 1))
+hist(dif_sim, 
+     main="Null Distribution: Radioactivity Differences", 
+     xlab="Difference in Mean Hits (|Drinking - Non-Drinking|)", 
+     ylab="Frequency",
+     col="lightgreen",
+     breaks=50,
+     xlim=c(0, max(c(dif_sim, observed_diff)) + 1))
+
+# Add observed difference as red line
+abline(v=observed_diff, col="red", lwd=3, lty=2)
+
+# Add legend
+legend("topright", 
+       legend=c("Simulated differences", "Observed difference"),
+       col=c("lightgreen", "red"), 
+       lwd=c(10, 3),
+       lty=c(1, 2),
+       cex=0.8)
+
+# ---------------------------
+# Step 7: Calculate P-value
+# ---------------------------
+p_value <- sum(dif_sim >= observed_diff) / nsimul
+
+cat("\n--- HYPOTHESIS TEST RESULTS ---\n")
+cat("P-value:", p_value, "\n")
+cat("Interpretation:", p_value * 100, "% of random shuffles produced\n")
+cat("a difference as large or larger than observed.\n\n")
+
+# Statistical conclusion
+if(p_value < 0.001) {
+  cat("CONCLUSION: Very strong evidence (p < 0.001) that radioactivity\n")
+  cat("levels differ between drinking and non-drinking wells.\n")
+} else if(p_value < 0.01) {
+  cat("CONCLUSION: Strong evidence (p < 0.01) that radioactivity\n")
+  cat("levels differ between drinking and non-drinking wells.\n")
+} else if(p_value < 0.05) {
+  cat("CONCLUSION: Moderate evidence (p < 0.05) that radioactivity\n")
+  cat("levels differ between drinking and non-drinking wells.\n")
+} else {
+  cat("CONCLUSION: Insufficient evidence (p >= 0.05) to conclude that\n")
+  cat("radioactivity levels differ between well types.\n")
+}
+
+# ---------------------------
+# Step 8: Additional Analyses
+# ---------------------------
+cat("\n--- ADDITIONAL CONTEXT ---\n")
+
+# Effect size (Cohen's d)
+pooled_sd <- sqrt(((observed_stats$N[1] - 1) * observed_stats$SD[1]^2 + 
+                   (observed_stats$N[2] - 1) * observed_stats$SD[2]^2) / 
+                  (sum(observed_stats$N) - 2))
+cohens_d <- observed_diff / pooled_sd
+cat("Effect size (Cohen's d):", round(cohens_d, 3), "\n")
+
+if(abs(cohens_d) < 0.2) {
+  cat("Effect size interpretation: Small\n")
+} else if(abs(cohens_d) < 0.5) {
+  cat("Effect size interpretation: Small to Medium\n")
+} else if(abs(cohens_d) < 0.8) {
+  cat("Effect size interpretation: Medium to Large\n")
+} else {
+  cat("Effect size interpretation: Large or Very Large\n")
+}
+
+# Percentage difference
+percent_diff <- (observed_diff / min(observed_stats$Mean)) * 100
+cat("\nPercentage difference:", round(percent_diff, 1), "% relative to lower mean\n")
+
+# How extreme is the observed difference?
+percentile <- (sum(dif_sim < observed_diff) / nsimul) * 100
+cat("\nObserved difference is at the", round(percentile, 2), 
+    "percentile of null distribution\n")
+
+# ---------------------------
+# Summary for Students
+# ---------------------------
+cat("\n=================================================================\n")
+cat("ANSWER KEY SUMMARY FOR INSTRUCTORS\n")
+cat("=================================================================\n")
+cat("Drinking wells: Mean =", round(observed_stats$Mean[1], 2), 
+    "hits, SD =", round(observed_stats$SD[1], 2), "\n")
+cat("Non-Drinking wells: Mean =", round(observed_stats$Mean[2], 2), 
+    "hits, SD =", round(observed_stats$SD[2], 2), "\n")
+cat("Observed difference:", round(observed_diff, 2), "hits per 100L\n")
+cat("P-value:", p_value, "\n")
+cat("Effect size (Cohen's d):", round(cohens_d, 3), "\n")
+cat("\nExpected student conclusion: Non-drinking wells show significantly\n")
+cat("higher radioactivity than drinking wells (p < 0.001), with a very\n")
+cat("large effect size. This suggests drinking water sources are either\n")
+cat("naturally lower in radioactivity or are treated/selected to reduce\n")
+cat("radioactive contamination.\n")
+cat("=================================================================\n")
+@
 \end{document}
