@@ -1,0 +1,467 @@
+\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+%\geometry{showframe}% for debugging purposes -- displays the margins
+
+\usepackage{amsmath}
+
+% Set up the images/graphics package
+\usepackage{graphicx}
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+\graphicspath{{graphics/}}
+
+\title{Anscombe's Quartet: Visualization \& Regression}
+\author{EA30 Reflection}
+\date{\today}
+
+% Provides color for the examples
+\usepackage{xcolor}
+
+% Provides hyperlinks
+\usepackage{hyperref}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent This handout explores Anscombe's Quartet, a famous dataset demonstrating why data visualization is essential before fitting statistical models. Through guided exercises, students will discover how four datasets with identical summary statistics can have dramatically different patterns.
+\end{abstract}
+
+%\printclassoptions
+
+\section{Introduction: Why Visualization Matters}
+
+\marginnote{%
+\textbf{Learning Goal:} Understand why data visualization is essential before fitting statistical models.
+}
+
+Anscombe's Quartet is a famous dataset created by statistician Francis Anscombe in 1973 to demonstrate the importance of visualizing data before analyzing it. Four datasets have nearly identical summary statistics (mean, variance, correlation, regression line) but look completely different when graphed!
+
+\textbf{Key Question to Consider:} Can we trust summary statistics alone?
+
+\section{Setup: Loading Required Packages}
+
+\marginnote{%
+\textbf{Help Topics:}\\
+\texttt{?library}\\
+\texttt{?install.packages}
+}
+
+We need several R packages for data manipulation and visualization: \texttt{ggplot2} for creating visualizations, \texttt{dplyr} for data manipulation, and \texttt{tidyr} for reshaping data.
+
+
+
+\section{Data Preparation}
+
+\marginnote{%
+\textbf{Pseudocode:}\\
+1. Load anscombe dataset\\
+2. Extract each x-y pair\\
+3. Add set identifiers\\
+4. Combine with \texttt{rbind()}
+}
+
+\marginnote{%
+\textbf{Help Topics:}\\
+\texttt{?anscombe}\\
+\texttt{?data.frame}\\
+\texttt{?rbind}
+}
+
+The Anscombe dataset comes in "wide" format with separate columns for each set (x1-y1, x2-y2, etc.). We'll transform it to "long" format for easier analysis. We can create 4 dataframes, each with different predictor and response variables, then we can combine them into a single dataframe, which I called df, using rbind().
+
+\begin{verbatim}
+# Creating a dataframe with one set
+  d1 <- data.frame(x = anscombe$x1, y = anscombe$y1, set = "1")
+\end{verbatim}
+
+
+
+\subsection{Optional: Using tidyr for Data Reshaping}
+
+\marginnote{%
+\textbf{Advanced Technique:} The \texttt{tidyr} package provides powerful functions for reshaping data.
+}
+
+\marginnote{%
+\textbf{Help Topics:}\\
+\texttt{?pivot\_longer}\\
+\texttt{?separate}\\
+\texttt{?mutate}
+}
+
+\newthought{The method above} works well, but there's a more elegant way using \texttt{tidyr}! The \texttt{pivot\_longer()} function can transform wide data to long format in fewer steps.
+
+\textbf{Concept:} Instead of manually creating four separate data frames, we can:
+\begin{enumerate}
+\item Add a row ID to track observations
+\item Pivot all x columns into one column and all y columns into another
+\item Separate the set number from the variable name
+\item Clean up the result
+\end{enumerate}
+
+Here's what the tidyr approach looks like:
+
+\begin{verbatim}
+# Alternative approach using tidyr
+df_tidy <- anscombe %>%
+  mutate(obs = row_number()) %>%
+  pivot_longer(
+    cols = -obs,
+    names_to = c(".value", "set"),
+    names_pattern = "(.)(.)"
+  ) %>%
+  select(-obs)
+\end{verbatim}
+
+\subsection{Exercise 1b (Optional): Comparing Approaches}
+
+\newthought{For advanced students}, try implementing the tidyr approach:
+
+\begin{enumerate}
+\item Type \texttt{View(anscombe)} to see the original wide format
+\item Implement the tidyr code above
+\item Use \texttt{identical(df, df\_tidy)} to verify both methods produce the same result
+\item Which approach do you find more intuitive? Why?
+\end{enumerate}
+
+
+
+\textbf{Key Insight:} \texttt{pivot\_longer()} with \texttt{names\_pattern} recognizes that "x1" means "x variable, set 1" and automatically separates them. The \texttt{.value} placeholder tells it to create separate columns for x and y.
+
+\subsection{Exercise 1: Exploring the Data Structure}
+
+\newthought{Before moving on}, answer these questions:
+
+\begin{enumerate}
+\item How many total observations are in the combined \texttt{df} dataset? (Hint: use \texttt{nrow(df)})
+\item What are the column names? (Hint: use \texttt{names(df)})
+\item Look at the first few rows of dataset 1. What do you notice? (Hint: use \texttt{head(subset(df, set == "1"))})
+\end{enumerate}
+
+
+
+\textbf{Bonus:} If you completed Exercise 1b above using tidyr, compare the structure of both datasets using \texttt{str(df)} and \texttt{str(df\_tidy)}.
+
+\section{Fitting Linear Models}
+
+\marginnote{%
+\textbf{Pseudocode:}\\
+1. Filter data for each set\\
+2. Fit model with \texttt{lm()}\\
+3. Extract coefficients\\
+4. Extract R$^2$ values\\
+5. Create summary table
+}
+
+\marginnote{%
+\textbf{Help Topics:}\\
+\texttt{?lm}\\
+\texttt{?coef}\\
+\texttt{?summary.lm}\\
+\texttt{?subset}
+}
+
+We fit a separate linear regression model (y \textasciitilde{} x) to each of the four datasets and extract key statistics: slope, intercept, and R².
+
+
+
+\subsection{Exercise 2: Understanding Model Output}
+
+\newthought{Practice interpreting} regression output:
+
+\begin{enumerate}
+\item Use \texttt{summary(fit1)} to see the detailed output for dataset 1. What is the p-value for the slope coefficient?
+\item What does the slope tell us about the relationship between x and y?
+\item Try running \texttt{plot(fit1)} -- what diagnostic plots appear?
+\end{enumerate}
+
+
+
+\section{Basic Visualization}
+
+\marginnote{%
+\textbf{Help Topics:}\\
+\texttt{?ggplot}\\
+\texttt{?geom\_point}\\
+\texttt{?geom\_smooth}\\
+\texttt{?facet\_wrap}
+}
+
+\newthought{What is \texttt{ggplot2}} -- it's a way to visualize data in R that provides a great deal of flexibility. 
+
+\paragraph{Simple Scatter Plot Example}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Load ggplot2 package}
+\hlkwd{library}\hlstd{(ggplot2)}
+
+\hlcom{# Create a small example dataset}
+\hlstd{demo} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}
+  \hlkwc{x} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{10}\hlstd{,}                        \hlcom{# X-axis values}
+  \hlkwc{y} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{6}\hlstd{,} \hlnum{8}\hlstd{,} \hlnum{7}\hlstd{,} \hlnum{9}\hlstd{,} \hlnum{12}\hlstd{,} \hlnum{10}\hlstd{,} \hlnum{13}\hlstd{)}  \hlcom{# Y-axis values}
+\hlstd{)}
+
+\hlcom{# Create a basic scatter plot}
+\hlkwd{ggplot}\hlstd{(demo,} \hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= x,} \hlkwc{y} \hlstd{= y))} \hlopt{+}   \hlcom{# Map x and y variables}
+  \hlkwd{geom_point}\hlstd{(}                     \hlcom{# Add points to the plot}
+    \hlkwc{color} \hlstd{=} \hlstr{"blue"}\hlstd{,}               \hlcom{# Point color}
+    \hlkwc{size} \hlstd{=} \hlnum{3}                       \hlcom{# Point size}
+  \hlstd{)} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}                            \hlcom{# Add labels}
+    \hlkwc{title} \hlstd{=} \hlstr{"Simple Scatter Plot"}\hlstd{,} \hlcom{# Plot title}
+    \hlkwc{x} \hlstd{=} \hlstr{"X-axis Label"}\hlstd{,}            \hlcom{# X-axis label}
+    \hlkwc{y} \hlstd{=} \hlstr{"Y-axis Label"}             \hlcom{# Y-axis label}
+  \hlstd{)} \hlopt{+}
+  \hlkwd{theme_minimal}\hlstd{()}                  \hlcom{# Apply a minimal theme for clean look}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/simple_plot-1} 
+\end{knitrout}
+
+\paragraph{Formatting Options Explained}
+
+\begin{itemize}
+  \item \textbf{aes(x = x, y = y)}: maps dataset columns to the plot axes.
+  \item \textbf{geom\_point()}: adds points; can set \texttt{color}, \texttt{size}, \texttt{shape}, etc.
+  \item \textbf{labs()}: sets labels like title, subtitle, x-axis, y-axis, and caption.
+  \item \textbf{theme\_minimal()}: changes plot appearance. Alternatives include \texttt{theme\_bw()}, \texttt{theme\_classic()}, etc.
+  \item \textbf{Layering with +}: ggplot2 uses \texttt{+} to combine layers like points, lines, labels, and themes.
+\end{itemize}
+
+\subsection{Notes for EA30}
+
+\begin{itemize}
+  \item Each element (\texttt{geom\_point}, \texttt{labs}, \texttt{theme\_minimal}) can be customized independently.
+  \item You can experiment with colors, sizes, shapes, and themes to see how the plot changes.
+  \item ggplot2 encourages a "grammar of graphics" approach: map data first (\texttt{aes}), then add layers and formatting.
+\end{itemize}
+
+Now we create a 2 x 2 grid of scatterplots with regression lines to visualize all four datasets. The plot uses \texttt{facet\_wrap()} to create separate panels for each dataset.
+
+\begin{figure*}[h]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\linewidth]{figure/basic-plot-1} 
+\end{knitrout}
+\caption{Scatterplots of all four Anscombe datasets with fitted regression lines. Notice the dramatic differences in patterns despite identical statistical summaries.}
+\end{figure*}
+
+\subsection{Exercise 3: Visual Interpretation}
+
+\newthought{Look carefully} at the four plots and answer:
+
+\begin{enumerate}
+\item Which dataset appears to have a truly linear relationship?
+\item Which dataset has a curved (non-linear) pattern?
+\item Which datasets have outliers? How many in each?
+\item Based on visualizations alone, which datasets would be appropriate for linear regression? Why?
+\end{enumerate}
+
+\section{Summary Statistics}
+
+Notice: All four datasets have nearly identical statistics! Slope $\sim$ 0.50, Intercept$\sim$ 3.00, R$^2$ $\sim$ 0.67
+
+\begin{table}
+
+\caption{\label{tab:stats-table}Regression statistics for all four datasets}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+set & slope & intercept & r2\\
+\hline
+1 & 0.5 & 3.000 & 0.667\\
+\hline
+2 & 0.5 & 3.001 & 0.666\\
+\hline
+3 & 0.5 & 3.002 & 0.666\\
+\hline
+4 & 0.5 & 3.002 & 0.667\\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Exercise 4: Comparing Statistics}
+
+\newthought{Calculate additional} summary statistics:
+
+\begin{enumerate}
+\item Calculate the mean of x for each dataset. Are they the same? (Hint: \texttt{tapply(df\$x, df\$set, mean)})
+\item Calculate the mean of y for each dataset using the same approach
+\item Calculate the correlation for each dataset
+\end{enumerate}
+
+
+
+\textbf{Question:} If the means, correlations, and regression lines are all nearly identical, why do the datasets look so different?
+
+\section{Annotated Visualization}
+
+\marginnote{%
+\textbf{Critical Observations:}\\
+\textbf{Set 1:} Linear (appropriate)\\
+\textbf{Set 2:} Non-linear (curved)\\
+\textbf{Set 3:} Linear + outlier\\
+\textbf{Set 4:} Outlier creates false correlation
+}
+
+
+
+\begin{figure*}[h]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\linewidth]{figure/annotated-plot-1} 
+\end{knitrout}
+\caption{Complete visualization with regression equations displayed on each panel. Despite identical equations, the datasets reveal very different underlying patterns.}
+\end{figure*}
+
+\subsection{Exercise 5: Customizing Visualization}
+
+\newthought{Practice modifying} the plot:
+
+\begin{enumerate}
+\item Change the point color from "steelblue" to another color
+\item Modify the point size -- try making them bigger or smaller
+\item Change the title to something creative
+\item Try \texttt{theme\_bw()} or \texttt{theme\_classic()} instead
+\end{enumerate}
+
+
+
+\section{Residual Analysis}
+
+\marginnote{%
+\textbf{Key Concept:} Residuals are the differences between observed and predicted y values. Random scatter = good model fit!
+}
+
+Residuals help us diagnose whether our linear model is appropriate. Good models have randomly scattered residuals around zero with no clear patterns.
+
+
+
+\begin{figure*}[h]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\linewidth]{figure/residual-plot-1} 
+\end{knitrout}
+\caption{Residual plots reveal problems invisible in summary statistics. Set 1 shows random scatter (good), Set 2 shows clear curvature (bad), and Sets 3 \& 4 show extreme outliers.}
+\end{figure*}
+
+\subsection{Exercise 6: Interpreting Residual Plots}
+
+\newthought{Study the residual plots} and answer:
+
+\begin{enumerate}
+\item Which dataset has residuals that appear randomly scattered? (Good!)
+\item Which dataset shows a clear pattern in the residuals? (Linear model inappropriate)
+\item Which datasets have extreme residuals (very far from zero)?
+\item What do these plots reveal that R$^2$ did not?
+\end{enumerate}
+
+\section{Challenge: Impact of Outliers}
+
+\subsection{Exercise 7: Removing Outliers}
+
+\newthought{For Dataset 3} (which has one outlier):
+
+\begin{enumerate}
+\item Create a new dataset excluding the outlier point (x=13)
+\item Fit a new regression model to this filtered data
+\item Compare the new slope and R$^2$ to the original
+\item Create a scatterplot with the new regression line
+\end{enumerate}
+
+\textbf{Starter hints:}
+\begin{verbatim}
+df3_no_outlier <- subset(df, set == "3" & x != ?)
+fit3_no_outlier <- lm(y ~ x, data = df3_no_outlier)
+\end{verbatim}
+
+
+
+\textbf{Question:} How much did removing one point change your results? What does this tell you about the influence of outliers?
+
+\section{Final Reflection}
+
+\newthought{Synthesize what you've learned:}
+
+\begin{enumerate}
+\item \textbf{Main Lesson:} In your own words, what is the key message of Anscombe's Quartet?
+\item \textbf{Real-World Application:} Think of a situation where someone might make a mistake by looking only at statistics without visualizing data.
+\item \textbf{Best Practices:} What steps should you ALWAYS take before trusting a linear regression model?
+\item \textbf{Going Forward:} What other diagnostic tools might you use when analyzing real data?
+\end{enumerate}
+
+\section{Key Takeaways}
+
+\begin{itemize}
+\item Always visualize your data before analysis
+\item Summary statistics can hide important patterns
+\item Outliers can dramatically affect regression results
+\item Check model assumptions, don't just trust R² values
+\item Residual plots help diagnose model problems
+\item Different data patterns require different analytical approaches
+\end{itemize}
+
+\section{Additional Resources}
+
+\begin{itemize}
+\item \textbf{R Documentation:} Use \texttt{?function\_name} in console
+\item \textbf{ggplot2 Cheat Sheet:} \url{https://rstudio.github.io/cheatsheets/}
+\item \textbf{Datasaurus Dozen:} A modern extension with even more diverse patterns
+\end{itemize}
+
+\end{document}

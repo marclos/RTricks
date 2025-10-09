@@ -1,0 +1,258 @@
+\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+%\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\newenvironment{itemize*}%
+  {\begin{itemize}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{itemize}}
+	
+\newenvironment{enumerate*}%
+  {\begin{enumerate}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{enumerate}}
+	
+	\newenvironment{description*}%
+  {\begin{description}%
+    \setlength{\itemsep}{0pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{description}}
+
+
+
+\title{Monte Carlo Analysis of Ant Nest Counts in Field and Forest Habitats}
+\author{EA030 Reflection}
+\date{\today}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+In ecological research, we often want to understand whether observed patterns, such as the number of ant nests in different habitats, are \textbf{statistically unusual} or could have occurred by chance. Traditional parametric tests may not always be appropriate, especially with small sample sizes or non-normal distributions.  
+
+\textbf{Monte Carlo simulations} provide a flexible, non-parametric approach to test hypotheses by \textit{randomly reshuffling data} many times to create a null distribution. By comparing observed statistics (like the mean number of ant nests in fields and forests) to this null distribution, we can assess the probability that the observed pattern arose by chance.  
+
+In this exercise, we analyze ant nest counts across two habitat types, \textbf{Field} and \textbf{Forest}, using Monte Carlo simulations to estimate expected mean and standard deviation under random redistribution of nests.
+
+\section{Learning Goals}
+
+By the end of this activity, learners will be able to:
+
+\begin{enumerate*}
+    \item Understand Monte Carlo simulations as a non-parametric method for hypothesis testing.
+    \item Compute summary statistics (mean and standard deviation) for ecological count data.
+    \item Perform Monte Carlo randomizations to generate null distributions of ecological data.
+    \item Compare observed statistics to null distributions to estimate tail probabilities (p-values).
+    \item Visualize simulation results using histograms with observed values highlighted.
+    \item Interpret the ecological significance of observed patterns in the context of habitat differences.
+\end{enumerate*}
+
+\section{Method \& Analysis Workflow}
+
+\textbf{Step 1: Input Data}  
+\begin{itemize*}
+    \item Collect ant nest counts per quadrat.
+    \item Record the habitat type (Field or Forest) for each quadrat.
+\end{itemize*}
+
+We can enter the data into R as follows:\sidenote{Alternatively, you can use the ancombe data that is built into R by typing \texttt{data(``anscombe'')}. Note that the dataframe name will differ from what I have used in the handout!}.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# ---------------------------}
+\hlcom{# Step 1: Input ant nest counts}
+\hlcom{# ---------------------------}
+\hlstd{nest_counts} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}
+  \hlkwc{Habitat} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"Forest"}\hlstd{,} \hlstr{"Forest"}\hlstd{,} \hlstr{"Forest"}\hlstd{,} \hlstr{"Forest"}\hlstd{,} \hlstr{"Forest"}\hlstd{,}
+              \hlstr{"Forest"}\hlstd{,} \hlstr{"Field"}\hlstd{,} \hlstr{"Field"}\hlstd{,} \hlstr{"Field"}\hlstd{,} \hlstr{"Field"}\hlstd{),}
+  \hlkwc{Nests} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{9}\hlstd{,}\hlnum{6}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{6}\hlstd{,}\hlnum{7}\hlstd{,}\hlnum{10}\hlstd{,}\hlnum{12}\hlstd{,}\hlnum{9}\hlstd{,}\hlnum{12}\hlstd{,}\hlnum{10}\hlstd{)}
+\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\textbf{Step 2: Compute Observed Statistics}  
+\begin{itemize}
+    \item Calculate the mean and standard deviation of ant nests for Field and Forest habitats.
+\end{itemize}
+
+We can use a data wrangling function... Google how to use dplyr() and see if you can replace the question marks with a productive result as noted below!
+
+\begin{verbatim}
+library(dplyr)
+observed_stats <- ?? %>%
+  group_by(??) %>%
+  summarise(
+    Mean = mean(??),
+    SD = sd(??)
+\end{verbatim}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## # A tibble: 2 x 4
+##   Habitat     N  Mean    SD
+##   <chr>   <int> <dbl> <dbl>
+## 1 Field       4  10.8  1.5 
+## 2 Forest      6   7    2.19
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+Let's order the data.frame by habitat
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{nest_counts} \hlkwb{<-} \hlstd{nest_counts[}\hlkwd{order}\hlstd{(nest_counts}\hlopt{$}\hlstd{Habitat), ]}
+\hlstd{nest_counts}
+\end{alltt}
+\begin{verbatim}
+##    Habitat Nests
+## 7    Field    12
+## 8    Field     9
+## 9    Field    12
+## 10   Field    10
+## 1   Forest     9
+## 2   Forest     6
+## 3   Forest     4
+## 4   Forest     6
+## 5   Forest     7
+## 6   Forest    10
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+What's the difference between forest mean and field mean for ant colonies?\sidenote{Let's think about that magnigitude of the difference as an absolute value.}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## [1] 3.75
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\textbf{Step 3: Monte Carlo Randomization}  
+\begin{itemize}
+    \item Randomly shuffle nest counts across quadrats 1000 times (or more).
+    \item For each randomization, compute the mean (and SD) for Field and Forest habitats.
+    \item Store the simulated means (and SDs) to create null distributions.
+\end{itemize}
+
+
+
+\textbf{Step 4: Visualize the Null Distribution}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Make a histogram of the simulated differences}
+\hlkwd{par}\hlstd{(}\hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{)}
+\hlkwd{hist}\hlstd{(dif_sim,} \hlkwc{main}\hlstd{=}\hlstr{"Null Distribution of Mean Differences"}\hlstd{,}
+     \hlkwc{xlab}\hlstd{=}\hlstr{"Difference in Means (Field - Forest)"}\hlstd{,} \hlkwc{ylim}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{300}\hlstd{))}
+\hlkwd{abline}\hlstd{(}\hlkwc{v}\hlstd{=observed_diff,} \hlkwc{col}\hlstd{=}\hlstr{"red"}\hlstd{,} \hlkwc{lwd}\hlstd{=}\hlnum{2}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-4-1} 
+\end{knitrout}
+
+\textbf{Step 5: Count the Number of Simulated Difference Above the Observed Difference} 
+\begin{itemize}
+   \item Count how many times the simulated difference in means is greater than or equal to the observed difference.
+   \item Divide this count by the total number of simulations to get the p-value.
+\end{itemize}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Count the number of simulated difference are above the observed difference}
+\hlstd{p_value_diff} \hlkwb{<-} \hlkwd{sum}\hlstd{(dif_sim} \hlopt{>=} \hlstd{observed_diff)} \hlopt{/} \hlstd{nsimul}
+\hlstd{noise_diff} \hlkwb{<-} \hlkwd{sum}\hlstd{(dif_sim} \hlopt{<} \hlstd{observed_diff)} \hlopt{/} \hlstd{nsimul}
+\hlstd{p_value_diff}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.041
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{Step 6: Interpretation}  
+\begin{itemize*}
+    \item Compare observed means and SDs to the null distributions.
+    \item Assess whether ant nest densities in each habitat are significantly higher or lower than expected by random chance.
+\end{itemize*}
+
+\section{Reflection Questions}
+
+\begin{enumerate*}
+    \item What does a Monte Carlo simulation tell us about the likelihood of observed patterns compared to random expectation?
+    \item How do the observed mean nest counts in Field and Forest compare to their respective simulated null distributions? What does this imply?
+    \item Why might a Monte Carlo approach be preferred over traditional parametric tests in ecological datasets with small sample sizes or skewed distributions?
+    \item How might the interpretation of results change if we examined standard deviation rather than the mean?
+    \item Can you think of other ecological questions or datasets where Monte Carlo simulations could provide insight?
+\end{enumerate*}
+
+
+\end{document}
