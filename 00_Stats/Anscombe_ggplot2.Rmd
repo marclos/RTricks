@@ -1,0 +1,446 @@
+---
+title: "Anscombe's Quartet: Visualization & Regression"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Introduction: Why Visualization Matters
+
+**Learning Goal:** Understand why data visualization is essential before fitting statistical models.
+
+Anscombe's Quartet is a famous dataset created by statistician Francis Anscombe in 1973 to demonstrate the importance of visualizing data before analyzing it. Four datasets have nearly identical summary statistics (mean, variance, correlation, regression line) but look completely different when graphed!
+
+**Key Question to Consider:** Can we trust summary statistics alone?
+
+---
+
+## Setup: Loading Required Packages
+
+**Goal:** Load the necessary R packages for data manipulation and visualization.
+
+**What you'll learn:**
+- How to load packages with `library()`
+- What each package does (ggplot2 for plotting, dplyr for data manipulation, tidyr for reshaping data)
+
+**Help Topics:**
+- `?library` - Loading packages
+- `?install.packages` - Installing new packages if needed
+
+```{r setup, include=FALSE}
+library(ggplot2)  # For creating visualizations
+library(dplyr)    # For data manipulation
+library(tidyr)    # For reshaping data
+```
+
+---
+
+## Data Preparation: Structuring Anscombe's Data
+
+**Goal:** Transform the Anscombe dataset from wide format to long format for easier analysis and plotting.
+
+**Pseudocode:**
+1. Load the built-in anscombe dataset
+2. Extract each x-y pair (x1-y1, x2-y2, x3-y3, x4-y4) into separate data frames
+3. Add a "set" identifier to each data frame (1, 2, 3, or 4)
+4. Combine all four data frames into one long-format data frame using `rbind()`
+
+**What you'll learn:**
+- How to access built-in R datasets
+- Creating data frames with `data.frame()`
+- Combining data frames with `rbind()`
+- The concept of "tidy" or long-format data
+
+**Help Topics:**
+- `?anscombe` - Documentation for Anscombe's Quartet dataset
+- `?data.frame` - Creating data frames
+- `?rbind` - Combining data frames by rows
+
+```{r data-prep, echo=FALSE}
+# Base Anscombe dataset
+data(anscombe)
+
+# Create individual data frames for each pair
+d1 <- data.frame(x = anscombe$x1, y = anscombe$y1, set = "1")
+d2 <- data.frame(x = anscombe$x2, y = anscombe$y2, set = "2")
+d3 <- data.frame(x = anscombe$x3, y = anscombe$y3, set = "3")
+d4 <- data.frame(x = anscombe$x4, y = anscombe$y4, set = "4")
+
+# Combine all into one for faceting
+df <- rbind(d1, d2, d3, d4)
+```
+
+### ✏️ EXERCISE 1: Exploring the Data Structure
+
+**Before moving on, answer these questions:**
+
+1. How many total observations are in the combined `df` dataset? (Hint: use `nrow(df)`)
+2. What are the column names? (Hint: use `names(df)`)
+3. Look at the first few rows of dataset 1. What do you notice? (Hint: use `head(subset(df, set == "1"))`)
+
+```{r exercise1, echo=FALSE}
+# Students: Insert your exploration code here
+# Example: nrow(df)
+# Example: names(df)
+# Example: head(subset(df, set == "1"))
+```
+
+---
+
+## Fitting Linear Models: Computing Regression Statistics
+
+**Goal:** Fit a separate linear regression model to each of the four datasets and extract key statistics.
+
+**Pseudocode:**
+1. Use `subset()` to filter data for each set (1, 2, 3, 4)
+2. Fit a linear model (y ~ x) using `lm()` for each subset
+3. Extract coefficients (slope and intercept) using `coef()`
+4. Extract R² values using `summary()$r.squared`
+5. Organize results into a summary table
+
+**What you'll learn:**
+- Fitting linear regression models with `lm()`
+- Extracting model coefficients and fit statistics
+- Understanding what slope, intercept, and R² represent
+
+**Help Topics:**
+- `?lm` - Linear regression models
+- `?coef` - Extracting coefficients from models
+- `?summary.lm` - Getting detailed model summaries
+- `?subset` - Filtering data
+
+```{r regression-models, echo=FALSE}
+# Run four separate regressions manually
+fit1 <- lm(y ~ x, data = subset(df, set == "1"))
+fit2 <- lm(y ~ x, data = subset(df, set == "2"))
+fit3 <- lm(y ~ x, data = subset(df, set == "3"))
+fit4 <- lm(y ~ x, data = subset(df, set == "4"))
+
+# Create a simple table with coefficients and R²
+reg_summary <- data.frame(
+  set = c("1", "2", "3", "4"),
+  slope = c(coef(fit1)[2], coef(fit2)[2], coef(fit3)[2], coef(fit4)[2]),
+  intercept = c(coef(fit1)[1], coef(fit2)[1], coef(fit3)[1], coef(fit4)[1]),
+  r2 = c(summary(fit1)$r.squared,
+         summary(fit2)$r.squared,
+         summary(fit3)$r.squared,
+         summary(fit4)$r.squared)
+)
+```
+
+### ✏️ EXERCISE 2: Understanding Model Output
+
+**Practice interpreting regression output:**
+
+1. Use `summary(fit1)` to see the detailed output for dataset 1. What is the p-value for the slope coefficient?
+2. What does the slope tell us about the relationship between x and y?
+3. Try running `plot(fit1)` - what diagnostic plots appear? (You'll see 4 plots; press Enter to cycle through them)
+
+```{r exercise2, echo=FALSE}
+# Students: Insert your code here
+# Example: summary(fit1)
+# Example: plot(fit1)
+```
+
+---
+
+## Basic Visualization: First Look at the Data
+
+**Goal:** Create a 2×2 grid of scatterplots with regression lines to visualize all four datasets.
+
+**Pseudocode:**
+1. Create a ggplot with x and y aesthetics
+2. Add points using `geom_point()`
+3. Add regression lines using `geom_smooth(method = "lm")`
+4. Use `facet_wrap()` to create separate panels for each dataset
+5. Customize labels and theme
+
+**What you'll learn:**
+- Building plots layer-by-layer with ggplot2
+- Creating faceted (multi-panel) plots
+- Adding trend lines to scatterplots
+- Customizing plot appearance with themes
+
+**Help Topics:**
+- `?ggplot` - Creating plots
+- `?geom_point` - Adding points to plots
+- `?geom_smooth` - Adding trend lines
+- `?facet_wrap` - Creating multi-panel plots
+- `?theme_minimal` - Plot themes
+
+```{r basic-plot, echo=FALSE, fig.width=10, fig.height=8}
+# Plot all four datasets in one 2x2 grid
+ggplot(df, aes(x = x, y = y)) +
+  geom_point(color = "steelblue", size = 3, alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  facet_wrap(~set, nrow = 2) +
+  labs(
+    title = "Anscombe's Quartet",
+    subtitle = "Four datasets with identical summary statistics but very different patterns",
+    x = "X values",
+    y = "Y values"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 18),
+    plot.subtitle = element_text(size = 13),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+### ✏️ EXERCISE 3: Visual Interpretation
+
+**Look carefully at the four plots above and answer:**
+
+1. Which dataset appears to have a truly linear relationship?
+2. Which dataset has a curved (non-linear) pattern?
+3. Which datasets have outliers? How many outliers do you see in each?
+4. Based on the visualizations alone, which datasets would be appropriate for linear regression? Why?
+
+*Write your observations here:*
+
+---
+
+## Summary Statistics Table
+
+**Goal:** Display the regression statistics in a readable table format.
+
+**What you'll learn:**
+- How to display data frames as tables in R Markdown
+- Interpreting regression output (slopes, intercepts, R²)
+
+**Notice:** All four datasets have nearly identical statistics! Slope ≈ 0.50, Intercept ≈ 3.00, R² ≈ 0.67
+
+**Help Topics:**
+- `?print` - Displaying objects
+- `?knitr::kable` - Creating formatted tables (optional enhancement)
+
+```{r stats-table, echo=FALSE}
+# Display the regression summary table
+reg_summary
+```
+
+### ✏️ EXERCISE 4: Comparing Statistics
+
+**Calculate additional summary statistics:**
+
+1. Calculate the mean of x for each dataset. Are they the same? (Hint: use `tapply(df$x, df$set, mean)`)
+2. Calculate the mean of y for each dataset using the same approach
+3. Calculate the correlation for each dataset (Hint: use `tapply()` with a custom function or subset each dataset and use `cor()`)
+
+```{r exercise4, echo=FALSE}
+# Students: Insert your code here
+# Example: tapply(df$x, df$set, mean)
+# Example: tapply(df$y, df$set, mean)
+```
+
+**Question:** If the means, correlations, and regression lines are all nearly identical, why do the datasets look so different?
+
+---
+
+## Creating Annotation Labels
+
+**Goal:** Prepare text labels containing the regression equations and R² values to overlay on plots.
+
+**Pseudocode:**
+1. Create a data frame with one row per dataset
+2. Specify x and y coordinates for label placement
+3. Use `paste0()` to construct formatted text strings
+4. Include slope, intercept, and R² in each label
+
+**What you'll learn:**
+- Creating formatted text with `paste0()` and `round()`
+- Preparing annotation data for ggplot
+- Controlling label positioning
+
+**Help Topics:**
+- `?paste0` - Concatenating strings
+- `?round` - Rounding numbers
+
+```{r create-labels, echo=FALSE}
+# Make the labels for each plot
+label_data <- data.frame(
+  set = reg_summary$set,
+  x = 4.5,  # x-coordinate for label placement
+  y = 10.5, # y-coordinate for label placement
+  label = paste0("y = ",
+                 round(reg_summary$slope, 2), "x + ",
+                 round(reg_summary$intercept, 2),
+                 "\nR² = ",
+                 round(reg_summary$r2, 2))
+)
+```
+
+---
+
+## Final Annotated Visualization
+
+**Goal:** Create the complete visualization with regression equations displayed on each panel.
+
+**Pseudocode:**
+1. Start with the basic scatterplot and regression line
+2. Add `geom_text()` layer with the label data
+3. Position labels using the x and y coordinates from label_data
+4. Ensure labels are readable and well-positioned
+
+**What you'll learn:**
+- Adding text annotations to ggplot
+- Working with separate data sources in the same plot
+- Creating publication-ready figures
+
+**Critical Observation:** Despite having identical regression equations, the four datasets show:
+- **Set 1:** Linear relationship (appropriate for linear regression)
+- **Set 2:** Non-linear/curved relationship (violates linearity assumption)
+- **Set 3:** Perfect linear relationship with one outlier (influential point)
+- **Set 4:** No relationship except one outlier creates artificial correlation
+
+**Help Topics:**
+- `?geom_text` - Adding text annotations
+- `?aes` - Aesthetic mappings
+
+```{r annotated-plot, echo=FALSE, fig.width=10, fig.height=8}
+# Plot the four Anscombe datasets in a 2x2 grid with equations
+ggplot(df, aes(x = x, y = y)) +
+  geom_point(color = "steelblue", size = 3, alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  facet_wrap(~set, nrow = 2) +
+  geom_text(
+    data = label_data,
+    aes(x = x, y = y, label = label),
+    color = "black",
+    hjust = 0,
+    size = 4
+  ) +
+  labs(
+    title = "Anscombe's Quartet: Same Statistics, Different Data",
+    subtitle = "Each dataset has identical summary stats but very different patterns",
+    x = "X values",
+    y = "Y values"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 18),
+    plot.subtitle = element_text(size = 13),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+### ✏️ EXERCISE 5: Customizing Your Visualization
+
+**Practice modifying the plot:**
+
+1. Change the point color from "steelblue" to another color of your choice
+2. Modify the point size - try making them bigger or smaller
+3. Change the title to something creative
+4. Try changing `theme_minimal()` to `theme_bw()` or `theme_classic()` - which do you prefer?
+
+```{r exercise5, echo=FALSE}
+# Students: Copy the plotting code from above and modify it here
+# Experiment with different colors, sizes, and themes!
+```
+
+---
+
+## Extension Activity: Residual Analysis
+
+**Goal:** Understand how residuals help us diagnose model problems.
+
+Residuals are the differences between observed y values and predicted y values. They help us check if our linear model is appropriate.
+
+```{r residuals, echo=FALSE, fig.width=10, fig.height=8}
+# Calculate residuals for each model
+df$residuals <- NA
+df$residuals[df$set == "1"] <- residuals(fit1)
+df$residuals[df$set == "2"] <- residuals(fit2)
+df$residuals[df$set == "3"] <- residuals(fit3)
+df$residuals[df$set == "4"] <- residuals(fit4)
+
+# Plot residuals
+ggplot(df, aes(x = x, y = residuals)) +
+  geom_point(color = "darkred", size = 3, alpha = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  facet_wrap(~set, nrow = 2) +
+  labs(
+    title = "Residual Plots for Anscombe's Quartet",
+    subtitle = "Good models have randomly scattered residuals around zero",
+    x = "X values",
+    y = "Residuals"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+### ✏️ EXERCISE 6: Interpreting Residual Plots
+
+**Study the residual plots above and answer:**
+
+1. Which dataset has residuals that appear randomly scattered? (This is good!)
+2. Which dataset shows a clear pattern in the residuals? (This indicates the linear model is inappropriate)
+3. Which datasets have one or more extreme residuals (very far from zero)?
+4. What do these residual plots tell you that the regression statistics (R², slope) did not?
+
+*Write your observations here:*
+
+---
+
+## Challenge Activity: The Impact of Outliers
+
+**Goal:** See how much outliers can change your conclusions.
+
+### ✏️ EXERCISE 7: Removing Outliers
+
+**For Dataset 3 (which has one outlier):**
+
+1. Create a new dataset that excludes the outlier point (x=13)
+2. Fit a new regression model to this filtered data
+3. Compare the new slope and R² to the original model
+4. Create a scatterplot of the filtered data with the new regression line
+
+**Starter code hints:**
+```
+# Filter out the outlier (you'll need to identify the exact point)
+# df3_no_outlier <- subset(df, set == "3" & x != ?)
+# fit3_no_outlier <- lm(y ~ x, data = df3_no_outlier)
+# summary(fit3_no_outlier)
+```
+
+```{r exercise7, echo=FALSE}
+# Students: Write your code here to explore the impact of outliers
+```
+
+**Question:** How much did removing one point change your results? What does this tell you about the influence of outliers?
+
+---
+
+## Final Reflection Questions
+
+**Synthesize what you've learned:**
+
+1. **The Main Lesson:** In your own words, what is the key message of Anscombe's Quartet?
+
+2. **Real-World Application:** Think of a situation (in your field of study, news, or daily life) where someone might make a mistake by looking only at statistics without visualizing data.
+
+3. **Best Practices:** Based on this exercise, what steps should you ALWAYS take before trusting a linear regression model?
+
+4. **Going Forward:** What other types of diagnostic tools or visualizations might you want to use when analyzing real data?
+
+---
+
+## Key Takeaways
+
+✓ **Always visualize your data before analysis**  
+✓ Summary statistics can hide important patterns  
+✓ Outliers can dramatically affect regression results  
+✓ Check model assumptions, don't just trust R² values  
+✓ Residual plots help diagnose model problems  
+✓ Different data patterns require different analytical approaches
+
+---
+
+## Additional Resources
+
+- **R Documentation:** Use `?function_name` in the R console to learn about any function
+- **ggplot2 Cheat Sheet:** https://rstudio.github.io/cheatsheets/data-visualization.pdf
+- **Linear Regression Assumptions:** Search for "linear regression diagnostic plots in R"
+- **Datasaurus Dozen:** A modern extension of Anscombe's Quartet with even more diverse patterns

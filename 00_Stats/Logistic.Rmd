@@ -1,0 +1,113 @@
+---
+title: "Logistic Regression Example — HAB Concentration and Cattle Mortality"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+## Introduction
+
+Harmful algal blooms (HABs) produce toxins that can poison livestock and wildlife.  
+This analysis examines whether **HAB concentration (µg/L)** predicts **cattle mortality** in 12 sampled ponds.
+
+### Research Question
+
+Does HAB concentration increase the likelihood of cattle mortality?
+
+### Hypotheses
+
+- **Null hypothesis (H):**  
+  HAB concentration does **not** affect the probability of cattle mortality.
+
+- **Alternative hypothesis (H):**  
+  Higher HAB concentration **increases** the probability of cattle mortality.
+
+### Statistical Method
+
+We use a **logistic regression model**, appropriate when the response variable is binary (Yes/No).
+
+Model:
+
+\[
+\text{logit}(P(\text{Mortality = Yes})) = \beta_0 + \beta_1 \times \text{HAB Concentration}
+\]
+
+Where:
+- \( \beta_1 \) = change in **log-odds** of mortality per 1 µg/L increase in HAB concentration.  
+- \( \exp(\beta_1) \) = **odds ratio** (OR), expressing multiplicative change in odds.
+
+---
+
+## Data
+
+The following data summarize 12 pond observations:
+
+| Pond_ID | HAB_Concentration (µg/L) | Cattle_Mortality |
+|----------|--------------------------|------------------|
+| 1 | 120 | Yes |
+| 2 | 80  | Yes |
+| 3 | 50  | No  |
+| 4 | 100 | Yes |
+| 5 | 60  | No  |
+| 6 | 130 | Yes |
+| 7 | 90  | Yes |
+| 8 | 40  | No  |
+| 9 | 110 | Yes |
+| 10 | 70 | No  |
+| 11 | 30 | No  |
+| 12 | 20 | No  |
+
+---
+
+## Logistic Regression Analysis
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Create dataset
+```{r}
+Pond_ID <- 1:12
+HAB_Concentration <- c(120, 80, 50, 100, 60, 130, 90, 40, 110, 70, 30, 20)
+Cattle_Mortality <- c("Yes", "Yes", "No", "Yes", "No", "Yes", "Yes", "No", "Yes", "No", "No", "No")
+
+data <- data.frame(Pond_ID, HAB_Concentration, Cattle_Mortality)
+
+# Convert response variable to binary numeric (Yes=1, No=0)
+data$Mortality_Binary <- ifelse(data$Cattle_Mortality == "Yes", 1, 0)
+
+# Display dataset
+data
+
+# Fit logistic regression
+log_model <- glm(Mortality_Binary ~ HAB_Concentration,
+                 data = data, family = binomial)
+
+# Display model summary
+summary(log_model)
+
+
+# Calculate odds ratio and 95% confidence interval
+odds_ratio <- exp(cbind(OR = coef(log_model),
+                        confint(log_model)))
+odds_ratio
+
+# Generate predicted probabilities
+data$Predicted_Prob <- predict(log_model, type = "response")
+
+# Plot predicted probability curve
+library(ggplot2)
+
+ggplot(data, aes(x = HAB_Concentration, y = Predicted_Prob)) +
+  geom_point(aes(color = Cattle_Mortality), size = 3) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"),
+              se = FALSE, color = "blue") +
+  labs(title = "Predicted Probability of Cattle Mortality vs. HAB Concentration",
+       x = "HAB Concentration (µg/L)",
+       y = "Predicted Probability of Mortality") +
+  theme_minimal()
+```
+
+
+

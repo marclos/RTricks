@@ -1,0 +1,81 @@
+---
+title: "Regression Analysis: Distance from CO Source and Asthma Severity"
+author: "Marc"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Introduction
+
+Air pollution, especially **carbon monoxide (CO)**, has been linked to a variety of negative respiratory health outcomes.  
+In this analysis, we test whether **distance from a CO source** can predict **asthma severity** among households.
+
+We expect that people living **closer to a CO source** may experience **more severe asthma symptoms** than those living farther away.
+
+---
+
+## Data
+
+The following table presents the study data:
+
+| Household | Distance_from_CO (m) | Asthma_Severity (1–10) |
+|------------|----------------------|------------------------|
+| 1 | 50 | 9.0 |
+| 2 | 75 | 8.5 |
+| 3 | 100 | 8.0 |
+| 4 | 125 | 7.4 |
+| 5 | 150 | 7.0 |
+| 6 | 200 | 6.5 |
+| 7 | 250 | 6.0 |
+| 8 | 300 | 5.5 |
+| 9 | 350 | 5.2 |
+| 10 | 400 | 5.0 |
+
+---
+
+## Regression Model
+
+We will fit a **simple linear regression model** to examine whether *distance from CO source* predicts *asthma severity*.
+
+### Model:
+\[
+\text{Asthma Severity} = \beta_0 + \beta_1 (\text{Distance from CO}) + \epsilon
+\]
+
+# Create the dataset
+```{r}
+household <- 1:10
+distance <- c(50, 75, 100, 125, 150, 200, 250, 300, 350, 400)
+asthma <- c(9.0, 8.5, 8.0, 7.4, 7.0, 6.5, 6.0, 5.5, 5.2, 5.0)
+
+data <- data.frame(Household = household,
+                   Distance_from_CO = distance,
+                   Asthma_Severity = asthma)
+
+# Fit linear regression model
+model <- lm(Asthma_Severity ~ Distance_from_CO, data = data)
+
+# Show model summary
+summary(model)
+
+coef(model)
+
+
+library(ggplot2)
+
+ggplot(data, aes(x = Distance_from_CO, y = Asthma_Severity)) +
+  geom_point(size = 3, color = "blue") +
+  geom_smooth(method = "lm", se = TRUE, color = "red") +
+  labs(title = "Asthma Severity vs. Distance from CO Source",
+       x = "Distance from CO Source (m)",
+       y = "Asthma Severity (1-10)") +
+  theme_minimal()
+```
+```
+

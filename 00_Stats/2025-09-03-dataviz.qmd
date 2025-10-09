@@ -1,0 +1,1799 @@
+---
+title: Better Data Visualizations
+author: "Jo Hardin"
+subtitle: "September 3 + 8, 2025"
+format:
+  revealjs:
+    incremental: false
+    scrollable: true
+    slide-number: true
+    show-slide-number: all
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| include: false
+
+source("../_common.R")
+fontawesome::fa_html_dependency()
+theme_set(theme_gray())
+```
+
+
+```{r include=FALSE}
+library(tidyverse)
+library(mosaic)
+library(knitr)
+library(ggthemes)
+options(pillar.width = 70)
+```
+
+
+# Agenda  9/3/25
+
+1. GitHub
+2. NSSD
+3. grammar of graphics
+4. ggplot
+
+
+::: {.callout-important}
+Before Monday, read: Tufte. 1997. <a href = "https://www.edwardtufte.com/book/visual-and-statistical-thinking-displays-of-evidence-for-making-decisions/" target = "_blank">Visual and Statistical Thinking: Displays of Evidence for Making Decisions</a>.  (Use Google to find it.)
+:::
+
+
+
+## NSSD: 
+
+::: {.incremental}
+* What was Hilary trying to answer in her data collection?
+
+* Name two of Hilary's main hurdles in gathering accurate data.
+
+* Which is better:  high touch (manual) or low touch (automatic) data collection?  Why?
+
+* What additional covariates are needed / desired?  Any problems with them?
+
+* How much data does she need?
+
+* Are there any ethical considerations to think about?
+:::
+
+## Data Visualization
+
+```{r, out.width = "800px", echo=FALSE, fig.cap = "Based on [https://www.effectivedatastorytelling.com/post/a-deeper-dive-into-lego-bricks-and-data-stories](https://www.effectivedatastorytelling.com/post/a-deeper-dive-into-lego-bricks-and-data-stories), original source: [https://www.linkedin.com/learning/instructors/bill-shander](https://www.linkedin.com/learning/instructors/bill-shander)"}
+knitr::include_graphics("../images/data_lego2.png")
+```
+
+# Graphics
+
+## Grammar of graphics
+
+Yau (2013) gives us nine visual cues, and Wickham (2014) translates them into a language using `ggplot2`.  
+
+1. Visual Cues:  the aspects of the figure where we should focus.  
+**Position** (numerical) where in relation to other things?  
+**Length** (numerical) how big (in one dimension)?  
+**Angle** (numerical) how wide? parallel to something else?  
+**Direction** (numerical) at what slope?  In a time series, going up or down?  
+**Shape** (categorical) belonging to what group?  
+**Area** (numerical) how big (in two dimensions)?  Beware of improper scaling!  
+**Volume** (numerical) how big (in three dimensions)?  Beware of improper scaling!  
+**Shade** (either) to what extent?  how severely?  
+**Color** (either) to what extent? how severely? Beware of red/green color blindness.  
+
+2. Coordinate System: rectangular, polar, geographic, etc.
+
+3. Scale: numeric (linear? logarithmic?), categorical (ordered?), time
+
+4. Context: in comparison to what (think back to ideas from Tufte)
+
+
+## Pieces of the Graph
+
+:::: {.columns} 
+::: {.column width="50%"}
+Visual Cues of Yau (2013):   
+**Position** (numerical)  
+**Length** (numerical)  
+**Angle** (numerical)   
+**Direction** (numerical)  
+**Shape** (categorical)   
+**Area** (numerical)  
+**Volume** (numerical)  
+**Shade** (either)    
+**Color** (either)  
+:::
+
+::: {.column width="50%"}
+```{r out.width = '100%', fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/Yau_viz_cues.png")
+```
+:::
+::::
+
+
+## Order Matters
+
+
+```{r out.width = '100%', fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/Yau_order.png")
+```
+
+
+## Cues Together
+
+```{r out.width = '100%', fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/Yau_cuestogether.png")
+```
+
+
+## Attributes
+
+Attributes can focus your reader's attention.^[image credit: Better Data Visualization by Schwabish]
+
+```{r out.width = '80%', fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/attributes.jpg")
+```
+
+
+# Goals of `ggplot2`
+
+What I will try to do
+
+ * give a tour of `ggplot2`
+ 
+ * explain how to think about plots the `ggplot2` way
+ 
+ * prepare/encourage you to learn more later
+ 
+What I can't do in one session
+
+ * show every bell and whistle
+ 
+ * make you an expert at using `ggplot2`
+ 
+
+
+
+## Getting help
+
+1.  One of the best ways to get started with ggplot is to Google what you want to do with the word ggplot.  Then look through the images that come up.  More often than not, the associated code is there.  There are also ggplot galleries of images, one of them is here: https://plot.ly/ggplot2/
+
+2. Look at the end of this presentation and the syllabus.  More help options there.
+
+```{r out.width='100%', fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/plotly.png")
+```
+
+
+
+
+## What are the visual cues on this plot?
+    
+:::: {.columns}
+::: {.column width="50%"}
+```{r, echo=FALSE}
+library(mosaic)
+library(mosaicData)
+SAT |> subset(frac > 50) |>
+  ggplot(aes(x = state, y =  math)) + 
+  labs(x = "state",
+       y = "average SAT score") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_point() + 
+  geom_linerange(aes(x = state, ymin=0, ymax = math))
+```
+:::
+
+::: {.column width="50%"}
+*  position
+*  length
+*  shape
+*  area/volume
+*  shade/color
+
+:::
+::::
+
+
+
+## What are the visual cues on this plot?
+
+```{r echo=FALSE}
+library(mosaic)
+library(mosaicData)
+```
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+SwimRecords |>
+  ggplot(aes(x = year, y = time, color = sex)) + 
+  geom_point() + 
+  geom_line() +
+  labs(title = "100m Swimming World Records",
+       y = "World Record Time (seconds)")
+```
+:::
+
+::: {.column width="50%"}
+*  position
+*  length
+*  shape
+*  area/volume
+*  shade/color
+
+:::
+::::
+
+
+
+## What are the visual cues on this plot?
+    
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+HELPrct |> group_by(substance) |>
+  summarize(count = n()) |>
+  mutate(lab.ypos = cumsum(count) - 0.5*count) |>
+  ggplot(aes(x = "", y =count, fill = substance)) + 
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = lab.ypos, label = count), color = "white") +
+  scale_fill_brewer(palette = "Greens") +
+  theme_void() +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+:::
+
+::: {.column width="50%"}
+*  position
+*  length
+*  shape
+*  area/volume
+*  shade/color
+
+:::
+::::
+
+
+## The grammar of graphics `ggplot` 
+            
+
+**geom**: the geometric "shape" used to display data
+ 
+  * bar, point, line, ribbon, text, etc.
+ 
+**aesthetic**: an attribute controlling how geom is displayed with respect to variables
+
+  * x **position**, y **position**, **color**, fill, shape, size, etc.
+
+<!--
+**scale**: adjust information in the aesthetic to map onto the plot
+
+  * *particular* assignment of colors, shapes, sizes, etc.; making axes continuous or constrained to a particular range of values.
+-->
+
+**guide**: helps user convert visual data back into raw data (legends, axes)
+
+**stat**: a transformation applied to data before geom gets it
+
+  * example: histograms work on binned data
+
+
+
+## Set up
+
+```{r}
+library(mosaic)
+data(Births2015)
+```
+
+```{r}
+#| eval: false
+head(Births2015)
+```
+
+```{r}
+#| echo: false
+head(Births2015) |> 
+  gt::gt()
+```
+
+Obtained from the National Center for Health Statistics, National Vital Statistics System, Natality, 2015 data.
+
+
+## How do we make this plot?
+   
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+ggplot(
+  data = Births2015, aes(x = date, y = births)) + 
+  geom_point() +
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="50%"}
+Two Questions:
+
+ 1. What do we want R to do?  (What is the goal?)
+ 
+ 2. What does R need to know?
+:::
+::::
+
+
+
+## How do we make this plot?
+   
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+ggplot(
+  data = Births2015, aes(x = date, y = births)) + 
+  geom_point() +
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="50%"}
+1. Goal: scatterplot = a plot with points
+ 
+2. What does R need to know?
+ 
+    * data source: `Births2015`
+
+    * aesthetics: 
+ 
+        * `date -> x`
+        * `births -> y`
+
+    * points
+:::
+::::
+
+## How do we make this plot?
+   
+:::: {.columns} 
+::: {.column width="40%"}
+```{r, echo=FALSE}
+ggplot(
+  data = Births2015, aes(x = date, y = births)) + 
+  geom_point() +
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="60%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "1,2,7,8"
+ggplot(data = Births2015, 
+       aes(x = date, y = births)) + 
+  geom_point() +
+  labs(title = "US Births in 2015")
+
+ggplot() +
+  geom_point(data = Births2015, 
+             aes(x = date, y = births)) +
+  labs(title = "US Births in 2015")
+```
+
+:::
+::::
+
+## Layers: layer 0 
+
+:::: {.columns} 
+::: {.column width="40%"}
+```{r}
+#| echo: false
+ggplot()
+```
+:::
+
+::: {.column width="60%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "1"
+ggplot() 
+```
+
+:::
+::::
+
+## Layers: layer 1 
+
+:::: {.columns} 
+::: {.column width="40%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015, aes(x = date, y = births))
+```
+:::
+
+::: {.column width="60%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "1,2"
+ggplot(data = Births2015, 
+       aes(x = date, y = births)) 
+```
+
+:::
+::::
+
+## Layers: layer 2 
+
+:::: {.columns} 
+::: {.column width="40%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015, aes(x = date, y = births)) + 
+  geom_point()
+```
+:::
+
+::: {.column width="60%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "3"
+ggplot(data = Births2015, 
+       aes(x = date, y = births)) + 
+  geom_point()
+```
+
+:::
+::::
+
+
+## Layers: layer 3 
+
+:::: {.columns} 
+::: {.column width="40%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015, aes(x = date, y = births)) + 
+  geom_point() +
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="60%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "4"
+ggplot(data = Births2015, 
+       aes(x = date, y = births)) + 
+  geom_point() +
+  labs(title = "US Births in 2015")
+```
+
+:::
+::::
+
+
+## How do we make this plot?
+    
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015) +
+  geom_point(aes(x = date, y = births, color = wday)) +
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="50%"}
+What has changed?  
+
+ * new aesthetic: mapping color to day of week
+
+:::
+::::
+
+## How do we make this plot?
+    
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015) +
+  geom_point(aes(x = date, y = births, color = wday)) +
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "4"
+ggplot(data = Births2015,
+       aes(x = date,
+           y = births, 
+           color = wday)) +
+  geom_point() +
+  labs(title = "US Births in 2015")
+```
+:::
+::::
+
+## How do we make this plot?
+    
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015) +
+  geom_line(aes(x = date, y = births, color = wday)) +
+  labs(title = "US Births in 2015")
+```
+:::
+::::
+
+## How do we make this plot?
+    
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015) +
+  geom_line(aes(x = date, y = births, color = wday)) +
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="50%"}
+lines instead of dots!
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "5"
+ggplot(data = Births2015,
+         aes(x = date, 
+             y = births,
+             color = wday)) +
+  geom_line() +
+  labs(title = "US Births in 2015")
+```
+
+:::
+::::
+
+## How do we make this plot?
+    
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015, 
+       aes(x = date, y = births, color = wday)) + 
+  geom_point() + 
+  geom_line() +
+  labs(title = "US Births in 2015")
+```
+:::
+::::
+
+## How do we make this plot?
+    
+:::: {.columns} 
+::: {.column width="50%"}
+```{r}
+#| echo: false
+ggplot(data = Births2015, 
+       aes(x = date, y = births, color = wday)) + 
+  geom_point() + 
+  geom_line() +
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="50%"}
+Now there are two **layers**: one with points and one with
+lines
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "5,6"
+ggplot(data = Births2015,
+       aes(x = date,
+           y = births,
+           color = wday)) + 
+  geom_point() +  
+  geom_line() +
+  labs(title = "US Births in 2015")
+```
+
+
+ *  The layers are placed one on top of the other:  the points 
+are *below* and the lines are *above*.   
+
+ * `data` and `aes` specified in `ggplot()` affect all geoms
+:::
+::::
+
+
+## What does this code do?
+  
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "2"
+ggplot(data = Births2015,
+       aes(x = date, y = births, color = "navy")) + 
+  geom_point() +
+  labs(title = "US Births in 2015") 
+```
+
+
+## What does this code do?
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "2"
+ggplot(data = Births2015,
+       aes(x = date, y = births, color = "navy")) + 
+  geom_point()  +
+  labs(title = "US Births in 2015")
+```
+
+
+This is *mapping* the color aesthetic to a new variable with 
+only one value ("navy").  
+So all the dots get set to the same color, but it's not navy.
+
+
+## Setting vs. Mapping
+
+If we want to *set* the color to be navy for all of the dots, we do 
+it outside the `aes()` designation:
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "2,3"
+ggplot(data = Births2015,
+       aes(x = date, y = births)) +   # map variables 
+  geom_point(color = "navy")    +   # set attributes
+  labs(title = "US Births in 2015")
+```
+
+
+* Note that `color = "navy"` is now outside of the aesthetics list.  That's how `ggplot2` distinguishes between mapping and setting.
+
+
+
+## How do we make this plot?
+    
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015,
+       aes(x = date, y = births)) + 
+  geom_line(aes(color = wday)) +       
+  geom_point(color = "navy")  +          
+  labs(title = "US Births in 2015")
+```
+:::
+::::
+
+## How do we make this plot?
+    
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, echo=FALSE}
+ggplot(data = Births2015,
+       aes(x = date,
+           y = births)) + 
+  geom_line(aes(color = wday)) +       
+  geom_point(color = "navy") +           
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "4,5"
+ggplot(data = Births2015,
+       aes(x = date,
+           y = births)) + 
+  geom_line(aes(color = wday)) +      
+  geom_point(color = "navy")  +         
+  labs(title = "US Births in 2015")
+```
+
+
+* `ggplot()` establishes the default data and aesthetics
+for the geoms, but each geom may change these defaults.
+
+* good practice: put into `ggplot()` the things that affect all (or most) of the layers; rest in `geom_XXXX()`
+:::
+::::
+
+## Setting vs. Mapping (again)
+
+Information gets passed to the plot via:
+
+a. `map` the **variable** information inside the aes (aesthetic) command
+
+a. `set` the **non-variable** information outside the aes (aesthetic) command
+
+# Agenda  9/8/25
+
+1. advice on plotting
+2. Tufte
+3. more ggplot
+
+## Advice for Plotting
+
+:::: {.columns}
+::: {.column width="40%"}
+* **Basic plotting**
+:::
+
+::: {.column width="60%"}
+* Avoid having other graph elements interfere with data
+* Use visually prominent symbols
+* Avoid over-plotting (One way to avoid over plotting: jitter the values)
+* Different values of data may obscure each other
+* Include all or nearly all of the data
+* Fill data region
+:::
+:::: 
+
+
+## Advice for Plotting
+
+:::: {.columns}
+::: {.column width="40%"}
+* Basic plotting
+* **Eliminate superfluous material**
+:::
+
+::: {.column width="60%"}
+* Chart junk & stuff that adds no meaning, e.g. butterflies on top of barplots, background images
+* Extra tick marks and grid lines
+* Unnecessary text and arrows
+* Decimal places beyond the measurement error or the level of difference
+:::
+::::
+
+## Advice for Plotting
+
+:::: {.columns}
+::: {.column width="40%"}
+* Basic plotting
+* Eliminate superfluous material
+* **Facilitate comparisons**
+:::
+
+::: {.column width="60%"}
+* Put juxtaposed plots on same scale
+* Make it easy to distinguish elements of superposed plots (e.g. color)
+* Emphasizes the important difference
+* Comparison: volume, area, height (be careful, volume can seem bigger than you mean it to)
+:::
+::::
+
+## Advice for Plotting
+
+:::: {.columns}
+::: {.column width="40%"}
+* Basic plotting
+* Eliminate superfluous material
+* Facilitate comparisons
+* **Choosing the scale**
+:::
+
+::: {.column width="60%"}
+* Keep scales on x and y axes the same for both plots to facilitate the comparison
+* Zoom in to focus on the region that contains the bulk of the data
+* Keep the scale the same throughout the plot (i.e. don’t change it mid-axis)
+* Origin need not be on the scale
+* Choose a scale that improves resolution
+* Avoid jiggling the baseline
+:::
+::::
+
+
+## Advice for Plotting
+
+:::: {.columns}
+::: {.column width="40%"}
+* Basic plotting
+* Eliminate superfluous material
+* Facilitate comparisons
+* Choosing the scale
+* **How to make a plot information rich**
+:::
+
+::: {.column width="60%"}
+* Describe what you see in the caption
+* Add context with reference markers (lines and points) including text
+* Add legends and labels
+* Use color and plotting symbols to add more information
+* Plot the same thing more than once in different ways/scales
+* Reduce clutter
+:::
+::::
+
+## Advice for Plotting
+
+:::: {.columns}
+::: {.column width="40%"}
+* Basic plotting
+* Eliminate superfluous material
+* Facilitate comparisons
+* Choosing the scale
+* How to make a plot information rich
+* **Captions should**
+:::
+
+::: {.column width="60%"}
+* Be comprehensive
+* Self-contained
+* Describe what has been graphed
+* Draw attention to important features
+* Describe conclusions drawn from graph
+:::
+::::
+
+## Advice for Plotting
+
+:::: {.columns}
+::: {.column width="40%"}
+* Basic plotting
+* Eliminate superfluous material
+* Facilitate comparisons
+* Choosing the scale
+* How to make a plot information rich
+* Captions should
+* **Good Plot Making Practice**
+:::
+
+::: {.column width="60%"}
+* Put major conclusions in graphical form
+* Provide reference information
+* Proof read for clarity and consistency
+* Graphing is an iterative process
+* Multiplicity is OK, i.e. two plots of the same variable may provide different messages
+* Make plots data rich
+:::
+::::
+
+
+
+# Examples in the wild
+
+* Tufte -- Cholera & Challenger
+* Fonts
+* NYT often does data viz quite well
+* W.E.B Du Bois
+
+
+
+## Preliminaries
+
+1. Make the data stand out
+
+2. Facilitate comparison
+
+3. Add information
+
+(Nolan & Perrrett, 2016)
+
+
+## Preliminaries
+
+Tufte lists two main motivational steps to working with graphics as part of an argument.
+
+1. "An essential analytic task in making decisions based on evidence is to understand how things work."
+
+2. Making decisions based on evidence requires the appropriate display of that evidence."
+
+# Tufte
+
+Tufte (1997) <a href = "https://www.edwardtufte.com/book/visual-and-statistical-thinking-displays-of-evidence-for-making-decisions/" target = "_blank">Visual and Statistical Thinking: Displays of Evidence for Making Decisions</a>.  (Use Google to find it.)
+
+
+## Cholera - a picture tells 1000 words
+
+```{r fig.cap = "How many aspects of this graph can you point out which are relevant to figuring out that cholera infection was coming from a single pump?  Are there any distracting aspects?", out.width="65%", fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/cholera1.jpg")
+```
+
+
+
+## Cholera - difficult to interpret
+
+```{r fig.cap = "Why would the outbreak already have begun to decline before the pump handle was removed?", out.width="80%", fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/cholera2.jpg")
+```
+
+
+## Challenger - Problematic
+
+```{r fig.cap = "One of the graphics which was particularly unconvincing in trying to explain that O-rings fail in the cold.", out.width = "70%", fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/challenger2.jpg")
+```
+
+
+## Challenger - Better????
+
+```{r fig.cap = "A different graph of the Challenger information, now sorted by temperature", fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/challenger1.jpg")
+```
+
+
+## Challenger - Improved
+
+```{r fig.cap = "The graphic the engineers should have led with in trying to persuade the administrators not to launch.  It is evident that the number of O-ring failures is quite highly associated with the ambient temperature.  Note the *vital* information on the x-axis associated with the large number of launches at warm temperatures that had *zero* O-ring failures.", fig.align='center', echo=FALSE}
+knitr::include_graphics("../images/TuftestemperatureandOringrelationshi.jpg")
+```
+
+Note that the "improved" Challenger graphic was made by **Tufte**, not by the engineers working on the problem at the time.
+
+
+## Fonts matter
+
+```{r, out.width = "500px", fig.alt = "image credit: Will Chase RStudio::conf 2020", echo=FALSE,fig.align = 'center'}
+knitr::include_graphics("../images/fontsmatter.png")
+``` 
+
+
+
+## Advice on plotting, specific
+
+- Avoid having other graph elements interfere with data
+- Use visually prominent symbols
+- Avoid over-plotting  (One way to avoid over plotting: jitter the values)
+- Different values of data may obscure each other
+- Include all or nearly all of the data
+- Fill data region
+
+
+
+## Advice on plotting, general
+
+- Eliminate superfluous material
+- Facilitate comparisons
+- Choose the best scale
+- Make the plot data / information rich
+- Use good captions, alt text, conclusions
+
+
+
+
+## Simplify
+
+```{r, out.width = "85%", fig.cap = "image credit: https://www.darkhorseanalytics.com/portfolio-data-looks-better-naked", fig.alt = "A gif of a barplot which starts out cluttered with labels and slowly becomes simplified with the relevant information highlighted.", echo=FALSE}
+knitr::include_graphics("../images/data-ink-bar.gif")
+``` 
+
+
+
+## Simplified
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, fig.cap = "", fig.alt = "The before and after images with the process of simplifying a barplot.", fig.show='hold', echo=FALSE}
+knitr::include_graphics("../images/barplot-gif-before.png")
+``` 
+:::
+
+::: {.column width=50%}
+```{r, fig.cap = "", fig.alt = "The before and after images with the process of simplifying a barplot.", fig.show='hold', echo=FALSE}
+knitr::include_graphics("../images/barplot-gif-after.png")
+``` 
+:::
+::::
+image credit: https://www.darkhorseanalytics.com/portfolio-data-looks-better-naked
+
+## NYT 9/7/21
+
+
+::: {.panel-tabset}
+
+## Data Viz
+```{r, out.width = "90%", fig.cap = "One in 5,000, NYT, D. Leonhardt 9/7/21; image credit: https://www.nytimes.com/2021/09/07/briefing/risk-breakthrough-infections-delta.html", fig.alt = "A scatterplot showing that states with higher vaccination rates have lower COVID case rates.  A few states are highlighted in stronger font: NY, CA, MA have low COVID rates and high vaccination rates; SC GA, ID have high COVID rates and low vaccination rates; TX and USA are in the middle with medium vaccination and medium COVID rates.", echo=FALSE}
+knitr::include_graphics("../images/vacc-case.png")
+``` 
+
+## What they did well
+
+* lighter grid lines
+* no extra information
+* good caption
+* regression line to give context to the trend
+* y axes labels horizontal, not vertical
+* a few states (and the US) are highlighted to draw the reader's eye
+
+:::
+
+# W.E.B. Du Bois
+
+One of the great early data viz pioneers. Remarkable ability to convey information.
+
+
+## Worth a Mention
+
+:::: {.columns} 
+::: {.column width="50%"}
+W.E.B. Du Bois (1868-1963)
+
+* sociologist
+* data scientist
+:::
+
+::: {.column width="50%"}
+```{r, out.width = "40%", fig.alt = "image of WEB Du Bois", fig.cap = "image credit: wikipedia", echo=FALSE}
+knitr::include_graphics("../images/WEB_DuBois_1918.jpg")
+``` 
+:::
+::::
+
+In 1900 Du Bois contributed approximately 60 data visualizations to an exhibit at the Exposition Universelle in Paris, an exhibit designed to illustrate the progress made by African Americans since the end of slavery (only 37 years prior, in 1863).
+
+
+
+## Beautiful & Informative Graphics
+
+https://drawingmatter.org/w-e-b-du-bois-visionary-infographics/
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, out.width = "90%", fig.alt = "figures from Du Bois's 1900 exhibition", fig.cap = "", echo=FALSE}
+knitr::include_graphics("../images/dubois-graphs1.png")
+``` 
+:::
+
+::: {.column width="50%"}
+```{r, out.width = "90%", fig.alt = "figures from Du Bois's 1900 exhibition", echo=FALSE}
+knitr::include_graphics("../images/dubois-graphs2.png")
+``` 
+:::
+::::
+
+
+# More **ggplot2**
+
+So much more to cover with **ggplot2**!
+
+## Other geoms
+ 
+```{r, echo=TRUE, comment=NA}
+apropos("^geom_")
+```
+
+
+
+## Other geoms
+
+help pages will tell you their aesthetics, default stats, etc.
+
+```{r, eval=FALSE}
+?geom_area             # for example
+```
+
+
+
+
+## Let's try `geom_area`
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, eval=TRUE}
+ggplot(data = Births2015,
+       aes(x = date,
+           y = births, 
+           fill = wday)) + 
+  geom_area() +
+  labs(title = "US Births in 2015")
+```
+
+:::
+::::
+
+## Let's try `geom_area`
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, eval=TRUE}
+ggplot(data = Births2015,
+       aes(x = date, y = births, fill = wday)) + 
+  geom_area() +
+  labs(title = "US Births in 2015")
+```
+:::
+
+::: {.column width="50%"}
+... not a good plot
+
+
+* overplotting is hiding much of the data
+* extending y-axis to 0 may or may not be desirable.
+:::
+::::
+
+## Side note: what makes a plot good?
+   
+
+Most (all?) graphics are intended to help us make comparisons
+
+* How does something change over time?
+* Do my treatments matter?  How much?
+* Do treatment and control respond the same way?
+
+::: {.callout-important}
+# Key plot metric
+Does my plot make the comparisons I am interested in:
+
+* easily, and 
+* accurately?
+:::
+
+## Time for some different data
+
+HELPrct: Health Evaluation and Linkage to Primary care randomized
+clinical trial.  Subjects admitted for treatment for addiction to one 
+of three substances.
+
+```{r}
+#| eval: false
+head(HELPrct)
+```
+
+```{r}
+#| echo: false
+head(HELPrct) |> 
+  gt::gt()
+```
+
+```{r echo = FALSE}
+HELP_data <- left_join(HELPrct, HELPfull, by = c( "id" = "ID")) |>
+  filter(!is.na(A11E)) |>
+  mutate(children = ifelse(A11E == 0, "no", "yes"))
+```
+
+
+
+## Who are the people in the study?
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r echo=FALSE}
+HELP_data |> 
+  ggplot(aes(x = substance)) + 
+  geom_bar() +
+  labs(title = "HELP trial")
+```
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = substance)) + 
+  geom_bar() +
+  labs(title = "HELP trial")
+```
+
+
+* Hmm.  What's up with `y`?
+
+:::
+::::
+
+## Who are the people in the study?
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r echo=FALSE}
+HELP_data |> 
+  ggplot(aes(x = substance)) + 
+  geom_bar() +
+  labs(title = "HELP trial")
+```
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = substance)) + 
+  geom_bar() +
+  labs(title = "HELP trial")
+```
+
+
+* Hmm.  What's up with `y`?
+
+    * `stat_bin()` is being applied to the data before the 
+    `geom_bar()` gets to do its thing.  Binning creates the
+    `y` values.
+:::
+::::
+
+## Who are the people in the study?
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+HELP_data |> 
+  ggplot(aes(x = substance, 
+             fill = children)) + 
+  geom_bar() +
+  labs(title = "HELP trial")
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = substance,
+           fill = children)) + 
+  geom_bar() +
+  labs(title = "HELP trial")
+```
+
+:::
+::::
+
+## Who are the people in the study?
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+ggplot(HELP_data,
+       aes(x = substance,
+           fill = children)) + 
+  geom_bar(position = "fill") +
+  labs(title = "HELP trial",
+       y = "actually, percent")
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "4"
+ggplot(HELP_data,
+       aes(x = substance,
+           fill = children)) + 
+  geom_bar(position = "fill") +
+  labs(title = "HELP trial",
+       y = "actually, percent")
+```
+
+:::
+::::
+
+## How old are people in the HELP study?
+     
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r, fig.height=1.5, message=TRUE, echo=FALSE}
+HELP_data |> 
+  ggplot(aes(x = age)) + 
+  geom_histogram() +
+  labs(title = "HELP trial")
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = age)) + 
+  geom_histogram() +
+  labs(title = "HELP trial")
+```
+
+
+Notice the messages
+
+* `stat_bin`:  Histograms are not mapping the raw data but
+binned data.  
+`stat_bin()` performs the data transformation.
+
+* `binwidth`: a default binwidth has been selected, but we should
+really choose our own.
+:::
+::::
+
+## Setting the binwidth manually
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r echo=FALSE}
+HELP_data |> 
+  ggplot(aes(x = age)) + 
+  geom_histogram(binwidth = 2) +
+  labs(title = "HELP trial")
+```
+
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = age)) + 
+  geom_histogram(binwidth = 2) +
+  labs(title = "HELP trial")
+```
+
+:::
+::::
+
+## How old are people in the HELP study? -- Other geoms
+     
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = age)) + 
+  geom_freqpoly(binwidth = 2) +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = age)) + 
+  geom_density() +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+## Selecting stat and geom manually
+  
+Every geom comes with a default stat
+
+* for simple cases, the stat is `stat_identity()` which does nothing
+* we can mix and match geoms and stats however we like
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = age)) + 
+  geom_line(stat = "density") +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+## Selecting stat and geom manually
+    
+Every stat comes with a default geom, every geom with a default stat
+
+* we can specify stats instead of geom, if we prefer
+* we can mix and match geoms and stats however we like
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = age)) + 
+  stat_density(geom = "line") +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+## More combinations
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3,4"
+ggplot(data = HELP_data,
+       aes(x = age)) + 
+  geom_point(stat = "bin", binwidth = 3) + 
+  geom_line(stat = "bin", binwidth = 3)  +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+## More combinations
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3"
+ggplot(data = HELP_data,
+       aes(x = age)) + 
+  geom_area(stat = "bin", binwidth = 3)  +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+
+## More combinations
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3,4,5,6"
+ggplot(data = HELP_data,
+       aes(x = age)) + 
+  geom_point(stat = "bin", 
+             binwidth = 3, 
+             aes(size = ..count..)) +
+  geom_line(stat = "bin", binwidth = 3) +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+## How much drinking? (i1)
+    
+
+```{r, fig.height=1.5}
+HELP_data |> 
+  ggplot(aes(x = i1)) + geom_histogram() +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+
+## How much drinking? (i1)
+ 
+```{r, fig.height=1.5}
+HELP_data |> 
+  ggplot(aes(x = i1)) + geom_density() +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+
+## How much drinking? (i1)
+ 
+```{r, fig.height=1.5}
+HELP_data |> 
+  ggplot(aes(x = i1)) + geom_area(stat = "density") +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+
+
+## Covariates: Adding in more variables
+  
+
+Using color and linetype:
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3,4"
+ggplot(data = HELP_data,
+       aes(x = i1,
+           color = substance,
+           linetype = children)) + 
+  geom_line(stat = "density") +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+## Using color and facets
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "4"
+ggplot(data = HELP_data,
+       aes(x = i1, color = substance)) + 
+  geom_line(stat = "density") + 
+  facet_grid( . ~ children ) +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "4"
+ggplot(data = HELP_data,
+       aes(x = i1, color = substance)) + 
+  geom_line(stat = "density") + 
+  facet_grid( children ~ . ) +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+## Boxplots 
+   
+Boxplots use `stat_quantile()` (five number summary).
+
+The quantitative variable must be `y`, and there must be an 
+additional `x` variable. 
+
+```{r fig.height = 3.5}
+HELP_data |> 
+  ggplot(aes(x = substance, y = age, color = children)) + 
+  geom_boxplot() +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+
+## Horizontal boxplots
+    
+Horizontal boxplots  are obtained by flipping the coordinate system:
+
+* `coord_flip()` may be used with other plots as well to reverse the roles
+of `x` and `y` on the plot.
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "6"
+ggplot(data = HELP_data,
+       aes(x = substance, 
+           y = age, 
+           color = children)) + 
+  geom_boxplot() +
+  coord_flip() +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+## Axes scaling with boxplots
+    
+We can scale the continuous axis
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "6"
+ggplot(data = HELP_data,
+       aes(x = substance, 
+           y = age, 
+           color = children)) + 
+  geom_boxplot() +
+  coord_trans(y = "exp") +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+
+## Give me some space
+  
+We've triggered a new feature: `dodge` (for dodging things left/right).
+We can control how much if we set the dodge manually.
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "5"
+ggplot(data = HELP_data,
+       aes(x = substance, 
+           y = age, 
+           color = children)) + 
+  geom_boxplot(position = position_dodge(width=1)) +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+## Issues with bigger data
+
+* Although we can see a generally positive association (as we would 
+expect), the overplotting may be hiding information.
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "6"
+library(NHANES)
+dim(NHANES)
+ggplot(data = NHANES,
+       aes(x = Height, y = Weight)) +
+  geom_point() + 
+  facet_grid( Gender ~ PregnantNow )
+```
+
+
+## Using alpha (opacity)
+
+One way to deal with overplotting is to set the opacity low.
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3"
+ggplot(data = NHANES,
+       aes(x = Height, y = Weight)) +
+  geom_point(alpha=0.01) + 
+  facet_grid( Gender ~ PregnantNow )
+```
+
+
+## geom_density2d
+  
+Alternatively (or simultaneously) we might prefer a different 
+geom altogether.
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "3"
+ggplot(data = NHANES,
+       aes(x = Height, y = Weight)) +
+  geom_density2d() + 
+  facet_grid( Gender ~ PregnantNow )
+```
+
+
+## Multiple layers
+
+:::: {.columns} 
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "2,3"
+ggplot(data = HELP_data, 
+       aes(x = children, y = age)) +
+  geom_boxplot(outlier.size = 0) +
+  geom_point(alpha=.6) +
+  coord_flip() +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "4"
+ggplot(data = HELP_data,
+       aes(x = children, y = age)) +
+  geom_boxplot(outlier.size = 0) +
+  geom_jitter(alpha=.6, width = 0.1) +
+  coord_flip() +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+:::
+::::
+
+## Multiple layers
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "5"
+ggplot(data = HELP_data,
+       aes(x = children, y = age)) +
+  geom_boxplot(outlier.size = 0) +
+  geom_point(alpha=.6, 
+             position = position_jitter(width=.1, height=0)) +
+  coord_flip() +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+## Things I haven't mentioned (much)
+ 
+ * coords (`coord_flip()` is good to know about)
+ 
+ * themes (for customizing appearance)
+
+ * position (`position_dodge()`, `position_jitterdodge()`,
+ `position_stack()`, etc.)
+ 
+ * transforming axes
+ 
+## themes 
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "4"
+library(ggthemes)
+ggplot(Births2015, aes(x = date, y = births)) + 
+  geom_point() + 
+  theme_wsj()
+```
+
+
+
+
+## `jitterdodge()`
+ 
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "6"
+ggplot(data = HELP_data, 
+       aes(x = substance, y = age, color = children)) +
+  geom_boxplot(coef = 10, position = position_dodge()) +
+  geom_point(aes(color = children, 
+                 fill = children), 
+             position = position_jitterdodge()) +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+
+
+## A little bit of everything
+
+```{r, fig.width=14}
+ggplot(data = HELP_data, aes(x = substance, y = age, color = children)) +
+  geom_boxplot(coef = 10, position = position_dodge(width=1)) +
+  geom_point(aes(fill = children), alpha=.5, 
+             position = position_jitterdodge(dodge.width=1, jitter.width = 0.2)) + 
+  facet_wrap(~homeless) +
+  labs(title = "HELP clinical trial at detoxification unit")
+```
+
+
+## Want to learn more?
+    
+
+ * [docs.ggplot2.org/](http://docs.ggplot2.org/)
+ 
+ * [R for Data Science](https://r4ds.had.co.nz/) by Hadley Wickham and Garrett Grolemund
+
+
+
+## What's around the corner?
+   
+
+`shiny`
+
+* interactive graphics / modeling
+
+* https://shiny.rstudio.com/
+
+`plotly` 
+
+> `Plotly` is an R package for creating interactive web-based graphs via plotly's JavaScript graphing library, `plotly.js`. The `plotly` R libary contains the `ggplotly` function , which will convert `ggplot2` figures into a Plotly object. Furthermore, you have the option of manipulating the Plotly object with the `style` function.
+ 
+ * https://plot.ly/ggplot2/getting-started/
+
+
+`gganimate`
+
+* [`gganimate` tutorial](https://gganimate.com/articles/gganimate.html)
+
+ 
+ 
+ 
+
+
+
+
+
+
+
