@@ -1,0 +1,43 @@
+\contentsline {section}{Executive Summary}{3}{section*.1}
+\contentsline {section}{Introduction}{3}{section*.2}
+\contentsline {subsection}{Background}{3}{subsection*.3}
+\contentsline {subsection}{Objectives}{3}{subsection*.4}
+\contentsline {subsection}{Regulatory Context}{3}{subsection*.5}
+\contentsline {section}{Data Collection and Study Area}{4}{section*.6}
+\contentsline {subsection}{Study Area Description}{4}{subsection*.7}
+\contentsline {subsection}{Monitoring Well Network}{4}{subsection*.8}
+\contentsline {section}{Methodology}{4}{section*.9}
+\contentsline {subsection}{Spatial Interpolation Overview}{4}{subsection*.10}
+\contentsline {subsection}{Implementation}{6}{subsection*.11}
+\contentsline {section}{Results}{6}{section*.12}
+\contentsline {subsection}{Interpolated Concentration Maps}{6}{subsection*.13}
+\contentsline {subsection}{Quantitative Comparison}{6}{subsection*.14}
+\contentsline {subsection}{Kriging Uncertainty Analysis}{7}{subsection*.15}
+\contentsline {section}{Interpretation and Discussion}{7}{section*.16}
+\contentsline {subsection}{Contamination Pattern Analysis}{7}{subsection*.17}
+\contentsline {subsection}{Method-Specific Observations}{7}{subsection*.18}
+\contentsline {subsection}{Comparison of Methods}{8}{subsection*.19}
+\contentsline {subsection}{Health Risk Assessment}{8}{subsection*.20}
+\contentsline {section}{Recommendations}{8}{section*.21}
+\contentsline {subsection}{Immediate Actions}{8}{subsection*.22}
+\contentsline {subsection}{Additional Monitoring}{9}{subsection*.23}
+\contentsline {subsection}{Future Analysis}{9}{subsection*.24}
+\contentsline {section}{Conclusions}{9}{section*.25}
+\contentsline {section}{Acknowledgments}{10}{section*.26}
+\contentsline {section}{References}{10}{section*.27}
+\contentsline {section}{Appendix A: Sample Data}{11}{section*.28}
+\contentsline {section}{Appendix B: R Code}{11}{section*.29}
+\contentsline {section}{Appendix C: Variogram Models}{13}{section*.30}
+\contentsline {section}{Appendix D: Quality Assurance}{13}{section*.31}
+\contentsline {subsection}{Data Quality Checks}{13}{subsection*.32}
+\contentsline {subsection}{Interpolation Validation}{13}{subsection*.33}
+\contentsline {subsection}{Assumptions and Limitations}{14}{subsection*.34}
+\contentsline {section}{Appendix E: Regulatory Framework}{15}{section*.35}
+\contentsline {subsection}{U.S. Federal Standards}{15}{subsection*.36}
+\contentsline {subsection}{Health Effects}{15}{subsection*.37}
+\contentsline {section}{Appendix F: Glossary}{15}{section*.38}
+\contentsline {section}{Document Information}{17}{section*.39}
+\contentsline {subsection}{Software Versions}{17}{subsection*.40}
+\contentsline {subsection}{Compilation Instructions}{17}{subsection*.41}
+\contentsline {subsection}{Contact Information}{17}{subsection*.42}
+\contentsfinish 

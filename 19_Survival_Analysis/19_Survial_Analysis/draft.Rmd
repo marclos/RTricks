@@ -1,0 +1,25 @@
+---
+title: "Survival Analysis for Algal Growth: A Handout for Korey & Maria"
+author: "Marc Los Huertos"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.align = 'center')
+```
+
+Goal and Justification
+The goal is to compare the time it takes for algal cultures under three different treatments to reach a specific growth milestone (an absorbance threshold). We use a survival analysis approach because it correctly handles cultures that never reach the threshold (right-censoring) and provides robust, interpretable comparisons of growth rates over time.
+
+Explanation for Korey and Maria
+Survival analysis fits our data perfectly because it focuses on Time-to-Event, not just the final outcome.
+
+Survival Term	Algae Equivalent	Statistical Role
+Event	Reaching the chosen OD threshold (e.g., OD = 0.6).	Defines the failure point we are tracking.
+Time	Time in hours until OD >= threshold.	The variable we are modeling.
+Censoring	Not reaching the threshold by the end of the experiment.	Allows us to keep and use data from slower cultures without bias.
+Hazard Ratio	The relative rate of reaching the threshold between two treatments.	Quantifies the speed difference: HR > 1 means faster growth.

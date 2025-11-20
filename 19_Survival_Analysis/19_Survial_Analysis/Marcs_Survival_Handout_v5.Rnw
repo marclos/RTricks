@@ -1,0 +1,472 @@
+\documentclass{article}
+
+\title{Survival Analysis -- Handout}
+\author{Marc Los Huertos}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+<<setup, include=FALSE>>=
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+@
+
+\section{Goal}
+
+We have absorbance (optical density, OD) measurements of algal cultures over time for three treatments. This R Markdown walks through an analysis that **uses a survival-analysis approach**: we define the event as *time to reach a event* (i.e. reach end of experiment milestone). This allows handling of cultures that never reach the threshold within the experiment (right-censored observations) and comparing groups using Kaplan–Meier curves, log-rank tests, and Cox proportional hazards models.
+
+\section{Justification!}
+
+Welcome to survival analysis for short-term experiments! I know 72 hours seems quick for ``survival'' analysis, but this technique is perfect for understanding \textit{when} growth rates change or fail, not just \textit{if} they change. 
+
+In your experiment, you're tracking algae growth under pollution stress. We'll use survival analysis to answer:
+
+\begin{itemize}
+\item When do algae colonies first show growth impairment?
+\item How quickly does pollution affect growth rates?
+\item What proportion maintains normal growth throughout the 72 hours?
+\end{itemize}
+
+\tableofcontents
+
+\section{Why use a survival analysis?}
+
+Alright Korey and Maria, here is an explanation of why I think you should and CAN use this approach. 
+
+We are not looking for a specific growth threshold. The issue is that the experiment has a hard stop. Some algae cultures get close to something interesting, and others do not, but everything ends at the same final time point because the experiment has to end. In other words, we censure the data. This is called right censured data. 
+
+So in this circumstance, the real question becomes: ``How long does each culture continue growing before the experiment forces us to stop?''
+
+This is exactly the kind of situation survival analysis is made for. Here is why it fits what we are doing.
+
+\subsection{1. Our event is the end of the experiment}
+
+Instead of waiting for the algae to reach some specific level, the ``event'' in our case is that the experiment ends. Some cultures are still growing. Some appear to have slowed down. Others might be about to separate from the pack but never get the chance because the experiment stops.
+
+Survival analysis lets us model this without pretending the algae hit a threshold that they did not actually reach -- in other words, we are removing a counfounding factor: data that is not there because the experiment ended.
+
+\subsection{2. All cultures are censored by design}
+
+Normally, censoring happens when something fails to happen in time. But here, censoring is simply the structure of the experiment. Every culture that does not finish whatever process we care about by the final measurement is censored at the end-of-experiment time.
+
+This is not a problem for survival analysis. In fact, survival analysis is built to handle exactly this type of "we stopped watching before the event happened" data.
+
+\subsection{3. It lets us compare treatments without assuming perfect growth curves}
+
+The algae do not follow perfect smooth logistic curves. They wiggle, plateau, slow down, and then take off again. If we tried to fit nonlinear models, we would be forcing the data into shapes it does not actually follow.
+
+Survival analysis does not care about the exact shape of the growth curve. It only cares about time until the event or censoring. That makes it realistic and robust for the type of noisy, real-world growth dynamics we have.
+
+\subsection{4. It gives us simple comparisons between treatments}
+
+Kaplan Meier curves show how much ``growth potential'' is still left in each group at each time point. Even though the event is the experiment ending, the KM curves still tell us who is ahead or behind as time goes on.
+
+Cox models give hazard ratios. In our case, the hazard ratio tells us whether one treatment is ``progressing toward the cutoff'' faster or slower than another. This becomes a practical way to compare treatments even when none of them reach a traditional endpoint.
+
+\subsection{5. We do not lose data by only looking at the final OD measurement}
+
+If we just looked at the final absorbance for each treatment, we would miss all the differences in how fast each culture was growing over time. Survival analysis uses all the data:
+
+\begin{itemize}
+\item every time point,
+\item every culture,
+\item all the differences in growth speed,
+\item all the censored cases.
+
+\end{itemize}
+
+Nothing gets thrown away. Are you starting to see why I think this is a good method? :-)
+
+\subsection{6. It fits the story of the experiment}
+
+The goal is not ``Did it reach some number?'' Instead, we might ask ``How long did it keep progressing until we had to stop the experiment?''
+
+Survival analysis is exactly the framework that treats our forced stop correctly and lets us compare treatments in a statistically meaningful way.
+
+\subsection{Summary}
+
+We are using survival analysis because the experiment does not run long enough for the cultures to reach a common endpoint. Instead, everyone gets cut off at the end of the experiment, and survival analysis is designed to handle that kind of censoring. It uses all of our data across time, does not require perfect growth curves, and gives us straightforward comparisons between treatments.
+
+In short:
+
+Survival analysis matches the way the experiment actually works, and it gives us the cleanest and most meaningful way to compare how the treatments influence growth over time.
+
+
+\section{1. Packages \& session info}
+
+To run the analysis, I am relying on a few packages, e.g. \texttt{tidyverse} for data wrangling and plotting, \texttt{survival} for survival analysis, and \texttt{survminer} for nice plotting functions.
+
+<<packages>>=
+library(tidyverse)
+library(survival)
+library(survminer)
+@
+
+
+\section{2. Data: two options}
+
+For Maria and Korey, I have created simulated example data below (Option B). You can also use your own data (Option A) if you have it in the suggested format. Hopefully, this handout will give you a sense of what this approach looks like and how to implement it!
+
+\subsection{Option A — use your own CSV}
+
+a suggested format is long: one row per sample per timepoint. 
+
+Columns:
+
+\begin{itemize}
+  \item `sample\_id` (unique for each biological replicate)
+  \item `treatment` (factor with 3 levels, e.g. `A`, `B`, `C`)
+  \item `time` (time in hours or days; numeric)
+  \item `absorbance` (OD or fluorescence reading; numeric)
+\end{itemize}
+
+Read it with:
+
+<<read-your-data, eval=FALSE>>=
+# df_raw <- read.csv("your_algae_data.csv")
+# glimpse(df_raw)
+@
+
+\subsection{Option B — simulated example data}
+
+used in this report so the analysis runs end-to-end). I thinnk this simulation creates realistic growth curves with noise, i.e. variation needed for a statistical analysis!
+
+More over, I created 10 replicates -- where some replicates that never hit the threshold.
+
+<<simulate-data>>=
+set.seed(2025)
+# parameters
+n_rep <- 10   # replicates per treatment
+times <- seq(0, 72, by = 8) # sample every 8 hours for 72 hours
+
+make_growth <- function(n, treatment_label, mu_time_to_mid = 30, sd_time = 6, maxOD = 1.2, prop_no_reach = 0.1){
+  tibble(sample = paste0(treatment_label, "_", seq_len(n))) %>%
+    rowwise() %>%
+    mutate(
+      # latent time to reach midpoint (control over growth speed)
+      t_mid = rnorm(1, mu_time_to_mid, sd_time) |> pmax(6),
+      slope = (maxOD) / (t_mid + 0.1),
+      # for a small proportion, set very slow growth so they won't reach threshold
+      never = runif(1) < prop_no_reach
+    ) %>%
+    ungroup() %>%
+    select(-t_mid, -slope, -never) -> samples
+
+  expand_grid(sample = samples$sample, time = times) %>%
+    left_join(samples, by = "sample") %>%
+    rowwise() %>%
+    mutate(
+      # generate an underlying logistic-like growth curve with noise
+      mu = plogis((time - rnorm(1, mu_time_to_mid, sd_time))/7) * maxOD,
+      absorbance = mu + rnorm(1, 0, 0.03)
+    ) %>%
+    ungroup() %>%
+    mutate(treatment = treatment_label)
+}
+
+# create three treatments with different typical growth rates
+df_A <- make_growth(n_rep, "A", mu_time_to_mid = 28, sd_time = 6, maxOD = 1.1, prop_no_reach = 0.05)
+df_B <- make_growth(n_rep, "B", mu_time_to_mid = 34, sd_time = 7, maxOD = 1.15, prop_no_reach = 0.12)
+df_C <- make_growth(n_rep, "C", mu_time_to_mid = 22, sd_time = 5, maxOD = 1.0, prop_no_reach = 0.08)
+
+df_raw <- bind_rows(df_A, df_B, df_C) %>%
+  mutate(treatment = factor(treatment))
+
+# inspect a handful
+df_raw %>% group_by(treatment) %>% slice_head(n = 6)
+@
+
+
+\subsection{End Of experiment}
+
+<<>>=
+# df_raw contains: sample, treatment, time, absorbance
+# Step 1: find the end-of-experiment time
+end_time <- max(df_raw$time)
+
+# Step 2: create a time-to-event dataset where the event is "experiment ended"
+# All samples have the same event time (the end) and all are censored (status = 0)
+
+time_to_event <- df_raw %>%
+  group_by(sample, treatment) %>%
+  summarise(
+    time = end_time,  # everyone ends at the final observed time
+    status = 0L,      # 0 = censored, because the event never actually happened
+    .groups = "drop"
+  )
+
+time_to_event
+@
+
+Some notes on the data: 
+
+\begin{enumerate}
+  \item Why status = 0 for everyone?
+
+Because in your design:
+\begin{itemize}
+\item The experiment ends before anything biologically meaningful happens, so the event never occurs, and the only thing that “happens” is that measurement stops.
+
+\item This is exactly what right-censoring represents.
+\end{itemize}
+\item If you want to define a different event, like “growth slowed” or “plateau started”
+
+\item You can define an event inside the experiment, for example: slope falls below a threshold, OD stops increasing, time to max observed absorbance, etc.
+
+\item Then some samples would have status = 1 and some status = 0.
+
+\item If you want that, tell me the biological definition and I’ll write the code for it.
+
+\end{enumerate}
+
+If you want to run Kaplan–Meier with end-of-experiment censoring
+
+<<>>=
+library(survival)
+library(survminer)
+
+km_fit <- survfit(Surv(time, status) ~ treatment, data = time_to_event)
+
+ggsurvplot(km_fit, data = time_to_event,
+           risk.table = TRUE,
+           conf.int = TRUE,
+           xlab = "Time",
+           title = "Survival curves where experiment-ending is censoring")
+@
+
+This will produce survival curves showing how much “time under observation” each treatment had — all curves will drop only at the end (because everyone is censored at the same time), but this sets the correct structure for modeling.
+
+
+\subsection{3. Visualize raw growth curves}
+
+Plotting raw absorbance over time for each replicate is important to see shapes, noise, and whether a single threshold makes sense.
+
+<<raw-curves>>=
+# spaghetti plot: individual curves (light) + treatment mean (bold)
+df_means <- df_raw %>%
+  group_by(treatment, time) %>%
+  summarise(mean_abs = mean(absorbance), .groups = "drop")
+
+p_raw <- ggplot() +
+  geom_line(data = df_raw,
+            aes(time, absorbance, group = sample, color = treatment),
+            alpha = 0.2, show.legend = FALSE) +
+  geom_line(data = df_means,
+            aes(time, mean_abs, color = treatment),
+            size = 1.1) +
+  labs(x = "Time (hours)",
+       y = "Absorbance (OD)",
+       title = "Raw growth curves by treatment") +
+  theme_minimal()
+
+p_raw
+@
+
+\subsection{Define event: time to reach a threshold}
+
+Choose a threshold that represents a biologically meaningful growth milestone. For example, `threshold <- 0.6` (you can change this). We compute, per sample, the **first time** the absorbance is >= threshold. If a sample never reaches the threshold during the recorded times, we treat it as **right-censored** at the last observed timepoint.
+
+<<compute-time-to-threshold>>=
+threshold <- 0.6
+
+time_to_event <- df_raw %>%
+  group_by(sample, treatment) %>%
+  arrange(time) %>%
+  summarise(
+    event_time = {
+      hit_rows <- which(absorbance >= threshold)
+      if(length(hit_rows) == 0) NA_real_ else time[min(hit_rows)]
+    },
+    last_time = max(time),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    status = if_else(is.na(event_time), 0L, 1L),        # 1 = event observed, 0 = censored
+    time = if_else(is.na(event_time), last_time, event_time)
+  )
+
+# show table
+time_to_event %>% count(treatment, status)
+@
+
+Plot the threshold on the raw curves so readers see what the event means.
+
+<<threshold-plot>>=
+p_raw + geom_hline(yintercept = threshold, linetype = "dashed") +
+  annotate("text", x = max(df_raw$time)*0.7, y = threshold + 0.04, label = paste0("threshold = ", threshold))
+@
+
+\subsection{5. Kaplan–Meier curves by treatment}
+
+Create a `Surv` object and fit Kaplan–Meier curves. We will visualize them and report median time-to-event where available.
+
+<<km-fit>>=
+km_fit <- survfit(Surv(time, status) ~ treatment, data = time_to_event)
+summary(km_fit)
+
+ggsurvplot(km_fit, data = time_to_event, risk.table = TRUE, pval = TRUE,
+           conf.int = TRUE, palette = "Dark2",
+           title = "Kaplan–Meier: time to reach absorbance threshold by treatment",
+           xlab = "Time (hours)", legend.title = "Treatment")
+@
+
+**Interpretation**: The survival curve here shows the probability that a culture has *not yet* reached the threshold at each timepoint. Lower curves correspond to faster attainment of the threshold.
+
+\subsection{6. Log-rank test (overall)}
+
+The log-rank test (implemented as `survdiff`) checks for differences in survival functions across groups.
+
+<<logrank>>=
+logrank <- survdiff(Surv(time, status) ~ treatment, data = time_to_event)
+logrank
+# compute approximate p-value
+p_val <- 1 - pchisq(logrank$chisq, df = length(logrank$n) - 1)
+cat("Omnibus log-rank p-value:", signif(p_val, 3), "\n")
+@
+
+subsection{7. Pairwise comparisons (adjusted)}
+
+If the omnibus test is significant, we may want pairwise comparisons. We'll compute pairwise log-rank tests and adjust p-values using the Benjamini-Hochberg method.
+
+<<pairwise>>=
+# pairwise_survdiff is available via survminer
+pairwise_res <- pairwise_survdiff(Surv(time, status) ~ treatment, data = time_to_event)
+pairwise_res
+
+# extract p-values and adjust
+pw <- pairwise_res$p.value
+pw_vec <- na.omit(as.vector(pw))
+adj <- p.adjust(pw_vec, method = "BH")
+adj
+@
+
+\subsection{8. Cox proportional hazards model}
+
+A Cox model estimates hazard ratios between treatments, which can be interpreted as relative rates of reaching the threshold.
+
+<<cox-model>>=
+# encode treatment as factor; choose reference
+time_to_event <- time_to_event %>% mutate(treatment = relevel(treatment, ref = "A"))
+cox1 <- coxph(Surv(time, status) ~ treatment, data = time_to_event)
+summary(cox1)
+@
+
+Notes: the hazard ratio (HR) $>$ 1 means faster attainment of the threshold relative to the reference.
+
+\subsection{9. Check proportional hazards assumption}
+
+<<cox-ph>>=
+ph_test <- cox.zph(cox1)
+ph_test
+plot(ph_test)
+@
+
+If the proportional hazards assumption fails for treatment, consider alternatives: stratified Cox, time-varying covariates, or non-parametric comparisons.
+
+\subsection{10. Visual diagnostics and alternative visualizations}
+
+Plot the cumulative hazard or complementary log-log plots if helpful. We can also overlay median times and forest plots of HRs.
+
+<<cox-forest>>=
+# simple forest plot for Cox HRs
+hr <- broom::tidy(cox1, exponentiate = TRUE, conf.int = TRUE)
+hr
+
+ggplot(hr, aes(x = term, y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.1) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  coord_flip() +
+  labs(y = "Hazard Ratio (HR)", x = "Coefficient", title = "Cox model: HR and 95% CI") +
+  theme_minimal()
+@
+
+\subsection{11. Reporting recommended outputs}
+
+A minimal reproducible report should include:
+
+\begin{itemize}
+\item Raw growth curve figure with threshold annotated (Step 3 \& 4).
+\item Table of `time-to-event' with `sample', `treatment', `time', `status' (observed/censored).
+\item Kaplan--Meier plot with risk table and p-value (Step 5).
+\item Omnibus log-rank test results and pairwise p-values with multiple-testing corrections (Steps 6--7).
+\item Cox model coefficients, hazard ratios and 95\% CI (Step 8) and asses
+\end{itemize}
+
+\section{Rationale Notes for Marc}
+
+\subsection{Rationale for Using Survival Analysis}
+
+Survival analysis is a powerful and appropriate statistical framework for analyzing algae growth when the primary question concerns *how long* it takes cultures to reach a biologically meaningful milestone, such as exceeding a specified absorbance threshold. This section explains why survival methods are preferred in such situations.
+
+\subsection{Focus on Time-to-Threshold Outcomes}
+
+Many algal growth studies aim to compare how long cultures under different treatments require to reach:
+- a specified absorbance (OD) level,
+- the onset of exponential growth, or
+- a density indicating establishment or competitive success.
+
+Survival analysis directly models **time-to-event** outcomes, aligning the statistical method with the biological question.
+
+\subsection{Natural Handling of Right-Censoring}
+
+Not every culture reaches the absorbance threshold during the experimental window. Traditional approaches (e.g., ANOVA on final OD or curve-fitting) often discard these observations or treat them incorrectly.  
+Survival analysis handles such cases as **right-censored** data:
+- the event did not occur during the observation period,
+- but the culture still provides valid information up to its last measurement time.
+
+This prevents bias and maximizes data use.
+
+\subsection{Minimal Assumptions About Growth Curves}
+
+Kaplan–Meier curves and log-rank tests compare groups **without requiring a specific growth model**. This is helpful because real algal populations may deviate from ideal logistic or Gompertz growth curves due to:
+- environmental fluctuations,
+- physiological acclimation,
+- measurement noise, and
+- treatment-specific growth dynamics.
+
+Survival methods remain robust under these conditions.
+
+\subsection{Interpretable Effect Sizes via Cox Models}
+
+The Cox proportional hazards model provides hazard ratios that quantify how treatments affect the **rate at which cultures reach the absorbance threshold**:
+- hazard ratio (HR) > 1 indicates faster growth,
+- HR < 1 indicates delayed growth.
+
+These effect sizes are intuitive and directly comparable across treatments.
+
+\subsection{Avoiding Information Loss}
+
+Analyzing only end-point absorbance values ignores valuable temporal data. Survival analysis incorporates:
+- timing of all measurements up to the event,
+- differences in growth trajectories,
+- censored observations.
+
+This increases statistical power and provides a more complete view of growth dynamics.
+
+\subsection{Flexibility for Complex Experiments}
+
+Survival frameworks easily extend to:
+- multiple covariates,
+- time-varying predictors,
+- stratified models,
+- non-proportional hazards scenarios,
+- mixed-effects survival models.
+
+This flexibility allows the approach to scale with more sophisticated experimental designs.
+
+\subsection{Summary}
+
+Survival analysis is an ideal approach for algae growth experiments where the goal is to compare the **time required to reach a growth milestone**, especially when:
+\begin{itemize}
+  \item treatments create different growth rates,
+  \item some cultures never reach the threshold,
+  \item the full growth curves are noisy or irregular, or
+  \item time-based comparisons provide the most biological insight.
+\end{itemize}
+It allows full use of the data, handles censoring
+
+
+
+\end{document}

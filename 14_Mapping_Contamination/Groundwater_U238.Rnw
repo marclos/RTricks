@@ -1,0 +1,200 @@
+\documentclass{article}
+
+\begin{document}
+
+<<>>=
+
+# Groundwater U-238 Contamination Mapping and Contouring
+# Auto-install and load required packages
+required_packages <- c("gstat", "sp", "ggplot2", "viridis", "gridExtra", "fields")
+
+for (pkg in required_packages) {
+  if (!require(pkg, character.only = TRUE, quietly = TRUE)) {
+    install.packages(pkg, dependencies = TRUE)
+    library(pkg, character.only = TRUE)
+  }
+}
+
+# Set seed for reproducibility
+set.seed(123)
+
+# 1. Generate simulated sampling points (monitoring wells)
+n_samples <- 30
+x <- runif(n_samples, 0, 100)
+y <- runif(n_samples, 0, 100)
+
+# Simulate U-238 concentration (µg/L) with contamination plumes
+hotspot1_x <- 30
+hotspot1_y <- 70
+hotspot2_x <- 60
+hotspot2_y <- 40
+
+u238 <- 50 * exp(-((x - hotspot1_x)^2 + (y - hotspot1_y)^2) / 500) +
+  30 * exp(-((x - hotspot2_x)^2 + (y - hotspot2_y)^2) / 300) +
+  rnorm(n_samples, 0, 2)
+
+u238 <- pmax(u238, 0.1)  # No negative values
+
+# Create data frame
+contamination_data <- data.frame(x = x, y = y, u238 = u238)
+
+cat("Sample Data Summary:\n")
+print(summary(contamination_data))
+cat("\n")
+
+# 2. Create 50x50 grid for interpolation
+grid_x <- seq(0, 100, length.out = 50)
+grid_y <- seq(0, 100, length.out = 50)
+grid <- expand.grid(x = grid_x, y = grid_y)
+
+# 3. Interpolation Method 1: Inverse Distance Weighting (IDW)
+coordinates(contamination_data) <- ~x+y
+coordinates(grid) <- ~x+y
+gridded(grid) <- TRUE
+
+cat("Performing IDW interpolation...\n")
+idw_result <- idw(u238 ~ 1, contamination_data, grid, idp = 2)
+idw_df <- as.data.frame(idw_result)
+names(idw_df)[3] <- "u238_idw"
+
+# 4. Interpolation Method 2: Kriging
+cat("Fitting variogram and performing kriging...\n")
+v <- variogram(u238 ~ 1, contamination_data)
+v_fit <- fit.variogram(v, vgm(psill = 100, model = "Sph", range = 30, nugget = 1))
+
+krige_result <- krige(u238 ~ 1, contamination_data, grid, model = v_fit)
+krige_df <- as.data.frame(krige_result)
+names(krige_df)[3] <- "u238_krige"
+
+# 5. Interpolation Method 3: Thin Plate Spline
+cat("Performing thin plate spline interpolation...\n")
+tps_fit <- Tps(x = contamination_data@coords, 
+               Y = contamination_data$u238,
+               lambda = 0)
+
+grid_coords <- expand.grid(x = grid_x, y = grid_y)
+tps_predictions <- predict(tps_fit, grid_coords)
+
+tps_df <- grid_coords
+tps_df$u238_tps <- tps_predictions
+
+# Convert sampling points back to regular data frame
+contamination_points <- as.data.frame(contamination_data)
+
+# 6. Define contour levels and regulatory threshold
+contour_levels <- c(1, 5, 10, 15, 20, 25, 30, 40, 50)
+mcl_u238 <- 30  # EPA Maximum Contaminant Level (µg/L)
+
+cat("\nGenerating maps...\n\n")
+
+# Plot 1: IDW Interpolation with Contours
+p1 <- ggplot() +
+  geom_tile(data = idw_df, aes(x = x, y = y, fill = u238_idw)) +
+  geom_contour(data = idw_df, aes(x = x, y = y, z = u238_idw),
+               breaks = contour_levels, color = "white", linewidth = 0.5, alpha = 0.7) +
+  geom_contour(data = idw_df, aes(x = x, y = y, z = u238_idw),
+               breaks = mcl_u238, color = "red", linewidth = 1.2) +
+  geom_point(data = contamination_points, aes(x = x, y = y),
+             color = "black", size = 2.5, shape = 21, fill = "yellow", stroke = 1) +
+  scale_fill_viridis(name = "U-238\n(µg/L)", option = "plasma", limits = c(0, 60)) +
+  labs(title = "IDW Interpolation (Inverse Distance Weighting)",
+       subtitle = "Red contour = MCL threshold (30 µg/L) | Yellow points = sampling wells",
+       x = "X Coordinate (m)", y = "Y Coordinate (m)") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title = element_text(face = "bold")) +
+  coord_fixed()
+
+# Plot 2: Kriging with Contours
+p2 <- ggplot() +
+  geom_tile(data = krige_df, aes(x = x, y = y, fill = u238_krige)) +
+  geom_contour(data = krige_df, aes(x = x, y = y, z = u238_krige),
+               breaks = contour_levels, color = "white", linewidth = 0.5, alpha = 0.7) +
+  geom_contour(data = krige_df, aes(x = x, y = y, z = u238_krige),
+               breaks = mcl_u238, color = "red", linewidth = 1.2) +
+  geom_point(data = contamination_points, aes(x = x, y = y),
+             color = "black", size = 2.5, shape = 21, fill = "yellow", stroke = 1) +
+  scale_fill_viridis(name = "U-238\n(µg/L)", option = "plasma", limits = c(0, 60)) +
+  labs(title = "Kriging Interpolation (Geostatistical)",
+       subtitle = "Red contour = MCL threshold (30 µg/L) | Yellow points = sampling wells",
+       x = "X Coordinate (m)", y = "Y Coordinate (m)") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title = element_text(face = "bold")) +
+  coord_fixed()
+
+# Plot 3: Thin Plate Spline with Contours
+p3 <- ggplot() +
+  geom_tile(data = tps_df, aes(x = x, y = y, fill = u238_tps)) +
+  geom_contour(data = tps_df, aes(x = x, y = y, z = u238_tps),
+               breaks = contour_levels, color = "white", linewidth = 0.5, alpha = 0.7) +
+  geom_contour(data = tps_df, aes(x = x, y = y, z = u238_tps),
+               breaks = mcl_u238, color = "red", linewidth = 1.2) +
+  geom_point(data = contamination_points, aes(x = x, y = y),
+             color = "black", size = 2.5, shape = 21, fill = "yellow", stroke = 1) +
+  scale_fill_viridis(name = "U-238\n(µg/L)", option = "plasma", limits = c(0, 60)) +
+  labs(title = "Thin Plate Spline Interpolation",
+       subtitle = "Red contour = MCL threshold (30 µg/L) | Yellow points = sampling wells",
+       x = "X Coordinate (m)", y = "Y Coordinate (m)") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title = element_text(face = "bold")) +
+  coord_fixed()
+
+# Plot 4: Comparison - Contours Only (All Methods Overlaid)
+p4 <- ggplot() +
+  geom_contour(data = idw_df, aes(x = x, y = y, z = u238_idw, color = "IDW"),
+               breaks = contour_levels, linewidth = 0.8) +
+  geom_contour(data = krige_df, aes(x = x, y = y, z = u238_krige, color = "Kriging"),
+               breaks = contour_levels, linewidth = 0.8, linetype = "dashed") +
+  geom_contour(data = tps_df, aes(x = x, y = y, z = u238_tps, color = "TPS"),
+               breaks = contour_levels, linewidth = 0.8, linetype = "dotted") +
+  geom_point(data = contamination_points, aes(x = x, y = y),
+             color = "black", size = 2.5, shape = 21, fill = "yellow", stroke = 1) +
+  scale_color_manual(name = "Interpolation\nMethod",
+                     values = c("IDW" = "#0066CC", "Kriging" = "#CC0000", "TPS" = "#00CC66")) +
+  labs(title = "Method Comparison - Contours Overlay",
+       subtitle = "Comparing three interpolation methods on the same domain",
+       x = "X Coordinate (m)", y = "Y Coordinate (m)") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title = element_text(face = "bold"),
+        legend.position = "right") +
+  coord_fixed()
+
+# Display all plots in a 2x2 grid
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+
+# 7. Statistical comparison
+cat("=== INTERPOLATION METHOD COMPARISON ===\n\n")
+
+cat("IDW (Inverse Distance Weighting):\n")
+cat(sprintf("  Minimum: %.2f µg/L\n", min(idw_df$u238_idw, na.rm = TRUE)))
+cat(sprintf("  Maximum: %.2f µg/L\n", max(idw_df$u238_idw, na.rm = TRUE)))
+cat(sprintf("  Mean:    %.2f µg/L\n", mean(idw_df$u238_idw, na.rm = TRUE)))
+cat(sprintf("  Std Dev: %.2f µg/L\n\n", sd(idw_df$u238_idw, na.rm = TRUE)))
+
+cat("Kriging (Geostatistical):\n")
+cat(sprintf("  Minimum: %.2f µg/L\n", min(krige_df$u238_krige, na.rm = TRUE)))
+cat(sprintf("  Maximum: %.2f µg/L\n", max(krige_df$u238_krige, na.rm = TRUE)))
+cat(sprintf("  Mean:    %.2f µg/L\n", mean(krige_df$u238_krige, na.rm = TRUE)))
+cat(sprintf("  Std Dev: %.2f µg/L\n\n", sd(krige_df$u238_krige, na.rm = TRUE)))
+
+cat("Thin Plate Spline:\n")
+cat(sprintf("  Minimum: %.2f µg/L\n", min(tps_df$u238_tps, na.rm = TRUE)))
+cat(sprintf("  Maximum: %.2f µg/L\n", max(tps_df$u238_tps, na.rm = TRUE)))
+cat(sprintf("  Mean:    %.2f µg/L\n", mean(tps_df$u238_tps, na.rm = TRUE)))
+cat(sprintf("  Std Dev: %.2f µg/L\n\n", sd(tps_df$u238_tps, na.rm = TRUE)))
+
+# Calculate area exceeding MCL
+idw_exceed <- sum(idw_df$u238_idw > mcl_u238, na.rm = TRUE) / nrow(idw_df) * 100
+krige_exceed <- sum(krige_df$u238_krige > mcl_u238, na.rm = TRUE) / nrow(krige_df) * 100
+tps_exceed <- sum(tps_df$u238_tps > mcl_u238, na.rm = TRUE) / nrow(tps_df) * 100
+
+cat("Area Exceeding MCL (30 µg/L):\n")
+cat(sprintf("  IDW:     %.1f%% of study area\n", idw_exceed))
+cat(sprintf("  Kriging: %.1f%% of study area\n", krige_exceed))
+cat(sprintf("  TPS:     %.1f%% of study area\n\n", tps_exceed))
+
+cat("Script completed successfully!\n")
+cat("Note: To save plots, uncomment the ggsave() line at the end of the script.\n")
+@
+
+
+\end{document}

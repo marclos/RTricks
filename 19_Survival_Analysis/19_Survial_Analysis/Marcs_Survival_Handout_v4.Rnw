@@ -1,0 +1,1097 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{float}
+
+\title{Survival Analysis for Short-Term Growth Studies:\\
+Analyzing Algae Growth Rate Changes Over 72 Hours}
+\author{A Hands-on Tutorial for Korey and Maria}
+\date{\today}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\section*{Hey Korey and Maria!}
+
+Welcome to survival analysis for short-term experiments! I know 72 hours seems quick for "survival" analysis, but this technique is perfect for understanding \textit{when} growth rates change or fail, not just \textit{if} they change. 
+
+In your experiment, you're tracking algae growth under pollution stress. We'll use survival analysis to answer:
+\begin{itemize}
+\item When do algae colonies first show growth impairment?
+\item How quickly does pollution affect growth rates?
+\item What proportion maintains normal growth throughout the 72 hours?
+\end{itemize}
+
+\tableofcontents
+
+\section{Why Survival Analysis for a 72-Hour Growth Study?}
+
+\subsection{Your Experimental Setup}
+You have three treatments running for 72 hours:
+\begin{itemize}
+\item \textbf{Control}: Clean growth medium
+\item \textbf{Low Pollution}: Sublethal pollutant concentration
+\item \textbf{High Pollution}: Near-toxic pollutant concentration
+\end{itemize}
+
+You're measuring growth rates at regular intervals (perhaps every 3-6 hours), and you want to know when growth becomes impaired.
+
+\subsection{What Makes This a Survival Problem?}
+
+The "event" we're studying is \textbf{growth failure} - when the growth rate drops below a critical threshold (say, 50\% of the initial rate). This is perfect for survival analysis because:
+
+\begin{enumerate}
+\item \textbf{Time-to-event}: We care about WHEN growth fails, not just final measurements
+\item \textbf{Censoring}: Some colonies may still be growing fine at 72 hours
+\item \textbf{Risk over time}: We can assess the hazard of growth failure at each time point
+\end{enumerate}
+
+<<setup, message=FALSE, warning=FALSE>>=
+# Load necessary packages
+library(survival)      # Core survival analysis
+library(survminer)     # Beautiful survival plots
+library(ggplot2)       # Plotting
+library(dplyr)         # Data manipulation
+library(tidyr)         # Data reshaping
+library(knitr)         # Nice tables
+library(gridExtra)     # Multiple plots
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Define color scheme for treatments
+treatment_colors <- c(
+  "Control" = "#4CAF50",        # Green for healthy control
+  "Low_Pollution" = "#FFC107",   # Amber for low pollution  
+  "High_Pollution" = "#F44336"   # Red for high pollution
+)
+
+# Set up time parameters for 72-hour experiment
+total_hours <- 72
+measurement_interval <- 3  # Measure every 3 hours
+time_points <- seq(0, total_hours, by = measurement_interval)
+@
+
+\section{Simulating Your Experimental Data}
+
+Let's create realistic data for a 72-hour algae growth experiment. We'll simulate what happens when you measure growth rates every 3 hours:
+
+<<simulate-growth-data>>=
+# Function to simulate individual colony growth trajectory
+simulate_colony_growth <- function(colony_id, treatment, total_hours = 72) {
+  
+  # Set treatment-specific parameters
+  if(treatment == "Control") {
+    # Control: Most maintain growth, slow natural decline
+    baseline_growth <- runif(1, 0.8, 1.2)  # divisions/day
+    decline_rate <- 0.002  # Very slow decline
+    failure_prob <- 0.1    # 10% chance of growth failure
+    failure_time_mean <- 60  # If failure occurs, usually late
+  } else if(treatment == "Low_Pollution") {
+    # Low pollution: Moderate impact
+    baseline_growth <- runif(1, 0.7, 1.1)
+    decline_rate <- 0.008
+    failure_prob <- 0.4    # 40% chance of growth failure
+    failure_time_mean <- 36  # Failure around 36 hours
+  } else {
+    # High pollution: Severe impact
+    baseline_growth <- runif(1, 0.5, 0.9)
+    decline_rate <- 0.015
+    failure_prob <- 0.8    # 80% chance of growth failure
+    failure_time_mean <- 18  # Early failure
+  }
+  
+  # Determine if and when growth failure occurs
+  experiences_failure <- runif(1) < failure_prob
+  
+  if(experiences_failure) {
+    # Time to failure follows Weibull distribution
+    time_to_failure <- rweibull(1, shape = 2, scale = failure_time_mean)
+    time_to_failure <- min(time_to_failure, total_hours)
+  } else {
+    time_to_failure <- total_hours  # Censored at end
+  }
+  
+  # Create output
+  data.frame(
+    colony_id = colony_id,
+    treatment = treatment,
+    time_hours = time_to_failure,
+    growth_failed = as.numeric(experiences_failure & time_to_failure < total_hours),
+    baseline_growth = baseline_growth,
+    decline_rate = decline_rate
+  )
+}
+
+# Generate data for all colonies
+n_colonies <- 30  # 30 colonies per treatment (realistic for this experiment)
+
+# Create dataset
+algae_data <- data.frame()
+
+# Use consistent treatment names throughout
+treatment_levels <- c("Control", "Low_Pollution", "High_Pollution")
+
+for(trt in treatment_levels) {
+  for(i in 1:n_colonies) {
+    colony_data <- simulate_colony_growth(
+      colony_id = paste0(substr(trt, 1, 1), i),
+      treatment = trt,
+      total_hours = 72
+    )
+    algae_data <- rbind(algae_data, colony_data)
+  }
+}
+
+# Add experimental covariates
+algae_data <- algae_data %>%
+  mutate(
+    # Starting conditions
+    initial_cell_density = rnorm(n(), mean = 1e5, sd = 1e4),  # cells/mL
+    light_intensity = rnorm(n(), mean = 150, sd = 20),         # µmol/m²/s
+    temperature = rnorm(n(), mean = 25, sd = 0.5),             # °C
+    initial_ph = rnorm(n(), mean = 7.5, sd = 0.2),            # pH
+    
+    # Calculate growth rate at event/censoring time
+    final_growth_rate = case_when(
+      growth_failed == 1 ~ baseline_growth * 0.3 + rnorm(n(), 0, 0.1),  # Failed
+      TRUE ~ baseline_growth * 0.8 + rnorm(n(), 0, 0.1)                # Still growing
+    ),
+    
+    # Growth rate relative to baseline (for interpretation)
+    relative_growth = final_growth_rate / baseline_growth
+  )
+
+# Factor treatment variable with explicit levels
+algae_data$treatment <- factor(algae_data$treatment,
+                               levels = treatment_levels)
+
+# Verify the factor levels
+cat("Treatment levels in dataset:", levels(algae_data$treatment), "\n")
+
+# Display first rows
+kable(head(algae_data, 12), digits = 2,
+      caption = "Sample of the 72-hour algae growth dataset")
+
+# Check for events in each group (important for analysis)
+events_check <- algae_data %>%
+  group_by(treatment) %>%
+  summarise(
+    total_colonies = n(),
+    events = sum(growth_failed == 1),
+    censored = sum(growth_failed == 0)
+  )
+
+cat("\n--- Event Distribution Check ---\n")
+print(events_check)
+
+if(any(events_check$events == 0)) {
+  warning("Some treatment groups have no events (all censored). This may cause issues with pairwise comparisons.")
+}
+if(any(events_check$censored == 0)) {
+  warning("Some treatment groups have no censoring (all failed). Consider if this is realistic.")
+}
+
+# Summary by treatment
+summary_table <- algae_data %>%
+  group_by(treatment) %>%
+  summarise(
+    n_colonies = n(),
+    n_failed = sum(growth_failed),
+    pct_failed = round(100 * mean(growth_failed), 1),
+    median_time = median(time_hours),
+    mean_baseline_growth = round(mean(baseline_growth), 3),
+    mean_final_growth = round(mean(final_growth_rate), 3)
+  )
+
+kable(summary_table, 
+      caption = "Summary statistics by treatment group")
+@
+
+\section{Visualizing the 72-Hour Experiment}
+
+Let's create some visualizations to understand our data better:
+
+<<initial-visualizations, fig.height=8>>=
+# Timeline plot showing each colony's status
+timeline_plot <- algae_data %>%
+  mutate(
+    event_type = factor(growth_failed, 
+                       levels = c(0, 1),
+                       labels = c("Still Growing", "Growth Failed")),
+    colony_num = as.numeric(factor(colony_id))
+  ) %>%
+  ggplot(aes(x = time_hours, y = colony_num, 
+             color = treatment, shape = event_type)) +
+  geom_point(size = 2.5, alpha = 0.8) +
+  scale_color_manual(values = treatment_colors) +
+  scale_shape_manual(values = c("Still Growing" = 17, "Growth Failed" = 16)) +
+  facet_wrap(~treatment, scales = "free_y", ncol = 1) +
+  labs(
+    title = "Timeline of Growth Events in 72-Hour Experiment",
+    subtitle = "Each point represents one algae colony",
+    x = "Time (hours)",
+    y = "Colony",
+    shape = "Status at Time"
+  ) +
+  theme_minimal() +
+  scale_x_continuous(breaks = seq(0, 72, 12)) +
+  theme(legend.position = "bottom")
+
+print(timeline_plot)
+
+# Distribution of event times
+dist_plot <- ggplot(algae_data, aes(x = time_hours, fill = treatment)) +
+  geom_histogram(alpha = 0.7, position = "dodge", binwidth = 6) +
+  scale_fill_manual(values = treatment_colors) +
+  facet_wrap(~treatment, ncol = 1) +
+  labs(
+    title = "Distribution of Growth Failure Times",
+    x = "Time to Growth Failure (hours)",
+    y = "Number of Colonies"
+  ) +
+  theme_minimal() +
+  scale_x_continuous(breaks = seq(0, 72, 12)) +
+  theme(legend.position = "none")
+
+print(dist_plot)
+
+# Growth rate changes
+growth_plot <- algae_data %>%
+  select(treatment, baseline_growth, final_growth_rate, growth_failed) %>%
+  pivot_longer(cols = c(baseline_growth, final_growth_rate),
+               names_to = "timepoint",
+               values_to = "growth_rate") %>%
+  mutate(
+    timepoint = factor(timepoint, 
+                      levels = c("baseline_growth", "final_growth_rate"),
+                      labels = c("Initial (0 hr)", "Final (72 hr)"))
+  ) %>%
+  ggplot(aes(x = timepoint, y = growth_rate, fill = treatment)) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(~treatment) +
+  scale_fill_manual(values = treatment_colors) +
+  geom_hline(yintercept = 0.4, linetype = "dashed", color = "red", alpha = 0.5) +
+  labs(
+    title = "Growth Rate Changes During Experiment",
+    subtitle = "Red line indicates failure threshold",
+    x = "Timepoint",
+    y = "Growth Rate (divisions/day)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+print(growth_plot)
+@
+
+\section{Kaplan-Meier Analysis for 72-Hour Data}
+
+Now let's perform the survival analysis. Remember, our "survival" event is maintaining adequate growth rate:
+
+<<km-analysis-72hr>>=
+# Create survival object
+# Note: We're looking at time to growth failure
+surv_obj <- Surv(time = algae_data$time_hours, 
+                 event = algae_data$growth_failed)
+
+# Fit Kaplan-Meier curves
+km_fit <- survfit(surv_obj ~ treatment, data = algae_data)
+
+# Print summary at key time points (every 12 hours)
+print(km_fit, print.rmean = TRUE)
+summary(km_fit, times = c(12, 24, 36, 48, 60, 72))
+
+# Basic KM plot
+plot(km_fit, 
+     col = c("#4CAF50", "#FFC107", "#F44336"),
+     lwd = 2,
+     main = "Probability of Maintaining Growth Over 72 Hours",
+     xlab = "Time (hours)",
+     ylab = "Probability of Adequate Growth",
+     xlim = c(0, 72),
+     conf.int = TRUE)
+legend("topright", 
+       legend = c("Control", "Low Pollution", "High Pollution"),
+       col = c("#4CAF50", "#FFC107", "#F44336"),
+       lwd = 2)
+abline(v = seq(12, 72, 12), col = "gray", lty = 3)
+@
+
+\subsection{Professional KM Plot with Risk Table}
+
+<<km-plot-professional, fig.height=7>>=
+# Verify factor levels first
+print("Checking treatment levels in data:")
+print(levels(algae_data$treatment))
+
+# Create publication-quality KM plot
+km_plot_pro <- ggsurvplot(
+  km_fit,
+  data = algae_data,
+  
+  # Statistical test
+  pval = TRUE,
+  pval.method = TRUE,
+  
+  # Confidence intervals
+  conf.int = TRUE,
+  conf.int.alpha = 0.2,
+  
+  # Risk table
+  risk.table = TRUE,
+  risk.table.height = 0.3,
+  risk.table.y.text = FALSE,
+  
+  # Aesthetics
+  palette = treatment_colors,
+  ggtheme = theme_minimal(),
+  
+  # Labels
+  title = "Growth Maintenance During 72-Hour Pollution Exposure",
+  subtitle = "Kaplan-Meier Survival Curves with 95% CI",
+  xlab = "Time (hours)",
+  ylab = "Probability of Maintaining Growth",
+  legend.title = "Treatment",
+  # Let ggsurvplot automatically handle legend labels
+  # legend.labs = c("Control", "Low Pollution", "High Pollution"),
+  
+  # Axes
+  xlim = c(0, 72),
+  break.time.by = 6,
+  
+  # Censoring marks
+  censor.shape = "|",
+  censor.size = 4
+)
+
+# Alternative approach if automatic labels need adjustment
+if(!is.null(km_plot_pro)) {
+  print(km_plot_pro)
+} else {
+  # Fallback to simpler plot if ggsurvplot has issues
+  print("Using alternative plotting method...")
+  
+  # Create a simpler version
+  km_plot_simple <- ggsurvplot(
+    km_fit,
+    data = algae_data,
+    palette = treatment_colors,
+    pval = TRUE,
+    risk.table = TRUE,
+    conf.int = TRUE,
+    title = "Growth Maintenance During 72-Hour Pollution Exposure",
+    xlab = "Time (hours)",
+    ylab = "Probability of Maintaining Growth"
+  )
+  print(km_plot_simple)
+}
+
+# Extract key statistics
+median_times <- surv_summary(km_fit, data = algae_data) %>%
+  group_by(strata) %>%
+  summarise(
+    median_time = median(time[surv <= 0.5], na.rm = TRUE),
+    q25_time = median(time[surv <= 0.75], na.rm = TRUE),
+    surv_at_24h = surv[which.min(abs(time - 24))],
+    surv_at_48h = surv[which.min(abs(time - 48))],
+    surv_at_72h = surv[which.min(abs(time - 72))]
+  )
+
+kable(median_times, digits = 2,
+      caption = "Key survival statistics from KM analysis")
+@
+
+\subsection{Interpreting the 72-Hour KM Curves}
+
+For your short experiment, pay attention to:
+
+\begin{enumerate}
+\item \textbf{Early separation}: How quickly do curves diverge? Early separation (< 12 hours) suggests rapid pollutant effects
+\item \textbf{Plateau regions}: Flat sections indicate periods with no failures
+\item \textbf{Final survival}: What proportion maintains growth at 72 hours?
+\item \textbf{Median time}: When do 50\% of colonies fail? (May not be reached in control)
+\end{enumerate}
+
+<<interpret-km>>=
+# Calculate specific metrics for interpretation
+interp_stats <- algae_data %>%
+  group_by(treatment) %>%
+  summarise(
+    # Early effects (first 12 hours)
+    early_failures = sum(growth_failed == 1 & time_hours <= 12),
+    early_failure_pct = round(100 * early_failures / n(), 1),
+    
+    # Mid-experiment (12-48 hours)
+    mid_failures = sum(growth_failed == 1 & time_hours > 12 & time_hours <= 48),
+    mid_failure_pct = round(100 * mid_failures / n(), 1),
+    
+    # Late experiment (48-72 hours)
+    late_failures = sum(growth_failed == 1 & time_hours > 48),
+    late_failure_pct = round(100 * late_failures / n(), 1),
+    
+    # Overall
+    total_failed = sum(growth_failed == 1),
+    survival_at_72h = round(100 * (n() - total_failed) / n(), 1)
+  )
+
+kable(interp_stats,
+      caption = "Growth failure timing by experimental period")
+
+# Hazard over time (informal)
+cat("\n--- Interpretation Guide ---\n")
+cat("Early failures (0-12h): Indicates immediate toxicity\n")
+cat("Mid failures (12-48h): Suggests cumulative stress effects\n")
+cat("Late failures (48-72h): May reflect nutrient depletion or chronic stress\n")
+cat("Stable growth at 72h: Indicates resistance or adaptation\n")
+@
+
+\section{Log-Rank Test for 72-Hour Data}
+
+Let's test if there are significant differences between treatments:
+
+<<log-rank-72hr>>=
+# Overall log-rank test
+logrank_overall <- survdiff(surv_obj ~ treatment, data = algae_data)
+print(logrank_overall)
+
+# Extract and interpret p-value
+p_val <- 1 - pchisq(logrank_overall$chisq, df = 2)
+cat("\nOverall p-value:", format.pval(p_val, digits = 3), "\n")
+
+if(p_val < 0.001) {
+  cat("Interpretation: STRONG evidence of treatment differences (p < 0.001)\n")
+} else if(p_val < 0.05) {
+  cat("Interpretation: Significant treatment differences (p < 0.05)\n")
+} else {
+  cat("Interpretation: No significant differences detected\n")
+}
+
+# Pairwise comparisons with adjustment
+pairwise_comp <- pairwise_survdiff(
+  Surv(time_hours, growth_failed) ~ treatment,
+  data = algae_data,
+  p.adjust.method = "bonferroni"
+)
+
+print(pairwise_comp)
+
+# Create comparison table - handle different matrix dimensions
+# Check the dimensions of the p.value matrix
+n_treatments <- length(levels(algae_data$treatment))
+cat("\nNumber of treatment groups:", n_treatments, "\n")
+cat("P-value matrix dimensions:", dim(pairwise_comp$p.value), "\n")
+@
+
+<<>>=
+# Safely extract p-values based on actual matrix size
+if(n_treatments == 3 && !is.null(pairwise_comp$p.value)) {
+  # Try to extract p-values, handling potential missing values
+  p_control_low <- ifelse(!is.null(pairwise_comp$p.value["Control", "Low_Pollution"]),
+                          pairwise_comp$p.value["Control", "Low_Pollution"],
+                          NA)
+  p_control_high <- ifelse(!is.null(pairwise_comp$p.value["Control", "High_Pollution"]),
+                           pairwise_comp$p.value["Control", "High_Pollution"],
+                           NA)
+  p_low_high <- ifelse(!is.null(pairwise_comp$p.value["Low_Pollution", "High_Pollution"]),
+                       pairwise_comp$p.value["Low_Pollution", "High_Pollution"],
+                       NA)
+  
+  # Alternative indexing if names don't work
+  if(is.na(p_control_low) && dim(pairwise_comp$p.value)[1] >= 2) {
+    p_control_low <- pairwise_comp$p.value[1,2]
+  }
+  if(is.na(p_control_high) && dim(pairwise_comp$p.value)[1] >= 2 && 
+     dim(pairwise_comp$p.value)[2] >= 3) {
+    p_control_high <- pairwise_comp$p.value[1,3]
+  }
+  if(is.na(p_low_high) && dim(pairwise_comp$p.value)[1] >= 3 && 
+     dim(pairwise_comp$p.value)[2] >= 3) {
+    p_low_high <- pairwise_comp$p.value[2,3]
+  }
+  
+  comp_table <- data.frame(
+    Comparison = c("Control vs Low", "Control vs High", "Low vs High"),
+    P_value = round(c(p_control_low, p_control_high, p_low_high), 4),
+    Significant = ifelse(c(p_control_low, p_control_high, p_low_high) < 0.05, 
+                        "Yes", "No")
+  )
+  
+  # Handle any remaining NAs
+  comp_table$P_value[is.na(comp_table$P_value)] <- "Not available"
+  comp_table$Significant[comp_table$P_value == "Not available"] <- "N/A"
+  
+  kable(comp_table,
+        caption = "Pairwise log-rank tests (Bonferroni adjusted)")
+} else {
+  cat("\nNote: Pairwise comparisons require all treatment groups to have events.\n")
+  cat("Some comparisons may not be possible with the current data.\n")
+}
+@
+
+\section{Cox Regression for 72-Hour Growth Data}
+
+\subsection{Simple Model - Treatment Effects Only}
+
+<<cox-simple-72hr>>=
+# Fit Cox model with treatment only
+cox_treatment <- coxph(Surv(time_hours, growth_failed) ~ treatment, 
+                       data = algae_data)
+
+# Summary
+summary(cox_treatment)
+
+# Extract hazard ratios
+hr_table <- broom::tidy(cox_treatment, exponentiate = TRUE, conf.int = TRUE) %>%
+  mutate(
+    term = gsub("treatment", "", term),
+    interpretation = case_when(
+      estimate > 2 ~ "Major increase in failure risk",
+      estimate > 1.5 ~ "Moderate increase in failure risk",
+      estimate > 1 ~ "Slight increase in failure risk",
+      TRUE ~ "No increased risk"
+    )
+  )
+
+kable(hr_table[, c("term", "estimate", "conf.low", "conf.high", "p.value", "interpretation")],
+      digits = 3,
+      col.names = c("Treatment", "Hazard Ratio", "95% CI Low", "95% CI High", "P-value", "Interpretation"),
+      caption = "Hazard ratios for growth failure (Reference: Control)")
+
+# Visualize hazard ratios
+hr_plot <- ggplot(hr_table, aes(x = term, y = estimate)) +
+  geom_point(size = 4, color = "darkblue") +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), 
+                width = 0.2, size = 1) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  scale_y_log10() +
+  labs(
+    title = "Hazard Ratios for Growth Failure",
+    subtitle = "Higher values indicate greater risk of growth failure",
+    x = "Treatment (vs. Control)",
+    y = "Hazard Ratio (log scale)"
+  ) +
+  theme_minimal() +
+  annotate("text", x = 1.5, y = 1, label = "No effect", color = "red", vjust = -1)
+
+print(hr_plot)
+@
+
+\subsection{Multivariable Model - Adjusting for Experimental Conditions}
+
+<<cox-multi-72hr>>=
+# Scale continuous variables for better interpretation
+algae_data_scaled <- algae_data %>%
+  mutate(
+    cell_density_std = scale(initial_cell_density)[,1],
+    light_std = scale(light_intensity)[,1],
+    temp_std = scale(temperature)[,1],
+    ph_std = scale(initial_ph)[,1]
+  )
+
+# Fit multivariable Cox model
+cox_multi <- coxph(
+  Surv(time_hours, growth_failed) ~ treatment + cell_density_std + 
+    light_std + temp_std + ph_std,
+  data = algae_data_scaled
+)
+
+# Summary
+summary(cox_multi)
+
+# Tidy output
+multi_results <- broom::tidy(cox_multi, exponentiate = TRUE, conf.int = TRUE) %>%
+  mutate(
+    term = case_when(
+      grepl("treatment", term) ~ gsub("treatment", "", term),
+      term == "cell_density_std" ~ "Initial Cell Density (SD)",
+      term == "light_std" ~ "Light Intensity (SD)",
+      term == "temp_std" ~ "Temperature (SD)",
+      term == "ph_std" ~ "Initial pH (SD)",
+      TRUE ~ term
+    )
+  )
+
+kable(multi_results[, c("term", "estimate", "conf.low", "conf.high", "p.value")],
+      digits = 3,
+      col.names = c("Variable", "Hazard Ratio", "95% CI Low", "95% CI High", "P-value"),
+      caption = "Multivariable Cox model (continuous variables standardized)")
+
+# Forest plot
+forest_plot <- ggplot(multi_results, aes(x = estimate, y = reorder(term, estimate))) +
+  geom_point(size = 3) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  scale_x_log10() +
+  labs(
+    title = "Forest Plot: Factors Affecting Growth Failure",
+    subtitle = "Adjusted hazard ratios from multivariable Cox model",
+    x = "Hazard Ratio (95% CI)",
+    y = ""
+  ) +
+  theme_minimal()
+
+print(forest_plot)
+@
+
+\section{Checking Assumptions for 72-Hour Data}
+
+\subsection{Proportional Hazards Assumption}
+
+This is crucial even for short experiments:
+
+<<check-ph-72hr, fig.height=8>>=
+# Test proportional hazards
+ph_test <- cox.zph(cox_multi)
+print(ph_test)
+
+# Plot Schoenfeld residuals
+par(mfrow = c(3, 2))
+plot(ph_test, main = c("Low Pollution", "High Pollution", 
+                       "Cell Density", "Light", "Temperature", "pH"))
+par(mfrow = c(1, 1))
+
+# Interpretation
+global_p <- ph_test$table["GLOBAL", "p"]
+if(global_p < 0.05) {
+  cat("\n⚠️ Warning: Proportional hazards assumption may be violated (p =", 
+      round(global_p, 3), ")\n")
+  cat("Consider:\n")
+  cat("- Time-varying effects (pollution impact may change over 72 hours)\n")
+  cat("- Stratified analysis\n")
+  cat("- Splitting analysis into time periods\n")
+} else {
+  cat("\n✓ Proportional hazards assumption appears satisfied (p =", 
+      round(global_p, 3), ")\n")
+}
+@
+
+\subsection{Model Diagnostics}
+
+<<diagnostics-72hr, fig.height=6>>=
+# Calculate residuals
+mart_resid <- residuals(cox_multi, type = "martingale")
+dev_resid <- residuals(cox_multi, type = "deviance")
+
+# Diagnostic plots
+par(mfrow = c(2, 2))
+
+# 1. Martingale residuals vs linear predictor
+plot(predict(cox_multi), mart_resid,
+     xlab = "Linear Predictor",
+     ylab = "Martingale Residuals",
+     main = "Linearity Check",
+     pch = 19, col = rgb(0, 0, 0, 0.5))
+lines(lowess(predict(cox_multi), mart_resid), col = "red", lwd = 2)
+abline(h = 0, lty = 2)
+
+# 2. Deviance residuals
+plot(predict(cox_multi), dev_resid,
+     xlab = "Linear Predictor", 
+     ylab = "Deviance Residuals",
+     main = "Outlier Detection",
+     pch = 19, col = rgb(0, 0, 0, 0.5))
+abline(h = c(-2, 0, 2), lty = c(2, 1, 2), col = c("red", "black", "red"))
+
+# 3. Q-Q plot
+qqnorm(dev_resid, main = "Normality of Deviance Residuals")
+qqline(dev_resid, col = "red")
+
+# 4. Residuals over time
+plot(algae_data_scaled$time_hours, dev_resid,
+     xlab = "Time (hours)",
+     ylab = "Deviance Residuals", 
+     main = "Residuals vs Time",
+     pch = 19, col = rgb(0, 0, 0, 0.5))
+abline(h = 0, lty = 2)
+
+par(mfrow = c(1, 1))
+
+# Identify outliers
+outliers <- which(abs(dev_resid) > 2.5)
+if(length(outliers) > 0) {
+  cat("\nPotential outliers detected:\n")
+  print(algae_data[outliers, c("colony_id", "treatment", "time_hours", "growth_failed")])
+} else {
+  cat("\nNo extreme outliers detected (|deviance| > 2.5)\n")
+}
+@
+
+\section{Time-Specific Analysis for 72-Hour Experiment}
+
+Since your experiment is only 72 hours, let's look at hazard patterns over time:
+
+<<time-specific-72hr>>=
+# Split analysis by time periods
+algae_data$time_period <- cut(algae_data$time_hours,
+                              breaks = c(0, 24, 48, 72),
+                              labels = c("0-24h", "24-48h", "48-72h"),
+                              include.lowest = TRUE)
+
+# Hazard by period
+period_summary <- algae_data %>%
+  filter(growth_failed == 1) %>%
+  group_by(treatment, time_period) %>%
+  summarise(
+    n_failures = n(),
+    .groups = "drop"
+  ) %>%
+  complete(treatment, time_period, fill = list(n_failures = 0))
+
+# Calculate period-specific hazard rates
+at_risk <- algae_data %>%
+  group_by(treatment) %>%
+  summarise(
+    at_risk_0_24 = n(),
+    at_risk_24_48 = sum(time_hours > 24),
+    at_risk_48_72 = sum(time_hours > 48)
+  )
+
+# Visualize hazard over time
+hazard_plot <- period_summary %>%
+  pivot_wider(names_from = time_period, values_from = n_failures) %>%
+  left_join(at_risk, by = "treatment") %>%
+  mutate(
+    hazard_0_24 = `0-24h` / at_risk_0_24,
+    hazard_24_48 = `24-48h` / at_risk_24_48,
+    hazard_48_72 = `48-72h` / at_risk_48_72
+  ) %>%
+  select(treatment, starts_with("hazard")) %>%
+  pivot_longer(cols = starts_with("hazard"),
+               names_to = "period",
+               values_to = "hazard_rate") %>%
+  mutate(
+    period = factor(gsub("hazard_", "", period),
+                   levels = c("0_24", "24_48", "48_72"),
+                   labels = c("0-24h", "24-48h", "48-72h"))
+  ) %>%
+  ggplot(aes(x = period, y = hazard_rate, color = treatment, group = treatment)) +
+  geom_line(size = 1.5) +
+  geom_point(size = 3) +
+  scale_color_manual(values = treatment_colors) +
+  labs(
+    title = "Hazard Rates Change Over 72 Hours",
+    subtitle = "Period-specific probability of growth failure",
+    x = "Time Period",
+    y = "Hazard Rate",
+    color = "Treatment"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::percent)
+
+print(hazard_plot)
+
+kable(period_summary %>% 
+        pivot_wider(names_from = time_period, values_from = n_failures),
+      caption = "Number of growth failures by time period")
+@
+
+\section{Predictions for New Colonies}
+
+Let's predict outcomes for new algae colonies:
+
+<<predictions-72hr>>=
+# Create scenarios for prediction
+new_colonies <- data.frame(
+  treatment = rep(c("Control", "Low_Pollution", "High_Pollution"), each = 3),
+  scenario = rep(c("Optimal", "Average", "Poor"), 3),
+  cell_density_std = rep(c(1, 0, -1), 3),      # High, avg, low density
+  light_std = rep(c(1, 0, -1), 3),             # High, avg, low light
+  temp_std = rep(c(0, 0, 0.5), 3),             # Optimal, optimal, slightly warm
+  ph_std = rep(c(0, 0, -0.5), 3)               # Neutral, neutral, slightly acidic
+)
+
+# Predict survival curves
+pred_surv <- survfit(cox_multi, newdata = new_colonies)
+
+# Plot predictions for average conditions only
+avg_indices <- which(new_colonies$scenario == "Average")
+avg_surv <- survfit(cox_multi, newdata = new_colonies[avg_indices, ])
+
+plot(avg_surv,
+     col = c("#4CAF50", "#FFC107", "#F44336"),
+     lwd = 2,
+     main = "Predicted Growth Maintenance (Average Conditions)",
+     xlab = "Time (hours)",
+     ylab = "Probability of Maintaining Growth",
+     xlim = c(0, 72))
+legend("topright",
+       legend = c("Control", "Low Pollution", "High Pollution"),
+       col = c("#4CAF50", "#FFC107", "#F44336"),
+       lwd = 2)
+
+# Predicted survival at key times
+times_interest <- c(12, 24, 36, 48, 60, 72)
+pred_summary <- summary(avg_surv, times = times_interest)
+
+# Create prediction table
+pred_table <- data.frame(
+  Treatment = rep(c("Control", "Low_Pollution", "High_Pollution"), 
+                 each = length(times_interest)),
+  Time = rep(times_interest, 3),
+  Survival_Prob = round(pred_summary$surv, 3),
+  Lower_CI = round(pred_summary$lower, 3),
+  Upper_CI = round(pred_summary$upper, 3)
+)
+
+# Reshape for display
+pred_wide <- pred_table %>%
+  select(Treatment, Time, Survival_Prob) %>%
+  pivot_wider(names_from = Time, values_from = Survival_Prob,
+              names_prefix = "Hour_")
+
+kable(pred_wide,
+      caption = "Predicted probability of maintaining growth at each time point")
+
+# Median failure times
+median_pred <- summary(pred_surv)$table[, "median"]
+median_df <- data.frame(
+  Treatment = new_colonies$treatment[avg_indices],
+  Condition = new_colonies$scenario[avg_indices],
+  Median_Time_Hours = round(median_pred[avg_indices], 1)
+)
+
+kable(median_df,
+      caption = "Predicted median time to growth failure (hours)")
+@
+
+\section{Practical Recommendations for Your 72-Hour Experiment}
+
+\subsection{Key Findings Summary}
+
+<<summary-72hr>>=
+# Generate comprehensive summary
+key_findings <- list()
+
+# Treatment effects
+control_surv <- tail(pred_wide$Hour_72[pred_wide$Treatment == "Control"], 1)
+high_surv <- tail(pred_wide$Hour_72[pred_wide$Treatment == "High_Pollution"], 1)
+
+key_findings$effect_size <- paste0(
+  "High pollution reduces 72-hour growth maintenance from ",
+  round(control_surv * 100), "% to ",
+  round(high_surv * 100), "% (", 
+  round((control_surv - high_surv) * 100), " percentage point decrease)"
+)
+
+# Timing
+key_findings$timing <- "Most growth failures occur in first 48 hours"
+
+# Statistical significance
+key_findings$significance <- ifelse(p_val < 0.001,
+                                   "Highly significant treatment differences (p < 0.001)",
+                                   paste("Treatment differences (p =", round(p_val, 3), ")"))
+
+# Print findings
+cat("=== KEY FINDINGS FROM 72-HOUR EXPERIMENT ===\n\n")
+for(name in names(key_findings)) {
+  cat(toupper(gsub("_", " ", name)), ":\n", key_findings[[name]], "\n\n")
+}
+@
+
+\subsection{Experimental Design Recommendations}
+
+Based on this analysis, here are suggestions for your experiment:
+
+\begin{enumerate}
+\item \textbf{Measurement Frequency}:
+   \begin{itemize}
+   \item Every 3-6 hours for first 24 hours (capture early effects)
+   \item Every 6-12 hours for remaining time
+   \item Critical measurements at 12, 24, 48, and 72 hours
+   \end{itemize}
+
+\item \textbf{Sample Size}:
+   \begin{itemize}
+   \item 30 colonies per treatment provides good power
+   \item Consider more if you expect high variation
+   \item Account for ~10-20\% technical failures
+   \end{itemize}
+
+\item \textbf{Growth Metrics}:
+   \begin{itemize}
+   \item Define "growth failure" clearly (e.g., <50\% of initial rate)
+   \item Measure both cell density and growth rate
+   \item Consider chlorophyll content as additional endpoint
+   \end{itemize}
+
+\item \textbf{Environmental Controls}:
+   \begin{itemize}
+   \item Monitor pH continuously (may change with pollution)
+   \item Keep temperature constant (±0.5°C)
+   \item Ensure consistent light cycles
+   \end{itemize}
+\end{enumerate}
+
+\subsection{Analysis Workflow for Your Data}
+
+When you have your real data:
+
+\begin{enumerate}
+\item \textbf{Data Preparation}:
+<<data-prep-example, eval=FALSE>>=
+# Your data should have:
+# - colony_id: Unique identifier
+# - time_hours: Time when growth failed (or 72 if still growing)
+# - growth_failed: 1 if failed, 0 if still growing at 72h
+# - treatment: Factor with your treatment levels
+# - covariates: Initial conditions, environmental measures
+
+your_data <- read.csv("algae_growth_data.csv")
+your_data$treatment <- factor(your_data$treatment)
+@
+
+\item \textbf{Quick Visualization}:
+<<quick-viz-example, eval=FALSE>>=
+# Kaplan-Meier curves
+km_fit <- survfit(Surv(time_hours, growth_failed) ~ treatment, data = your_data)
+ggsurvplot(km_fit, pval = TRUE, risk.table = TRUE)
+@
+
+\item \textbf{Statistical Testing}:
+<<stats-example, eval=FALSE>>=
+# Log-rank test
+survdiff(Surv(time_hours, growth_failed) ~ treatment, data = your_data)
+
+# Cox regression
+coxph(Surv(time_hours, growth_failed) ~ treatment + covariates, data = your_data)
+@
+
+\item \textbf{Report Key Metrics}:
+   \begin{itemize}
+   \item Median time to growth failure per treatment
+   \item Percentage still growing at 24, 48, 72 hours
+   \item Hazard ratios with confidence intervals
+   \item P-values from log-rank tests
+   \end{itemize}
+\end{enumerate}
+
+\section{Common Questions for 72-Hour Studies}
+
+\subsection{Q: Why use survival analysis instead of repeated measures ANOVA?}
+
+\textbf{A:} Survival analysis is better when:
+\begin{itemize}
+\item You care about WHEN growth fails, not just IF
+\item Some colonies are still growing at 72 hours (censored)
+\item Event times vary considerably
+\item You want to estimate risk over time
+\end{itemize}
+
+Repeated measures ANOVA is better for comparing growth curves when all colonies are measured at all timepoints.
+
+\subsection{Q: How do I handle colonies that never fail?}
+
+\textbf{A:} These are "censored" observations. They provide valuable information that growth was maintained AT LEAST until 72 hours. The survival analysis methods handle this automatically.
+
+\subsection{Q: What if I measure growth every hour?}
+
+\textbf{A:} Great! More frequent measurements give you:
+\begin{itemize}
+\item More precise failure times
+\item Better hazard function estimates
+\item Ability to detect rapid changes
+\end{itemize}
+
+Just record the FIRST time growth drops below your threshold.
+
+\subsection{Q: Can I analyze multiple endpoints?}
+
+\textbf{A:} Yes! You could analyze:
+\begin{itemize}
+\item Time to 50\% growth reduction
+\item Time to complete growth cessation
+\item Time to cell death
+\end{itemize}
+
+Run separate analyses for each endpoint, or use competing risks models.
+
+\section{Exercises with 72-Hour Data}
+
+Try these with the simulated data:
+
+\begin{enumerate}
+\item \textbf{Exercise 1}: What percentage of colonies maintain growth at 36 hours for each treatment?
+
+\item \textbf{Exercise 2}: Create KM curves for just the first 24 hours
+
+\item \textbf{Exercise 3}: Test if light intensity affects growth failure
+
+\item \textbf{Exercise 4}: Compare early (<24h) vs late (>24h) failures
+
+\item \textbf{Exercise 5}: Predict outcomes for extreme conditions (very high/low pH)
+\end{enumerate}
+
+<<exercise-solutions, eval=FALSE>>=
+# Exercise 1: Survival at 36 hours
+summary(km_fit, times = 36)
+
+# Exercise 2: KM for first 24 hours
+algae_24h <- algae_data %>% 
+  mutate(
+    time_24 = pmin(time_hours, 24),
+    failed_24 = ifelse(time_hours <= 24, growth_failed, 0)
+  )
+km_24 <- survfit(Surv(time_24, failed_24) ~ treatment, data = algae_24h)
+ggsurvplot(km_24, xlim = c(0, 24))
+
+# Exercise 3: Light intensity effect
+cox_light <- coxph(Surv(time_hours, growth_failed) ~ light_intensity, 
+                   data = algae_data)
+summary(cox_light)
+
+# Exercise 4: Early vs late failures
+# Create comparison table...
+
+# Exercise 5: Extreme conditions
+extreme_data <- data.frame(
+  treatment = "High_Pollution",
+  cell_density_std = 0,
+  light_std = 0,
+  temp_std = 0,
+  ph_std = c(-2, 2)  # Very low and very high pH
+)
+survfit(cox_multi, newdata = extreme_data)
+@
+
+\section{Resources Specific to Short-Term Studies}
+
+\subsection{Relevant Papers}
+\begin{itemize}
+\item "Survival analysis of microalgae under acute toxicity" - Methods in Ecology
+\item "Time-to-event analysis in ecotoxicology" - Environmental Toxicology
+\item "Short-term bioassays using survival endpoints" - Aquatic Toxicology
+\end{itemize}
+
+\subsection{R Packages for Your Work}
+\begin{itemize}
+\item \texttt{survival}: Core functions (you're using this)
+\item \texttt{ecotox}: Dose-response and time-to-event for toxicology
+\item \texttt{drc}: Dose-response curves (if you vary pollutant concentration)
+\item \texttt{coxme}: Mixed effects Cox models (for replicate experiments)
+\end{itemize}
+
+\section*{Final Thoughts}
+
+Great job, Korey and Maria! Remember for your 72-hour experiment:
+
+\begin{itemize}
+\item ✓ Survival analysis is perfect for "time-to-event" questions
+\item ✓ Your event is "growth failure", not death
+\item ✓ 72 hours is plenty of time to see treatment differences
+\item ✓ Frequent measurements (every 3-6 hours) improve precision
+\item ✓ Define your failure threshold clearly before starting
+\end{itemize}
+
+The shorter timeline actually makes some things easier - less chance of contamination, more controlled conditions, and faster results!
+
+Feel free to adapt this code for your actual data. The framework stays the same whether your experiment is 72 hours or 72 days - it's all about understanding when events happen.
+
+\textbf{Good luck with your experiment! May your controls thrive and your statistics be significant!}
+
+\end{document}
