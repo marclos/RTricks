@@ -1,0 +1,16 @@
+\contentsline {section}{\numberline {1}Goal and Justification}{1}{section.1}
+\contentsline {subsection}{\numberline {1.1}Why Survival Analysis is an important way to go!}{2}{subsection.1.1}
+\contentsline {section}{\numberline {2}Packages and Data Setup}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Data Simulation}{3}{subsection.2.1}
+\contentsline {section}{\numberline {3}Visualization and Event Definition}{4}{section.3}
+\contentsline {subsection}{\numberline {3.1}Raw Growth Curves and Threshold}{4}{subsection.3.1}
+\contentsline {section}{\numberline {4}Analysis 1: Threshold Crossing (Speed Analysis)}{6}{section.4}
+\contentsline {subsection}{\numberline {4.1}Defining the Event (Survival Data Setup)}{6}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Kaplan-Meier Curves: Visualizing Speed}{7}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Cox Proportional Hazards Model: Quantifying Speed}{8}{subsection.4.3}
+\contentsline {subsection}{\numberline {4.4}Hazard Ratio Forest Plot}{9}{subsection.4.4}
+\contentsline {subsection}{\numberline {4.5}Assumptions Check: Proportional Hazards}{10}{subsection.4.5}
+\contentsline {section}{\numberline {5}Analysis 2: End of Event (Success Probability Analysis)}{11}{section.5}
+\contentsline {subsection}{\numberline {5.1}Event Definition (Logistic Data Setup)}{11}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Logistic Regression Model}{11}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Odds Ratio Plot}{12}{subsection.5.3}

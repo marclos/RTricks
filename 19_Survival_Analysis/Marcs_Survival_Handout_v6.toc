@@ -1,0 +1,33 @@
+\contentsline {section}{Goal}{1}{section*.1}
+\contentsline {section}{Justification!}{1}{section*.2}
+\contentsline {section}{Why use a survival analysis?}{2}{section*.3}
+\contentsline {subsection}{1. Our event is the end of the experiment}{3}{subsection*.4}
+\contentsline {subsection}{2. All cultures are censored by design}{3}{subsection*.5}
+\contentsline {subsection}{3. It lets us compare treatments without assuming perfect growth curves}{3}{subsection*.6}
+\contentsline {subsection}{4. It gives us simple comparisons between treatments}{3}{subsection*.7}
+\contentsline {subsection}{5. We do not lose data by only looking at the final OD measurement}{4}{subsection*.8}
+\contentsline {subsection}{6. It fits the story of the experiment}{4}{subsection*.9}
+\contentsline {subsection}{Summary}{4}{subsection*.10}
+\contentsline {section}{1. Packages \& session info}{5}{section*.11}
+\contentsline {section}{2. Data: two options}{5}{section*.12}
+\contentsline {subsection}{Option A --- use your own CSV}{5}{subsection*.13}
+\contentsline {subsection}{Option B -- marc's simulated example data}{5}{subsection*.14}
+\contentsline {subsection}{End Of Experiment}{6}{subsection*.15}
+\contentsline {subsection}{3. Visualize raw growth curves}{8}{subsection*.16}
+\contentsline {subsection}{Define event: time to reach a threshold}{9}{subsection*.17}
+\contentsline {subsection}{5. Kaplan–Meier curves by treatment}{11}{subsection*.18}
+\contentsline {subsection}{6. Log-rank test (overall)}{12}{subsection*.19}
+\contentsline {subsection}{8. Cox proportional hazards model}{14}{subsection*.20}
+\contentsline {subsection}{9. Check proportional hazards assumption}{14}{subsection*.21}
+\contentsline {subsection}{10. Visual diagnostics and alternative visualizations}{15}{subsection*.22}
+\contentsline {subsection}{11. Reporting recommended outputs}{16}{subsection*.23}
+\contentsline {section}{Rationale Notes for Marc}{16}{section*.24}
+\contentsline {subsection}{Rationale for Using Survival Analysis}{16}{subsection*.25}
+\contentsline {subsection}{Focus on Time-to-Threshold Outcomes}{17}{subsection*.26}
+\contentsline {subsection}{Natural Handling of Right-Censoring}{17}{subsection*.27}
+\contentsline {subsection}{Minimal Assumptions About Growth Curves}{17}{subsection*.28}
+\contentsline {subsection}{Interpretable Effect Sizes via Cox Models}{17}{subsection*.29}
+\contentsline {subsection}{Avoiding Information Loss}{17}{subsection*.30}
+\contentsline {subsection}{Flexibility for Complex Experiments}{18}{subsection*.31}
+\contentsline {subsection}{Summary}{18}{subsection*.32}
+\contentsfinish 

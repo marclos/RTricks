@@ -1,0 +1,255 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{Algal Growth Survival Analysis \& Event Modeling: A Detailed Handout}
+\author{Marc Los Huertos}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Goal and Justification}
+
+The purpose of this handout is to compare the time it takes for algal cultures under three different treatments to reach a specific growth milestone (an absorbance threshold). Survival analysis is used because it correctly handles cultures that never reach the threshold (right-censoring) and provides robust, interpretable comparisons of growth rates over time.
+
+\subsection{Why Survival Analysis is an important way to go!}
+
+In simple terms, survival analysis focuses on speed. Instead of just looking at OD at a single time point, we look at the time-to-event.
+
+\begin{itemize}
+    \item The Event: Our chosen growth milestone (e.g., OD $\geq 0.6$).
+    \item The Time: The hours it took to hit that milestone.
+    \item The Magic (Censoring): If a culture is too slow and never reaches the threshold by the end of the 72-hour experiment, we don't throw it out. We simply record that the event did not occur (status = 0) by the time of the last observation. This avoids bias, giving us an honest assessment of growth rates.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{lp{4cm}p{4cm}}
+\toprule
+Survival Term & Algae Equivalent & Statistical Role \\
+\midrule
+Event & Reaching OD threshold (e.g., OD = 0.6) & Defines the failure point we are tracking \\
+Time & Hours until OD $\geq$ threshold & The variable we are modeling \\
+Censoring & Not reaching threshold by experiment end & Allows us to use incomplete data \\
+Hazard Ratio & Relative rate of reaching threshold & HR $>$ 1 means faster growth (speed) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Packages and Data Setup}
+
+We first load the required packages. These provide tools for data manipulation (\texttt{tidyverse}), survival analysis (\texttt{survival}), visualization (\texttt{survminer}), and tidying model output (\texttt{broom}).
+
+<<packages>>=
+library(tidyverse)
+library(survival)
+library(survminer)
+library(broom)
+@
+
+\subsection{Data Simulation}
+
+We simulate growth data for three treatments. The function \texttt{make\_growth} generates noisy logistic growth curves.
+
+<<simulate>>=
+set.seed(2025)
+n_rep <- 10
+times <- seq(0, 72, by = 8)
+
+make_growth <- function(n, treatment_label, mu_time_to_mid = 30, sd_time = 6, maxOD = 1.2, prop_no_reach = 0.1){
+    tibble(sample = paste0(treatment_label, "_", seq_len(n))) %>%
+    rowwise() %>%
+    mutate(
+      t_mid = rnorm(1, mu_time_to_mid, sd_time) |> pmax(6),
+      slope = (maxOD) / (t_mid + 0.1),
+      never = runif(1) < prop_no_reach
+    ) %>%
+    ungroup() %>%
+    expand_grid(time = times) %>%
+    rowwise() %>%
+    mutate(
+      mu = plogis((time - rnorm(1, mu_time_to_mid, sd_time))/7) * maxOD,
+      absorbance = mu + rnorm(1, 0, 0.03)
+    ) %>%
+    ungroup() %>%
+    mutate(treatment = treatment_label)
+}
+
+# --- ENSURE THESE ADJUSTED VALUES ARE USED ---
+# Slower growth for A and B to create failures
+df_A <- make_growth(n_rep, "A", mu_time_to_mid = 45, sd_time = 6, maxOD = 1.1, prop_no_reach = 0.2)
+df_B <- make_growth(n_rep, "B", mu_time_to_mid = 40, sd_time = 7, maxOD = 1.15, prop_no_reach = 0.2)
+df_C <- make_growth(n_rep, "C", mu_time_to_mid = 22, sd_time = 5, maxOD = 1.0, prop_no_reach = 0.08)
+
+df_raw <- bind_rows(df_A, df_B, df_C) %>%
+    mutate(treatment = factor(treatment))
+@
+
+\section{Visualization and Event Definition}
+
+\subsection{Raw Growth Curves and Threshold}
+
+We plot individual growth curves and treatment means. This shows variability and average trends. The dashed red line marks our target $\text{OD} = 0.6$ threshold.
+
+<<rawcurves>>=
+df_means <- df_raw %>%
+    group_by(treatment, time) %>%
+    summarise(mean_abs = mean(absorbance), .groups = "drop")
+
+threshold <- 0.6
+
+p_raw <- ggplot() +
+    geom_line(data = df_raw,
+              aes(time, absorbance, group = sample, color = treatment),
+              alpha = 0.2, show.legend = FALSE) +
+    geom_line(data = df_means,
+              aes(time, mean_abs, color = treatment),
+              linewidth = 1.1) +
+    geom_hline(yintercept = threshold, linetype = "dashed", color = "red", linewidth = 0.8) +
+    annotate("text", x = max(df_raw$time)*0.7, y = threshold + 0.04, label = paste0("Threshold = ", threshold), color = "red") +
+    labs(x = "Time (hours)",
+         y = "Absorbance (OD)",
+         title = "Raw Growth Curves by Treatment with Target Threshold") +
+    theme_minimal()
+p_raw
+@
+
+\section{Analysis 1: Threshold Crossing (Speed Analysis)}
+
+\subsection{Defining the Event (Survival Data Setup)}
+
+We define the event as the first time a culture reaches $\text{OD} \geq 0.6$. If a culture never reaches this threshold by the end of the growth experiment (72 hours), it is censored at $t=72$.
+
+<<event>>=
+time_to_event <- df_raw %>%
+    group_by(sample, treatment) %>%
+    arrange(time) %>%
+    summarise(
+      event_time = {
+        hit_rows <- which(absorbance >= threshold)
+        if(length(hit_rows) == 0) NA_real_ else time[min(hit_rows)]
+      },
+      last_time = max(time),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      status = if_else(is.na(event_time), 0L, 1L), # 1=Event Occurred, 0=Censored
+      time = if_else(is.na(event_time), last_time, event_time)
+    )
+
+cat("Censoring Status (0 = Censored, 1 = Event Occurred):\n")
+print(time_to_event %>% count(treatment, status))
+@
+
+\subsection{Kaplan-Meier Curves: Visualizing Speed}
+
+Kaplan-Meier curves estimate the probability of not yet reaching the threshold over time. Steeper, earlier drops mean faster growth. We use `surv.median.line = ``none'' to avoid the interpolation error encountered earlier.
+
+<<km>>=
+km_fit <- survfit(Surv(time, status) ~ treatment, data = time_to_event)
+
+ggsurvplot(km_fit, data = time_to_event, risk.table = TRUE, pval = TRUE,
+           conf.int = TRUE, palette = "Dark2",
+           surv.median.line = "none",
+           title = "Kaplan-Meier: Time to Reach Absorbance Threshold (OD 0.6)",
+           xlab = "Time (hours)", legend.title = "Treatment",
+           break.time.by = 12)
+@
+
+\subsection{Cox Proportional Hazards Model: Quantifying Speed}
+
+The Cox model estimates Hazard Ratios (HR), which quantify the relative speed of hitting the threshold. We use Treatment A as the reference group.
+
+\begin{itemize}
+  \item  $\text{HR} > 1$: Treatment reaches the threshold faster than A.
+  \item  $\text{HR} < 1$: Treatment reaches the threshold slower than A.
+\end{itemize}
+
+<<cox>>=
+time_to_event <- time_to_event %>% mutate(treatment = relevel(treatment, ref = "A"))
+cox1 <- coxph(Surv(time, status) ~ treatment, data = time_to_event)
+summary(cox1)
+@
+
+\subsection{Hazard Ratio Forest Plot}
+
+This plot visualizes the HR estimates and confidence intervals (CI). If the CI for an HR does not cross 1 (the blue dashed line), the difference in speed is statistically significant.
+
+<<forest>>=
+hr <- tidy(cox1, exponentiate = TRUE, conf.int = TRUE)
+
+ggplot(hr, aes(x = term, y = estimate)) +
+    geom_point() +
+    geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.1) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "blue") +
+    coord_flip() +
+    labs(y = "Hazard Ratio (HR)", x = "Coefficient", title = "Cox Model: HR and 95% CI (Ref: Treatment A)") +
+    theme_minimal()
+@
+
+\subsection{Assumptions Check: Proportional Hazards}
+
+The Cox model assumes the HR is constant over time. A non-significant p-value ($\text{p} > 0.05$) from the Schoenfeld residuals test indicates the assumption holds.
+
+<<ph>>=
+ph_test <- cox.zph(cox1)
+ph_test
+@
+
+---
+
+\section{Analysis 2: End of Event (Success Probability Analysis)}
+
+In this alternative analysis, we ignore when the event happened and only ask: Did the culture succeed in reaching $\text{OD} \geq 0.6$ by the time the experiment ended (72 hours)?
+
+This shifts our focus from speed to final probability of success. Since the outcome is binary (Success=1 or Failure=0), we use Logistic Regression.
+
+\subsection{Event Definition (Logistic Data Setup)}
+
+We filter the data to the final time point and create a binary success variable.
+
+<<logistic_data>>=
+final_data <- df_raw %>%
+    filter(time == max(time)) %>%
+    mutate(
+        success = if_else(absorbance >= threshold, 1, 0),
+        treatment = relevel(treatment, ref = "A")
+    )
+
+cat("Success/Failure Status at 72 Hours:\n")
+print(final_data %>% count(treatment, success))
+@
+
+\subsection{Logistic Regression Model}
+
+The model estimates Odds Ratios (OR), which quantify the relative odds of a culture achieving $\text{OD} \geq 0.6$ at the end of the experiment compared to the reference group (Treatment A).
+
+ $\text{OR} > 1$: Treatment has higher odds of success than A.
+ $\text{OR} < 1$: Treatment has lower odds of success than A.
+
+<<logistic_model>>=
+logis_model <- glm(success ~ treatment, data = final_data, family = "binomial")
+summary(logis_model)
+@
+
+\subsection{Odds Ratio Plot}
+
+We visualize the OR estimates and their confidence intervals. If the CI does not cross 1, the difference in the odds of success is statistically significant.
+
+<<or_plot>>=
+or_results <- tidy(logis_model, exponentiate = TRUE, conf.int = TRUE) %>%
+    filter(term != "(Intercept)") # Remove the intercept for the plot
+
+ggplot(or_results, aes(x = term, y = estimate)) +
+    geom_point() +
+    geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.1) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "blue") +
+    coord_flip() +
+    labs(y = "Odds Ratio (OR)", x = "Coefficient", title = "Logistic Model: Odds of Success at 72 hrs (Ref: Treatment A)") +
+    theme_minimal()
+@
+
+\end{document}

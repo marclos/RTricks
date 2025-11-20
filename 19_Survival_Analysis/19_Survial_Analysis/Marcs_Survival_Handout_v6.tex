@@ -1,0 +1,719 @@
+\documentclass{tufte-handout}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\title{Survival Analysis -- Handout}
+\author{Marc Los Huertos}
+\date{\today}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle
+
+
+
+\section{Goal}
+
+We have absorbance (optical density, OD) measurements of algal cultures over time for three treatments. This R Markdown walks through an analysis that **uses a survival-analysis approach**: we define the event as *time to reach a event* (i.e. reach end of experiment milestone). This allows handling of cultures that never reach the threshold within the experiment (right-censored observations) and comparing groups using Kaplan–Meier curves, log-rank tests, and Cox proportional hazards models.
+
+\section{Justification!}
+
+Welcome to survival analysis for short-term experiments! I know 72 hours seems quick for ``survival'' analysis, but this technique is perfect for understanding \textit{when} growth rates change or fail, not just \textit{if} they change. 
+
+In your experiment, you're tracking algae growth under pollution stress. We'll use survival analysis to answer:
+
+\begin{itemize}
+\item When do algae colonies first show growth impairment?
+\item How quickly does pollution affect growth rates?
+\item What proportion maintains normal growth throughout the 72 hours?
+\end{itemize}
+
+\tableofcontents
+
+\section{Why use a survival analysis?}
+
+Alright Korey and Maria, here is an explanation of why I think you should and CAN use this approach. 
+
+We are not looking for a specific growth threshold. The issue is that the experiment has a hard stop. Some algae cultures get close to something interesting, and others do not, but everything ends at the same final time point because the experiment has to end. In other words, we censure the data. This is called right censured data. 
+
+So in this circumstance, the real question becomes: ``How long does each culture continue growing before the experiment forces us to stop?''
+
+This is exactly the kind of situation survival analysis is made for. Here is why it fits what we are doing.
+
+\subsection{1. Our event is the end of the experiment}
+
+Instead of waiting for the algae to reach some specific level, the ``event'' in our case is that the experiment ends. Some cultures are still growing. Some appear to have slowed down. Others might be about to separate from the pack but never get the chance because the experiment stops.
+
+Survival analysis lets us model this without pretending the algae hit a threshold that they did not actually reach -- in other words, we are removing a counfounding factor: data that is not there because the experiment ended.
+
+\subsection{2. All cultures are censored by design}
+
+Normally, censoring happens when something fails to happen in time. But here, censoring is simply the structure of the experiment. Every culture that does not finish whatever process we care about by the final measurement is censored at the end-of-experiment time.
+
+This is not a problem for survival analysis. In fact, survival analysis is built to handle exactly this type of "we stopped watching before the event happened" data.
+
+\subsection{3. It lets us compare treatments without assuming perfect growth curves}
+
+The algae do not follow perfect smooth logistic curves. They wiggle, plateau, slow down, and then take off again. If we tried to fit nonlinear models, we would be forcing the data into shapes it does not actually follow.
+
+Survival analysis does not care about the exact shape of the growth curve. It only cares about time until the event or censoring. That makes it realistic and robust for the type of noisy, real-world growth dynamics we have.
+
+\subsection{4. It gives us simple comparisons between treatments}
+
+Kaplan Meier curves show how much ``growth potential'' is still left in each group at each time point. Even though the event is the experiment ending, the KM curves still tell us who is ahead or behind as time goes on.
+
+Cox models give hazard ratios. In our case, the hazard ratio tells us whether one treatment is ``progressing toward the cutoff'' faster or slower than another. This becomes a practical way to compare treatments even when none of them reach a traditional endpoint.
+
+\subsection{5. We do not lose data by only looking at the final OD measurement}
+
+If we just looked at the final absorbance for each treatment, we would miss all the differences in how fast each culture was growing over time. Survival analysis uses all the data:
+
+\begin{itemize}
+\item every time point,
+\item every culture,
+\item all the differences in growth speed,
+\item all the censored cases.
+
+\end{itemize}
+
+Nothing gets thrown away. Are you starting to see why I think this is a good method? :-)
+
+\subsection{6. It fits the story of the experiment}
+
+The goal is not ``Did it reach some number?'' Instead, we might ask ``How long did it keep progressing until we had to stop the experiment?''
+
+Survival analysis is exactly the framework that treats our forced stop correctly and lets us compare treatments in a statistically meaningful way.
+
+\subsection{Summary}
+
+We are using survival analysis because the experiment does not run long enough for the cultures to reach a common endpoint. Instead, everyone gets cut off at the end of the experiment, and survival analysis is designed to handle that kind of censoring. It uses all of our data across time, does not require perfect growth curves, and gives us straightforward comparisons between treatments.
+
+In short:
+
+Survival analysis matches the way the experiment actually works, and it gives us the cleanest and most meaningful way to compare how the treatments influence growth over time.
+
+
+\section{1. Packages \& session info}
+
+To run the analysis, I am relying on a few packages, e.g. \texttt{tidyverse} for data wrangling and plotting, \texttt{survival} for survival analysis, and \texttt{survminer} for nice plotting functions.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(tidyverse)}
+\hlkwd{library}\hlstd{(survival)}
+\hlkwd{library}\hlstd{(survminer)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\section{2. Data: two options}
+
+For Maria and Korey, I have created simulated example data below (Option B). You can also use your own data (Option A) if you have it in the suggested format. Hopefully, this handout will give you a sense of what this approach looks like and how to implement it!
+
+\subsection{Option A — use your own CSV}
+
+a suggested format is long: one row per sample per timepoint. 
+
+Columns:
+
+\begin{itemize}
+  \item `sample\_id` (unique for each biological replicate)
+  \item `treatment` (factor with 3 levels, e.g. `A`, `B`, `C`)
+  \item `time` (time in hours or days; numeric)
+  \item `absorbance` (OD or fluorescence reading; numeric)
+\end{itemize}
+
+Read it with:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# df_raw <- read.csv("your_algae_data.csv")}
+\hlcom{# glimpse(df_raw)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Option B — simulated example data}
+
+used in this report so the analysis runs end-to-end). I thinnk this simulation creates realistic growth curves with noise, i.e. variation needed for a statistical analysis!
+
+More over, I created 10 replicates -- where some replicates that never hit the threshold.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{set.seed}\hlstd{(}\hlnum{2025}\hlstd{)}
+\hlcom{# parameters}
+\hlstd{n_rep} \hlkwb{<-} \hlnum{10}   \hlcom{# replicates per treatment}
+\hlstd{times} \hlkwb{<-} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{72}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{8}\hlstd{)} \hlcom{# sample every 8 hours for 72 hours}
+
+\hlstd{make_growth} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{n}\hlstd{,} \hlkwc{treatment_label}\hlstd{,} \hlkwc{mu_time_to_mid} \hlstd{=} \hlnum{30}\hlstd{,} \hlkwc{sd_time} \hlstd{=} \hlnum{6}\hlstd{,} \hlkwc{maxOD} \hlstd{=} \hlnum{1.2}\hlstd{,} \hlkwc{prop_no_reach} \hlstd{=} \hlnum{0.1}\hlstd{)\{}
+  \hlkwd{tibble}\hlstd{(}\hlkwc{sample} \hlstd{=} \hlkwd{paste0}\hlstd{(treatment_label,} \hlstr{"_"}\hlstd{,} \hlkwd{seq_len}\hlstd{(n)))} \hlopt{%>%}
+    \hlkwd{rowwise}\hlstd{()} \hlopt{%>%}
+    \hlkwd{mutate}\hlstd{(}
+      \hlcom{# latent time to reach midpoint (control over growth speed)}
+      \hlkwc{t_mid} \hlstd{=} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{, mu_time_to_mid, sd_time) |>} \hlkwd{pmax}\hlstd{(}\hlnum{6}\hlstd{),}
+      \hlkwc{slope} \hlstd{= (maxOD)} \hlopt{/} \hlstd{(t_mid} \hlopt{+} \hlnum{0.1}\hlstd{),}
+      \hlcom{# for a small proportion, set very slow growth so they won't reach threshold}
+      \hlkwc{never} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{1}\hlstd{)} \hlopt{<} \hlstd{prop_no_reach}
+    \hlstd{)} \hlopt{%>%}
+    \hlkwd{ungroup}\hlstd{()} \hlopt{%>%}
+    \hlkwd{select}\hlstd{(}\hlopt{-}\hlstd{t_mid,} \hlopt{-}\hlstd{slope,} \hlopt{-}\hlstd{never)} \hlkwb{->} \hlstd{samples}
+
+  \hlkwd{expand_grid}\hlstd{(}\hlkwc{sample} \hlstd{= samples}\hlopt{$}\hlstd{sample,} \hlkwc{time} \hlstd{= times)} \hlopt{%>%}
+    \hlkwd{left_join}\hlstd{(samples,} \hlkwc{by} \hlstd{=} \hlstr{"sample"}\hlstd{)} \hlopt{%>%}
+    \hlkwd{rowwise}\hlstd{()} \hlopt{%>%}
+    \hlkwd{mutate}\hlstd{(}
+      \hlcom{# generate an underlying logistic-like growth curve with noise}
+      \hlkwc{mu} \hlstd{=} \hlkwd{plogis}\hlstd{((time} \hlopt{-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{, mu_time_to_mid, sd_time))}\hlopt{/}\hlnum{7}\hlstd{)} \hlopt{*} \hlstd{maxOD,}
+      \hlkwc{absorbance} \hlstd{= mu} \hlopt{+} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0.03}\hlstd{)}
+    \hlstd{)} \hlopt{%>%}
+    \hlkwd{ungroup}\hlstd{()} \hlopt{%>%}
+    \hlkwd{mutate}\hlstd{(}\hlkwc{treatment} \hlstd{= treatment_label)}
+\hlstd{\}}
+
+\hlcom{# create three treatments with different typical growth rates}
+\hlstd{df_A} \hlkwb{<-} \hlkwd{make_growth}\hlstd{(n_rep,} \hlstr{"A"}\hlstd{,} \hlkwc{mu_time_to_mid} \hlstd{=} \hlnum{28}\hlstd{,} \hlkwc{sd_time} \hlstd{=} \hlnum{6}\hlstd{,} \hlkwc{maxOD} \hlstd{=} \hlnum{1.1}\hlstd{,} \hlkwc{prop_no_reach} \hlstd{=} \hlnum{0.05}\hlstd{)}
+\hlstd{df_B} \hlkwb{<-} \hlkwd{make_growth}\hlstd{(n_rep,} \hlstr{"B"}\hlstd{,} \hlkwc{mu_time_to_mid} \hlstd{=} \hlnum{34}\hlstd{,} \hlkwc{sd_time} \hlstd{=} \hlnum{7}\hlstd{,} \hlkwc{maxOD} \hlstd{=} \hlnum{1.15}\hlstd{,} \hlkwc{prop_no_reach} \hlstd{=} \hlnum{0.12}\hlstd{)}
+\hlstd{df_C} \hlkwb{<-} \hlkwd{make_growth}\hlstd{(n_rep,} \hlstr{"C"}\hlstd{,} \hlkwc{mu_time_to_mid} \hlstd{=} \hlnum{22}\hlstd{,} \hlkwc{sd_time} \hlstd{=} \hlnum{5}\hlstd{,} \hlkwc{maxOD} \hlstd{=} \hlnum{1.0}\hlstd{,} \hlkwc{prop_no_reach} \hlstd{=} \hlnum{0.08}\hlstd{)}
+
+\hlstd{df_raw} \hlkwb{<-} \hlkwd{bind_rows}\hlstd{(df_A, df_B, df_C)} \hlopt{%>%}
+  \hlkwd{mutate}\hlstd{(}\hlkwc{treatment} \hlstd{=} \hlkwd{factor}\hlstd{(treatment))}
+
+\hlcom{# inspect a handful}
+\hlstd{df_raw} \hlopt{%>%} \hlkwd{group_by}\hlstd{(treatment)} \hlopt{%>%} \hlkwd{slice_head}\hlstd{(}\hlkwc{n} \hlstd{=} \hlnum{6}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 18 x 5
+## # Groups:   treatment [3]
+##    sample  time      mu absorbance treatment
+##    <chr>  <dbl>   <dbl>      <dbl> <fct>    
+##  1 A_1        0 0.0233      0.0581 A        
+##  2 A_1        8 0.0623      0.0175 A        
+##  3 A_1       16 0.123       0.122  A        
+##  4 A_1       24 0.699       0.692  A        
+##  5 A_1       32 0.199       0.189  A        
+##  6 A_1       40 0.960       0.941  A        
+##  7 B_1        0 0.00495    -0.0645 B        
+##  8 B_1        8 0.213       0.199  B        
+##  9 B_1       16 0.0448      0.0604 B        
+## 10 B_1       24 0.365       0.342  B        
+## 11 B_1       32 0.793       0.842  B        
+## 12 B_1       40 0.960       0.968  B        
+## 13 C_1        0 0.0587      0.0488 C        
+## 14 C_1        8 0.104       0.0963 C        
+## 15 C_1       16 0.233       0.217  C        
+## 16 C_1       24 0.432       0.420  C        
+## 17 C_1       32 0.482       0.503  C        
+## 18 C_1       40 0.959       1.02   C
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\subsection{End Of experiment}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# df_raw contains: sample, treatment, time, absorbance}
+\hlcom{# Step 1: find the end-of-experiment time}
+\hlstd{end_time} \hlkwb{<-} \hlkwd{max}\hlstd{(df_raw}\hlopt{$}\hlstd{time)}
+
+\hlcom{# Step 2: create a time-to-event dataset where the event is "experiment ended"}
+\hlcom{# All samples have the same event time (the end) and all are censored (status = 0)}
+
+\hlstd{time_to_event} \hlkwb{<-} \hlstd{df_raw} \hlopt{%>%}
+  \hlkwd{group_by}\hlstd{(sample, treatment)} \hlopt{%>%}
+  \hlkwd{summarise}\hlstd{(}
+    \hlkwc{time} \hlstd{= end_time,}  \hlcom{# everyone ends at the final observed time}
+    \hlkwc{status} \hlstd{=} \hlnum{0L}\hlstd{,}      \hlcom{# 0 = censored, because the event never actually happened}
+    \hlkwc{.groups} \hlstd{=} \hlstr{"drop"}
+  \hlstd{)}
+
+\hlstd{time_to_event}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 30 x 4
+##    sample treatment  time status
+##    <chr>  <fct>     <dbl>  <int>
+##  1 A_1    A            72      0
+##  2 A_10   A            72      0
+##  3 A_2    A            72      0
+##  4 A_3    A            72      0
+##  5 A_4    A            72      0
+##  6 A_5    A            72      0
+##  7 A_6    A            72      0
+##  8 A_7    A            72      0
+##  9 A_8    A            72      0
+## 10 A_9    A            72      0
+## # i 20 more rows
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Some notes on the data: 
+
+\begin{enumerate}
+  \item Why status = 0 for everyone?
+
+Because in your design:
+\begin{itemize}
+\item The experiment ends before anything biologically meaningful happens, so the event never occurs, and the only thing that “happens” is that measurement stops.
+
+\item This is exactly what right-censoring represents.
+\end{itemize}
+\item If you want to define a different event, like “growth slowed” or “plateau started”
+
+\item You can define an event inside the experiment, for example: slope falls below a threshold, OD stops increasing, time to max observed absorbance, etc.
+
+\item Then some samples would have status = 1 and some status = 0.
+
+\item If you want that, tell me the biological definition and I’ll write the code for it.
+
+\end{enumerate}
+
+If you want to run Kaplan–Meier with end-of-experiment censoring
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(survival)}
+\hlkwd{library}\hlstd{(survminer)}
+
+\hlstd{km_fit} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(time, status)} \hlopt{~} \hlstd{treatment,} \hlkwc{data} \hlstd{= time_to_event)}
+
+\hlkwd{ggsurvplot}\hlstd{(km_fit,} \hlkwc{data} \hlstd{= time_to_event,}
+           \hlkwc{risk.table} \hlstd{=} \hlnum{TRUE}\hlstd{,}
+           \hlkwc{conf.int} \hlstd{=} \hlnum{TRUE}\hlstd{,}
+           \hlkwc{xlab} \hlstd{=} \hlstr{"Time"}\hlstd{,}
+           \hlkwc{title} \hlstd{=} \hlstr{"Survival curves where experiment-ending is censoring"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-2-1} 
+\end{knitrout}
+
+This will produce survival curves showing how much “time under observation” each treatment had — all curves will drop only at the end (because everyone is censored at the same time), but this sets the correct structure for modeling.
+
+
+\subsection{3. Visualize raw growth curves}
+
+Plotting raw absorbance over time for each replicate is important to see shapes, noise, and whether a single threshold makes sense.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# spaghetti plot: individual curves (light) + treatment mean (bold)}
+\hlstd{df_means} \hlkwb{<-} \hlstd{df_raw} \hlopt{%>%}
+  \hlkwd{group_by}\hlstd{(treatment, time)} \hlopt{%>%}
+  \hlkwd{summarise}\hlstd{(}\hlkwc{mean_abs} \hlstd{=} \hlkwd{mean}\hlstd{(absorbance),} \hlkwc{.groups} \hlstd{=} \hlstr{"drop"}\hlstd{)}
+
+\hlstd{p_raw} \hlkwb{<-} \hlkwd{ggplot}\hlstd{()} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwc{data} \hlstd{= df_raw,}
+            \hlkwd{aes}\hlstd{(time, absorbance,} \hlkwc{group} \hlstd{= sample,} \hlkwc{color} \hlstd{= treatment),}
+            \hlkwc{alpha} \hlstd{=} \hlnum{0.2}\hlstd{,} \hlkwc{show.legend} \hlstd{=} \hlnum{FALSE}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwc{data} \hlstd{= df_means,}
+            \hlkwd{aes}\hlstd{(time, mean_abs,} \hlkwc{color} \hlstd{= treatment),}
+            \hlkwc{size} \hlstd{=} \hlnum{1.1}\hlstd{)} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}\hlkwc{x} \hlstd{=} \hlstr{"Time (hours)"}\hlstd{,}
+       \hlkwc{y} \hlstd{=} \hlstr{"Absorbance (OD)"}\hlstd{,}
+       \hlkwc{title} \hlstd{=} \hlstr{"Raw growth curves by treatment"}\hlstd{)} \hlopt{+}
+  \hlkwd{theme_minimal}\hlstd{()}
+
+\hlstd{p_raw}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/raw-curves-1} 
+\end{knitrout}
+
+\subsection{Define event: time to reach a threshold}
+
+Choose a threshold that represents a biologically meaningful growth milestone. For example, `threshold <- 0.6` (you can change this). We compute, per sample, the **first time** the absorbance is >= threshold. If a sample never reaches the threshold during the recorded times, we treat it as **right-censored** at the last observed timepoint.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{threshold} \hlkwb{<-} \hlnum{0.6}
+
+\hlstd{time_to_event} \hlkwb{<-} \hlstd{df_raw} \hlopt{%>%}
+  \hlkwd{group_by}\hlstd{(sample, treatment)} \hlopt{%>%}
+  \hlkwd{arrange}\hlstd{(time)} \hlopt{%>%}
+  \hlkwd{summarise}\hlstd{(}
+    \hlkwc{event_time} \hlstd{= \{}
+      \hlstd{hit_rows} \hlkwb{<-} \hlkwd{which}\hlstd{(absorbance} \hlopt{>=} \hlstd{threshold)}
+      \hlkwa{if}\hlstd{(}\hlkwd{length}\hlstd{(hit_rows)} \hlopt{==} \hlnum{0}\hlstd{)} \hlnum{NA_real_} \hlkwa{else} \hlstd{time[}\hlkwd{min}\hlstd{(hit_rows)]}
+    \hlstd{\},}
+    \hlkwc{last_time} \hlstd{=} \hlkwd{max}\hlstd{(time),}
+    \hlkwc{.groups} \hlstd{=} \hlstr{"drop"}
+  \hlstd{)} \hlopt{%>%}
+  \hlkwd{mutate}\hlstd{(}
+    \hlkwc{status} \hlstd{=} \hlkwd{if_else}\hlstd{(}\hlkwd{is.na}\hlstd{(event_time),} \hlnum{0L}\hlstd{,} \hlnum{1L}\hlstd{),}        \hlcom{# 1 = event observed, 0 = censored}
+    \hlkwc{time} \hlstd{=} \hlkwd{if_else}\hlstd{(}\hlkwd{is.na}\hlstd{(event_time), last_time, event_time)}
+  \hlstd{)}
+
+\hlcom{# show table}
+\hlstd{time_to_event} \hlopt{%>%} \hlkwd{count}\hlstd{(treatment, status)}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 3 x 3
+##   treatment status     n
+##   <fct>      <int> <int>
+## 1 A              1    10
+## 2 B              1    10
+## 3 C              1    10
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Plot the threshold on the raw curves so readers see what the event means.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{p_raw} \hlopt{+} \hlkwd{geom_hline}\hlstd{(}\hlkwc{yintercept} \hlstd{= threshold,} \hlkwc{linetype} \hlstd{=} \hlstr{"dashed"}\hlstd{)} \hlopt{+}
+  \hlkwd{annotate}\hlstd{(}\hlstr{"text"}\hlstd{,} \hlkwc{x} \hlstd{=} \hlkwd{max}\hlstd{(df_raw}\hlopt{$}\hlstd{time)}\hlopt{*}\hlnum{0.7}\hlstd{,} \hlkwc{y} \hlstd{= threshold} \hlopt{+} \hlnum{0.04}\hlstd{,} \hlkwc{label} \hlstd{=} \hlkwd{paste0}\hlstd{(}\hlstr{"threshold = "}\hlstd{, threshold))}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/threshold-plot-1} 
+\end{knitrout}
+
+\subsection{5. Kaplan–Meier curves by treatment}
+
+Create a `Surv` object and fit Kaplan–Meier curves. We will visualize them and report median time-to-event where available.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{km_fit} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(time, status)} \hlopt{~} \hlstd{treatment,} \hlkwc{data} \hlstd{= time_to_event)}
+\hlkwd{summary}\hlstd{(km_fit)}
+\end{alltt}
+\begin{verbatim}
+## Call: survfit(formula = Surv(time, status) ~ treatment, data = time_to_event)
+## 
+##                 treatment=A 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##    24     10       2      0.8   0.126        0.587        1.000
+##    32      8       4      0.4   0.155        0.187        0.855
+##    40      4       4      0.0     NaN           NA           NA
+## 
+##                 treatment=B 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##    24     10       1      0.9  0.0949       0.7320        1.000
+##    32      9       8      0.1  0.0949       0.0156        0.642
+##    40      1       1      0.0     NaN           NA           NA
+## 
+##                 treatment=C 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##    24     10       7      0.3  0.1449       0.1164        0.773
+##    32      3       2      0.1  0.0949       0.0156        0.642
+##    40      1       1      0.0     NaN           NA           NA
+\end{verbatim}
+\begin{alltt}
+\hlkwd{ggsurvplot}\hlstd{(km_fit,} \hlkwc{data} \hlstd{= time_to_event,} \hlkwc{risk.table} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{pval} \hlstd{=} \hlnum{TRUE}\hlstd{,}
+           \hlkwc{conf.int} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{palette} \hlstd{=} \hlstr{"Dark2"}\hlstd{,}
+           \hlkwc{title} \hlstd{=} \hlstr{"Kaplan–Meier: time to reach absorbance threshold by treatment"}\hlstd{,}
+           \hlkwc{xlab} \hlstd{=} \hlstr{"Time (hours)"}\hlstd{,} \hlkwc{legend.title} \hlstd{=} \hlstr{"Treatment"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/km-fit-1} 
+\end{knitrout}
+
+**Interpretation**: The survival curve here shows the probability that a culture has *not yet* reached the threshold at each timepoint. Lower curves correspond to faster attainment of the threshold.
+
+\subsection{6. Log-rank test (overall)}
+
+The log-rank test (implemented as `survdiff`) checks for differences in survival functions across groups.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{logrank} \hlkwb{<-} \hlkwd{survdiff}\hlstd{(}\hlkwd{Surv}\hlstd{(time, status)} \hlopt{~} \hlstd{treatment,} \hlkwc{data} \hlstd{= time_to_event)}
+\hlstd{logrank}
+\end{alltt}
+\begin{verbatim}
+## Call:
+## survdiff(formula = Surv(time, status) ~ treatment, data = time_to_event)
+## 
+##              N Observed Expected (O-E)^2/E (O-E)^2/V
+## treatment=A 10       10    12.93    0.6653     3.318
+## treatment=B 10       10    10.63    0.0377     0.153
+## treatment=C 10       10     6.43    1.9774     6.069
+## 
+##  Chisq= 6.7  on 2 degrees of freedom, p= 0.03
+\end{verbatim}
+\begin{alltt}
+\hlcom{# compute approximate p-value}
+\hlstd{p_val} \hlkwb{<-} \hlnum{1} \hlopt{-} \hlkwd{pchisq}\hlstd{(logrank}\hlopt{$}\hlstd{chisq,} \hlkwc{df} \hlstd{=} \hlkwd{length}\hlstd{(logrank}\hlopt{$}\hlstd{n)} \hlopt{-} \hlnum{1}\hlstd{)}
+\hlkwd{cat}\hlstd{(}\hlstr{"Omnibus log-rank p-value:"}\hlstd{,} \hlkwd{signif}\hlstd{(p_val,} \hlnum{3}\hlstd{),} \hlstr{"\textbackslash{}n"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## Omnibus log-rank p-value: 0.0345
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+subsection{7. Pairwise comparisons (adjusted)}
+
+If the omnibus test is significant, we may want pairwise comparisons. We'll compute pairwise log-rank tests and adjust p-values using the Benjamini-Hochberg method.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# pairwise_survdiff is available via survminer}
+\hlstd{pairwise_res} \hlkwb{<-} \hlkwd{pairwise_survdiff}\hlstd{(}\hlkwd{Surv}\hlstd{(time, status)} \hlopt{~} \hlstd{treatment,} \hlkwc{data} \hlstd{= time_to_event)}
+\hlstd{pairwise_res}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Pairwise comparisons using Log-Rank test 
+## 
+## data:  time_to_event and treatment 
+## 
+##   A     B    
+## B 0.365 -    
+## C 0.073 0.073
+## 
+## P value adjustment method: BH
+\end{verbatim}
+\begin{alltt}
+\hlcom{# extract p-values and adjust}
+\hlstd{pw} \hlkwb{<-} \hlstd{pairwise_res}\hlopt{$}\hlstd{p.value}
+\hlstd{pw_vec} \hlkwb{<-} \hlkwd{na.omit}\hlstd{(}\hlkwd{as.vector}\hlstd{(pw))}
+\hlstd{adj} \hlkwb{<-} \hlkwd{p.adjust}\hlstd{(pw_vec,} \hlkwc{method} \hlstd{=} \hlstr{"BH"}\hlstd{)}
+\hlstd{adj}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.3652911 0.1088803 0.1088803
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsection{8. Cox proportional hazards model}
+
+A Cox model estimates hazard ratios between treatments, which can be interpreted as relative rates of reaching the threshold.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# encode treatment as factor; choose reference}
+\hlstd{time_to_event} \hlkwb{<-} \hlstd{time_to_event} \hlopt{%>%} \hlkwd{mutate}\hlstd{(}\hlkwc{treatment} \hlstd{=} \hlkwd{relevel}\hlstd{(treatment,} \hlkwc{ref} \hlstd{=} \hlstr{"A"}\hlstd{))}
+\hlstd{cox1} \hlkwb{<-} \hlkwd{coxph}\hlstd{(}\hlkwd{Surv}\hlstd{(time, status)} \hlopt{~} \hlstd{treatment,} \hlkwc{data} \hlstd{= time_to_event)}
+\hlkwd{summary}\hlstd{(cox1)}
+\end{alltt}
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(time, status) ~ treatment, data = time_to_event)
+## 
+##   n= 30, number of events= 30 
+## 
+##              coef exp(coef) se(coef)     z Pr(>|z|)  
+## treatmentB 0.3785    1.4601   0.4586 0.825   0.4092  
+## treatmentC 0.9301    2.5347   0.4554 2.042   0.0411 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##            exp(coef) exp(-coef) lower .95 upper .95
+## treatmentB     1.460     0.6849    0.5943     3.587
+## treatmentC     2.535     0.3945    1.0382     6.189
+## 
+## Concordance= 0.722  (se = 0.085 )
+## Likelihood ratio test= 4.04  on 2 df,   p=0.1
+## Wald test            = 4.23  on 2 df,   p=0.1
+## Score (logrank) test = 4.45  on 2 df,   p=0.1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Notes: the hazard ratio (HR) $>$ 1 means faster attainment of the threshold relative to the reference.
+
+\subsection{9. Check proportional hazards assumption}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ph_test} \hlkwb{<-} \hlkwd{cox.zph}\hlstd{(cox1)}
+\hlstd{ph_test}
+\end{alltt}
+\begin{verbatim}
+##           chisq df    p
+## treatment  3.61  2 0.16
+## GLOBAL     3.61  2 0.16
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(ph_test)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+If the proportional hazards assumption fails for treatment, consider alternatives: stratified Cox, time-varying covariates, or non-parametric comparisons.
+
+\subsection{10. Visual diagnostics and alternative visualizations}
+
+Plot the cumulative hazard or complementary log-log plots if helpful. We can also overlay median times and forest plots of HRs.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# simple forest plot for Cox HRs}
+\hlstd{hr} \hlkwb{<-} \hlstd{broom}\hlopt{::}\hlkwd{tidy}\hlstd{(cox1,} \hlkwc{exponentiate} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{conf.int} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlstd{hr}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 2 x 7
+##   term       estimate std.error statistic p.value conf.low conf.high
+##   <chr>         <dbl>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl>
+## 1 treatmentB     1.46     0.459     0.825  0.409     0.594      3.59
+## 2 treatmentC     2.53     0.455     2.04   0.0411    1.04       6.19
+\end{verbatim}
+\begin{alltt}
+\hlkwd{ggplot}\hlstd{(hr,} \hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= term,} \hlkwc{y} \hlstd{= estimate))} \hlopt{+}
+  \hlkwd{geom_point}\hlstd{()} \hlopt{+}
+  \hlkwd{geom_errorbar}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{ymin} \hlstd{= conf.low,} \hlkwc{ymax} \hlstd{= conf.high),} \hlkwc{width} \hlstd{=} \hlnum{0.1}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_hline}\hlstd{(}\hlkwc{yintercept} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{linetype} \hlstd{=} \hlstr{"dashed"}\hlstd{)} \hlopt{+}
+  \hlkwd{coord_flip}\hlstd{()} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}\hlkwc{y} \hlstd{=} \hlstr{"Hazard Ratio (HR)"}\hlstd{,} \hlkwc{x} \hlstd{=} \hlstr{"Coefficient"}\hlstd{,} \hlkwc{title} \hlstd{=} \hlstr{"Cox model: HR and 95% CI"}\hlstd{)} \hlopt{+}
+  \hlkwd{theme_minimal}\hlstd{()}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/cox-forest-1} 
+\end{knitrout}
+
+\subsection{11. Reporting recommended outputs}
+
+A minimal reproducible report should include:
+
+\begin{itemize}
+\item Raw growth curve figure with threshold annotated (Step 3 \& 4).
+\item Table of `time-to-event' with `sample', `treatment', `time', `status' (observed/censored).
+\item Kaplan--Meier plot with risk table and p-value (Step 5).
+\item Omnibus log-rank test results and pairwise p-values with multiple-testing corrections (Steps 6--7).
+\item Cox model coefficients, hazard ratios and 95\% CI (Step 8) and asses
+\end{itemize}
+
+\section{Rationale Notes for Marc}
+
+\subsection{Rationale for Using Survival Analysis}
+
+Survival analysis is a powerful and appropriate statistical framework for analyzing algae growth when the primary question concerns *how long* it takes cultures to reach a biologically meaningful milestone, such as exceeding a specified absorbance threshold. This section explains why survival methods are preferred in such situations.
+
+\subsection{Focus on Time-to-Threshold Outcomes}
+
+Many algal growth studies aim to compare how long cultures under different treatments require to reach:
+- a specified absorbance (OD) level,
+- the onset of exponential growth, or
+- a density indicating establishment or competitive success.
+
+Survival analysis directly models **time-to-event** outcomes, aligning the statistical method with the biological question.
+
+\subsection{Natural Handling of Right-Censoring}
+
+Not every culture reaches the absorbance threshold during the experimental window. Traditional approaches (e.g., ANOVA on final OD or curve-fitting) often discard these observations or treat them incorrectly.  
+Survival analysis handles such cases as **right-censored** data:
+- the event did not occur during the observation period,
+- but the culture still provides valid information up to its last measurement time.
+
+This prevents bias and maximizes data use.
+
+\subsection{Minimal Assumptions About Growth Curves}
+
+Kaplan–Meier curves and log-rank tests compare groups **without requiring a specific growth model**. This is helpful because real algal populations may deviate from ideal logistic or Gompertz growth curves due to:
+- environmental fluctuations,
+- physiological acclimation,
+- measurement noise, and
+- treatment-specific growth dynamics.
+
+Survival methods remain robust under these conditions.
+
+\subsection{Interpretable Effect Sizes via Cox Models}
+
+The Cox proportional hazards model provides hazard ratios that quantify how treatments affect the **rate at which cultures reach the absorbance threshold**:
+- hazard ratio (HR) > 1 indicates faster growth,
+- HR < 1 indicates delayed growth.
+
+These effect sizes are intuitive and directly comparable across treatments.
+
+\subsection{Avoiding Information Loss}
+
+Analyzing only end-point absorbance values ignores valuable temporal data. Survival analysis incorporates:
+- timing of all measurements up to the event,
+- differences in growth trajectories,
+- censored observations.
+
+This increases statistical power and provides a more complete view of growth dynamics.
+
+\subsection{Flexibility for Complex Experiments}
+
+Survival frameworks easily extend to:
+- multiple covariates,
+- time-varying predictors,
+- stratified models,
+- non-proportional hazards scenarios,
+- mixed-effects survival models.
+
+This flexibility allows the approach to scale with more sophisticated experimental designs.
+
+\subsection{Summary}
+
+Survival analysis is an ideal approach for algae growth experiments where the goal is to compare the **time required to reach a growth milestone**, especially when:
+\begin{itemize}
+  \item treatments create different growth rates,
+  \item some cultures never reach the threshold,
+  \item the full growth curves are noisy or irregular, or
+  \item time-based comparisons provide the most biological insight.
+\end{itemize}
+It allows full use of the data, handles censoring
+
+
+
+\end{document}

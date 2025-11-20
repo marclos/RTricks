@@ -1,0 +1,384 @@
+\documentclass[11pt]{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{Survival Analysis for Algal Growth: A Handout for Korey \& Maria}
+\author{Marc Los Huertos}
+\date{\today}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Goal and Justification}
+
+The purpose of this handout is to compare the time it takes for algal cultures under three different treatments to reach a specific growth milestone (an absorbance threshold). Survival analysis is used because it correctly handles cultures that never reach the threshold (right-censoring) and provides robust, interpretable comparisons of growth rates over time.
+
+\section{Explanation for Korey and Maria}
+
+Survival analysis focuses on time-to-event data. In our case, the ``event'' is reaching a chosen optical density (OD) threshold. This approach allows us to include both cultures that reach the threshold and those that do not, without bias.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Survival Term & Algae Equivalent & Statistical Role \\
+\midrule
+Event & Reaching OD threshold (e.g., OD = 0.6) & Defines the failure point we are tracking \\
+Time & Hours until OD $\geq$ threshold & The variable we are modeling \\
+Censoring & Not reaching threshold by experiment end & Allows us to use incomplete data \\
+Hazard Ratio & Relative rate of reaching threshold & HR $>$ 1 means faster growth \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Packages and Data Setup}
+
+We first load the required packages. These provide tools for data manipulation (tidyverse), survival analysis (survival), visualization (survminer), and tidying model output (broom).
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(tidyverse)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# -- Attaching core tidyverse packages ------------------------ tidyverse 2.0.0 --\\\#\# v dplyr \ \ \ \ 1.1.4 \ \ \ \ v readr \ \ \ \ 2.1.5\\\#\# v forcats \ \ 1.0.0 \ \ \ \ v stringr \ \ 1.5.1\\\#\# v ggplot2 \ \ 3.4.4 \ \ \ \ v tibble \ \ \ 3.2.1\\\#\# v lubridate 1.9.3 \ \ \ \ v tidyr \ \ \ \ 1.3.1\\\#\# v purrr \ \ \ \ 1.0.2 \ \ \ \ \\\#\# -- Conflicts ------------------------------------------ tidyverse\_conflicts() --\\\#\# x dplyr::filter() masks stats::filter()\\\#\# x dplyr::lag() \ \ \ masks stats::lag()\\\#\# i Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors}}\begin{alltt}
+\hlkwd{library}\hlstd{(survival)}
+\hlkwd{library}\hlstd{(survminer)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: ggpubr\\\#\# \\\#\# Attaching package: 'survminer'\\\#\# \\\#\# The following object is masked from 'package:survival':\\\#\# \\\#\# \ \ \ \ myeloma}}\begin{alltt}
+\hlkwd{library}\hlstd{(broom)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Data Simulation}
+
+We simulate growth data for three treatments. Each treatment has slightly different average growth rates and variability. The function \texttt{make\_growth} generates noisy logistic growth curves, some of which never reach the threshold (to mimic censoring).
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{set.seed}\hlstd{(}\hlnum{2025}\hlstd{)}
+\hlstd{n_rep} \hlkwb{<-} \hlnum{10}
+\hlstd{times} \hlkwb{<-} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{72}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{8}\hlstd{)}
+
+\hlstd{make_growth} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{n}\hlstd{,} \hlkwc{treatment_label}\hlstd{,} \hlkwc{mu_time_to_mid} \hlstd{=} \hlnum{30}\hlstd{,} \hlkwc{sd_time} \hlstd{=} \hlnum{6}\hlstd{,} \hlkwc{maxOD} \hlstd{=} \hlnum{1.2}\hlstd{,} \hlkwc{prop_no_reach} \hlstd{=} \hlnum{0.1}\hlstd{)\{}
+  \hlkwd{tibble}\hlstd{(}\hlkwc{sample} \hlstd{=} \hlkwd{paste0}\hlstd{(treatment_label,} \hlstr{"_"}\hlstd{,} \hlkwd{seq_len}\hlstd{(n)))} \hlopt{%>%}
+    \hlkwd{rowwise}\hlstd{()} \hlopt{%>%}
+    \hlkwd{mutate}\hlstd{(}
+      \hlkwc{t_mid} \hlstd{=} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{, mu_time_to_mid, sd_time) |>} \hlkwd{pmax}\hlstd{(}\hlnum{6}\hlstd{),}
+      \hlkwc{slope} \hlstd{= (maxOD)} \hlopt{/} \hlstd{(t_mid} \hlopt{+} \hlnum{0.1}\hlstd{),}
+      \hlkwc{never} \hlstd{=} \hlkwd{runif}\hlstd{(}\hlnum{1}\hlstd{)} \hlopt{<} \hlstd{prop_no_reach}
+    \hlstd{)} \hlopt{%>%}
+    \hlkwd{ungroup}\hlstd{()} \hlopt{%>%}
+    \hlkwd{expand_grid}\hlstd{(}\hlkwc{time} \hlstd{= times)} \hlopt{%>%}
+    \hlkwd{rowwise}\hlstd{()} \hlopt{%>%}
+    \hlkwd{mutate}\hlstd{(}
+      \hlkwc{mu} \hlstd{=} \hlkwd{plogis}\hlstd{((time} \hlopt{-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{, mu_time_to_mid, sd_time))}\hlopt{/}\hlnum{7}\hlstd{)} \hlopt{*} \hlstd{maxOD,}
+      \hlkwc{absorbance} \hlstd{= mu} \hlopt{+} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0.03}\hlstd{)}
+    \hlstd{)} \hlopt{%>%}
+    \hlkwd{ungroup}\hlstd{()} \hlopt{%>%}
+    \hlkwd{mutate}\hlstd{(}\hlkwc{treatment} \hlstd{= treatment_label)}
+\hlstd{\}}
+
+\hlstd{df_A} \hlkwb{<-} \hlkwd{make_growth}\hlstd{(n_rep,} \hlstr{"A"}\hlstd{,} \hlkwc{mu_time_to_mid} \hlstd{=} \hlnum{28}\hlstd{,} \hlkwc{sd_time} \hlstd{=} \hlnum{6}\hlstd{,} \hlkwc{maxOD} \hlstd{=} \hlnum{1.1}\hlstd{,} \hlkwc{prop_no_reach} \hlstd{=} \hlnum{0.05}\hlstd{)}
+\hlstd{df_B} \hlkwb{<-} \hlkwd{make_growth}\hlstd{(n_rep,} \hlstr{"B"}\hlstd{,} \hlkwc{mu_time_to_mid} \hlstd{=} \hlnum{34}\hlstd{,} \hlkwc{sd_time} \hlstd{=} \hlnum{7}\hlstd{,} \hlkwc{maxOD} \hlstd{=} \hlnum{1.15}\hlstd{,} \hlkwc{prop_no_reach} \hlstd{=} \hlnum{0.12}\hlstd{)}
+\hlstd{df_C} \hlkwb{<-} \hlkwd{make_growth}\hlstd{(n_rep,} \hlstr{"C"}\hlstd{,} \hlkwc{mu_time_to_mid} \hlstd{=} \hlnum{22}\hlstd{,} \hlkwc{sd_time} \hlstd{=} \hlnum{5}\hlstd{,} \hlkwc{maxOD} \hlstd{=} \hlnum{1.0}\hlstd{,} \hlkwc{prop_no_reach} \hlstd{=} \hlnum{0.08}\hlstd{)}
+
+\hlstd{df_raw} \hlkwb{<-} \hlkwd{bind_rows}\hlstd{(df_A, df_B, df_C)} \hlopt{%>%}
+  \hlkwd{mutate}\hlstd{(}\hlkwc{treatment} \hlstd{=} \hlkwd{factor}\hlstd{(treatment))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\section{Visualization and Event Definition}
+
+\subsection{Raw Growth Curves}
+
+We plot individual growth curves and treatment means. This shows variability and average trends.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{df_means} \hlkwb{<-} \hlstd{df_raw} \hlopt{%>%}
+  \hlkwd{group_by}\hlstd{(treatment, time)} \hlopt{%>%}
+  \hlkwd{summarise}\hlstd{(}\hlkwc{mean_abs} \hlstd{=} \hlkwd{mean}\hlstd{(absorbance),} \hlkwc{.groups} \hlstd{=} \hlstr{"drop"}\hlstd{)}
+
+\hlstd{p_raw} \hlkwb{<-} \hlkwd{ggplot}\hlstd{()} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwc{data} \hlstd{= df_raw,}
+            \hlkwd{aes}\hlstd{(time, absorbance,} \hlkwc{group} \hlstd{= sample,} \hlkwc{color} \hlstd{= treatment),}
+            \hlkwc{alpha} \hlstd{=} \hlnum{0.2}\hlstd{,} \hlkwc{show.legend} \hlstd{=} \hlnum{FALSE}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_line}\hlstd{(}\hlkwc{data} \hlstd{= df_means,}
+            \hlkwd{aes}\hlstd{(time, mean_abs,} \hlkwc{color} \hlstd{= treatment),}
+            \hlkwc{linewidth} \hlstd{=} \hlnum{1.1}\hlstd{)} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}\hlkwc{x} \hlstd{=} \hlstr{"Time (hours)"}\hlstd{,}
+       \hlkwc{y} \hlstd{=} \hlstr{"Absorbance (OD)"}\hlstd{,}
+       \hlkwc{title} \hlstd{=} \hlstr{"Raw Growth Curves by Treatment"}\hlstd{)} \hlopt{+}
+  \hlkwd{theme_minimal}\hlstd{()}
+\hlstd{p_raw}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/rawcurves-1} 
+\end{knitrout}
+
+\subsection{Defining the Event}
+
+We define the event as the first time a culture reaches OD $\geq$ 0.6. If a culture never reaches this threshold, it is censored at its last observation time.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{threshold} \hlkwb{<-} \hlnum{0.6}
+
+\hlstd{time_to_event} \hlkwb{<-} \hlstd{df_raw} \hlopt{%>%}
+  \hlkwd{group_by}\hlstd{(sample, treatment)} \hlopt{%>%}
+  \hlkwd{arrange}\hlstd{(time)} \hlopt{%>%}
+  \hlkwd{summarise}\hlstd{(}
+    \hlkwc{event_time} \hlstd{= \{}
+      \hlstd{hit_rows} \hlkwb{<-} \hlkwd{which}\hlstd{(absorbance} \hlopt{>=} \hlstd{threshold)}
+      \hlkwa{if}\hlstd{(}\hlkwd{length}\hlstd{(hit_rows)} \hlopt{==} \hlnum{0}\hlstd{)} \hlnum{NA_real_} \hlkwa{else} \hlstd{time[}\hlkwd{min}\hlstd{(hit_rows)]}
+    \hlstd{\},}
+    \hlkwc{last_time} \hlstd{=} \hlkwd{max}\hlstd{(time),}
+    \hlkwc{.groups} \hlstd{=} \hlstr{"drop"}
+  \hlstd{)} \hlopt{%>%}
+  \hlkwd{mutate}\hlstd{(}
+    \hlkwc{status} \hlstd{=} \hlkwd{if_else}\hlstd{(}\hlkwd{is.na}\hlstd{(event_time),} \hlnum{0L}\hlstd{,} \hlnum{1L}\hlstd{),}
+    \hlkwc{time} \hlstd{=} \hlkwd{if_else}\hlstd{(}\hlkwd{is.na}\hlstd{(event_time), last_time, event_time)}
+  \hlstd{)}
+
+\hlkwd{cat}\hlstd{(}\hlstr{"Censoring Status:\textbackslash{}n"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## Censoring Status:
+\end{verbatim}
+\begin{alltt}
+\hlstd{time_to_event} \hlopt{%>%} \hlkwd{count}\hlstd{(treatment, status)}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 3 x 3
+##   treatment status     n
+##   <fct>      <int> <int>
+## 1 A              1    10
+## 2 B              1    10
+## 3 C              1    10
+\end{verbatim}
+\begin{alltt}
+\hlstd{p_raw} \hlopt{+} \hlkwd{geom_hline}\hlstd{(}\hlkwc{yintercept} \hlstd{= threshold,} \hlkwc{linetype} \hlstd{=} \hlstr{"dashed"}\hlstd{,} \hlkwc{color} \hlstd{=} \hlstr{"red"}\hlstd{,} \hlkwc{linewidth} \hlstd{=} \hlnum{0.8}\hlstd{)} \hlopt{+}
+  \hlkwd{annotate}\hlstd{(}\hlstr{"text"}\hlstd{,} \hlkwc{x} \hlstd{=} \hlkwd{max}\hlstd{(df_raw}\hlopt{$}\hlstd{time)}\hlopt{*}\hlnum{0.7}\hlstd{,} \hlkwc{y} \hlstd{= threshold} \hlopt{+} \hlnum{0.04}\hlstd{,} \hlkwc{label} \hlstd{=} \hlkwd{paste0}\hlstd{(}\hlstr{"Threshold = "}\hlstd{, threshold),} \hlkwc{color} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/event-1} 
+\end{knitrout}
+
+\section{Survival Analysis and Modeling}
+
+\subsection{Kaplan-Meier Curves}
+
+Kaplan-Meier curves estimate the probability of not yet reaching the threshold over time. Each step down represents cultures reaching the event.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{km_fit} \hlkwb{<-} \hlkwd{survfit}\hlstd{(}\hlkwd{Surv}\hlstd{(time, status)} \hlopt{~} \hlstd{treatment,} \hlkwc{data} \hlstd{= time_to_event)}
+\hlkwd{summary}\hlstd{(km_fit)}
+\end{alltt}
+\begin{verbatim}
+## Call: survfit(formula = Surv(time, status) ~ treatment, data = time_to_event)
+## 
+##                 treatment=A 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##    24     10       2      0.8   0.126        0.587        1.000
+##    32      8       4      0.4   0.155        0.187        0.855
+##    40      4       4      0.0     NaN           NA           NA
+## 
+##                 treatment=B 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##    24     10       1      0.9  0.0949       0.7320        1.000
+##    32      9       8      0.1  0.0949       0.0156        0.642
+##    40      1       1      0.0     NaN           NA           NA
+## 
+##                 treatment=C 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##    24     10       7      0.3  0.1449       0.1164        0.773
+##    32      3       2      0.1  0.0949       0.0156        0.642
+##    40      1       1      0.0     NaN           NA           NA
+\end{verbatim}
+\begin{alltt}
+\hlkwd{ggsurvplot}\hlstd{(km_fit,} \hlkwc{data} \hlstd{= time_to_event,} \hlkwc{risk.table} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{pval} \hlstd{=} \hlnum{TRUE}\hlstd{,}
+           \hlkwc{conf.int} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{palette} \hlstd{=} \hlstr{"Dark2"}\hlstd{,}
+           \hlkwc{title} \hlstd{=} \hlstr{"Kaplan-Meier: Time to Reach Absorbance Threshold"}\hlstd{,}
+           \hlkwc{xlab} \hlstd{=} \hlstr{"Time (hours)"}\hlstd{,} \hlkwc{legend.title} \hlstd{=} \hlstr{"Treatment"}\hlstd{,}
+           \hlkwc{break.time.by} \hlstd{=} \hlnum{12}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/km-1} 
+\end{knitrout}
+
+\subsection{Log-Rank Test}
+
+The log-rank test compares survival curves across treatments. Null hypothesis: no difference between groups.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{logrank} \hlkwb{<-} \hlkwd{survdiff}\hlstd{(}\hlkwd{Surv}\hlstd{(time, status)} \hlopt{~} \hlstd{treatment,} \hlkwc{data} \hlstd{= time_to_event)}
+\hlstd{logrank}
+\end{alltt}
+\begin{verbatim}
+## Call:
+## survdiff(formula = Surv(time, status) ~ treatment, data = time_to_event)
+## 
+##              N Observed Expected (O-E)^2/E (O-E)^2/V
+## treatment=A 10       10    12.93    0.6653     3.318
+## treatment=B 10       10    10.63    0.0377     0.153
+## treatment=C 10       10     6.43    1.9774     6.069
+## 
+##  Chisq= 6.7  on 2 degrees of freedom, p= 0.03
+\end{verbatim}
+\begin{alltt}
+\hlstd{p_val} \hlkwb{<-} \hlnum{1} \hlopt{-} \hlkwd{pchisq}\hlstd{(logrank}\hlopt{$}\hlstd{chisq,} \hlkwc{df} \hlstd{=} \hlkwd{length}\hlstd{(logrank}\hlopt{$}\hlstd{n)} \hlopt{-} \hlnum{1}\hlstd{)}
+\hlkwd{cat}\hlstd{(}\hlstr{"Omnibus log-rank p-value:"}\hlstd{,} \hlkwd{signif}\hlstd{(p_val,} \hlnum{3}\hlstd{),} \hlstr{"\textbackslash{}n"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## Omnibus log-rank p-value: 0.0345
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Cox Proportional Hazards Model}
+
+The Cox model estimates hazard ratios (HR). HR $>$ 1 means faster reaching of the threshold compared to the reference group. Assumption: proportional hazards (HR constant over time).
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{time_to_event} \hlkwb{<-} \hlstd{time_to_event} \hlopt{%>%} \hlkwd{mutate}\hlstd{(}\hlkwc{treatment} \hlstd{=} \hlkwd{relevel}\hlstd{(treatment,} \hlkwc{ref} \hlstd{=} \hlstr{"A"}\hlstd{))}
+\hlstd{cox1} \hlkwb{<-} \hlkwd{coxph}\hlstd{(}\hlkwd{Surv}\hlstd{(time, status)} \hlopt{~} \hlstd{treatment,} \hlkwc{data} \hlstd{= time_to_event)}
+\hlkwd{summary}\hlstd{(cox1)}
+\end{alltt}
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(time, status) ~ treatment, data = time_to_event)
+## 
+##   n= 30, number of events= 30 
+## 
+##              coef exp(coef) se(coef)     z Pr(>|z|)  
+## treatmentB 0.3785    1.4601   0.4586 0.825   0.4092  
+## treatmentC 0.9301    2.5347   0.4554 2.042   0.0411 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##            exp(coef) exp(-coef) lower .95 upper .95
+## treatmentB     1.460     0.6849    0.5943     3.587
+## treatmentC     2.535     0.3945    1.0382     6.189
+## 
+## Concordance= 0.722  (se = 0.085 )
+## Likelihood ratio test= 4.04  on 2 df,   p=0.1
+## Wald test            = 4.23  on 2 df,   p=0.1
+## Score (logrank) test = 4.45  on 2 df,   p=0.1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Hazard Ratio Forest Plot}
+
+We visualize HR estimates and confidence intervals. If CI does not cross 1, the effect is statistically significant.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{hr} \hlkwb{<-} \hlkwd{tidy}\hlstd{(cox1,} \hlkwc{exponentiate} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{conf.int} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{ggplot}\hlstd{(hr,} \hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= term,} \hlkwc{y} \hlstd{= estimate))} \hlopt{+}
+  \hlkwd{geom_point}\hlstd{()} \hlopt{+}
+  \hlkwd{geom_errorbar}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{ymin} \hlstd{= conf.low,} \hlkwc{ymax} \hlstd{= conf.high),} \hlkwc{width} \hlstd{=} \hlnum{0.1}\hlstd{)} \hlopt{+}
+  \hlkwd{geom_hline}\hlstd{(}\hlkwc{yintercept} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{linetype} \hlstd{=} \hlstr{"dashed"}\hlstd{,} \hlkwc{color} \hlstd{=} \hlstr{"blue"}\hlstd{)} \hlopt{+}
+  \hlkwd{coord_flip}\hlstd{()} \hlopt{+}
+  \hlkwd{labs}\hlstd{(}\hlkwc{y} \hlstd{=} \hlstr{"Hazard Ratio (HR)"}\hlstd{,} \hlkwc{x} \hlstd{=} \hlstr{"Coefficient"}\hlstd{,} \hlkwc{title} \hlstd{=} \hlstr{"Cox Model: HR and 95% CI (Ref: Treatment A)"}\hlstd{)} \hlopt{+}
+  \hlkwd{theme_minimal}\hlstd{()}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/forest-1} 
+\end{knitrout}
+
+\section{Assumptions Check}
+
+\subsection{Proportional Hazards Assumption}
+
+The Cox model assumes hazard ratios are constant over time. We test this with Schoenfeld residuals. A non-significant p-value (p $>$ 0.05) indicates the assumption holds.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{ph_test} \hlkwb{<-} \hlkwd{cox.zph}\hlstd{(cox1)}
+\hlstd{ph_test}
+\end{alltt}
+\begin{verbatim}
+##           chisq df    p
+## treatment  3.61  2 0.16
+## GLOBAL     3.61  2 0.16
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(ph)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(ph): object 'ph' not found}}\end{kframe}
+\end{knitrout}
+
+\end{document}
