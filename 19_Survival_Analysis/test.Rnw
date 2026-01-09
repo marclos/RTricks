@@ -1,0 +1,204 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{Survival Analysis for Algal Growth: A Handout for Korey \& Maria}
+\author{Marc Los Huertos}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Goal and Justification}
+
+The purpose of this handout is to compare the time it takes for algal cultures under three different treatments to reach a specific growth milestone (an absorbance threshold). Survival analysis is used because it correctly handles cultures that never reach the threshold (right-censoring) and provides robust, interpretable comparisons of growth rates over time.
+
+\section{Explanation for Korey and Maria}
+
+Survival analysis focuses on time-to-event data. In our case, the ``event'' is reaching a chosen optical density (OD) threshold. This approach allows us to include both cultures that reach the threshold and those that do not, without bias.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Survival Term & Algae Equivalent & Statistical Role \\
+\midrule
+Event & Reaching OD threshold (e.g., OD = 0.6) & Defines the failure point we are tracking \\
+Time & Hours until OD $\geq$ threshold & The variable we are modeling \\
+Censoring & Not reaching threshold by experiment end & Allows us to use incomplete data \\
+Hazard Ratio & Relative rate of reaching threshold & HR $>$ 1 means faster growth \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Packages and Data Setup}
+
+We first load the required packages. These provide tools for data manipulation (tidyverse), survival analysis (survival), visualization (survminer), and tidying model output (broom).
+
+<<packages>>=
+library(tidyverse)
+library(survival)
+library(survminer)
+library(broom)
+@
+
+\subsection{Data Simulation}
+
+We simulate growth data for three treatments. Each treatment has slightly different average growth rates and variability. The function \texttt{make\_growth} generates noisy logistic growth curves, some of which never reach the threshold (to mimic censoring).
+
+<<simulate>>=
+set.seed(2025)
+n_rep <- 10
+times <- seq(0, 72, by = 8)
+
+make_growth <- function(n, treatment_label, mu_time_to_mid = 30, sd_time = 6, maxOD = 1.2, prop_no_reach = 0.1){
+  tibble(sample = paste0(treatment_label, "_", seq_len(n))) %>%
+    rowwise() %>%
+    mutate(
+      t_mid = rnorm(1, mu_time_to_mid, sd_time) |> pmax(6),
+      slope = (maxOD) / (t_mid + 0.1),
+      never = runif(1) < prop_no_reach
+    ) %>%
+    ungroup() %>%
+    expand_grid(time = times) %>%
+    rowwise() %>%
+    mutate(
+      mu = plogis((time - rnorm(1, mu_time_to_mid, sd_time))/7) * maxOD,
+      absorbance = mu + rnorm(1, 0, 0.03)
+    ) %>%
+    ungroup() %>%
+    mutate(treatment = treatment_label)
+}
+
+df_A <- make_growth(n_rep, "A", mu_time_to_mid = 28, sd_time = 6, maxOD = 1.1, prop_no_reach = 0.05)
+df_B <- make_growth(n_rep, "B", mu_time_to_mid = 34, sd_time = 7, maxOD = 1.15, prop_no_reach = 0.12)
+df_C <- make_growth(n_rep, "C", mu_time_to_mid = 22, sd_time = 5, maxOD = 1.0, prop_no_reach = 0.08)
+
+df_raw <- bind_rows(df_A, df_B, df_C) %>%
+  mutate(treatment = factor(treatment))
+@
+
+\section{Visualization and Event Definition}
+
+\subsection{Raw Growth Curves}
+
+We plot individual growth curves and treatment means. This shows variability and average trends.
+
+<<rawcurves>>=
+df_means <- df_raw %>%
+  group_by(treatment, time) %>%
+  summarise(mean_abs = mean(absorbance), .groups = "drop")
+
+p_raw <- ggplot() +
+  geom_line(data = df_raw,
+            aes(time, absorbance, group = sample, color = treatment),
+            alpha = 0.2, show.legend = FALSE) +
+  geom_line(data = df_means,
+            aes(time, mean_abs, color = treatment),
+            linewidth = 1.1) +
+  labs(x = "Time (hours)",
+       y = "Absorbance (OD)",
+       title = "Raw Growth Curves by Treatment") +
+  theme_minimal()
+p_raw
+@
+
+\subsection{Defining the Event}
+
+We define the event as the first time a culture reaches OD $\geq$ 0.6. If a culture never reaches this threshold, it is censored at its last observation time.
+
+<<event>>=
+threshold <- 0.6
+
+time_to_event <- df_raw %>%
+  group_by(sample, treatment) %>%
+  arrange(time) %>%
+  summarise(
+    event_time = {
+      hit_rows <- which(absorbance >= threshold)
+      if(length(hit_rows) == 0) NA_real_ else time[min(hit_rows)]
+    },
+    last_time = max(time),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    status = if_else(is.na(event_time), 0L, 1L),
+    time = if_else(is.na(event_time), last_time, event_time)
+  )
+
+cat("Censoring Status:\n")
+time_to_event %>% count(treatment, status)
+
+p_raw + geom_hline(yintercept = threshold, linetype = "dashed", color = "red", linewidth = 0.8) +
+  annotate("text", x = max(df_raw$time)*0.7, y = threshold + 0.04, label = paste0("Threshold = ", threshold), color = "red")
+@
+
+\section{Survival Analysis and Modeling}
+
+\subsection{Kaplan-Meier Curves}
+
+Kaplan-Meier curves estimate the probability of not yet reaching the threshold over time. Each step down represents cultures reaching the event.
+
+<<km>>=
+km_fit <- survfit(Surv(time, status) ~ treatment, data = time_to_event)
+summary(km_fit)
+
+ggsurvplot(km_fit, data = time_to_event, risk.table = TRUE, pval = TRUE,
+           conf.int = TRUE, palette = "Dark2",
+           title = "Kaplan-Meier: Time to Reach Absorbance Threshold",
+           xlab = "Time (hours)", legend.title = "Treatment",
+           break.time.by = 12)
+@
+
+\subsection{Log-Rank Test}
+
+The log-rank test compares survival curves across treatments. Null hypothesis: no difference between groups.
+
+<<logrank>>=
+logrank <- survdiff(Surv(time, status) ~ treatment, data = time_to_event)
+logrank
+p_val <- 1 - pchisq(logrank$chisq, df = length(logrank$n) - 1)
+cat("Omnibus log-rank p-value:", signif(p_val, 3), "\n")
+@
+
+\subsection{Cox Proportional Hazards Model}
+
+The Cox model estimates hazard ratios (HR). HR $>$ 1 means faster reaching of the threshold compared to the reference group. Assumption: proportional hazards (HR constant over time).
+
+<<cox>>=
+time_to_event <- time_to_event %>% mutate(treatment = relevel(treatment, ref = "A"))
+cox1 <- coxph(Surv(time, status) ~ treatment, data = time_to_event)
+summary(cox1)
+@
+
+\subsection{Hazard Ratio Forest Plot}
+
+We visualize HR estimates and confidence intervals. If CI does not cross 1, the effect is statistically significant.
+
+<<forest>>=
+hr <- tidy(cox1, exponentiate = TRUE, conf.int = TRUE)
+
+ggplot(hr, aes(x = term, y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.1) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "blue") +
+  coord_flip() +
+  labs(y = "Hazard Ratio (HR)", x = "Coefficient", title = "Cox Model: HR and 95% CI (Ref: Treatment A)") +
+  theme_minimal()
+@
+
+\section{Assumptions Check}
+
+\subsection{Proportional Hazards Assumption}
+
+The Cox model assumes hazard ratios are constant over time. We test this with Schoenfeld residuals. A non-significant p-value (p $>$ 0.05) indicates the assumption holds.
+
+<<ph>>=
+ph_test <- cox.zph(cox1)
+ph_test
+plot(ph)
+@
+
+\end{document}
