@@ -1,6 +1,10 @@
 {
     "sortOrder": [
         {
+            "columnIndex": 3,
+            "ascending": false
+        },
+        {
             "columnIndex": 2,
             "ascending": true
         },
@@ -9,5 +13,5 @@
             "ascending": false
         }
     ],
-    "path": "~/RTricks"
+    "path": "~/RTricks/19_Survival_Analysis"
 }
