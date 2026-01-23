@@ -1,7 +1,7 @@
 {
     "sortOrder": [
         {
-            "columnIndex": 3,
+            "columnIndex": 4,
             "ascending": false
         },
         {
@@ -9,9 +9,9 @@
             "ascending": true
         },
         {
-            "columnIndex": 4,
+            "columnIndex": 3,
             "ascending": false
         }
     ],
-    "path": "~/RTricks/19_Survival_Analysis"
+    "path": "~/RTricks/05_Regional_Climate_Trends/2026_7"
 }

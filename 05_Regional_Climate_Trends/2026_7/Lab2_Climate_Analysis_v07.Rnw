@@ -1,0 +1,295 @@
+\documentclass{article}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{framed}
+
+\definecolor{shadecolor}{RGB}{248,248,248}
+
+\title{Lab 2: Climate Trend Analysis\\
+\large{Regional Climate Trends Project}\\
+\normalsize{Learning Statistical Analysis in R}}
+\author{EA030}
+\date{\today~v. 0.07}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+In Lab 2, you will learn statistical analysis of climate trends. Building on Lab 1's data preparation, we focus on:
+
+\begin{itemize}
+  \item Descriptive statistics in R
+  \item Histograms and distributions
+  \item Linear regression for trend analysis
+  \item Interpreting p-values and significance
+  \item Comparing groups (seasons, regions)
+\end{itemize}
+
+\section{Setup}
+
+<<setup, message=FALSE, warning=FALSE, echo=FALSE>>=
+setwd("/home/mwl04747/RTricks/05_Regional_Climate_Trends/2026_7/")
+source("ClimateNarrativesFunctions_v07.R")
+check_packages()
+@
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+setwd("/path/to/your/project/folder/")
+source("ClimateNarrativesFunctions_v07.R")
+check_packages()
+\end{Verbatim}
+\end{shaded}
+
+\section{Load Data from Lab 1}
+
+<<load-data, echo=FALSE>>=
+my.state <- "CA"
+datafolder <- "Data/"
+figuresfolder <- "Figures/"
+
+rdata_file <- paste0(datafolder, "spatial_trends_", my.state, ".RData")
+if (!file.exists(rdata_file)) {
+  stop("Data file not found! Complete Lab 1 first.")
+}
+
+loaded_vars <- load(rdata_file)
+if (exists("all_trends") && !exists("all_station_trends")) {
+  all_station_trends <- all_trends
+}
+
+cat("[OK] Loaded data for", my.state, ":", nrow(all_station_trends), "stations\n")
+@
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+my.state <- "CA"
+datafolder <- "Data/"
+figuresfolder <- "Figures/"
+
+rdata_file <- paste0(datafolder, "spatial_trends_", my.state, ".RData")
+load(rdata_file)
+\end{Verbatim}
+\end{shaded}
+
+\section{Learning R: Summary Statistics}
+
+\subsection{Basic Summary Functions}
+
+<<summary-basics, echo=FALSE>>=
+tmax_trends <- all_station_trends$annual_trend_TMAX
+
+cat("Statistics for Annual TMAX Trend (°C/century):\n")
+cat("========================================\n")
+cat("Mean:    ", round(mean(tmax_trends, na.rm = TRUE), 2), "\n")
+cat("Median:  ", round(median(tmax_trends, na.rm = TRUE), 2), "\n")
+cat("Std Dev: ", round(sd(tmax_trends, na.rm = TRUE), 2), "\n")
+cat("Min:     ", round(min(tmax_trends, na.rm = TRUE), 2), "\n")
+cat("Max:     ", round(max(tmax_trends, na.rm = TRUE), 2), "\n")
+@
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+tmax_trends <- all_station_trends$annual_trend_TMAX
+
+mean(tmax_trends, na.rm = TRUE)     # Average
+median(tmax_trends, na.rm = TRUE)   # Middle value
+sd(tmax_trends, na.rm = TRUE)       # Standard deviation
+min(tmax_trends, na.rm = TRUE)      # Minimum
+max(tmax_trends, na.rm = TRUE)      # Maximum
+\end{Verbatim}
+\end{shaded}
+
+\textbf{R Concept: na.rm = TRUE}
+
+Many R functions return \texttt{NA} if any values are missing. Adding \texttt{na.rm = TRUE} removes missing values before calculating.
+
+\section{Learning R: Histograms}
+
+Histograms show the distribution of data.
+
+<<histogram-basic, fig.width=8, fig.height=5, echo=FALSE>>=
+hist(tmax_trends, breaks = 20, col = "coral", border = "white",
+     main = "Distribution of Annual TMAX Trends",
+     xlab = "Trend (°C/century)", ylab = "Number of Stations")
+abline(v = 0, col = "gray", lwd = 2, lty = 2)
+abline(v = mean(tmax_trends, na.rm = TRUE), col = "red", lwd = 2)
+legend("topright", legend = c("Zero", "Mean"),
+       col = c("gray", "red"), lwd = 2, lty = c(2, 1))
+@
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+hist(tmax_trends, breaks = 20, col = "coral",
+     main = "Distribution of Annual TMAX Trends",
+     xlab = "Trend (°C/century)")
+abline(v = 0, col = "gray", lty = 2)
+abline(v = mean(tmax_trends, na.rm = TRUE), col = "red", lwd = 2)
+\end{Verbatim}
+\end{shaded}
+
+\section{Learning R: Linear Regression}
+
+Linear regression finds the best-fit line: $y = a + bx$
+
+<<lm-example, echo=FALSE>>=
+set.seed(42)
+years <- 1960:2020
+anomalies <- 0.02 * (years - 1975) + rnorm(length(years), 0, 0.5)
+demo_data <- data.frame(YEAR = years, ANOMALY = anomalies)
+
+model <- lm(ANOMALY ~ YEAR, data = demo_data)
+model_summary <- summary(model)
+
+cat("Linear Regression Results:\n")
+print(model_summary$coefficients)
+cat("\nTrend:", round(coef(model)[2] * 100, 2), "°C/century\n")
+cat("p-value:", format(model_summary$coefficients[2,4], digits = 3), "\n")
+cat("R-squared:", round(model_summary$r.squared, 3), "\n")
+@
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+# Fit linear model
+model <- lm(ANOMALY ~ YEAR, data = demo_data)
+
+# Get summary
+summary(model)
+
+# Extract slope (trend per year)
+coef(model)[2]
+
+# Convert to per century
+coef(model)[2] * 100
+\end{Verbatim}
+\end{shaded}
+
+\textbf{Understanding p-values:}
+\begin{itemize}
+  \item p $<$ 0.05: Statistically significant
+  \item p $<$ 0.01: Highly significant
+  \item p $<$ 0.001: Very highly significant
+\end{itemize}
+
+<<trend-plot, fig.width=8, fig.height=5, echo=FALSE>>=
+plot(ANOMALY ~ YEAR, data = demo_data, pch = 19, col = "steelblue",
+     main = "Temperature Anomaly with Trend Line",
+     xlab = "Year", ylab = "Temperature Anomaly (°C)")
+abline(model, col = "red", lwd = 2)
+abline(h = 0, lty = 2, col = "gray")
+@
+
+\section{Seasonal Comparison}
+
+<<boxplot-seasonal, fig.width=8, fig.height=6, echo=FALSE>>=
+seasonal_data <- data.frame(
+  Winter = all_station_trends$winter_trend_TMAX,
+  Spring = all_station_trends$spring_trend_TMAX,
+  Summer = all_station_trends$summer_trend_TMAX,
+  Fall = all_station_trends$fall_trend_TMAX
+)
+
+boxplot(seasonal_data, col = c("lightblue", "lightgreen", "coral", "orange"),
+        main = "TMAX Trends by Season", ylab = "Trend (°C/century)", las = 1)
+abline(h = 0, col = "gray", lwd = 2, lty = 2)
+points(1:4, colMeans(seasonal_data, na.rm = TRUE), pch = 19, col = "red", cex = 1.5)
+@
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+seasonal_data <- data.frame(
+  Winter = all_station_trends$winter_trend_TMAX,
+  Spring = all_station_trends$spring_trend_TMAX,
+  Summer = all_station_trends$summer_trend_TMAX,
+  Fall = all_station_trends$fall_trend_TMAX
+)
+
+boxplot(seasonal_data, col = c("lightblue", "lightgreen", "coral", "orange"),
+        main = "TMAX Trends by Season", ylab = "Trend (°C/century)")
+\end{Verbatim}
+\end{shaded}
+
+\section{Geographic Patterns}
+
+<<trend-latitude, fig.width=8, fig.height=5, echo=FALSE>>=
+plot(annual_trend_TMAX ~ LATITUDE, data = all_station_trends,
+     pch = 19, col = "steelblue", cex = 1.2,
+     main = "TMAX Trend vs. Latitude",
+     xlab = "Latitude (°N)", ylab = "TMAX Trend (°C/century)")
+abline(h = 0, col = "gray", lty = 2)
+lat_model <- lm(annual_trend_TMAX ~ LATITUDE, data = all_station_trends)
+abline(lat_model, col = "red", lwd = 2)
+r <- cor(all_station_trends$annual_trend_TMAX, 
+         all_station_trends$LATITUDE, use = "complete.obs")
+legend("topright", legend = paste("r =", round(r, 3)), bty = "n")
+@
+
+\section{TMAX vs TMIN Comparison}
+
+<<tmax-tmin-compare, fig.width=8, fig.height=6, echo=FALSE>>=
+plot(annual_trend_TMIN ~ annual_trend_TMAX, data = all_station_trends,
+     pch = 19, col = "purple", cex = 1.2,
+     main = "Daytime (TMAX) vs Nighttime (TMIN) Warming",
+     xlab = "TMAX Trend (°C/century)", ylab = "TMIN Trend (°C/century)")
+abline(0, 1, col = "gray", lty = 2, lwd = 2)
+abline(h = 0, v = 0, col = "lightgray")
+@
+
+<<tmax-tmin-stats, echo=FALSE>>=
+mean_tmax <- mean(all_station_trends$annual_trend_TMAX, na.rm = TRUE)
+mean_tmin <- mean(all_station_trends$annual_trend_TMIN, na.rm = TRUE)
+r <- cor(all_station_trends$annual_trend_TMAX, all_station_trends$annual_trend_TMIN, use = "complete.obs")
+
+cat("\n===========================================================\n")
+cat("DAYTIME vs NIGHTTIME WARMING\n")
+cat("===========================================================\n")
+cat("Mean TMAX trend:", round(mean_tmax, 2), "°C/century\n")
+cat("Mean TMIN trend:", round(mean_tmin, 2), "°C/century\n")
+cat("Correlation:    ", round(r, 3), "\n")
+cat("===========================================================\n")
+@
+
+\section{Key Findings Summary}
+
+<<key-findings, echo=FALSE>>=
+tmax_warming <- sum(all_station_trends$annual_trend_TMAX > 0, na.rm = TRUE)
+total_stations <- sum(!is.na(all_station_trends$annual_trend_TMAX))
+
+cat("===========================================================\n")
+cat("              KEY FINDINGS SUMMARY                         \n")
+cat("===========================================================\n")
+cat("State:", my.state, "| Stations:", total_stations, "\n")
+cat("-----------------------------------------------------------\n")
+cat("ANNUAL TRENDS:\n")
+cat("  TMAX:", sprintf("%+.2f", mean(all_station_trends$annual_trend_TMAX, na.rm=TRUE)), "°C/century\n")
+cat("  TMIN:", sprintf("%+.2f", mean(all_station_trends$annual_trend_TMIN, na.rm=TRUE)), "°C/century\n")
+cat("  PRCP:", sprintf("%+.1f", mean(all_station_trends$annual_trend_PRCP, na.rm=TRUE)), "mm/century\n")
+cat("-----------------------------------------------------------\n")
+cat("Stations warming:", tmax_warming, "/", total_stations,
+    sprintf("(%.0f%%)\n", 100 * tmax_warming / total_stations))
+cat("===========================================================\n")
+@
+
+\section{Lab 2 Summary: R Concepts Learned}
+
+\begin{enumerate}
+  \item \textbf{Summary Statistics:} \texttt{mean()}, \texttt{median()}, \texttt{sd()}, \texttt{summary()}
+  \item \textbf{Histograms:} \texttt{hist()}, \texttt{breaks}, \texttt{abline()}
+  \item \textbf{Linear Regression:} \texttt{lm()}, \texttt{coef()}, \texttt{summary()}
+  \item \textbf{Statistical Concepts:} p-value, R², correlation
+  \item \textbf{Boxplots:} Comparing distributions across groups
+\end{enumerate}
+
+\section{Next Steps}
+
+Lab 3: Create spatial heat maps, visualize regional patterns, generate publication-quality figures.
+
+\end{document}

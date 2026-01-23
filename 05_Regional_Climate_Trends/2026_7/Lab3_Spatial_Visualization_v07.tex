@@ -1,0 +1,579 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{framed}
+
+\definecolor{shadecolor}{RGB}{248,248,248}
+
+\title{Lab 3: Spatial Visualization with Heat Mapping\\
+\large{Regional Climate Trends Project}\\
+\normalsize{Learning Spatial Analysis in R}}
+\author{EA030}
+\date{\today~v. 0.07}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+In Lab 3, you will create professional spatial visualizations showing climate trends across your state. You will learn:
+
+\begin{itemize}
+  \item Spatial data structures in R (sf and sp)
+  \item Kriging interpolation concepts
+  \item Creating heat maps with ggplot2
+  \item Combining multiple maps
+  \item Exporting publication-quality figures
+\end{itemize}
+
+\subsection{Why Heat Maps?}
+
+Heat maps transform scattered point data into continuous surfaces, making spatial patterns easier to see and communicate.
+
+\section{Setup}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## 
+## ===========================================================
+##  Climate Narratives Functions v7.0 Loaded Successfully!
+## ===========================================================
+##  Run check_packages() to verify dependencies
+## ===========================================================
+## 
+##  QUICK START:
+##  1. setup_project('CA')
+##  2. select_stations_for_analysis(n_stations = 50)
+##  3. download_stations()
+##  4. load_and_save_stations(cleanup = TRUE)
+##  5. process_all_stations_for_spatial()
+##  6. create_spatial_objects(all_station_trends)
+## 
+##  NEW IN v7.0:
+##  - Fixed figuresfolder variable handling
+##  - Improved error messages
+##  - Better documentation for teaching
+## 
+## ===========================================================
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+# Set working directory (CHANGE to your path!)
+setwd("/path/to/your/project/folder/")
+
+# Load functions and packages
+source("ClimateNarrativesFunctions_v07.R")
+check_packages()
+\end{Verbatim}
+\end{shaded}
+
+\section{Load Data}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Loaded variables: all_station_trends
+## [OK] Created spatial objects:
+##      trends_sf: 50 features
+##      trends_sp: 50 features
+## 
+## [OK] Loaded spatial data for CA
+##      Stations: 50
+##      Longitude: -123.76 to -115.57
+##      Latitude: 32.85 to 41.87
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+# Set your state
+my.state <- "CA"
+
+# IMPORTANT: Define folder paths before saving anything
+datafolder <- "Data/"
+figuresfolder <- "Figures/"
+
+# Create Figures folder if needed
+if (!dir.exists(figuresfolder)) {
+  dir.create(figuresfolder, recursive = TRUE)
+}
+
+# Load the processed data
+rdata_file <- paste0(datafolder, "spatial_trends_", my.state, ".RData")
+load(rdata_file)
+
+# Create spatial objects for mapping
+spatial_objects <- create_spatial_objects(all_station_trends)
+\end{Verbatim}
+\end{shaded}
+
+\textbf{R Concept: Directory Creation}
+
+\texttt{dir.exists()} checks if a folder exists, and \texttt{dir.create()} creates it. The \texttt{recursive = TRUE} option creates parent folders if needed.
+
+\section{Learning R: Spatial Data}
+
+R has two main systems for spatial data:
+\begin{itemize}
+  \item \textbf{sf} (Simple Features): Modern, tidy approach
+  \item \textbf{sp} (Spatial): Legacy system, still used by some packages
+\end{itemize}
+
+\subsection{The sf Package}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Structure of trends_sf (Simple Features):
+## ==========================================
+## Class:     sf
+## Features:  50
+## CRS:       4326 (WGS84 lat/lon)
+## 
+## First few rows:
+##            ID LATITUDE LONGITUDE annual_trend_TMAX
+## 1 USC00043157  41.8714 -120.1575        0.16117902
+## 2 USW00023271  38.5553 -121.4183        2.53534598
+## 3 USC00042294  38.5350 -121.7761       -0.04812917
+## 4 USC00046074  38.2778 -122.2647        0.78330318
+## 5 USC00046136  39.2467 -121.0008       -0.97059534
+## 6 USC00046719  34.1483 -118.1447        2.38718896
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+# sf objects look like data frames with a geometry column
+head(trends_sf)
+
+# Check the coordinate reference system
+st_crs(trends_sf)
+
+# Get the bounding box
+st_bbox(trends_sf)
+\end{Verbatim}
+\end{shaded}
+
+\subsection{Converting Between sf and sp}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Converting between sf and sp:
+## ==============================
+## trends_sf class: sf
+## trends_sp class: SpatialPointsDataFrame
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+# sf to sp (for packages that need sp)
+trends_sp <- as(trends_sf, "Spatial")
+
+# sp to sf
+trends_sf <- st_as_sf(trends_sp)
+\end{Verbatim}
+\end{shaded}
+
+\section{Understanding Kriging}
+
+\textbf{Kriging} is a geostatistical interpolation method that:
+\begin{enumerate}
+  \item Assumes nearby points have similar values
+  \item Uses a \textbf{variogram} to model spatial correlation
+  \item Predicts values at unsampled locations
+  \item Provides prediction uncertainty estimates
+\end{enumerate}
+
+\subsection{The Variogram}
+
+A variogram describes how similar values are based on distance:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/variogram-example-1} 
+\end{knitrout}
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+# Calculate empirical variogram
+v <- variogram(annual_trend_TMAX ~ 1, trends_sp)
+
+# Plot it
+plot(v, main = "Variogram for Annual TMAX Trend")
+
+# The variogram shows:
+#   - Points close together are similar (low semivariance)
+#   - Points far apart are different (high semivariance)
+#   - The "range" is where the curve levels off
+\end{Verbatim}
+\end{shaded}
+
+\section{Station Location Map}
+
+Let's first see where our stations are located.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/station-map-1} 
+\end{knitrout}
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+# Get state boundary
+us_states <- map_data("state")
+state_name <- tolower(state.name[state.abb == my.state])
+state_boundary <- us_states %>% filter(region == state_name)
+
+# Create map with ggplot2
+ggplot() +
+  # State polygon
+  geom_polygon(data = state_boundary,
+               aes(x = long, y = lat, group = group),
+               fill = "gray95", color = "gray50") +
+  # Station points colored by trend
+  geom_sf(data = trends_sf,
+          aes(color = annual_trend_TMAX),
+          size = 3) +
+  # Color scale
+  scale_color_viridis_c(name = "Trend")
+\end{Verbatim}
+\end{shaded}
+
+\section{Creating Heat Maps}
+
+Now let's create interpolated heat maps using kriging.
+
+\subsection{Annual Maximum Temperature (TMAX)}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Fitting variogram for annual_trend_TMAX ...
+## Performing kriging interpolation...
+## [using ordinary kriging]
+\end{verbatim}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/tmax-annual-heatmap-1} 
+\begin{kframe}\begin{verbatim}
+## 
+## [OK] Saved: Heatmap_TMAX_annual_CA.png
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+# Create heat map using our function
+map_tmax_annual <- create_heatmap(
+  trends_sp,                    # Spatial data
+  trend_var = "annual_trend_TMAX",  # Variable to map
+  title = paste(my.state, "- Annual TMAX Trend"),
+  subtitle = "Change in deg C per 100 years",
+  state = my.state,
+  colors = "temp",              # Color scheme
+  resolution = 0.1              # Grid resolution
+)
+
+# Display it
+print(map_tmax_annual)
+
+# Save high-resolution version
+ggsave(paste0(figuresfolder, "Heatmap_TMAX_annual_", my.state, ".png"),
+       map_tmax_annual,
+       width = 10, height = 8, dpi = 300)
+\end{Verbatim}
+\end{shaded}
+
+\textbf{R Concept: ggsave()}
+
+\texttt{ggsave()} saves ggplot figures with professional quality:
+\begin{itemize}
+  \item \texttt{width}, \texttt{height}: Size in inches
+  \item \texttt{dpi = 300}: Publication quality resolution
+  \item File format determined by extension (.png, .pdf, .jpg)
+\end{itemize}
+
+\subsection{Annual Minimum Temperature (TMIN)}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Fitting variogram for annual_trend_TMIN ...
+## Performing kriging interpolation...
+## [using ordinary kriging]
+\end{verbatim}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/tmin-annual-heatmap-1} 
+\begin{kframe}\begin{verbatim}
+## [OK] Saved: Heatmap_TMIN_annual_CA.png
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section{Seasonal Heat Maps}
+
+Let's compare trends across seasons.
+
+\subsection{Summer vs Winter TMAX}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Fitting variogram for summer_trend_TMAX ...
+## Performing kriging interpolation...
+## [using ordinary kriging]
+\end{verbatim}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/seasonal-heatmaps-1} 
+\end{knitrout}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Fitting variogram for winter_trend_TMAX ...
+## Performing kriging interpolation...
+## [using ordinary kriging]
+\end{verbatim}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/winter-heatmap-1} 
+\end{knitrout}
+
+\section{Learning R: Combining Plots}
+
+The \texttt{patchwork} package makes it easy to combine multiple plots.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Fitting variogram for winter_trend_TMAX ...
+## Performing kriging interpolation...
+## [using ordinary kriging]
+## Fitting variogram for spring_trend_TMAX ...
+## Performing kriging interpolation...
+## [using ordinary kriging]
+## Fitting variogram for summer_trend_TMAX ...
+## Performing kriging interpolation...
+## [using ordinary kriging]
+## Fitting variogram for fall_trend_TMAX ...
+## Performing kriging interpolation...
+## [using ordinary kriging]
+\end{verbatim}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/seasonal-panel-1} 
+\begin{kframe}\begin{verbatim}
+## 
+## [OK] Saved: Seasonal_TMAX_comparison_CA.png
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{shaded}
+\begin{Verbatim}[fontsize=\small]
+library(patchwork)
+
+# patchwork operators:
+#   |   = side by side
+#   /   = stacked vertically
+#   +   = add annotation
+
+seasonal_comparison <- (winter | spring) / 
+                       (summer | fall) +
+  plot_annotation(title = "Seasonal Comparison")
+
+print(seasonal_comparison)
+\end{Verbatim}
+\end{shaded}
+
+\section{Precipitation Heat Map}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## Fitting variogram for annual_trend_PRCP ...
+## Performing kriging interpolation...
+## [using ordinary kriging]
+\end{verbatim}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/prcp-heatmap-1} 
+\begin{kframe}\begin{verbatim}
+## [OK] Saved: Heatmap_PRCP_annual_CA.png
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section{Regional Summary}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## ===========================================================
+## REGIONAL SUMMARY - ANNUAL TMAX TRENDS
+## ===========================================================
+## # A tibble: 4 x 3
+##   region        n mean_trend
+##   <chr>     <int>      <dbl>
+## 1 Northeast     7       1.01
+## 2 Northwest    18       0.37
+## 3 Southeast    18       0.38
+## 4 Southwest     7       1.08
+## ===========================================================
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section{Export Summary}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## ===========================================================
+##               EXPORTED HEAT MAPS
+## ===========================================================
+## Total figures created: 6
+## -----------------------------------------------------------
+##  * Heatmap_PRCP_annual_CA.png 
+##  * Heatmap_Summer_TMAX_CA.png 
+##  * Heatmap_TMAX_annual_CA.png 
+##  * Heatmap_TMIN_annual_CA.png 
+##  * Heatmap_Winter_TMAX_CA.png 
+##  * Seasonal_TMAX_comparison_CA.png
+## -----------------------------------------------------------
+## Location: Figures/
+## Resolution: 300 dpi (publication quality)
+## ===========================================================
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section{Interpreting Your Maps}
+
+When examining heat maps, consider:
+
+\begin{enumerate}
+  \item \textbf{Spatial Patterns}
+  \begin{itemize}
+    \item Are there distinct regional differences?
+    \item Where are the hotspots (strongest warming)?
+    \item Do coastal vs. inland areas differ?
+  \end{itemize}
+  
+  \item \textbf{Seasonal Variation}
+  \begin{itemize}
+    \item Which season shows strongest trends?
+    \item Do patterns differ by season?
+  \end{itemize}
+  
+  \item \textbf{Temperature vs. Precipitation}
+  \begin{itemize}
+    \item Do patterns align?
+    \item Are warming areas also drying/wetting?
+  \end{itemize}
+\end{enumerate}
+
+\section{Lab 3 Summary}
+
+\subsection{What You Accomplished}
+
+\begin{itemize}
+  \item Created interpolated heat maps using kriging
+  \item Visualized annual and seasonal temperature trends
+  \item Mapped precipitation changes
+  \item Identified regional climate hotspots
+  \item Generated 6 publication-quality figures
+\end{itemize}
+
+\subsection{R Concepts Learned}
+
+\begin{enumerate}
+  \item \textbf{Spatial Data:} sf and sp objects
+  \item \textbf{Kriging:} Variograms, interpolation
+  \item \textbf{ggplot2:} Layers, scales, themes
+  \item \textbf{patchwork:} Combining plots
+  \item \textbf{ggsave:} Exporting figures
+\end{enumerate}
+
+\subsection{Key Results for CA}
+
+\begin{itemize}
+  \item Mean TMAX trend: \textbf{0.56 °C/century}
+  \item Spatial range: \textbf{-1.68 to 2.59 °C/century}
+\end{itemize}
+
+\subsection{Using These Maps in Your Video}
+
+\begin{enumerate}
+  \item Start with annual TMAX (overview)
+  \item Show seasonal variation for nuance
+  \item Zoom into specific hotspots
+  \item Compare temperature and precipitation
+  \item Connect to community impacts
+\end{enumerate}
+
+\textbf{You now have everything needed to create a compelling climate narrative video!}
+
+\end{document}
