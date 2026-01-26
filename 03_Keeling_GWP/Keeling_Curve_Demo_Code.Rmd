@@ -36,13 +36,6 @@ maunaloa <- read.csv(filename)
 ```
 
 
-
-
-
-
-
-
-
 # Generate code to use RF to estimate GWP for Carbon dioxide and methane
 
 Approximate RF values for common greenhouse gases:
