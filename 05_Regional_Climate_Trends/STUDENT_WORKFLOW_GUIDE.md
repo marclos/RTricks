@@ -1,5 +1,8 @@
 # ClimateNarratives - Complete Student Workflow Guide
 
+**Revision Date:** February 9, 2026  
+**Version:** 0.2.0
+
 **A Step-by-Step Tutorial for Climate Data Analysis in R**
 
 ---
@@ -17,6 +20,38 @@ This guide walks you through a complete climate analysis workflow using the Clim
 **Time Required:** 2-4 hours (mostly computer processing time)  
 **Disk Space:** 100-500 MB per state  
 **Prerequisites:** Basic R knowledge (variables, functions, data frames)
+
+---
+
+## ⚠️ CRITICAL: Common Errors & Quick Fixes
+
+**Before you start, know these solutions:**
+
+### Error: "object 'datafolder' not found"
+**Solution:** You skipped `initialize_project()`! Run it first:
+```r
+initialize_project("CA")  # Change to your state
+```
+
+### Error: "could not find function 'ggsave'"
+**Solution:** Load ggplot2 explicitly:
+```r
+library(ggplot2)
+```
+
+### Files saving to wrong place?
+**Solution:** ALWAYS use variables, NEVER hardcoded paths:
+```r
+# ✅ CORRECT
+write.csv(data, paste0(datafolder, "file.csv"), row.names = FALSE)
+
+# ❌ WRONG
+write.csv(data, "Data/file.csv")
+```
+
+**📋 See TROUBLESHOOTING_PATHS.md for complete solutions!**
+
+**📋 Run diagnostic_script.R to check your setup!**
 
 ---
 
@@ -41,7 +76,7 @@ This guide walks you through a complete climate analysis workflow using the Clim
 
 ```r
 # Set your working directory
-setwd("~/05_Regional_Climate_Trends")
+setwd("~/RTricks/05_Regional_Climate_Trends")
 
 # Install ClimateNarratives
 install.packages("ClimateNarratives_0.2.tar.gz", repos = NULL, type = "source")
@@ -80,7 +115,7 @@ initialize_project("CA")  # Change "CA" to your state
 
 **Alternative with custom path:**
 ```r
-initialize_project("CA", path = "~/05_Regional_Climate_Trends")
+initialize_project("CA", path = "~/MyClimateProject")
 ```
 
 ### What This Function Does
@@ -635,11 +670,14 @@ hist(trends$annual_trend_TMAX,
 
 **Save trends for later:**
 ```r
-# Save to CSV for Excel
-write.csv(trends, "Data/climate_trends.csv", row.names = FALSE)
+# Save to CSV for Excel (uses datafolder variable)
+write.csv(trends, paste0(datafolder, "climate_trends.csv"), row.names = FALSE)
 
 # Save to RData
-save(trends, file = "Data/trends.RData")
+save(trends, file = paste0(datafolder, "trends.RData"))
+
+# Or with explicit path if datafolder not set:
+# write.csv(trends, "Data/climate_trends.csv", row.names = FALSE)
 ```
 
 ### Getting Help
@@ -833,6 +871,9 @@ assessment$n_stations
 **Use when: 20+ stations with good coverage**
 
 ```r
+# Load ggplot2 for ggsave (if not already loaded)
+library(ggplot2)
+
 # Annual TMAX trend
 map_tmax <- create_heatmap(
   trends_sp,
@@ -845,7 +886,7 @@ map_tmax <- create_heatmap(
 )
 
 print(map_tmax)
-ggsave("Figures/tmax_annual_CA.png", map_tmax, 
+ggsave(paste0(figuresfolder, "tmax_annual_CA.png"), map_tmax, 
        width = 10, height = 8, dpi = 300)
 
 # Annual TMIN trend
@@ -855,7 +896,7 @@ map_tmin <- create_heatmap(
   "Annual Minimum Temperature Trend",
   state = "CA"
 )
-ggsave("Figures/tmin_annual_CA.png", map_tmin,
+ggsave(paste0(figuresfolder, "tmin_annual_CA.png"), map_tmin,
        width = 10, height = 8, dpi = 300)
 
 # Annual precipitation trend
@@ -866,7 +907,7 @@ map_prcp <- create_heatmap(
   state = "CA",
   colors = "precip"  # Different color scheme
 )
-ggsave("Figures/prcp_annual_CA.png", map_prcp,
+ggsave(paste0(figuresfolder, "prcp_annual_CA.png"), map_prcp,
        width = 10, height = 8, dpi = 300)
 ```
 
@@ -894,7 +935,7 @@ map_points <- plot_station_map(
 )
 
 print(map_points)
-ggsave("Figures/tmax_points_CA.png", map_points,
+ggsave(paste0(figuresfolder, "tmax_points_CA.png"), map_points,
        width = 10, height = 8, dpi = 300)
 ```
 
@@ -965,7 +1006,7 @@ seasonal <- (winter | spring) / (summer | fall) +
     subtitle = "Change in °C per 100 years"
   )
 
-ggsave("Figures/seasonal_tmax_CA.png", seasonal,
+ggsave(paste0(figuresfolder, "seasonal_tmax_CA.png"), seasonal,
        width = 12, height = 10, dpi = 300)
 ```
 
