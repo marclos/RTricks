@@ -322,14 +322,23 @@ devtools::install()        # reinstall
 # git add . && git commit -m "description" && git push
 ```
 
-Students update by re-uploading the new tar.gz and reinstalling:
+Students update by re-uploading the new tar.gz and reinstalling. The `install_package.R` script handles detaching the old version automatically:
 
 ```r
 setwd("~/ClimateNarratives_setup")
-install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
+source("install_package.R")   # detaches old version, installs deps, reinstalls
 ```
 
-Then: Session > Restart R, and `library(ClimateNarratives)`.
+If students install directly instead:
+
+```r
+detach("package:ClimateNarratives", unload = TRUE)  # unload old version
+setwd("~/ClimateNarratives_setup")
+install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
+library(ClimateNarratives)
+```
+
+The `detach()` call removes the old package namespace from memory so that `library()` picks up the newly installed version. Students keep all their global environment variables (`my.state`, `station_list`, `trends`, etc.) since those live in `.GlobalEnv`, not in the package namespace. If ClimateNarratives is not currently loaded, the `detach()` will error harmlessly — students can skip it.
 
 ---
 

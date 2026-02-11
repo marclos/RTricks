@@ -139,6 +139,18 @@ You should see this startup message:
 
 > **Learning note:** `library()` loads a package into your current R session so you can use its functions. This is different from `install.packages()`, which puts the package on disk. You only install once, but you run `library()` every time you start a new R session.
 
+> **If you are upgrading from v0.3.0:** You must unload the old version before installing the new one, otherwise R will keep using the cached old version. If you use `install_package.R`, this is handled automatically:
+> ```r
+> source("install_package.R")   # detaches old version, installs deps, installs package
+> ```
+> If you install directly with `install.packages()`, detach first:
+> ```r
+> detach("package:ClimateNarratives", unload = TRUE)
+> install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
+> library(ClimateNarratives)
+> ```
+> The `detach()` removes the old package from memory without clearing your other variables. If ClimateNarratives is not currently loaded, skip the `detach()` line.
+
 ---
 
 ## Part 2: Download Your State's Data (Do This Once Per State)
@@ -675,14 +687,23 @@ Either the package is not loaded, or an old version is installed. Try:
 library(ClimateNarratives)
 ```
 
-If that does not help, reinstall:
+If that does not help, reinstall. The easiest way:
 
 ```r
 setwd("~/ClimateNarratives_setup")
-install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
+source("install_package.R")   # handles detach + deps + install
 ```
 
-Then go to Session > Restart R in the RStudio menu, and try `library(ClimateNarratives)` again.
+Or manually:
+
+```r
+detach("package:ClimateNarratives", unload = TRUE)  # unload old version first
+setwd("~/ClimateNarratives_setup")
+install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
+library(ClimateNarratives)
+```
+
+If `detach()` gives an error saying the package is not attached, that is fine — just skip that line and run the remaining three.
 
 ### Download seems stuck
 

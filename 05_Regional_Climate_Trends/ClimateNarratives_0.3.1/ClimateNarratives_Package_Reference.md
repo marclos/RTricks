@@ -70,6 +70,24 @@ check_dependencies(install = FALSE)
 
 At `library(ClimateNarratives)` load time, the package checks for missing core dependencies and prints a loud warning with the exact install command if anything is missing.
 
+### Upgrading from a Previous Version
+
+The `install_package.R` script automatically detaches the old version before reinstalling:
+
+```r
+source("install_package.R")
+```
+
+If installing directly, unload the old version first so R picks up the new one:
+
+```r
+detach("package:ClimateNarratives", unload = TRUE)
+install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
+library(ClimateNarratives)
+```
+
+This preserves all global environment variables (`my.state`, `station_list`, etc.).
+
 ---
 
 ## Function Reference
