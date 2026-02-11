@@ -66,9 +66,20 @@ install.packages(c(
   "viridis", "maps", "mapdata", "patchwork"
 ))
 
+# >>> RESTART R HERE (Session > Restart R) <<<
+# This prevents corrupt help databases from packages loaded in memory
+
+setwd("~/ClimateNarratives_setup")
+
+# Remove old version if upgrading (harmless if not previously installed):
+try(detach("package:ClimateNarratives", unload = TRUE), silent = TRUE)
+remove.packages("ClimateNarratives")
+
 install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
 library(ClimateNarratives)
 ```
+
+**Why the restart?** When `install.packages()` updates dependencies (Step 5), some of those packages may already be loaded in R's memory (e.g., ggplot2 from a previous session). The old in-memory version clashes with the new on-disk files, corrupting R's `.rdb` help database. A fresh R session before the ClimateNarratives install ensures nothing is loaded.
 
 ### Option D: From GitHub
 
@@ -140,11 +151,13 @@ This works if your server has outbound internet access. Dependencies still need 
 
 ```r
 library(ClimateNarratives)
-initialize_project("XX")     # their assigned state
+initialize_project("XX", path = "~/ClimateNarratives")   # their assigned state
 select_stations(n = 50)
 download_stations()           # let this run — takes 10-30 min
 load_and_save_stations()
 ```
+
+**Note on `path =`:** Specifying the path explicitly is now the preferred method. The default (without `path =`) auto-creates `~/ClimateNarratives_XX/`, but `~` can resolve differently on some server configurations. Using `path =` ensures students always know where their files are. You may want to provide a specific path for your server (e.g., `path = "/data/students/ClimateNarratives"`).
 
 **What will go wrong:**
 
@@ -158,6 +171,8 @@ load_and_save_stations()
 
 5. **`file.exists()` returns FALSE** — They uploaded the file to the wrong folder, or didn't run `setwd()`. Have them check `getwd()` and the Files pane.
 
+6. **"lazy-load database is corrupt"** — The install updated a package (ggplot2, sf, etc.) that was still loaded in memory. The error can name ClimateNarratives or any dependency. Fix: `remove.packages("PACKAGENAME")` (using the package named in the error), restart R, `install.packages("PACKAGENAME")`. **Prevention:** Always restart R (Session > Restart R) before installing or upgrading. The Student Workflow now instructs this at Step 6.
+
 **Tip:** Assign small states (RI, DE, CT) for initial testing. California and Texas have many stations and take longer.
 
 **Where students can stop and learn:** After `initialize_project()`, have students run `head(my.inventory)` and discuss what the columns mean (station ID, coordinates, elevation, years of record). This is their first exposure to real scientific data in R.
@@ -168,7 +183,7 @@ load_and_save_stations()
 
 ```r
 library(ClimateNarratives)
-initialize_project("XX")     # re-run to set paths (fast — inventory is cached)
+initialize_project("XX", path = "~/ClimateNarratives")   # re-run to set paths (fast — inventory is cached)
 load_stations()               # loads the RData file
 
 # Explore a station
@@ -184,7 +199,7 @@ head(stn)
 
 **What will go wrong:**
 
-1. **"Variable 'datafolder' not found"** — They forgot to run `initialize_project()`. This is the single most common error. Emphasize: every new R session starts with `library()` then `initialize_project()`.
+1. **"Variable 'datafolder' not found"** — They forgot to run `initialize_project()`. This is the single most common error. Emphasize: every new R session starts with `library()` then `initialize_project("XX", path = "~/ClimateNarratives")`.
 
 2. **"RData file not found"** — They didn't finish Week 1 properly. Have them re-run `download_stations()` then `load_and_save_stations()`.
 
@@ -277,7 +292,8 @@ ggsave(paste0(figuresfolder, "PRCP_intensity_", my.state, ".png"),
 | Error | Cause | Fix |
 |-------|-------|-----|
 | `there is no package called 'X'` | Missing dependency | `check_dependencies()` |
-| `Run initialize_project() first!` | Forgot setup at session start | `initialize_project("XX")` |
+| `Run initialize_project() first!` | Forgot setup at session start | `initialize_project("XX", path = "~/ClimateNarratives")` |
+| `lazy-load database ... is corrupt` | Installed while a package was loaded in memory | `remove.packages("PACKAGENAME")`, restart R, `install.packages("PACKAGENAME")` |
 | `RData file not found` | Didn't finish download/save | `download_stations()` then `load_and_save_stations()` |
 | `No stations found for state: XX` | Invalid state code | Check the printed list of valid codes |
 | `Station USC00...: Cannot compute normals` | Not enough data for any period | Expected — station is skipped |
@@ -322,23 +338,26 @@ devtools::install()        # reinstall
 # git add . && git commit -m "description" && git push
 ```
 
-Students update by re-uploading the new tar.gz and reinstalling. The `install_package.R` script handles detaching the old version automatically:
+Students update by re-uploading the new tar.gz and reinstalling. **They must restart R first** to prevent corrupt help databases — this applies to both ClimateNarratives and its dependencies (ggplot2, sf, etc.):
 
 ```r
+# 1. Restart R (Session > Restart R) — critical!
+# 2. Then immediately (before loading anything):
 setwd("~/ClimateNarratives_setup")
-source("install_package.R")   # detaches old version, installs deps, reinstalls
+source("install_package.R")   # removes old version, installs deps, reinstalls
 ```
 
-If students install directly instead:
+If students install directly instead, restart R first, then:
 
 ```r
-detach("package:ClimateNarratives", unload = TRUE)  # unload old version
 setwd("~/ClimateNarratives_setup")
+try(detach("package:ClimateNarratives", unload = TRUE), silent = TRUE)
+remove.packages("ClimateNarratives")
 install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
 library(ClimateNarratives)
 ```
 
-The `detach()` call removes the old package namespace from memory so that `library()` picks up the newly installed version. Students keep all their global environment variables (`my.state`, `station_list`, `trends`, etc.) since those live in `.GlobalEnv`, not in the package namespace. If ClimateNarratives is not currently loaded, the `detach()` will error harmlessly — students can skip it.
+**Common upgrade problem:** If a student skips the restart, any loaded package that gets updated during installation will have its `.rdb` help database corrupted. The error message names the affected package (could be ggplot2, sf, or ClimateNarratives itself). The fix is always the same: `remove.packages("PACKAGENAME")`, restart R, `install.packages("PACKAGENAME")`. Students keep their saved data — just reload with `load_stations()` after reinstalling.
 
 ---
 
@@ -376,6 +395,9 @@ Students find `my.state` easier than `project$state`. The package uses `assign(.
 **Why `setwd()` in `initialize_project()`?**  
 Students do not reliably edit file paths. By setting the working directory and using relative paths (`"Data/"`, `"Figures/"`), every `ggsave()` call just works without students modifying anything.
 
+**Why recommend `path =` explicitly?**  
+In earlier versions, `initialize_project("CA")` auto-created `~/ClimateNarratives_CA/` and students never knew where `~` actually pointed. On some servers, `~` resolves to unexpected locations. Using `initialize_project("CA", path = "~/ClimateNarratives")` makes the destination explicit and debuggable. If a file-not-found error occurs, students can verify the path directly. Instructors can also provide a server-specific path (e.g., `path = "/data/students/ClimateNarratives"`) to ensure all students' files land in the right place.
+
 **Why the normals cascade?**  
 The original code checked `nrow == 0` for 1961–1990 and fell back to the full record. But many stations have *some* data in that window — just not enough for all 12 months. This produced NaN anomalies that crashed `lm()` downstream. The cascade checks actual month-by-month coverage and tries progressively newer standard periods before falling back to the full record.
 
@@ -400,9 +422,9 @@ The ETCCDI also defines percentile-based indices (R95p, R99p) that require a bas
 
 If a student says "it doesn't work," walk through this:
 
-1. `library(ClimateNarratives)` — Does it load? If not → `check_dependencies()`
-2. `initialize_project("XX")` — Does it run? If not → check internet (first time only)
-3. `getwd()` — Is it pointing to the project folder? If not → re-run `initialize_project()`
+1. `library(ClimateNarratives)` — Does it load? If not → `check_dependencies()`. If "lazy-load database is corrupt" → `remove.packages("ClimateNarratives")`, restart R, reinstall.
+2. `initialize_project("XX", path = "~/ClimateNarratives")` — Does it run? If not → check internet (first time only)
+3. `getwd()` — Is it pointing to the project folder? If not → re-run `initialize_project()` with the correct path
 4. `ls()` — Do they see `my.state`, `datafolder`, etc.? If not → they're in a different session
 5. `nrow(my.inventory)` — Do they have stations? If 0 → check state code
 6. `list.files("Data/")` — Is the RData file there? If not → need to download/save

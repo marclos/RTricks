@@ -72,21 +72,26 @@ At `library(ClimateNarratives)` load time, the package checks for missing core d
 
 ### Upgrading from a Previous Version
 
-The `install_package.R` script automatically detaches the old version before reinstalling:
+**Always restart R before installing** (Session > Restart R). This prevents corrupt `.rdb` help databases — the error can affect ClimateNarratives or any dependency (ggplot2, sf, etc.) that was loaded in memory during installation.
+
+After restarting R, the `install_package.R` script handles everything:
 
 ```r
+setwd("~/ClimateNarratives_setup")
 source("install_package.R")
 ```
 
-If installing directly, unload the old version first so R picks up the new one:
+If installing directly, restart R first, then:
 
 ```r
-detach("package:ClimateNarratives", unload = TRUE)
+setwd("~/ClimateNarratives_setup")
+try(detach("package:ClimateNarratives", unload = TRUE), silent = TRUE)
+remove.packages("ClimateNarratives")
 install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
 library(ClimateNarratives)
 ```
 
-This preserves all global environment variables (`my.state`, `station_list`, etc.).
+Saved data (`all_stations_raw.RData`, figures) is not affected. Reload with `load_stations()` after reinstalling. If you see `lazy-load database ... is corrupt`, remove the named package, restart R, and reinstall it.
 
 ---
 
@@ -99,7 +104,7 @@ This preserves all global environment variables (`my.state`, `station_list`, etc
 The main setup function. Creates directory structure, downloads NOAA station inventory, sets global variables, and changes your working directory to the project root.
 
 - **state** — Two-letter state abbreviation (e.g., `"CA"`, `"TX"`, `"NY"`, `"AK"`)
-- **path** — Where to create the project. If omitted (recommended), auto-creates `~/ClimateNarratives_XX/` where XX is the state code.
+- **path** — Where to create the project. **Recommended:** specify this explicitly so you always know where files are saved. If omitted, auto-creates `~/ClimateNarratives_XX/` where XX is the state code, but `~` can resolve to unexpected locations on some servers.
 
 **What it does:**
 1. Creates `Data/`, `Output/`, `Figures/` subdirectories
@@ -109,8 +114,14 @@ The main setup function. Creates directory structure, downloads NOAA station inv
 5. Sets global variables: `my.state`, `my.inventory`, `datafolder`, `figuresfolder`, `projectfolder`
 
 ```r
+# Preferred (explicit path):
+initialize_project("CA", path = "~/ClimateNarratives")
+
+# Also works (auto-generates ~/ClimateNarratives_CA/):
 initialize_project("CA")
-initialize_project("TX", path = "~/Documents/TexasClimate")
+
+# Custom server path:
+initialize_project("TX", path = "/data/students/ClimateNarratives")
 ```
 
 #### `set_config(state, path = NULL)`

@@ -95,11 +95,22 @@ If a package keeps failing, tell your instructor — it may need a system librar
 
 > **Learning note:** R packages are collections of code that other people wrote and shared. They extend what R can do. The `c()` function creates a vector (a list of items). Here we're passing a vector of package names to `install.packages()`. Each package brings different capabilities: `ggplot2` makes plots, `sf` handles spatial data, `gstat` does kriging interpolation, and so on.
 
-### Step 6 — Install ClimateNarratives
+### Step 6 — Restart R, then install ClimateNarratives
 
-Now install the actual package. Type:
+**Important:** Before installing, restart R so that no packages are loaded in memory. If a package like ggplot2 is loaded when the installer updates it, R's help database for that package can become corrupted.
+
+**In RStudio:** Go to **Session > Restart R** (or press Ctrl+Shift+F10).
+
+After restarting, your Console will show a fresh `>` prompt. Now run these lines — do NOT run `library()` for anything first:
 
 ```r
+setwd("~/ClimateNarratives_setup")
+
+# Remove old ClimateNarratives if upgrading (harmless if not previously installed):
+try(detach("package:ClimateNarratives", unload = TRUE), silent = TRUE)
+remove.packages("ClimateNarratives")
+
+# Install:
 install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
 ```
 
@@ -112,7 +123,7 @@ Wait for it to finish. The last lines should include:
 **If you see `ERROR` or `had non-zero exit status` instead:**
 Read the error message. It usually names a missing package. Go back to Step 5 and install that package, then try Step 6 again.
 
-> **Learning note:** The `repos = NULL` argument tells R "don't look online — install from this local file instead." The `type = "source"` tells R this is raw source code that needs to be compiled, not a pre-built binary.
+> **Learning note:** `remove.packages()` deletes a package from disk. `detach()` unloads it from the current R session's memory. We do both to ensure a completely clean install. The `try(..., silent = TRUE)` wrapper prevents an error if the package was not loaded. **Restarting R before installing is critical** because R keeps loaded packages in memory — if the installer updates a loaded package (like ggplot2), the old in-memory version clashes with the new on-disk version and corrupts the help database. A fresh R session has nothing loaded, so nothing can clash. The `repos = NULL` argument in `install.packages()` tells R "don't look online — install from this local file instead." The `type = "source"` tells R this is raw source code that needs to be compiled, not a pre-built binary.
 
 ### Step 7 — Verify it works
 
@@ -139,17 +150,20 @@ You should see this startup message:
 
 > **Learning note:** `library()` loads a package into your current R session so you can use its functions. This is different from `install.packages()`, which puts the package on disk. You only install once, but you run `library()` every time you start a new R session.
 
-> **If you are upgrading from v0.3.0:** You must unload the old version before installing the new one, otherwise R will keep using the cached old version. If you use `install_package.R`, this is handled automatically:
+> **If you are upgrading from v0.3.0:** You must restart R and remove the old version before installing the new one, otherwise R's help database can become corrupted — for ClimateNarratives itself or for any dependency (like ggplot2) that was loaded when the installer touched it. If you use `install_package.R`, restart R first, then:
 > ```r
-> source("install_package.R")   # detaches old version, installs deps, installs package
+> setwd("~/ClimateNarratives_setup")
+> source("install_package.R")   # removes old version, installs deps, installs package
 > ```
-> If you install directly with `install.packages()`, detach first:
+> If you install directly, restart R first (Session > Restart R), then:
 > ```r
-> detach("package:ClimateNarratives", unload = TRUE)
+> setwd("~/ClimateNarratives_setup")
+> try(detach("package:ClimateNarratives", unload = TRUE), silent = TRUE)
+> remove.packages("ClimateNarratives")
 > install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
 > library(ClimateNarratives)
 > ```
-> The `detach()` removes the old package from memory without clearing your other variables. If ClimateNarratives is not currently loaded, skip the `detach()` line.
+> Your global environment variables (`my.state`, `station_list`, `trends`, etc.) are not affected by restarting R if you have saved your data to disk with `load_and_save_stations()` — just reload with `load_stations()` after reinstalling.
 
 ---
 
@@ -158,31 +172,35 @@ You should see this startup message:
 ### Step 8 — Initialize your project
 
 ```r
-initialize_project("XX")
+initialize_project("XX", path = "~/ClimateNarratives")
 ```
 
-Replace `XX` with your state code. For example:
+Replace `XX` with your state code. The `path =` argument tells R exactly where to create your project folder. For example:
 
 ```r
-initialize_project("CA")   # California
-initialize_project("TX")   # Texas
-initialize_project("NY")   # New York
-initialize_project("AK")   # Alaska
+initialize_project("CA", path = "~/ClimateNarratives")   # California
+initialize_project("TX", path = "~/ClimateNarratives")   # Texas
+initialize_project("NY", path = "~/ClimateNarratives")   # New York
+initialize_project("AK", path = "~/ClimateNarratives")   # Alaska
 ```
 
 **What this does:**
 
-- Creates a project folder in your home directory (e.g., `~/ClimateNarratives_CA/`)
+- Creates the project folder at the path you specified (e.g., `~/ClimateNarratives/`)
 - Creates `Data/`, `Output/`, and `Figures/` subfolders inside it
 - Downloads a list of available weather stations from NOAA
 - Changes your working directory to the project folder (you do NOT need to call `setwd()` yourself)
 
 You should see output ending with `Setup Complete!` and a count of potential stations.
 
+> **Why use `path =`?** By specifying the path explicitly, you always know exactly where your files are. The default (without `path =`) auto-creates `~/ClimateNarratives_XX/` — which works, but `~` can point to unexpected locations on some servers. Using `path =` removes ambiguity. **Your instructor may provide a specific path to use** — if so, use that path instead of `~/ClimateNarratives`.
+
+> **Note:** If you omit `path =`, the function auto-creates `~/ClimateNarratives_XX/` where XX is your state code. This still works, but specifying the path is preferred so you can confirm exactly where files are saved.
+
 **Pause and explore:** After this step, look at what was created:
 
 ```r
-getwd()                    # Should show ~/ClimateNarratives_XX/
+getwd()                    # Should show the path you specified
 list.files()               # Should show Data, Figures, Output folders
 ls()                       # Should show my.state, my.inventory, etc.
 nrow(my.inventory)         # How many potential stations?
@@ -248,14 +266,14 @@ When your R session ends (you log out, your session times out, or you restart R)
 
 ```r
 library(ClimateNarratives)
-initialize_project("XX")     # your state code — e.g., "CA"
+initialize_project("XX", path = "~/ClimateNarratives")   # your state code — e.g., "CA"
 load_stations()
 ```
 
 What each line does:
 
 - `library(ClimateNarratives)` — loads the package functions (they are not available until you do this)
-- `initialize_project("XX")` — sets your working directory to `~/ClimateNarratives_XX/` and creates the path variables (`datafolder`, `figuresfolder`). **This replaces any need to call `setwd()` yourself.**
+- `initialize_project("XX", path = "~/ClimateNarratives")` — sets your working directory to your project folder and creates the path variables (`datafolder`, `figuresfolder`). **This replaces any need to call `setwd()` yourself.** Use the same path you used when you first created the project.
 - `load_stations()` — loads your previously saved weather data from the `Data/` folder back into memory
 
 You do NOT need to:
@@ -526,7 +544,7 @@ if ("gam_edf_TMAX" %in% names(trends)) {
 
 ```r
 library(ClimateNarratives)
-initialize_project("XX")
+initialize_project("XX", path = "~/ClimateNarratives")   # same state and path as before
 load_stations()
 ```
 
@@ -538,7 +556,7 @@ Copy this block, change the state code on line 2, and run it:
 
 ```r
 library(ClimateNarratives)
-initialize_project("CA")     # <-- CHANGE THIS TO YOUR STATE
+initialize_project("CA", path = "~/ClimateNarratives")   # <-- CHANGE STATE CODE
 load_stations()
 
 # Full v0.3.1 analysis
@@ -673,7 +691,7 @@ Or install all dependencies at once (copy-paste from Part 1, Step 5).
 
 ### "Run initialize_project() first!"
 
-You need to run `initialize_project("XX")` at the start of every R session. This is the most common error — it just means you started a new session and forgot the setup lines.
+You need to run `initialize_project("XX", path = "~/ClimateNarratives")` at the start of every R session. This is the most common error — it just means you started a new session and forgot the setup lines.
 
 ### "RData file not found"
 
@@ -687,23 +705,41 @@ Either the package is not loaded, or an old version is installed. Try:
 library(ClimateNarratives)
 ```
 
-If that does not help, reinstall. The easiest way:
+If that does not help, do a clean reinstall:
 
 ```r
-setwd("~/ClimateNarratives_setup")
-source("install_package.R")   # handles detach + deps + install
-```
-
-Or manually:
-
-```r
-detach("package:ClimateNarratives", unload = TRUE)  # unload old version first
+try(detach("package:ClimateNarratives", unload = TRUE), silent = TRUE)
+remove.packages("ClimateNarratives")
+# Then restart R (Session > Restart R), and:
 setwd("~/ClimateNarratives_setup")
 install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
 library(ClimateNarratives)
 ```
 
-If `detach()` gives an error saying the package is not attached, that is fine — just skip that line and run the remaining three.
+### "lazy-load database ... is corrupt"
+
+This means R's help database for a package got corrupted during installation. It happens when a package was loaded in memory while the installer updated its files on disk. The error can name ClimateNarratives itself or a dependency like ggplot2.
+
+**If the error names ClimateNarratives:**
+
+```r
+remove.packages("ClimateNarratives")
+# Session > Restart R, then:
+setwd("~/ClimateNarratives_setup")
+install.packages("ClimateNarratives_0.3.1.tar.gz", repos = NULL, type = "source")
+library(ClimateNarratives)
+```
+
+**If the error names a dependency (e.g., ggplot2):**
+
+```r
+remove.packages("ggplot2")   # replace with whichever package is named in the error
+# Session > Restart R, then:
+install.packages("ggplot2")
+library(ClimateNarratives)
+```
+
+**To prevent this in the future:** Always restart R (Session > Restart R) before installing or upgrading. A fresh R session has no packages loaded, so nothing can clash during installation.
 
 ### Download seems stuck
 
