@@ -33,35 +33,9 @@ knitr::opts_chunk$set(
 Work through **every step in this section once** before touching any
 code. You only need to do this setup once per computer.
 
-## Step 1 — Install R and RStudio
+## Step 1 — Open RStudio
 
-If you do not have R and RStudio installed yet:
-
-1. Download and install **R** from <https://cran.r-project.org>
-   (choose your operating system).
-2. Download and install **RStudio Desktop (free)**
-   from <https://posit.co/download/rstudio-desktop>.
-
-Always install R *before* RStudio. RStudio is the editor; R is the
-engine that runs underneath it.
-
-## Step 2 — Install a LaTeX Distribution (needed to knit to PDF)
-
-R Markdown knits to PDF by routing through LaTeX. The easiest way to
-get LaTeX without a full installation is the `tinytex` package:
-
-1. Open RStudio.
-2. In the **Console** pane (bottom-left), run these two lines one at a
-   time, pressing Enter after each:
-
-```r
-install.packages("tinytex")
-tinytex::install_tinytex()
-```
-
-This downloads a small LaTeX distribution into your home folder. It
-takes a few minutes the first time. You do **not** need to repeat this
-on the same computer.
+### Step 2 Lots of step we don't need...
 
 ## Step 3 — Install Required R Packages
 
@@ -202,6 +176,9 @@ meta <- readNWISsite(site_no)
 
 glimpse(raw)
 ```
+
+NOTE: Sometimes this doesn't work -- I don't kno why!  Let me know if you have trouble here!
+
 
 ## Alternative: Load a Pre-Downloaded CSV
 
