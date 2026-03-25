@@ -198,13 +198,13 @@ files to shared system directories.
 
 1. In the **Files** pane, make sure you are in your home directory — click the
    house icon (🏠) if you are not sure.
-2. Click **New Folder**, type `EJnPi`, and click OK.
-3. Double-click into `EJnPi` to open it.
+2. Click **New Folder**, type `EPA_PM25`, and click OK.
+3. Double-click into `EPA_PM25` to open it.
 4. Click **New Folder** again, type `data`, and click OK.
 
 <div class="callout callout-check">
 <strong>✅ What you should see</strong>
-You should now be inside `~/EJnPi/` and see an empty `data/` folder listed.
+You should now be inside `~/EPA_PM25/` and see an empty `data/` folder listed.
 If you do not see the Files pane at all, go to **View → Panes → Show All Panes**.
 </div>
 
@@ -217,7 +217,7 @@ Then:
 3. At the top of your `.Rmd`, add this line so knitr always runs in the right place:
 
 ```{r setwd-example, eval=FALSE}
-knitr::opts_knit$set(root.dir = "~/EJnPi")
+knitr::opts_knit$set(root.dir = "~/EPA_25")
 ```
 
 Your folder structure before the first knit:
@@ -236,21 +236,21 @@ This assignment uses R functions written for this course that handle
 downloading and cleaning the EPA data, so you can focus on the analysis.
 They are maintained in the course GitHub repository.
 
-**Browse the code:** [https://github.com/marclos/EJnPi/tree/master/docs](https://github.com/marclos/EJnPi/tree/master/docs)
+**Browse the code:** [https://github.com/marclos/RTricks/tree/master/docs](https://github.com/marclos/RTricks/tree/master/docs)
 
 ```{r copy-functions, include=FALSE}
-file.copy("EPA_25_functions.R", "../docs/EPA_25_functions.R", overwrite = TRUE)
+file.copy("EPA_PM25_functions.R", "../docs/EPA_PM25_functions.R", overwrite = TRUE)
 ```
 
 You do not need to download or copy anything. Your Rmd loads them
 automatically with this line (already in the setup section below):
 
 ```r
-source("https://raw.githubusercontent.com/marclos/EJnPi/master/docs/EJnPi_functions.R")
+source("https://raw.githubusercontent.com/marclos/EJnPi/master/docs/EPA_PM25_functions.R")
 ```
 
 If you are curious how the functions work, click the link above, open
-`EJnPi_functions.R`, and read the comments. You are not expected to
+`EPA_PM25_functions.R`, and read the comments. You are not expected to
 modify them.
 
 ## Install Required Packages

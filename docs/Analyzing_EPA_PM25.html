@@ -90,7 +90,7 @@ if (window.hljs) {
 
 <h1 class="title toc-ignore">Analyzing EPA PM2.5 Data</h1>
 <h4 class="author">Marc Los Huertos</h4>
-<h4 class="date">Spring 2026 · v6 · Compiled 2026-03-24</h4>
+<h4 class="date">Spring 2026 · v6 · Compiled 2026-03-25</h4>
 
 
 <div id="TOC">
@@ -339,13 +339,13 @@ files to shared system directories.</p>
 <ol style="list-style-type: decimal">
 <li>In the <strong>Files</strong> pane, make sure you are in your home directory — click the
 house icon (🏠) if you are not sure.</li>
-<li>Click <strong>New Folder</strong>, type <code>EJnPi</code>, and click OK.</li>
-<li>Double-click into <code>EJnPi</code> to open it.</li>
+<li>Click <strong>New Folder</strong>, type <code>EPA_PM25</code>, and click OK.</li>
+<li>Double-click into <code>EPA_PM25</code> to open it.</li>
 <li>Click <strong>New Folder</strong> again, type <code>data</code>, and click OK.</li>
 </ol>
 <div class="callout callout-check">
 <p><strong>✅ What you should see</strong>
-You should now be inside <code>~/EJnPi/</code> and see an empty <code>data/</code> folder listed.
+You should now be inside <code>~/EPA_PM25/</code> and see an empty <code>data/</code> folder listed.
 If you do not see the Files pane at all, go to <strong>View → Panes → Show All Panes</strong>.</p>
 </div>
 <p>Then:</p>
@@ -356,7 +356,7 @@ and click OK.</li>
 and name it <code>Analyzing_EPA_PM25_YourLastName.Rmd</code>.</li>
 <li>At the top of your <code>.Rmd</code>, add this line so knitr always runs in the right place:</li>
 </ol>
-<pre class="r"><code>knitr::opts_knit$set(root.dir = &quot;~/EJnPi&quot;)</code></pre>
+<pre class="r"><code>knitr::opts_knit$set(root.dir = &quot;~/EPA_25&quot;)</code></pre>
 <p>Your folder structure before the first knit:</p>
 <pre><code>~/EJnPi/
   Analyzing_EPA_PM25_YourLastName.Rmd
@@ -368,12 +368,12 @@ and name it <code>Analyzing_EPA_PM25_YourLastName.Rmd</code>.</li>
 <p>This assignment uses R functions written for this course that handle
 downloading and cleaning the EPA data, so you can focus on the analysis.
 They are maintained in the course GitHub repository.</p>
-<p><strong>Browse the code:</strong> <a href="https://github.com/marclos/EJnPi/tree/master/docs">https://github.com/marclos/EJnPi/tree/master/docs</a></p>
+<p><strong>Browse the code:</strong> <a href="https://github.com/marclos/RTricks/tree/master/docs">https://github.com/marclos/RTricks/tree/master/docs</a></p>
 <p>You do not need to download or copy anything. Your Rmd loads them
 automatically with this line (already in the setup section below):</p>
-<pre class="r"><code>source(&quot;https://raw.githubusercontent.com/marclos/EJnPi/master/docs/EJnPi_functions.R&quot;)</code></pre>
+<pre class="r"><code>source(&quot;https://raw.githubusercontent.com/marclos/EJnPi/master/docs/EPA_PM25_functions.R&quot;)</code></pre>
 <p>If you are curious how the functions work, click the link above, open
-<code>EJnPi_functions.R</code>, and read the comments. You are not expected to
+<code>EPA_PM25_functions.R</code>, and read the comments. You are not expected to
 modify them.</p>
 </div>
 <div id="install-required-packages" class="section level2" number="3.3">
@@ -1158,7 +1158,7 @@ controls decimal places column by column: position 1 is the (unused) row name;
 positions 2 onward correspond to each data column left to right.</p>
 <p>Here is the table your code should produce:</p>
 <!-- html table generated in R 4.2.2 by xtable 1.8-4 package -->
-<!-- Tue Mar 24 22:31:28 2026 -->
+<!-- Wed Mar 25 00:55:48 2026 -->
 <table border="1">
 <caption align="top">
 Monthly PM2.5 AQI summary – station 06-071-9004
