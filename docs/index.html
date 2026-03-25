@@ -63,7 +63,6 @@ ul.task-list{list-style: none;}
 
 
 <style type="text/css">
-
 @font-face {
 font-family: 'Lato';
 font-style: normal;
@@ -152,325 +151,156 @@ line-height: 1.7;
 h1.title, h4.author, h4.date { display: none; }
 
 .site-header {
-background: var(--forest);
 background-image:
-repeating-linear-gradient(
-120deg,
-transparent,
-transparent 60px,
-rgba(255,255,255,0.018) 60px,
-rgba(255,255,255,0.018) 61px
-),
-linear-gradient(160deg, var(--forest) 0%, var(--moss) 60%, #1a3d30 100%);
-color: var(--white);
+repeating-linear-gradient(120deg, transparent, transparent 60px,
+rgba(255,255,255,0.018) 60px, rgba(255,255,255,0.018) 61px),
+linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+color: #fff;
 padding: 56px 6vw 48px;
 position: relative;
 overflow: hidden;
 border-bottom: 4px solid var(--amber);
 }
 .site-header::after {
-content: '';
-position: absolute;
-right: -60px; top: -60px;
-width: 340px; height: 340px;
-border-radius: 50%;
+content: ''; position: absolute; right: -60px; top: -60px;
+width: 340px; height: 340px; border-radius: 50%;
 background: radial-gradient(circle, rgba(138,173,150,0.12) 0%, transparent 70%);
 pointer-events: none;
 }
-.header-inner {
-max-width: 1100px;
-margin: 0 auto;
-}
+.header-inner { max-width: 1100px; margin: 0 auto; }
 .course-tag {
 display: inline-block;
 font-family: 'Source Code Pro', monospace;
-font-size: 0.72rem;
-font-weight: 600;
-letter-spacing: 0.18em;
-text-transform: uppercase;
+font-size: 0.72rem; font-weight: 600;
+letter-spacing: 0.18em; text-transform: uppercase;
 color: var(--amber-lt);
 border: 1px solid rgba(200,131,42,0.45);
-padding: 3px 10px;
-border-radius: 2px;
-margin-bottom: 18px;
+padding: 3px 10px; border-radius: 2px; margin-bottom: 18px;
 }
 .site-header h1 {
 font-family: 'Libre Baskerville', serif;
-font-size: clamp(2rem, 4vw, 3rem);
-font-weight: 700;
-line-height: 1.18;
-color: var(--white);
-letter-spacing: -0.01em;
-margin-bottom: 10px;
+font-size: clamp(2rem, 4vw, 3rem); font-weight: 700;
+line-height: 1.18; color: #fff;
+letter-spacing: -0.01em; margin-bottom: 10px;
 }
-.site-header h1 span {
-color: var(--sage);
-}
-.header-sub {
-font-size: 0.97rem;
-font-weight: 300;
-color: rgba(255,255,255,0.72);
-letter-spacing: 0.01em;
-}
-.header-sub strong {
-font-weight: 700;
-color: rgba(255,255,255,0.92);
-}
-.header-meta {
-margin-top: 22px;
-display: flex;
-align-items: center;
-gap: 24px;
-flex-wrap: wrap;
-}
-.meta-pill {
-font-family: 'Source Code Pro', monospace;
-font-size: 0.75rem;
-color: var(--sage);
-letter-spacing: 0.06em;
-}
-.meta-pill::before { content: '▸ '; opacity: 0.6; }
+.site-header h1 span { color: var(--sage); }
+.header-sub { font-size: 0.97rem; font-weight: 300; color: rgba(255,255,255,0.72); }
+.header-sub strong { font-weight: 700; color: rgba(255,255,255,0.92); }
+.header-meta { margin-top: 22px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.meta-pill { font-family: 'Source Code Pro', monospace; font-size: 0.75rem; color: var(--sage); letter-spacing: 0.06em; }
+.meta-pill::before { content: '\25B8 '; opacity: 0.6; }
 
 .site-nav {
-background: var(--ink);
-padding: 0 6vw;
-position: sticky;
-top: 0;
-z-index: 100;
+background: var(--ink); padding: 0 6vw;
+position: sticky; top: 0; z-index: 100;
 border-bottom: 2px solid var(--amber);
 }
-.nav-inner {
-max-width: 1100px;
-margin: 0 auto;
-display: flex;
-gap: 4px;
-}
+.nav-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; }
 .site-nav a {
 display: inline-block;
-font-family: 'Source Code Pro', monospace;
-font-size: 0.75rem;
-font-weight: 600;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-color: rgba(255,255,255,0.6);
-text-decoration: none;
-padding: 13px 16px;
-border-bottom: 2px solid transparent;
+font-family: 'Source Code Pro', monospace; font-size: 0.75rem;
+font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+color: rgba(255,255,255,0.6); text-decoration: none;
+padding: 13px 16px; border-bottom: 2px solid transparent;
 transition: color 0.2s, border-color 0.2s;
 }
-.site-nav a:hover {
-color: var(--amber-lt);
-border-bottom-color: var(--amber);
-}
+.site-nav a:hover { color: var(--amber-lt); border-bottom-color: var(--amber); }
 
-.page-body {
-max-width: 1100px;
-margin: 0 auto;
-padding: 52px 6vw 80px;
-}
+.page-body { max-width: 1100px; margin: 0 auto; padding: 52px 6vw 80px; }
 
-.section-header {
-margin-bottom: 28px;
-padding-bottom: 12px;
-border-bottom: 1px solid var(--parchment);
-}
-.section-header h2 {
-font-family: 'Libre Baskerville', serif;
-font-size: 1.55rem;
-font-weight: 700;
-color: var(--forest);
-letter-spacing: -0.01em;
-}
-.section-header p {
-font-size: 0.93rem;
-color: var(--dust);
-margin-top: 4px;
-}
+.section-header { margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid var(--parchment); }
+.section-header h2 { font-family: 'Libre Baskerville', serif; font-size: 1.55rem; font-weight: 700; color: var(--forest); letter-spacing: -0.01em; }
+.section-header p { font-size: 0.93rem; color: var(--dust); margin-top: 4px; }
 
-.card-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-gap: 20px;
-margin-bottom: 56px;
-}
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 20px; margin-bottom: 56px; }
 .card {
-background: var(--white);
-border: 1px solid var(--mist);
-border-radius: 6px;
-padding: 26px 24px 22px;
-text-decoration: none;
-color: inherit;
-display: flex;
-flex-direction: column;
+background: var(--white); border: 1px solid var(--mist); border-radius: 6px;
+padding: 26px 24px 22px; text-decoration: none; color: inherit;
+display: flex; flex-direction: column;
 box-shadow: var(--card-shadow);
 transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-position: relative;
-overflow: hidden;
+position: relative; overflow: hidden;
 }
 .card::before {
-content: '';
-position: absolute;
-top: 0; left: 0;
-width: 4px; height: 100%;
-background: var(--sage);
-transition: background 0.2s;
+content: ''; position: absolute; top: 0; left: 0;
+width: 4px; height: 100%; background: var(--sage); transition: background 0.2s;
 }
-.card:hover {
-transform: translateY(-3px);
-box-shadow: var(--card-hover);
-border-color: var(--sage);
-}
+.card:hover { transform: translateY(-3px); box-shadow: var(--card-hover); border-color: var(--sage); }
 .card:hover::before { background: var(--fern); }
 .card.advanced::before { background: var(--amber); }
 .card.advanced:hover::before { background: var(--rust); }
 .card.advanced:hover { border-color: var(--amber-lt); }
-.card.coming-soon {
-opacity: 0.58;
-cursor: default;
-pointer-events: none;
-filter: grayscale(0.3);
-}
-.card-icon {
-font-size: 1.4rem;
-margin-bottom: 12px;
-display: block;
-line-height: 1;
-}
-.card-title {
-font-family: 'Libre Baskerville', serif;
-font-size: 1.02rem;
-font-weight: 700;
-color: var(--forest);
-margin-bottom: 6px;
-}
-.card-desc {
-font-size: 0.86rem;
-color: var(--dust);
-line-height: 1.55;
-flex-grow: 1;
-}
+.card.coming-soon { opacity: 0.55; cursor: default; pointer-events: none; filter: grayscale(0.3); }
+.card-icon { font-size: 1.4rem; margin-bottom: 12px; display: block; line-height: 1; }
+.card-title { font-family: 'Libre Baskerville', serif; font-size: 1.02rem; font-weight: 700; color: var(--forest); margin-bottom: 6px; }
+.card-desc { font-size: 0.86rem; color: var(--dust); line-height: 1.55; flex-grow: 1; }
 .card-tag {
-display: inline-block;
-margin-top: 14px;
-font-family: 'Source Code Pro', monospace;
-font-size: 0.68rem;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-padding: 2px 8px;
-border-radius: 2px;
-background: var(--mist);
-color: var(--fern);
-font-weight: 600;
-align-self: flex-start;
+display: inline-block; margin-top: 14px;
+font-family: 'Source Code Pro', monospace; font-size: 0.68rem;
+letter-spacing: 0.1em; text-transform: uppercase;
+padding: 2px 8px; border-radius: 2px;
+background: var(--mist); color: var(--fern); font-weight: 600; align-self: flex-start;
 }
-.card.advanced .card-tag {
-background: #fdf0e0;
-color: var(--amber);
-}
-.card.coming-soon .card-tag {
-background: var(--parchment);
-color: var(--dust);
-}
+.card.advanced .card-tag { background: #fdf0e0; color: var(--amber); }
+.card.coming-soon .card-tag { background: var(--parchment); color: var(--dust); }
 
 .quick-ref {
-background: var(--forest);
-color: var(--white);
-border-radius: 6px;
-padding: 32px 36px;
-margin-bottom: 56px;
-display: grid;
-grid-template-columns: 1fr auto;
-align-items: center;
-gap: 24px;
+background: var(--forest); color: #fff; border-radius: 6px;
+padding: 32px 36px; margin-bottom: 56px;
+display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px;
 }
-.quick-ref h3 {
-font-family: 'Libre Baskerville', serif;
-font-size: 1.1rem;
-color: var(--sage);
-margin-bottom: 6px;
-}
-.quick-ref p {
-font-size: 0.88rem;
-color: rgba(255,255,255,0.7);
-}
-.quick-ref code {
-font-family: 'Source Code Pro', monospace;
-font-size: 0.82rem;
-background: rgba(255,255,255,0.1);
-color: var(--amber-lt);
-padding: 2px 6px;
-border-radius: 3px;
-}
+.quick-ref h3 { font-family: 'Libre Baskerville', serif; font-size: 1.1rem; color: var(--sage); margin-bottom: 6px; }
+.quick-ref p { font-size: 0.88rem; color: rgba(255,255,255,0.7); }
+.quick-ref code { font-family: 'Source Code Pro', monospace; font-size: 0.82rem; background: rgba(255,255,255,0.1); color: var(--amber-lt); padding: 2px 6px; border-radius: 3px; }
 .ref-links { display: flex; flex-direction: column; gap: 8px; }
 .ref-link {
-font-family: 'Source Code Pro', monospace;
-font-size: 0.75rem;
-letter-spacing: 0.05em;
-color: var(--amber-lt);
-text-decoration: none;
-border: 1px solid rgba(200,131,42,0.4);
-padding: 7px 14px;
-border-radius: 3px;
-transition: background 0.2s;
-white-space: nowrap;
-text-align: center;
+font-family: 'Source Code Pro', monospace; font-size: 0.75rem; letter-spacing: 0.05em;
+color: var(--amber-lt); text-decoration: none;
+border: 1px solid rgba(200,131,42,0.4); padding: 7px 14px; border-radius: 3px;
+transition: background 0.2s; white-space: nowrap; text-align: center;
 }
 .ref-link:hover { background: rgba(200,131,42,0.15); }
 
+.intro-blurb {
+background: var(--white); border-left: 4px solid var(--fern);
+border-radius: 0 6px 6px 0; padding: 22px 26px; margin-bottom: 48px;
+font-size: 0.94rem; color: var(--charcoal); box-shadow: var(--card-shadow);
+}
+.intro-blurb strong { color: var(--forest); }
+.intro-blurb code { font-family: 'Source Code Pro', monospace; font-size: 0.84em; background: var(--mist); padding: 1px 5px; border-radius: 3px; color: var(--moss); }
+
 .site-footer {
-background: var(--ink);
-color: rgba(255,255,255,0.45);
-text-align: center;
-padding: 32px 6vw;
-font-size: 0.8rem;
-font-family: 'Source Code Pro', monospace;
-letter-spacing: 0.04em;
+background: var(--ink); color: rgba(255,255,255,0.45);
+text-align: center; padding: 32px 6vw;
+font-size: 0.8rem; font-family: 'Source Code Pro', monospace; letter-spacing: 0.04em;
 }
 .site-footer a { color: var(--sage); text-decoration: none; }
 .site-footer a:hover { color: var(--amber-lt); }
 .site-footer .divider { margin: 0 10px; opacity: 0.3; }
-
-.intro-blurb {
-background: var(--white);
-border-left: 4px solid var(--fern);
-border-radius: 0 6px 6px 0;
-padding: 22px 26px;
-margin-bottom: 48px;
-font-size: 0.94rem;
-color: var(--charcoal);
-box-shadow: var(--card-shadow);
-}
-.intro-blurb strong { color: var(--forest); }
-.intro-blurb code {
-font-family: 'Source Code Pro', monospace;
-font-size: 0.84em;
-background: var(--mist);
-padding: 1px 5px;
-border-radius: 3px;
-color: var(--moss);
-}
 </style>
 <header class="site-header">
 <div class="header-inner">
-<pre><code>&lt;div class=&quot;course-tag&quot;&gt;EA030 &amp;mdash; Environmental Analysis&lt;/div&gt;
-&lt;h1&gt;R&lt;span&gt;Tricks&lt;/span&gt; &amp;mdash; Statistical Computing Resources&lt;/h1&gt;
-&lt;p class=&quot;header-sub&quot;&gt;
-  &lt;strong&gt;Prof. Marc Los Huertos&lt;/strong&gt; &amp;nbsp;&amp;bull;&amp;nbsp; Pomona College
-&lt;/p&gt;
-&lt;div class=&quot;header-meta&quot;&gt;
-  &lt;span class=&quot;meta-pill&quot;&gt;Pomona College&lt;/span&gt;
-  &lt;span class=&quot;meta-pill&quot;&gt;Environmental Analysis&lt;/span&gt;
-  &lt;span class=&quot;meta-pill&quot;&gt;R / RMarkdown / knitr&lt;/span&gt;
-&lt;/div&gt;</code></pre>
+<div class="course-tag">
+EA030 — Environmental Analysis
+</div>
+<h1>
+R<span>Tricks</span> — Statistical Computing Resources
+</h1>
+<p class="header-sub">
+<strong>Prof. Marc Los Huertos</strong>  •  Pomona College
+</p>
+<div class="header-meta">
+<p><span class="meta-pill">Pomona College</span> <span class="meta-pill">Environmental Analysis</span> <span class="meta-pill">R / RMarkdown / knitr</span></p>
+</div>
 </div>
 </header>
 <nav class="site-nav">
 <div class="nav-inner">
-<pre><code>&lt;a href=&quot;#getting-started&quot;&gt;Getting Started&lt;/a&gt;
-&lt;a href=&quot;#basic-stats&quot;&gt;Basic Stats&lt;/a&gt;
-&lt;a href=&quot;#advanced-stats&quot;&gt;Advanced Stats&lt;/a&gt;
-&lt;a href=&quot;#workflows&quot;&gt;Workflows&lt;/a&gt;
-&lt;a href=&quot;#resources&quot;&gt;Resources&lt;/a&gt;</code></pre>
+<p><a href="#getting-started">Getting Started</a>
+<a href="#basic-stats">Basic Stats</a>
+<a href="#advanced-stats">Advanced Stats</a>
+<a href="#workflows">Workflows</a>
+<a href="#resources">Resources</a></p>
 </div>
 </nav>
 <div class="page-body">
@@ -483,9 +313,7 @@ and spatial analysis. Each card below links to a self-contained module
 in the course repository. New modules are added throughout the
 semester.</p>
 </div>
-<hr />
-<div id="getting-started" class="section level2">
-<h2>Getting Started</h2>
+<div id="getting-started">
 <div class="section-header">
 <h2>
 Getting Started
@@ -495,38 +323,44 @@ Setup, orientation, and reproducible workflow fundamentals.
 </p>
 </div>
 <div class="card-grid">
-<a class="card" href="#"> <span class="card-icon">💻</span>
+<a class="card" href="#"><span class="card-icon">💻</span>
 <div class="card-title">
 R &amp; RStudio Setup
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Install R and RStudio, configure your environment, and verify your installation with a test script.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;setup&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="#"> <span class="card-icon">📁</span>
+<p class="card-desc">
+Install R and RStudio, configure your environment, and verify your
+installation with a test script.
+</p>
+<span class="card-tag">setup</span></a> <a class="card" href="#"><span class="card-icon">📁</span>
 <div class="card-title">
 Project Structure
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Organise scripts, data, and outputs using RStudio Projects and a consistent folder hierarchy.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;workflow&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="#"> <span class="card-icon">🧶</span>
+<p class="card-desc">
+Organise scripts, data, and outputs using RStudio Projects and a
+consistent folder hierarchy.
+</p>
+<span class="card-tag">workflow</span></a>
+<a class="card" href="#"><span class="card-icon">🧶</span>
 <div class="card-title">
 RMarkdown &amp; knitr
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Weave prose, code, and output into reproducible reports. YAML headers, chunk options, and rendering.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;reproducibility&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card coming-soon" href="#"> <span class="card-icon">🗃️</span>
+<p class="card-desc">
+Weave prose, code, and output into reproducible reports. YAML headers,
+chunk options, and rendering.
+</p>
+<span class="card-tag">reproducibility</span></a>
+<a class="card coming-soon" href="#"><span class="card-icon">🗃️</span>
 <div class="card-title">
 Data Import
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Reading CSV, Excel, and field-data files. Handling encoding issues and common import pitfalls.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;coming soon&lt;/span&gt;</code></pre>
-<p></a></p>
+<p class="card-desc">
+Reading CSV, Excel, and field-data files. Handling encoding issues and
+common import pitfalls.
+</p>
+<p><span class="card-tag">coming soon</span></a></p>
 </div>
 </div>
-<div id="basic-stats" class="section level2">
-<h2>Basic Statistics</h2>
+<div id="basic-stats">
 <div class="section-header">
 <h2>
 Basic Statistics
@@ -536,52 +370,62 @@ Descriptive summaries, inference, and foundational visualisation.
 </p>
 </div>
 <div class="card-grid">
-<a class="card" href="#"> <span class="card-icon">📊</span>
+<a class="card" href="#"><span class="card-icon">📊</span>
 <div class="card-title">
 Descriptive Statistics
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Measures of centre and spread, frequency tables, and base-R and &lt;code&gt;dplyr&lt;/code&gt; summaries.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;descriptive&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="#"> <span class="card-icon">📈</span>
+<p class="card-desc">
+Measures of centre and spread, frequency tables, and base-R and
+<code>dplyr</code> summaries.
+</p>
+<span class="card-tag">descriptive</span></a>
+<a class="card" href="#"><span class="card-icon">📈</span>
 <div class="card-title">
 Data Visualisation
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Core &lt;code&gt;ggplot2&lt;/code&gt; grammar: geoms, aesthetics, facets, themes, and export-ready figures.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;ggplot2&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="#"> <span class="card-icon">🔬</span>
+<p class="card-desc">
+Core <code>ggplot2</code> grammar: geoms, aesthetics, facets, themes,
+and export-ready figures.
+</p>
+<span class="card-tag">ggplot2</span></a> <a class="card" href="#"><span class="card-icon">🔬</span>
 <div class="card-title">
 Hypothesis Testing
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;t-tests, Wilcoxon tests, proportions tests. Effect sizes, p-values, and common misconceptions.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;inference&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="#"> <span class="card-icon">📉</span>
+<p class="card-desc">
+t-tests, Wilcoxon tests, proportions tests. Effect sizes, p-values, and
+common misconceptions.
+</p>
+<span class="card-tag">inference</span></a>
+<a class="card" href="#"><span class="card-icon">📉</span>
 <div class="card-title">
 Simple Linear Regression
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Fitting, diagnosing, and interpreting OLS models with &lt;code&gt;lm()&lt;/code&gt;. Residual plots and leverage.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;regression&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="#"> <span class="card-icon">🎲</span>
+<p class="card-desc">
+Fitting, diagnosing, and interpreting OLS models with <code>lm()</code>.
+Residual plots and leverage.
+</p>
+<span class="card-tag">regression</span></a>
+<a class="card" href="#"><span class="card-icon">🎲</span>
 <div class="card-title">
 ANOVA &amp; Group Comparisons
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;One-way and two-way ANOVA, post-hoc tests, and visualising group differences.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;anova&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card coming-soon" href="#"> <span class="card-icon">📐</span>
+<p class="card-desc">
+One-way and two-way ANOVA, post-hoc tests, and visualising group
+differences.
+</p>
+<span class="card-tag">anova</span></a>
+<a class="card coming-soon" href="#"><span class="card-icon">📐</span>
 <div class="card-title">
 Correlation Analysis
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Pearson and Spearman correlation, scatterplot matrices, and interpreting correlation structure.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;coming soon&lt;/span&gt;</code></pre>
-<p></a></p>
+<p class="card-desc">
+Pearson and Spearman correlation, scatterplot matrices, and interpreting
+correlation structure.
+</p>
+<p><span class="card-tag">coming soon</span></a></p>
 </div>
 </div>
-<div id="advanced-stats" class="section level2">
-<h2>Advanced Statistics</h2>
+<div id="advanced-stats">
 <div class="section-header">
 <h2>
 Advanced Statistics
@@ -592,52 +436,63 @@ environmental data.
 </p>
 </div>
 <div class="card-grid">
-<a class="card advanced" href="#"> <span class="card-icon">🌿</span>
+<a class="card advanced" href="#"><span class="card-icon">🌿</span>
 <div class="card-title">
 Multiple Regression &amp; GLMs
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Multiple predictors, interactions, model selection (AIC), and generalised linear models for count and binary data.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;glm&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card advanced" href="#"> <span class="card-icon">🏔️</span>
+<p class="card-desc">
+Multiple predictors, interactions, model selection (AIC), and
+generalised linear models for count and binary data.
+</p>
+<span class="card-tag">glm</span></a>
+<a class="card advanced" href="#"><span class="card-icon">🏔️</span>
 <div class="card-title">
 Mixed-Effects Models
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Random intercepts and slopes with &lt;code&gt;lme4&lt;/code&gt;. Nested and crossed random effects for field study designs.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;lme4&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card advanced" href="#"> <span class="card-icon">🗺️</span>
+<p class="card-desc">
+Random intercepts and slopes with <code>lme4</code>. Nested and crossed
+random effects for field study designs.
+</p>
+<span class="card-tag">lme4</span></a>
+<a class="card advanced" href="#"><span class="card-icon">🗺️</span>
 <div class="card-title">
 Spatial Analysis
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Importing shapefiles, CRS transformations, spatial joins, and choropleth maps with &lt;code&gt;sf&lt;/code&gt; and &lt;code&gt;ggplot2&lt;/code&gt;.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;sf / terra&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card advanced" href="#"> <span class="card-icon">🕸️</span>
+<p class="card-desc">
+Importing shapefiles, CRS transformations, spatial joins, and choropleth
+maps with <code>sf</code> and <code>ggplot2</code>.
+</p>
+<span class="card-tag">sf / terra</span></a>
+<a class="card advanced" href="#"><span class="card-icon">🕸️</span>
 <div class="card-title">
 Multivariate Ordination
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;PCA, NMDS, and RDA for community and environmental gradient data using &lt;code&gt;vegan&lt;/code&gt;.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;vegan&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card advanced coming-soon" href="#"> <span class="card-icon">⏱️</span>
+<p class="card-desc">
+PCA, NMDS, and RDA for community and environmental gradient data using
+<code>vegan</code>.
+</p>
+<span class="card-tag">vegan</span></a>
+<a class="card advanced coming-soon" href="#"><span class="card-icon">⏱️</span>
 <div class="card-title">
 Time-Series Analysis
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Decomposition, autocorrelation, ARIMA, and sensor-data workflows with &lt;code&gt;lubridate&lt;/code&gt; and &lt;code&gt;tsibble&lt;/code&gt;.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;coming soon&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card advanced coming-soon" href="#"> <span class="card-icon">🔁</span>
+<p class="card-desc">
+Decomposition, autocorrelation, ARIMA, and sensor-data workflows with
+<code>lubridate</code> and <code>tsibble</code>.
+</p>
+<span class="card-tag">coming soon</span></a>
+<a class="card advanced coming-soon" href="#"><span class="card-icon">🔁</span>
 <div class="card-title">
 Bootstrapping &amp; Permutation
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Resampling-based inference, confidence intervals, and randomisation tests for non-standard designs.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;coming soon&lt;/span&gt;</code></pre>
-<p></a></p>
+<p class="card-desc">
+Resampling-based inference, confidence intervals, and randomisation
+tests for non-standard designs.
+</p>
+<p><span class="card-tag">coming soon</span></a></p>
 </div>
 </div>
-<div id="workflows" class="section level2">
-<h2>Workflows &amp; Data Wrangling</h2>
+<div id="workflows">
 <div class="section-header">
 <h2>
 Workflows &amp; Data Wrangling
@@ -647,46 +502,56 @@ Tidy data pipelines, version control, and collaborative practices.
 </p>
 </div>
 <div class="card-grid">
-<a class="card" href="#"> <span class="card-icon">🔧</span>
+<a class="card" href="#"><span class="card-icon">🔧</span>
 <div class="card-title">
 Tidyverse Data Wrangling
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;&lt;code&gt;dplyr&lt;/code&gt; verbs, &lt;code&gt;tidyr&lt;/code&gt; pivoting, and pipe-based workflows for cleaning field and lab data.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;tidyverse&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="#"> <span class="card-icon">🐙</span>
+<p class="card-desc">
+<code>dplyr</code> verbs, <code>tidyr</code> pivoting, and pipe-based
+workflows for cleaning field and lab data.
+</p>
+<span class="card-tag">tidyverse</span></a>
+<a class="card" href="#"><span class="card-icon">🐙</span>
 <div class="card-title">
 Git &amp; GitHub for R
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Version-control basics, committing from RStudio, branching, and submitting work via pull request.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;git&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card coming-soon" href="#"> <span class="card-icon">📦</span>
+<p class="card-desc">
+Version-control basics, committing from RStudio, branching, and
+submitting work via pull request.
+</p>
+<span class="card-tag">git</span></a>
+<a class="card coming-soon" href="#"><span class="card-icon">📦</span>
 <div class="card-title">
 Package Management
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Using &lt;code&gt;renv&lt;/code&gt; to lock package versions and share reproducible environments across machines.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;coming soon&lt;/span&gt;</code></pre>
-<p></a></p>
+<p class="card-desc">
+Using <code>renv</code> to lock package versions and share reproducible
+environments across machines.
+</p>
+<p><span class="card-tag">coming soon</span></a></p>
+</div>
 </div>
 <div class="quick-ref">
 <div>
-<pre><code>&lt;h3&gt;Quick Reference&lt;/h3&gt;
-&lt;p&gt;
-  Repository lives at &lt;code&gt;github.com/marcloshuertos/RTricks&lt;/code&gt;.
-  Each module folder contains an &lt;code&gt;index.Rmd&lt;/code&gt;, a &lt;code&gt;data/&lt;/code&gt;
-  subfolder, and rendered HTML. Clone the repo or follow links above.
-&lt;/p&gt;</code></pre>
+<h3>
+Quick Reference
+</h3>
+<p>
+Repository lives at <code>github.com/marclos/RTricks</code>. Each module
+folder contains an <code>index.Rmd</code>, a <code>data/</code>
+subfolder, and rendered HTML. Clone the repo or follow links above.
+</p>
 </div>
 <div class="ref-links">
-<pre><code>&lt;a class=&quot;ref-link&quot; href=&quot;https://github.com/marcloshuertos/RTricks&quot;&gt;↗ GitHub Repo&lt;/a&gt;
-&lt;a class=&quot;ref-link&quot; href=&quot;https://www.pomona.edu/academics/departments/environmental-analysis&quot;&gt;↗ EA @ Pomona&lt;/a&gt;
-&lt;a class=&quot;ref-link&quot; href=&quot;https://rmarkdown.rstudio.com/docs/&quot;&gt;↗ RMarkdown Docs&lt;/a&gt;</code></pre>
+<p><a class="ref-link" href="https://github.com/marclos/RTricks">↗
+GitHub Repo</a>
+<a class="ref-link" href="https://www.pomona.edu/academics/departments/environmental-analysis">↗
+EA @ Pomona</a>
+<a class="ref-link" href="https://rmarkdown.rstudio.com/docs/">↗
+RMarkdown Docs</a></p>
 </div>
 </div>
-</div>
-<div id="resources" class="section level2">
-<h2>Additional Resources</h2>
+<div id="resources">
 <div class="section-header">
 <h2>
 Additional Resources
@@ -696,44 +561,48 @@ External references and community tools curated for EA030.
 </p>
 </div>
 <div class="card-grid">
-<a class="card" href="https://r4ds.hadley.nz/" target="_blank" rel="noopener">
-<span class="card-icon">📖</span>
+<a class="card" href="https://r4ds.hadley.nz/" target="_blank" rel="noopener"><span class="card-icon">📖</span>
 <div class="card-title">
 R for Data Science (2e)
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Hadley Wickham &amp;amp; Mine Çetinkaya-Rundel. The canonical tidyverse reference, freely available online.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;external&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="https://www.statmethods.net/" target="_blank" rel="noopener">
-<span class="card-icon">🔍</span>
+<p class="card-desc">
+Hadley Wickham &amp; Mine Çetinkaya-Rundel. The canonical tidyverse
+reference, freely available online.
+</p>
+<span class="card-tag">external</span></a>
+<a class="card" href="https://www.statmethods.net/" target="_blank" rel="noopener"><span class="card-icon">🔍</span>
 <div class="card-title">
 Quick-R Reference
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Dense, searchable reference for base-R syntax — useful as a cheat-sheet during lab sessions.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;external&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="https://ggplot2.tidyverse.org/reference/" target="_blank" rel="noopener">
-<span class="card-icon">🎨</span>
+<p class="card-desc">
+Dense, searchable reference for base-R syntax — useful as a cheat-sheet
+during lab sessions.
+</p>
+<span class="card-tag">external</span></a>
+<a class="card" href="https://ggplot2.tidyverse.org/reference/" target="_blank" rel="noopener"><span class="card-icon">🎨</span>
 <div class="card-title">
 ggplot2 Reference
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Full function reference for every geom, stat, scale, and theme component in ggplot2.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;external&lt;/span&gt;</code></pre>
-<p></a></p>
-<a class="card" href="https://posit.co/resources/cheatsheets/" target="_blank" rel="noopener">
-<span class="card-icon">📋</span>
+<p class="card-desc">
+Full function reference for every geom, stat, scale, and theme component
+in ggplot2.
+</p>
+<span class="card-tag">external</span></a>
+<a class="card" href="https://posit.co/resources/cheatsheets/" target="_blank" rel="noopener"><span class="card-icon">📋</span>
 <div class="card-title">
 Posit Cheatsheets
 </div>
-<pre><code>&lt;p class=&quot;card-desc&quot;&gt;Official one-page PDF cheatsheets for ggplot2, dplyr, tidyr, RMarkdown, and more — print and post.&lt;/p&gt;
-&lt;span class=&quot;card-tag&quot;&gt;external&lt;/span&gt;</code></pre>
-<p></a></p>
+<p class="card-desc">
+Official one-page PDF cheatsheets for ggplot2, dplyr, tidyr, RMarkdown,
+and more — print and post.
+</p>
+<p><span class="card-tag">external</span></a></p>
 </div>
 </div>
 </div>
 <footer class="site-footer">
-EA030 RTricks  <span class="divider">|</span>  Prof. Marc Los Huertos
- <span class="divider">|</span>  Pomona College  <span class="divider">|</span>  Last updated: March 2026  <span class="divider">|</span> 
+EA030 RTricks <span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College <span class="divider">|</span> Last updated: March 2026 <span class="divider">|</span>
 <a href="https://github.com/marclos/RTricks">GitHub</a>
 </footer>
 
