@@ -10,9 +10,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="author" content="Professor Marc Los Huertos, Pomona College" />
 
-<meta name="date" content="2026-03-24" />
 
 <title>EA030 — R Resources</title>
 
@@ -57,11 +55,19 @@ ul.task-list{list-style: none;}
 
 
 <h1 class="title toc-ignore">EA030 — R Resources</h1>
-<h4 class="author">Professor Marc Los Huertos, Pomona College</h4>
-<h4 class="date">March 24, 2026</h4>
 
 
 
+<!-- ============================================================ -->
+<!--  EDIT YOUR CONTENT HERE — no HTML knowledge needed           -->
+<!--  Each list() is one card. Fields:                            -->
+<!--    title, desc, icon, tag, href, type                        -->
+<!--  type = "basic" | "advanced" | "project" | "core"           -->
+<!--  Set href = "" to mark a card as "coming soon"               -->
+<!-- ============================================================ -->
+<!-- ============================================================ -->
+<!--  RENDERING ENGINE — no need to edit below this line          -->
+<!-- ============================================================ -->
 <style type="text/css">
 @font-face {
 font-family: 'Lato';
@@ -135,148 +141,116 @@ src: url(data:font/ttf;base64,AAEAAAARAQAABAAQQkFTRVT/bgMAAAHUAAAARkdERUasYav/AA
 --amber-lt: #e8a84a;
 --rust: #8b3a2a;
 --white: #ffffff;
---card-shadow: 0 2px 12px rgba(30,58,47,0.10), 0 1px 3px rgba(30,58,47,0.07);
---card-hover: 0 8px 28px rgba(30,58,47,0.16), 0 2px 8px rgba(30,58,47,0.10);
+--card-shadow: 0 2px 12px rgba(30,58,47,.10), 0 1px 3px rgba(30,58,47,.07);
+--card-hover: 0 8px 28px rgba(30,58,47,.16), 0 2px 8px rgba(30,58,47,.10);
 }
 html { scroll-behavior: smooth; }
-body {
-font-family: 'Lato', sans-serif;
-background-color: var(--cream);
-color: var(--ink);
-font-size: 16px;
-line-height: 1.7;
-}
-
+body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); font-size: 16px; line-height: 1.7; }
 .main-container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
 h1.title, h4.author, h4.date { display: none; }
 
 .site-header {
 background-image:
-repeating-linear-gradient(120deg, transparent, transparent 60px,
-rgba(255,255,255,0.018) 60px, rgba(255,255,255,0.018) 61px),
+repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
 linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
-color: #fff;
-padding: 56px 6vw 48px;
-position: relative;
-overflow: hidden;
-border-bottom: 4px solid var(--amber);
+color: #fff; padding: 56px 6vw 48px; position: relative; overflow: hidden; border-bottom: 4px solid var(--amber);
 }
 .site-header::after {
-content: ''; position: absolute; right: -60px; top: -60px;
-width: 340px; height: 340px; border-radius: 50%;
-background: radial-gradient(circle, rgba(138,173,150,0.12) 0%, transparent 70%);
-pointer-events: none;
+content: ''; position: absolute; right: -60px; top: -60px; width: 340px; height: 340px; border-radius: 50%;
+background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%); pointer-events: none;
 }
 .header-inner { max-width: 1100px; margin: 0 auto; }
 .course-tag {
-display: inline-block;
-font-family: 'Source Code Pro', monospace;
-font-size: 0.72rem; font-weight: 600;
-letter-spacing: 0.18em; text-transform: uppercase;
-color: var(--amber-lt);
-border: 1px solid rgba(200,131,42,0.45);
-padding: 3px 10px; border-radius: 2px; margin-bottom: 18px;
+display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .72rem; font-weight: 600;
+letter-spacing: .18em; text-transform: uppercase; color: var(--amber-lt);
+border: 1px solid rgba(200,131,42,.45); padding: 3px 10px; border-radius: 2px; margin-bottom: 18px;
 }
 .site-header h1 {
-font-family: 'Libre Baskerville', serif;
-font-size: clamp(2rem, 4vw, 3rem); font-weight: 700;
-line-height: 1.18; color: #fff;
-letter-spacing: -0.01em; margin-bottom: 10px;
+font-family: 'Libre Baskerville', serif; font-size: clamp(2rem,4vw,3rem); font-weight: 700;
+line-height: 1.18; color: #fff; letter-spacing: -.01em; margin-bottom: 10px;
 }
 .site-header h1 span { color: var(--sage); }
-.header-sub { font-size: 0.97rem; font-weight: 300; color: rgba(255,255,255,0.72); }
-.header-sub strong { font-weight: 700; color: rgba(255,255,255,0.92); }
+.header-sub { font-size: .97rem; font-weight: 300; color: rgba(255,255,255,.72); }
+.header-sub strong { font-weight: 700; color: rgba(255,255,255,.92); }
 .header-meta { margin-top: 22px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-.meta-pill { font-family: 'Source Code Pro', monospace; font-size: 0.75rem; color: var(--sage); letter-spacing: 0.06em; }
-.meta-pill::before { content: '\25B8 '; opacity: 0.6; }
+.meta-pill { font-family: 'Source Code Pro', monospace; font-size: .75rem; color: var(--sage); letter-spacing: .06em; }
+.meta-pill::before { content: '\25B8 '; opacity: .6; }
 
-.site-nav {
-background: var(--ink); padding: 0 6vw;
-position: sticky; top: 0; z-index: 100;
-border-bottom: 2px solid var(--amber);
-}
-.nav-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; }
+.site-nav { background: var(--ink); padding: 0 6vw; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--amber); }
+.nav-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; flex-wrap: wrap; }
 .site-nav a {
-display: inline-block;
-font-family: 'Source Code Pro', monospace; font-size: 0.75rem;
-font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-color: rgba(255,255,255,0.6); text-decoration: none;
-padding: 13px 16px; border-bottom: 2px solid transparent;
-transition: color 0.2s, border-color 0.2s;
+display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .72rem;
+font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,.6);
+text-decoration: none; padding: 12px 14px; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s;
 }
 .site-nav a:hover { color: var(--amber-lt); border-bottom-color: var(--amber); }
 
+.nav-divider { font-family: 'Source Code Pro', monospace; font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.25); padding: 12px 8px; align-self: center; }
+
 .page-body { max-width: 1100px; margin: 0 auto; padding: 52px 6vw 80px; }
 
-.section-header { margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid var(--parchment); }
-.section-header h2 { font-family: 'Libre Baskerville', serif; font-size: 1.55rem; font-weight: 700; color: var(--forest); letter-spacing: -0.01em; }
-.section-header p { font-size: 0.93rem; color: var(--dust); margin-top: 4px; }
+.section-header { margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid var(--parchment); margin-top: 52px; }
+.section-header:first-child { margin-top: 0; }
+.section-header h2 { font-family: 'Libre Baskerville', serif; font-size: 1.5rem; font-weight: 700; color: var(--forest); letter-spacing: -.01em; }
+.section-header p { font-size: .93rem; color: var(--dust); margin-top: 4px; }
 
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 20px; margin-bottom: 56px; }
+#core-r .section-header h2::before { content: 'Core Skills '; font-family: 'Source Code Pro', monospace; font-size: .65rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--fern); background: var(--mist); padding: 2px 7px; border-radius: 2px; margin-right: 10px; vertical-align: middle; }
+#ea030-projects .section-header h2::before { content: 'EA030 Projects '; font-family: 'Source Code Pro', monospace; font-size: .65rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--amber); background: #fdf0e0; padding: 2px 7px; border-radius: 2px; margin-right: 10px; vertical-align: middle; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 20px; margin-bottom: 12px; }
 .card {
 background: var(--white); border: 1px solid var(--mist); border-radius: 6px;
-padding: 26px 24px 22px; text-decoration: none; color: inherit;
-display: flex; flex-direction: column;
-box-shadow: var(--card-shadow);
-transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-position: relative; overflow: hidden;
+padding: 24px 22px 20px; text-decoration: none; color: inherit;
+display: flex; flex-direction: column; box-shadow: var(--card-shadow);
+transition: transform .2s, box-shadow .2s, border-color .2s; position: relative; overflow: hidden;
 }
-.card::before {
-content: ''; position: absolute; top: 0; left: 0;
-width: 4px; height: 100%; background: var(--sage); transition: background 0.2s;
-}
+.card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--sage); transition: background .2s; }
 .card:hover { transform: translateY(-3px); box-shadow: var(--card-hover); border-color: var(--sage); }
 .card:hover::before { background: var(--fern); }
-.card.advanced::before { background: var(--amber); }
-.card.advanced:hover::before { background: var(--rust); }
-.card.advanced:hover { border-color: var(--amber-lt); }
-.card.coming-soon { opacity: 0.55; cursor: default; pointer-events: none; filter: grayscale(0.3); }
-.card-icon { font-size: 1.4rem; margin-bottom: 12px; display: block; line-height: 1; }
-.card-title { font-family: 'Libre Baskerville', serif; font-size: 1.02rem; font-weight: 700; color: var(--forest); margin-bottom: 6px; }
-.card-desc { font-size: 0.86rem; color: var(--dust); line-height: 1.55; flex-grow: 1; }
+
+#ea030-projects .card::before { background: var(--amber); }
+#ea030-projects .card:hover::before { background: var(--rust); }
+#ea030-projects .card:hover { border-color: var(--amber-lt); }
+.card.coming-soon { opacity: .52; cursor: default; pointer-events: none; filter: grayscale(.3); }
+.card-icon { font-size: 1.35rem; margin-bottom: 10px; display: block; line-height: 1; }
+.card-title { font-family: 'Libre Baskerville', serif; font-size: 1rem; font-weight: 700; color: var(--forest); margin-bottom: 5px; }
+.card-desc { font-size: .85rem; color: var(--dust); line-height: 1.55; flex-grow: 1; }
 .card-tag {
-display: inline-block; margin-top: 14px;
-font-family: 'Source Code Pro', monospace; font-size: 0.68rem;
-letter-spacing: 0.1em; text-transform: uppercase;
-padding: 2px 8px; border-radius: 2px;
-background: var(--mist); color: var(--fern); font-weight: 600; align-self: flex-start;
+display: inline-block; margin-top: 13px;
+font-family: 'Source Code Pro', monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase;
+padding: 2px 7px; border-radius: 2px; background: var(--mist); color: var(--fern); font-weight: 600; align-self: flex-start;
 }
-.card.advanced .card-tag { background: #fdf0e0; color: var(--amber); }
+#ea030-projects .card-tag { background: #fdf0e0; color: var(--amber); }
 .card.coming-soon .card-tag { background: var(--parchment); color: var(--dust); }
 
 .quick-ref {
-background: var(--forest); color: #fff; border-radius: 6px;
-padding: 32px 36px; margin-bottom: 56px;
+background: var(--forest); color: #fff; border-radius: 6px; padding: 28px 32px; margin: 48px 0;
 display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px;
 }
-.quick-ref h3 { font-family: 'Libre Baskerville', serif; font-size: 1.1rem; color: var(--sage); margin-bottom: 6px; }
-.quick-ref p { font-size: 0.88rem; color: rgba(255,255,255,0.7); }
-.quick-ref code { font-family: 'Source Code Pro', monospace; font-size: 0.82rem; background: rgba(255,255,255,0.1); color: var(--amber-lt); padding: 2px 6px; border-radius: 3px; }
-.ref-links { display: flex; flex-direction: column; gap: 8px; }
+.quick-ref h3 { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; color: var(--sage); margin-bottom: 5px; }
+.quick-ref p { font-size: .87rem; color: rgba(255,255,255,.68); }
+.quick-ref code { font-family: 'Source Code Pro', monospace; font-size: .8rem; background: rgba(255,255,255,.1); color: var(--amber-lt); padding: 1px 5px; border-radius: 3px; }
+.ref-links { display: flex; flex-direction: column; gap: 7px; }
 .ref-link {
-font-family: 'Source Code Pro', monospace; font-size: 0.75rem; letter-spacing: 0.05em;
-color: var(--amber-lt); text-decoration: none;
-border: 1px solid rgba(200,131,42,0.4); padding: 7px 14px; border-radius: 3px;
-transition: background 0.2s; white-space: nowrap; text-align: center;
+font-family: 'Source Code Pro', monospace; font-size: .73rem; letter-spacing: .05em;
+color: var(--amber-lt); text-decoration: none; border: 1px solid rgba(200,131,42,.4);
+padding: 6px 13px; border-radius: 3px; transition: background .2s; white-space: nowrap; text-align: center;
 }
-.ref-link:hover { background: rgba(200,131,42,0.15); }
+.ref-link:hover { background: rgba(200,131,42,.15); }
 
 .intro-blurb {
-background: var(--white); border-left: 4px solid var(--fern);
-border-radius: 0 6px 6px 0; padding: 22px 26px; margin-bottom: 48px;
-font-size: 0.94rem; color: var(--charcoal); box-shadow: var(--card-shadow);
+background: var(--white); border-left: 4px solid var(--fern); border-radius: 0 6px 6px 0;
+padding: 20px 24px; margin-bottom: 44px; font-size: .93rem; color: var(--charcoal); box-shadow: var(--card-shadow);
 }
 .intro-blurb strong { color: var(--forest); }
-.intro-blurb code { font-family: 'Source Code Pro', monospace; font-size: 0.84em; background: var(--mist); padding: 1px 5px; border-radius: 3px; color: var(--moss); }
 
 .site-footer {
-background: var(--ink); color: rgba(255,255,255,0.45);
-text-align: center; padding: 32px 6vw;
-font-size: 0.8rem; font-family: 'Source Code Pro', monospace; letter-spacing: 0.04em;
+background: var(--ink); color: rgba(255,255,255,.42); text-align: center; padding: 28px 6vw;
+font-size: .78rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
 }
 .site-footer a { color: var(--sage); text-decoration: none; }
 .site-footer a:hover { color: var(--amber-lt); }
-.site-footer .divider { margin: 0 10px; opacity: 0.3; }
+.site-footer .divider { margin: 0 9px; opacity: .3; }
 </style>
 <header class="site-header">
 <div class="header-inner">
@@ -298,20 +272,18 @@ R<span>Tricks</span> — Statistical Computing Resources
 <div class="nav-inner">
 <p><a href="#getting-started">Getting Started</a>
 <a href="#basic-stats">Basic Stats</a>
-<a href="#advanced-stats">Advanced Stats</a>
-<a href="#workflows">Workflows</a>
-<a href="#resources">Resources</a></p>
+<a href="#advanced-stats">Advanced Stats</a> <span class="nav-divider">│</span> <a href="#core-r">Core R Skills</a>
+<a href="#ea030-projects">Field &amp; Lab Projects</a> <span class="nav-divider">│</span> <a href="#resources">Resources</a></p>
 </div>
 </nav>
 <div class="page-body">
 <div class="intro-blurb">
 <p>Welcome to the <strong>RTricks</strong> resource hub for
-<strong>EA030</strong>. This site collects tutorials, worked examples,
-and reference materials for using <code>R</code> in environmental data
-analysis — from loading your first dataset through mixed-effects models
-and spatial analysis. Each card below links to a self-contained module
-in the course repository. New modules are added throughout the
-semester.</p>
+<strong>EA030</strong>. Tutorials, worked examples, and reference
+materials for R in environmental data analysis — from loading your first
+dataset through mixed-effects models and spatial analysis. Each card
+links to a self-contained module; cards marked <em>coming soon</em> are
+in progress.</p>
 </div>
 <div id="getting-started">
 <div class="section-header">
@@ -323,15 +295,16 @@ Setup, orientation, and reproducible workflow fundamentals.
 </p>
 </div>
 <div class="card-grid">
-<a class="card" href="#"><span class="card-icon">💻</span>
+<a class="card coming-soon" href="#"> <span class="card-icon">💻</span>
 <div class="card-title">
 R &amp; RStudio Setup
 </div>
 <p class="card-desc">
-Install R and RStudio, configure your environment, and verify your
-installation with a test script.
+Install R and RStudio, configure your environment, and verify with a
+test script.
 </p>
-<span class="card-tag">setup</span></a> <a class="card" href="#"><span class="card-icon">📁</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">📁</span>
 <div class="card-title">
 Project Structure
 </div>
@@ -339,25 +312,25 @@ Project Structure
 Organise scripts, data, and outputs using RStudio Projects and a
 consistent folder hierarchy.
 </p>
-<span class="card-tag">workflow</span></a>
-<a class="card" href="#"><span class="card-icon">🧶</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🧶</span>
 <div class="card-title">
 RMarkdown &amp; knitr
 </div>
 <p class="card-desc">
 Weave prose, code, and output into reproducible reports. YAML headers,
-chunk options, and rendering.
+chunk options, rendering.
 </p>
-<span class="card-tag">reproducibility</span></a>
-<a class="card coming-soon" href="#"><span class="card-icon">🗃️</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🗃️</span>
 <div class="card-title">
 Data Import
 </div>
 <p class="card-desc">
 Reading CSV, Excel, and field-data files. Handling encoding issues and
-common import pitfalls.
+common pitfalls.
 </p>
-<p><span class="card-tag">coming soon</span></a></p>
+<p><span class="card-tag">coming soon</span> </a></p>
 </div>
 </div>
 <div id="basic-stats">
@@ -370,42 +343,43 @@ Descriptive summaries, inference, and foundational visualisation.
 </p>
 </div>
 <div class="card-grid">
-<a class="card" href="#"><span class="card-icon">📊</span>
+<a class="card coming-soon" href="#"> <span class="card-icon">📊</span>
 <div class="card-title">
 Descriptive Statistics
 </div>
 <p class="card-desc">
-Measures of centre and spread, frequency tables, and base-R and
-<code>dplyr</code> summaries.
+Measures of centre and spread, frequency tables, base-R and dplyr
+summaries.
 </p>
-<span class="card-tag">descriptive</span></a>
-<a class="card" href="#"><span class="card-icon">📈</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">📈</span>
 <div class="card-title">
 Data Visualisation
 </div>
 <p class="card-desc">
-Core <code>ggplot2</code> grammar: geoms, aesthetics, facets, themes,
-and export-ready figures.
+Core ggplot2 grammar: geoms, aesthetics, facets, themes, and
+export-ready figures.
 </p>
-<span class="card-tag">ggplot2</span></a> <a class="card" href="#"><span class="card-icon">🔬</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🔬</span>
 <div class="card-title">
 Hypothesis Testing
 </div>
 <p class="card-desc">
-t-tests, Wilcoxon tests, proportions tests. Effect sizes, p-values, and
+t-tests, Wilcoxon tests, proportions tests. Effect sizes, p-values,
 common misconceptions.
 </p>
-<span class="card-tag">inference</span></a>
-<a class="card" href="#"><span class="card-icon">📉</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">📉</span>
 <div class="card-title">
 Simple Linear Regression
 </div>
 <p class="card-desc">
-Fitting, diagnosing, and interpreting OLS models with <code>lm()</code>.
-Residual plots and leverage.
+Fitting, diagnosing, and interpreting OLS models with lm(). Residual
+plots and leverage.
 </p>
-<span class="card-tag">regression</span></a>
-<a class="card" href="#"><span class="card-icon">🎲</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🎲</span>
 <div class="card-title">
 ANOVA &amp; Group Comparisons
 </div>
@@ -413,8 +387,8 @@ ANOVA &amp; Group Comparisons
 One-way and two-way ANOVA, post-hoc tests, and visualising group
 differences.
 </p>
-<span class="card-tag">anova</span></a>
-<a class="card coming-soon" href="#"><span class="card-icon">📐</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">📐</span>
 <div class="card-title">
 Correlation Analysis
 </div>
@@ -422,7 +396,7 @@ Correlation Analysis
 Pearson and Spearman correlation, scatterplot matrices, and interpreting
 correlation structure.
 </p>
-<p><span class="card-tag">coming soon</span></a></p>
+<p><span class="card-tag">coming soon</span> </a></p>
 </div>
 </div>
 <div id="advanced-stats">
@@ -436,52 +410,52 @@ environmental data.
 </p>
 </div>
 <div class="card-grid">
-<a class="card advanced" href="#"><span class="card-icon">🌿</span>
+<a class="card coming-soon" href="#"> <span class="card-icon">🌿</span>
 <div class="card-title">
 Multiple Regression &amp; GLMs
 </div>
 <p class="card-desc">
-Multiple predictors, interactions, model selection (AIC), and
-generalised linear models for count and binary data.
+Multiple predictors, interactions, model selection (AIC), and GLMs for
+count and binary data.
 </p>
-<span class="card-tag">glm</span></a>
-<a class="card advanced" href="#"><span class="card-icon">🏔️</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🏔️</span>
 <div class="card-title">
 Mixed-Effects Models
 </div>
 <p class="card-desc">
-Random intercepts and slopes with <code>lme4</code>. Nested and crossed
-random effects for field study designs.
+Random intercepts and slopes with lme4. Nested and crossed random
+effects for field designs.
 </p>
-<span class="card-tag">lme4</span></a>
-<a class="card advanced" href="#"><span class="card-icon">🗺️</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🗺️</span>
 <div class="card-title">
 Spatial Analysis
 </div>
 <p class="card-desc">
 Importing shapefiles, CRS transformations, spatial joins, and choropleth
-maps with <code>sf</code> and <code>ggplot2</code>.
+maps with sf.
 </p>
-<span class="card-tag">sf / terra</span></a>
-<a class="card advanced" href="#"><span class="card-icon">🕸️</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🕸️</span>
 <div class="card-title">
 Multivariate Ordination
 </div>
 <p class="card-desc">
 PCA, NMDS, and RDA for community and environmental gradient data using
-<code>vegan</code>.
+vegan.
 </p>
-<span class="card-tag">vegan</span></a>
-<a class="card advanced coming-soon" href="#"><span class="card-icon">⏱️</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">⏱️</span>
 <div class="card-title">
 Time-Series Analysis
 </div>
 <p class="card-desc">
 Decomposition, autocorrelation, ARIMA, and sensor-data workflows with
-<code>lubridate</code> and <code>tsibble</code>.
+lubridate and tsibble.
 </p>
-<span class="card-tag">coming soon</span></a>
-<a class="card advanced coming-soon" href="#"><span class="card-icon">🔁</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🔁</span>
 <div class="card-title">
 Bootstrapping &amp; Permutation
 </div>
@@ -489,66 +463,131 @@ Bootstrapping &amp; Permutation
 Resampling-based inference, confidence intervals, and randomisation
 tests for non-standard designs.
 </p>
-<p><span class="card-tag">coming soon</span></a></p>
+<p><span class="card-tag">coming soon</span> </a></p>
 </div>
 </div>
-<div id="workflows">
+<div id="core-r">
 <div class="section-header">
 <h2>
-Workflows &amp; Data Wrangling
+Core R Skills
 </h2>
 <p>
-Tidy data pipelines, version control, and collaborative practices.
+General-purpose, transferable R techniques applicable beyond EA030.
 </p>
 </div>
 <div class="card-grid">
-<a class="card" href="#"><span class="card-icon">🔧</span>
+<a class="card coming-soon" href="#"> <span class="card-icon">🔧</span>
 <div class="card-title">
 Tidyverse Data Wrangling
 </div>
 <p class="card-desc">
-<code>dplyr</code> verbs, <code>tidyr</code> pivoting, and pipe-based
-workflows for cleaning field and lab data.
+dplyr verbs, tidyr pivoting, and pipe-based workflows for cleaning field
+and lab data.
 </p>
-<span class="card-tag">tidyverse</span></a>
-<a class="card" href="#"><span class="card-icon">🐙</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🐙</span>
 <div class="card-title">
 Git &amp; GitHub for R
 </div>
 <p class="card-desc">
 Version-control basics, committing from RStudio, branching, and
-submitting work via pull request.
+submitting via pull request.
 </p>
-<span class="card-tag">git</span></a>
-<a class="card coming-soon" href="#"><span class="card-icon">📦</span>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">📦</span>
 <div class="card-title">
-Package Management
+Package Management with renv
 </div>
 <p class="card-desc">
-Using <code>renv</code> to lock package versions and share reproducible
-environments across machines.
+Lock package versions and share reproducible environments across
+machines.
 </p>
-<p><span class="card-tag">coming soon</span></a></p>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🔄</span>
+<div class="card-title">
+Functional Programming
+</div>
+<p class="card-desc">
+purrr::map() and friends to replace loops, write cleaner code, and
+automate repetitive tasks.
+</p>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">📋</span>
+<div class="card-title">
+Tables &amp; Reporting
+</div>
+<p class="card-desc">
+Publication-quality tables with kableExtra, gt, and flextable. Inline R
+in RMarkdown.
+</p>
+<p><span class="card-tag">coming soon</span> </a></p>
 </div>
 </div>
-<div class="quick-ref">
-<div>
-<h3>
-Quick Reference
-</h3>
+<div id="ea030-projects">
+<div class="section-header">
+<h2>
+EA030 Field &amp; Lab Projects
+</h2>
 <p>
-Repository lives at <code>github.com/marclos/RTricks</code>. Each module
-folder contains an <code>index.Rmd</code>, a <code>data/</code>
-subfolder, and rendered HTML. Clone the repo or follow links above.
+Course-specific modules tied to EA030 assignments, field campaigns, and
+shared datasets.
 </p>
 </div>
-<div class="ref-links">
-<p><a class="ref-link" href="https://github.com/marclos/RTricks">↗
-GitHub Repo</a>
-<a class="ref-link" href="https://www.pomona.edu/academics/departments/environmental-analysis">↗
-EA @ Pomona</a>
-<a class="ref-link" href="https://rmarkdown.rstudio.com/docs/">↗
-RMarkdown Docs</a></p>
+<div class="card-grid">
+<a class="card coming-soon" href="#"> <span class="card-icon">🌱</span>
+<div class="card-title">
+Soil Carbon Analysis
+</div>
+<p class="card-desc">
+Importing and cleaning soil survey data, fitting depth profiles, and
+comparing land-use treatments.
+</p>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">💧</span>
+<div class="card-title">
+Water Quality Monitoring
+</div>
+<p class="card-desc">
+Time-series of field sensor data, detecting exceedances, and visualising
+spatial variation.
+</p>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🦋</span>
+<div class="card-title">
+Biodiversity Surveys
+</div>
+<p class="card-desc">
+Species richness, rarefaction curves, and community composition with
+vegan.
+</p>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🌡️</span>
+<div class="card-title">
+Climate Data &amp; Trends
+</div>
+<p class="card-desc">
+Downloading NOAA/EPA data, trend detection, and visualising temperature
+and precipitation records.
+</p>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">🏙️</span>
+<div class="card-title">
+Urban Heat Island
+</div>
+<p class="card-desc">
+Raster data from Landsat, land-cover classification, and surface
+temperature analysis.
+</p>
+<span class="card-tag">coming soon</span> </a>
+<a class="card coming-soon" href="#"> <span class="card-icon">📍</span>
+<div class="card-title">
+GPS &amp; Field Data Integration
+</div>
+<p class="card-desc">
+Joining GPS tracks with field observations, plotting on basemaps, and
+exporting for reports.
+</p>
+<p><span class="card-tag">coming soon</span> </a></p>
 </div>
 </div>
 <div id="resources">
@@ -561,16 +600,16 @@ External references and community tools curated for EA030.
 </p>
 </div>
 <div class="card-grid">
-<a class="card" href="https://r4ds.hadley.nz/" target="_blank" rel="noopener"><span class="card-icon">📖</span>
+<a class="card" href="https://r4ds.hadley.nz/"> <span class="card-icon">📖</span>
 <div class="card-title">
 R for Data Science (2e)
 </div>
 <p class="card-desc">
-Hadley Wickham &amp; Mine Çetinkaya-Rundel. The canonical tidyverse
-reference, freely available online.
+Hadley Wickham &amp; Mine Cetinkaya-Rundel. The canonical tidyverse
+reference, freely online.
 </p>
-<span class="card-tag">external</span></a>
-<a class="card" href="https://www.statmethods.net/" target="_blank" rel="noopener"><span class="card-icon">🔍</span>
+<span class="card-tag">external</span> </a>
+<a class="card" href="https://www.statmethods.net/"> <span class="card-icon">🔍</span>
 <div class="card-title">
 Quick-R Reference
 </div>
@@ -578,8 +617,8 @@ Quick-R Reference
 Dense, searchable reference for base-R syntax — useful as a cheat-sheet
 during lab sessions.
 </p>
-<span class="card-tag">external</span></a>
-<a class="card" href="https://ggplot2.tidyverse.org/reference/" target="_blank" rel="noopener"><span class="card-icon">🎨</span>
+<span class="card-tag">external</span> </a>
+<a class="card" href="https://ggplot2.tidyverse.org/reference/"> <span class="card-icon">🎨</span>
 <div class="card-title">
 ggplot2 Reference
 </div>
@@ -587,16 +626,36 @@ ggplot2 Reference
 Full function reference for every geom, stat, scale, and theme component
 in ggplot2.
 </p>
-<span class="card-tag">external</span></a>
-<a class="card" href="https://posit.co/resources/cheatsheets/" target="_blank" rel="noopener"><span class="card-icon">📋</span>
+<span class="card-tag">external</span> </a>
+<a class="card" href="https://posit.co/resources/cheatsheets/"> <span class="card-icon">📋</span>
 <div class="card-title">
 Posit Cheatsheets
 </div>
 <p class="card-desc">
 Official one-page PDF cheatsheets for ggplot2, dplyr, tidyr, RMarkdown,
-and more — print and post.
+and more.
 </p>
-<p><span class="card-tag">external</span></a></p>
+<p><span class="card-tag">external</span> </a></p>
+</div>
+</div>
+<div class="quick-ref">
+<div>
+<h3>
+Quick Reference
+</h3>
+<p>
+Repository at <code>github.com/marclos/RTricks</code>. Each module
+contains an <code>index.Rmd</code>, a <code>data/</code> folder, and
+rendered HTML. Clone or browse via the links.
+</p>
+</div>
+<div class="ref-links">
+<p><a class="ref-link" href="https://github.com/marclos/RTricks">↗
+GitHub Repo</a>
+<a class="ref-link" href="https://www.pomona.edu/academics/departments/environmental-analysis">↗
+EA @ Pomona</a>
+<a class="ref-link" href="https://rmarkdown.rstudio.com/docs/">↗
+RMarkdown Docs</a></p>
 </div>
 </div>
 </div>
