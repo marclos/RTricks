@@ -4,7 +4,7 @@
 # Helper functions for the Environmental Justice & Pi (EJnPi) course module.
 # Source this file directly from GitHub in your Rmd setup chunk:
 #
-#   source("https://raw.githubusercontent.com/marclos/RTrics/master/docs/EPA_25_functions.R")
+#   source("https://raw.githubusercontent.com/marclos/RTrics/master/docs/EPA_25d_functions.R")
 #
 # Functions defined here:
 #   prepare_epa_pm25(raw)                         -- clean raw AQS CSV columns
