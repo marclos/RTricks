@@ -1,8 +1,8 @@
 ---
 title: "Analyzing EPA PM2.5 Data"
 author: "Marc Los Huertos"
-date: "Spring 2026 · v6 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
-knit: (function(input, ...) rmarkdown::render(input, output_dir = "../docs"))
+date: "Spring 2026 · v7 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+knit: (function(input, ...) rmarkdown::render(input, output_dir = "../docs/Unit_Air"))
 output:
   tufte::tufte_html:
     toc: true
@@ -212,18 +212,18 @@ Then:
 
 1. Create a new `.Rmd` file: **File → New File → R Markdown**, give it any title,
    and click OK.
-2. Immediately save it: **File → Save As**, navigate into the `EJnPi` folder,
+2. Immediately save it: **File → Save As**, navigate into the `EPA_PM25` folder,
    and name it `Analyzing_EPA_PM25_YourLastName.Rmd`.
 3. At the top of your `.Rmd`, add this line so knitr always runs in the right place:
 
 ```{r setwd-example, eval=FALSE}
-knitr::opts_knit$set(root.dir = "~/EPA_25")
+knitr::opts_knit$set(root.dir = "~/EPA_PM25")
 ```
 
 Your folder structure before the first knit:
 
 ```
-~/EJnPi/
+~/EPA_PM25/
   Analyzing_EPA_PM25_YourLastName.Rmd
   data/              <- empty; the download loop will populate it
 ```
@@ -236,17 +236,17 @@ This assignment uses R functions written for this course that handle
 downloading and cleaning the EPA data, so you can focus on the analysis.
 They are maintained in the course GitHub repository.
 
-**Browse the code:** [https://github.com/marclos/RTricks/tree/master/docs](https://github.com/marclos/RTricks/tree/master/docs)
+**Browse the code:** [https://github.com/marclos/RTricks/tree/master/06_EPA_PM25](https://github.com/marclos/RTricks/tree/master/06_EPA_PM25)
 
 ```{r copy-functions, include=FALSE}
-file.copy("EPA_PM25_functions.R", "../docs/EPA_PM25_functions.R", overwrite = TRUE)
+file.copy("EPA_PM25_functions.R", "../docs/Unit_Air/EPA_PM25_functions.R", overwrite = TRUE)
 ```
 
 You do not need to download or copy anything. Your Rmd loads them
 automatically with this line (already in the setup section below):
 
 ```r
-source("https://raw.githubusercontent.com/marclos/EJnPi/master/docs/EPA_PM25_functions.R")
+source("https://raw.githubusercontent.com/marclos/RTricks/master/06_EPA_PM25/EPA_PM25_functions.R")
 ```
 
 If you are curious how the functions work, click the link above, open
@@ -344,9 +344,14 @@ correctly on the server:
 Use `?function_name` in the Console for full documentation on any function.
 </div>
 
-```{r load-libraries}
-knitr::opts_knit$set(root.dir = "~/EJnPi")   # adjust to your actual folder name
+```{r load-libraries-rootdir, eval=FALSE}
+# ── Add this line at the top of YOUR .Rmd setup chunk ──────────────────────
+# It tells knitr where to look for files (e.g. data/) when knitting on the server.
+# Adjust the path if your folder has a different name.
+knitr::opts_knit$set(root.dir = "~/EPA_PM25")
+```
 
+```{r load-libraries}
 library(dplyr)       # group_by(), summarise(), mutate(), filter()
 library(lubridate)   # ymd(), month() -- date parsing and extraction
 ```
@@ -436,14 +441,14 @@ below in a hidden chunk --- you do not need to read or modify it. On the **first
 it downloads thirty years of data (allow 20--30 minutes on first knit). On every subsequent knit it
 finds the cached file and loads it in seconds.
 
-The helper functions live in a shared file on GitHub. The chunk below sources
+The helper functions live in the course repository on GitHub. The chunk below sources
 them directly --- no download or installation needed. If the server has no outbound
 internet access, ask your instructor for the local path.
 
 `r margin_note("source() runs an R script as if you had typed it into the console. Sourcing from a raw GitHub URL means you always get the current version without copying any code into your Rmd.")`
 
 ```{r load-functions, message=FALSE}
-source("https://raw.githubusercontent.com/marclos/EJnPi/master/docs/EJnPi_functions.R")
+source("https://raw.githubusercontent.com/marclos/RTricks/master/06_EPA_PM25/EPA_PM25_functions.R")
 ```
 
 `get_epa_pm25()` handles downloading and caching; internally it calls
@@ -480,9 +485,9 @@ This takes **20–30 minutes** — start it and step away. Do not close the brow
 - **`object 'get_epa_pm25' not found`** — the `source()` chunk above did not run.
   Check your internet connection, then run the source chunk manually in the Console.
 - **`cannot open URL`** — the server cannot reach GitHub. Ask your instructor for a
-  local path to `EJnPi_functions.R` and replace the URL in the source() call.
+  local path to `EPA_PM25_functions.R` and replace the URL in the source() call.
 - **`cannot create directory 'data'`** — your `data/` subfolder does not exist. Go
-  to the Files pane, navigate into `EJnPi`, click **New Folder**, and create `data`.
+  to the Files pane, navigate into `EPA_PM25`, click **New Folder**, and create `data`.
 - **Download stalls partway through** — run the chunk again. The function skips years
   already saved and picks up where it left off.
 </div>
@@ -956,12 +961,9 @@ below shows this geometrically: the shaded regions are the rejection regions for
 two-tailed test at α = 0.05.
 
 ```{r z-density-output, echo=FALSE, fig.cap="Standard normal density curve. Red shading = rejection regions at α = 0.05 (2.5% per tail). The vertical dashed lines fall at ±1.96, the critical values that define the boundary. In R: qnorm(0.975) = 1.96."}
-# Build the density curve
 z_seq   <- seq(-4, 4, length.out = 500)
 d_seq   <- dnorm(z_seq)
-
-# x and y for the left and right tail polygons at alpha = 0.05
-z_crit  <- qnorm(0.975)           # 1.96
+z_crit  <- qnorm(0.975)
 tail_z  <- seq(-4, -z_crit, length.out = 200)
 tail_zR <- seq(z_crit,  4,  length.out = 200)
 
@@ -971,26 +973,19 @@ plot(z_seq, d_seq, type = "l", lwd = 2,
      main = "Standard Normal: Critical Values for 95% CI",
      xlim = c(-4, 4), ylim = c(0, 0.42), xaxt = "n")
 
-# Shade left tail
 polygon(c(tail_z, rev(tail_z)),
         c(dnorm(tail_z), rep(0, length(tail_z))),
         col = rgb(0.8, 0.1, 0.1, 0.3), border = NA)
-
-# Shade right tail
 polygon(c(tail_zR, rev(tail_zR)),
         c(dnorm(tail_zR), rep(0, length(tail_zR))),
         col = rgb(0.8, 0.1, 0.1, 0.3), border = NA)
 
-# Critical value lines
 abline(v = c(-z_crit, z_crit), col = "red", lty = 2, lwd = 1.5)
-
-# Custom x-axis: show standard ticks plus ±1.96 highlighted
 axis(1, at = -3:3, labels = -3:3, col.axis = "grey40")
 axis(1, at = c(-z_crit, z_crit),
      labels = c("-1.96", "1.96"),
      col.axis = "red", font = 2, tick = TRUE)
 
-# Annotations
 text(0,  0.21, "95%",  cex = 1.1, col = "grey30")
 text(-3.2, 0.06, "2.5%", cex = 0.85, col = "red")
 text( 3.2, 0.06, "2.5%", cex = 0.85, col = "red")
@@ -1107,10 +1102,7 @@ Here is the output your code should produce:
 focus    <- Monthly[Monthly$Site.ID == focus_site, ]
 decades  <- levels(focus$Decade)
 n_dec    <- length(decades)
-# Palette: dark -> light blue so oldest decade is darkest
 pal      <- colorRampPalette(c("#08306b", "#6baed6", "#c6dbef"))(n_dec)
-
-# y-axis upper limit: highest UCL95 or 35, whichever is bigger
 ylim_top <- max(focus$UCL95, 35, na.rm = TRUE) * 1.15
 
 par(las = 1, mar = c(4, 4.5, 3.5, 1))
@@ -1122,18 +1114,14 @@ plot(NULL,
 axis(1, at = 1:12, labels = month.abb)
 abline(h = 35, col = "red", lty = 2, lwd = 1.2)
 
-# Offset months slightly so error bars from different decades don't overprint
 offsets <- seq(-0.15, 0.15, length.out = n_dec)
 
 for (i in seq_along(decades)) {
   d  <- focus[focus$Decade == decades[i], ]
   d  <- d[order(d$Month), ]
-  mx <- d$Month + offsets[i]            # horizontal jitter per decade
-
+  mx <- d$Month + offsets[i]
   lines(mx, d$mean, col = pal[i], lwd = 1.8)
   points(mx, d$mean, col = pal[i], pch = 16, cex = 0.9)
-
-  # 95% CI error bars
   arrows(mx, d$LCL95, mx, d$UCL95,
          angle = 90, code = 3, length = 0.04,
          col = pal[i], lwd = 1.2)
@@ -1173,8 +1161,7 @@ trapping vehicle emissions near the surface.
 
 `r margin_note("colorRampPalette() creates a function that interpolates between two or more colors and returns a palette of any length. Here it grades from dark navy (oldest) to pale blue (newest), so time runs light-to-dark left-to-right in the legend.")`
 
-Scaffold --- the key new ideas here are `plot(NULL, ...)` to set up empty axes before
-drawing anything, and the offset jitter so overlapping error bars stay readable.
+Scaffold:
 
 <div class="callout callout-tip">
 <strong>ℹ️ Build this plot in three stages — run each one before adding the next</strong>
@@ -1262,14 +1249,14 @@ figures look like.
 **Regional meteorology and source characterization.** Describe the physical geography
 and emission sources shaping PM2.5 at your location. What industries, traffic corridors,
 or land uses are present? What meteorological patterns --- inversions, sea breezes,
-katabatic flows --- control how pollutants accumulate or disperse? <!-- [@Kleeman2005] -->
+katabatic flows --- control how pollutants accumulate or disperse?
 
 **Seasonal patterns.** What does your monthly CI plot show? Which months are highest
 and lowest, and why? If wildfire smoke affects your region, connect episodic spikes in
-the time-series to the broader trend of lengthening fire seasons. <!-- [@Liu2017] -->
+the time-series to the broader trend of lengthening fire seasons.
 
 **Exceedance context.** How often did concentrations exceed 35 ug/m3? Which stations
-or periods were worst? What does this imply for residents living near those stations? <!-- [@Sax2004] -->
+or periods were worst? What does this imply for residents living near those stations?
 
 **Environmental justice.** Who lives near the stations you analyzed? Are there
 disparities in proximity to pollution sources, access to green space, or health-care
