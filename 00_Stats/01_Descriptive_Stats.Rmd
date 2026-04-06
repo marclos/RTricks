@@ -1,0 +1,816 @@
+---
+title: "Describing Data: Centre, Spread, and Uncertainty"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/basic_statistics/01_Descriptive_Stats.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 7,
+  fig.height = 4
+)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); font-size: 17px; line-height: 1.75; }
+.main-container { max-width: 860px !important; margin: 0 auto !important; padding: 0 4vw 80px !important; }
+h1.title, h4.author, h4.date { display: none; }
+
+/* Page header */
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+/* Section nav pills */
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+/* Section headings */
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+
+/* Body text */
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+
+/* Code */
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+/* Callout boxes */
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0; font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+/* Math display */
+.math-block {
+  background: var(--white); border: 1px solid var(--parchment);
+  border-radius: 5px; padding: 16px 20px; margin: 1.2em 0;
+  text-align: center; box-shadow: var(--card-shadow);
+}
+
+/* Tables */
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+/* Key concept summary boxes */
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+/* Footer */
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Basic Statistics &mdash; Module 01</div>
+<h1>Describing Data: <span>Centre, Spread & Uncertainty</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<a class="back-link" href="index.html">&#8592; Back to Basic Statistics</a>
+</div>
+
+<div class="section-nav">
+<a href="#summary">Summary</a>
+<a href="#centre">Mean & Median</a>
+<a href="#spread">Variance & SD</a>
+<a href="#normal">Normal Distribution</a>
+<a href="#uncertainty">SE & Error Bars</a>
+<a href="#ci">Confidence Intervals</a>
+<a href="#putting-together">Putting It Together</a>
+</div>
+
+> **What this module covers.** Before fitting any statistical model, you need to
+> describe your data: where is the "centre", how spread out are the values, and how
+> much should you trust a sample mean? This module builds each concept step by step,
+> from the simplest summary (the mean) to the most practically useful (the confidence
+> interval). Every idea is illustrated with environmental data from EA030.
+
+---
+
+## 1. Centre: Mean and Median {#centre}
+
+### The arithmetic mean
+
+The **mean** is the balance point of a distribution — the value that makes all
+deviations sum to zero. You already know how to compute it, but it is worth
+being precise about what it measures and when it misleads.
+
+$$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$$
+
+Let's use a real dataset: hourly PM2.5 concentrations (µg/m³) recorded at a
+Southern California monitoring station over one week.
+
+```{r pm25-data}
+# Weekly PM2.5 readings (µg/m³) — one value per day
+pm25 <- c(8.2, 11.4, 9.7, 42.3, 10.1, 9.3, 8.8)
+days <- c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+```
+
+```{r mean-calc}
+n        <- length(pm25)
+pm25_mean <- mean(pm25)
+
+cat("n =", n, "\n")
+cat("Mean PM2.5 =", round(pm25_mean, 1), "µg/m³\n")
+```
+
+Thursday's value (42.3 µg/m³) looks suspicious — possibly a smoke event.
+Notice how strongly it pulls the mean upward.
+
+```{r mean-plot, echo=FALSE, fig.cap="Daily PM2.5 values. The dashed red line shows the mean; the solid blue line shows the median. One high-smoke Thursday pulls the mean far above the typical week."}
+par(las = 1, mar = c(4, 4.5, 2, 1), family = "sans")
+barplot(pm25, names.arg = days,
+        col  = ifelse(pm25 > 35, "#b71c1c", "#4a7c5e"),
+        ylab = "PM2.5 (µg/m³)", xlab = "",
+        ylim = c(0, 50), border = NA,
+        main = "Daily PM2.5 — Southern California Station")
+abline(h = mean(pm25),   col = "#c8832a", lty = 2, lwd = 2)
+abline(h = median(pm25), col = "#1565c0", lty = 1, lwd = 2)
+legend("topright",
+       legend = c(paste0("Mean = ", round(mean(pm25), 1), " µg/m³"),
+                  paste0("Median = ", round(median(pm25), 1), " µg/m³"),
+                  "Smoke event"),
+       col = c("#c8832a", "#1565c0", "#b71c1c"),
+       lty = c(2, 1, NA), pch = c(NA, NA, 15),
+       bty = "n", cex = 0.85)
+```
+
+### The median
+
+The **median** is the middle value when data are sorted. It is *resistant* to
+extreme values — one wildfire day does not distort it the way it distorts the mean.
+
+```{r median-calc}
+pm25_median <- median(pm25)
+cat("Median PM2.5 =", round(pm25_median, 1), "µg/m³\n")
+cat("Mean - Median =", round(pm25_mean - pm25_median, 1), "µg/m³\n")
+```
+
+<div class="callout callout-concept">
+<strong>📌 When to use mean vs. median</strong>
+
+Use the **mean** when your data are roughly symmetric and you plan to use
+methods like t-tests or regression (which are built around means).
+
+Use the **median** when your data are skewed or contain outliers — income,
+pollutant concentrations during episodic events, species abundances.
+
+The gap between mean and median is itself informative: a large gap signals skewness.
+</div>
+
+### Checking both together
+
+```{r summary-stats}
+# summary() gives the five-number summary plus the mean
+summary(pm25)
+```
+
+---
+
+## 2. Spread: Variance and Standard Deviation {#spread}
+
+Knowing the centre of a distribution is not enough — two datasets can have the
+same mean but completely different spreads, which leads to very different
+statistical conclusions.
+
+### Residuals: deviations from the mean
+
+The spread of data is fundamentally about **how far each observation is from the
+mean**. These deviations are called **residuals**.
+
+```{r residuals}
+residuals_pm25 <- pm25 - pm25_mean
+round(residuals_pm25, 1)
+```
+
+```{r residuals-plot, echo=FALSE, fig.cap="Residuals from the mean. Each bar shows how far that day's PM2.5 was from the weekly mean. Notice the enormous positive residual on Thursday."}
+par(las = 1, mar = c(4, 5, 2, 1))
+barplot(residuals_pm25, names.arg = days,
+        col    = ifelse(residuals_pm25 >= 0, "#4a7c5e", "#8aad96"),
+        ylab   = "Residual (µg/m³)", xlab = "",
+        border = NA,
+        main   = "Deviations from the Mean")
+abline(h = 0, col = "#1a1a18", lwd = 1.2)
+```
+
+Notice that the residuals sum to zero — that is always true by definition of the mean:
+
+```{r residuals-sum}
+round(sum(residuals_pm25), 10)   # essentially zero (floating-point rounding)
+```
+
+### Why we square the residuals
+
+We cannot use the raw sum of residuals as a measure of spread (it is always zero).
+Instead, we **square** each residual, which makes all values positive and gives
+larger weight to observations far from the mean.
+
+```{r squared-residuals}
+sq_resid <- residuals_pm25^2
+round(sq_resid, 1)
+```
+
+### Sum of Squares, Variance, and SD
+
+$$\text{SS} = \sum_{i=1}^{n}(x_i - \bar{x})^2$$
+
+$$s^2 = \frac{\text{SS}}{n-1} \qquad \text{(variance — uses } n-1 \text{ for sample)}$$
+
+$$s = \sqrt{s^2} \qquad \text{(standard deviation)}$$
+
+We divide by $n-1$ rather than $n$ because we are estimating the population
+variance from a sample — using $n$ would systematically underestimate it.
+This correction is called **Bessel's correction**.
+
+```{r variance-sd}
+SS       <- sum(sq_resid)
+variance <- SS / (n - 1)          # sample variance
+sd_hand  <- sqrt(variance)        # standard deviation by hand
+
+cat("Sum of Squares =", round(SS, 1),        "\n")
+cat("Variance       =", round(variance, 2),  "µg²/m⁶\n")
+cat("SD (by hand)   =", round(sd_hand, 2),   "µg/m³\n")
+cat("sd() check     =", round(sd(pm25), 2),  "µg/m³\n")
+```
+
+<div class="callout callout-formula">
+<strong>⚙️ SD in plain language</strong><br>
+The standard deviation is roughly the average distance of observations from the mean.
+If PM2.5 has a mean of 14.3 µg/m³ and an SD of 12.5 µg/m³, a typical day
+deviates from the mean by about 12.5 µg/m³ in either direction.
+</div>
+
+### Two distributions: same mean, different spread
+
+This is the key insight. Here are two hypothetical monitoring stations with the
+same annual average PM2.5 but very different variability:
+
+```{r two-stations, fig.cap="Two stations with the same mean (15 µg/m³) but different standard deviations. Station B has much higher day-to-day variability — more frequent exceedance events even though the average is identical."}
+set.seed(42)
+station_A <- rnorm(200, mean = 15, sd = 3)
+station_B <- rnorm(200, mean = 15, sd = 10)
+
+par(las = 1, mar = c(4, 4, 3, 1), mfrow = c(1, 2))
+
+hist(station_A, breaks = 20, col = "#4a7c5e", border = "white",
+     main = "Station A\nSD = 3 µg/m³", xlab = "PM2.5 (µg/m³)",
+     xlim = c(-15, 55), ylim = c(0, 50))
+abline(v = 15, col = "#c8832a", lty = 2, lwd = 2)
+abline(v = 35, col = "red",     lty = 2, lwd = 1.5)
+
+hist(station_B, breaks = 20, col = "#8aad96", border = "white",
+     main = "Station B\nSD = 10 µg/m³", xlab = "PM2.5 (µg/m³)",
+     xlim = c(-15, 55), ylim = c(0, 50))
+abline(v = 15, col = "#c8832a", lty = 2, lwd = 2)
+abline(v = 35, col = "red",     lty = 2, lwd = 1.5)
+
+par(mfrow = c(1, 1))
+```
+
+```{r exceed-count}
+cat("Station A — days exceeding 35 µg/m³:",
+    sum(station_A > 35), "/", length(station_A), "\n")
+cat("Station B — days exceeding 35 µg/m³:",
+    sum(station_B > 35), "/", length(station_B), "\n")
+```
+
+<div class="callout callout-concept">
+<strong>📌 Why spread matters for environmental justice</strong>
+Two communities can have the same average pollution exposure but very different
+health outcomes if one community experiences frequent high-concentration spikes
+(high SD). Regulatory standards set on annual averages alone can miss this.
+</div>
+
+---
+
+## 3. The Normal Distribution {#normal}
+
+Many natural measurements — heights, weights, daily temperatures, measurement
+errors — follow a roughly bell-shaped pattern called the **normal distribution**.
+Understanding it is essential because most classical statistical tests assume
+(or approximate) normality.
+
+### Shape and parameters
+
+A normal distribution is completely described by two numbers: its mean ($\mu$)
+and standard deviation ($\sigma$).
+
+$$X \sim \mathcal{N}(\mu,\ \sigma^2)$$
+
+```{r normal-curve, echo=FALSE, fig.cap="The normal distribution with mean = 0 and SD = 1 (the standard normal). The shaded regions show the 68–95–99.7 rule."}
+x <- seq(-4, 4, length.out = 500)
+y <- dnorm(x)
+
+par(las = 1, mar = c(4, 4, 3, 1))
+plot(x, y, type = "l", lwd = 2.5, col = "#1a1a18",
+     xlab = "Standard deviations from mean", ylab = "Density",
+     main = "The Normal Distribution: 68–95–99.7 Rule",
+     xaxt = "n", ylim = c(0, 0.45))
+axis(1, at = -3:3)
+
+# Shade ±1 SD (68%)
+x1 <- seq(-1, 1, length.out = 200)
+polygon(c(-1, x1, 1), c(0, dnorm(x1), 0),
+        col = rgb(0.29, 0.49, 0.37, 0.55), border = NA)
+
+# Shade ±2 SD (95%) — the additional area
+x2a <- seq(-2, -1, length.out = 100)
+x2b <- seq( 1,  2, length.out = 100)
+polygon(c(-2, x2a, -1), c(0, dnorm(x2a), 0),
+        col = rgb(0.54, 0.68, 0.59, 0.55), border = NA)
+polygon(c(1, x2b, 2), c(0, dnorm(x2b), 0),
+        col = rgb(0.54, 0.68, 0.59, 0.55), border = NA)
+
+# Shade ±3 SD (99.7%) — the additional area
+x3a <- seq(-3, -2, length.out = 100)
+x3b <- seq( 2,  3, length.out = 100)
+polygon(c(-3, x3a, -2), c(0, dnorm(x3a), 0),
+        col = rgb(0.78, 0.85, 0.80, 0.55), border = NA)
+polygon(c(2, x3b, 3), c(0, dnorm(x3b), 0),
+        col = rgb(0.78, 0.85, 0.80, 0.55), border = NA)
+
+lines(x, y, lwd = 2.5, col = "#1a1a18")
+
+abline(v = c(-1, 1), col = "#4a7c5e", lty = 2, lwd = 1.2)
+abline(v = c(-2, 2), col = "#8aad96", lty = 2, lwd = 1.2)
+abline(v = c(-3, 3), col = "#d4e6da", lty = 2, lwd = 1.2)
+
+text(0, 0.20, "68%",  cex = 1,   col = "#1e3a2f", font = 2)
+text(0, 0.07, "95%",  cex = 0.9, col = "#2d5a3d")
+text(0, 0.02, "99.7%",cex = 0.8, col = "#4a7c5e")
+```
+
+### The 68–95–99.7 rule
+
+This is the single most useful fact about the normal distribution:
+
+- **68%** of observations fall within **1 SD** of the mean
+- **95%** fall within **2 SD** of the mean  
+- **99.7%** fall within **3 SD** of the mean
+
+```{r rule-demo}
+# Verify with a large simulated normal sample
+set.seed(7)
+temps <- rnorm(10000, mean = 18.5, sd = 4.2)   # daily max °C, inland CA
+
+within_1sd <- mean(abs(temps - mean(temps)) < sd(temps))
+within_2sd <- mean(abs(temps - mean(temps)) < 2 * sd(temps))
+within_3sd <- mean(abs(temps - mean(temps)) < 3 * sd(temps))
+
+cat("Within 1 SD:", round(within_1sd * 100, 1), "%\n")
+cat("Within 2 SD:", round(within_2sd * 100, 1), "%\n")
+cat("Within 3 SD:", round(within_3sd * 100, 1), "%\n")
+```
+
+### Checking normality: the Q-Q plot
+
+A **quantile-quantile (Q-Q) plot** compares your data to what a perfect normal
+distribution would look like. Points falling on the diagonal line = normality.
+Strong departures = skewness or heavy tails.
+
+```{r qqplot, fig.cap="Q-Q plots for two variables. Left: PM2.5 with a smoke event — the upper tail departs strongly from normality. Right: daily maximum temperature — much closer to the normal line.", fig.height=4}
+set.seed(3)
+daily_temp <- rnorm(365, mean = 22, sd = 5.5)   # roughly normal
+
+par(mfrow = c(1, 2), las = 1, mar = c(4, 4, 3, 1))
+
+# Q-Q for PM2.5 (skewed by smoke event)
+pm25_long <- c(rnorm(90, 10, 3), 42.3, rnorm(9, 10, 3))
+qqnorm(pm25_long, main = "PM2.5 (skewed)", pch = 20, cex = 0.6,
+       col = "#4a7c5e")
+qqline(pm25_long, col = "#c8832a", lwd = 2)
+
+# Q-Q for daily temperature (approximately normal)
+qqnorm(daily_temp, main = "Daily Max Temp (≈ normal)", pch = 20, cex = 0.6,
+       col = "#4a7c5e")
+qqline(daily_temp, col = "#c8832a", lwd = 2)
+
+par(mfrow = c(1, 1))
+```
+
+<div class="callout callout-tip">
+<strong>💡 Do I need perfectly normal data?</strong>
+No. Many tests are **robust** to moderate departures from normality, especially
+with larger samples (the Central Limit Theorem, coming up next, explains why).
+Use Q-Q plots to detect serious problems — extreme skewness, bimodality, or
+heavy tails — not to demand perfection.
+</div>
+
+---
+
+## 4. Uncertainty: Standard Error and Error Bars {#uncertainty}
+
+The standard deviation describes how spread out your **data** are.
+The **standard error** describes how spread out your **sample means** would be
+if you repeated the study many times. These are different things and confusing
+them is one of the most common errors in scientific reporting.
+
+### The Central Limit Theorem
+
+If you take many samples from *any* distribution and compute their means,
+those means will be normally distributed — regardless of the shape of the
+original data. This remarkable result is the **Central Limit Theorem (CLT)**.
+
+```{r clt-demo, echo=FALSE, fig.cap="The Central Limit Theorem in action. The original PM2.5 data are right-skewed (top left), but the distribution of 1000 sample means (n = 30 each) is approximately normal (bottom right).", fig.height=5}
+set.seed(99)
+# Skewed population: PM2.5-like (log-normal)
+population <- rlnorm(10000, meanlog = 2.5, sdlog = 0.7)
+
+# Draw 1000 samples of size 30, compute each mean
+sample_means_5  <- replicate(1000, mean(sample(population, 5)))
+sample_means_30 <- replicate(1000, mean(sample(population, 30)))
+
+par(mfrow = c(2, 2), las = 1, mar = c(4, 4, 3, 1))
+
+hist(population, breaks = 60, col = "#8aad96", border = "white",
+     main = "Population (skewed)", xlab = "PM2.5 (µg/m³)",
+     xlim = c(0, 120))
+
+hist(sample_means_5, breaks = 30, col = "#4a7c5e", border = "white",
+     main = "Sample means, n = 5", xlab = "Mean PM2.5 (µg/m³)")
+
+hist(sample_means_30, breaks = 30, col = "#2d5a3d", border = "white",
+     main = "Sample means, n = 30", xlab = "Mean PM2.5 (µg/m³)")
+
+# Overlay normal curve on last panel
+curve(dnorm(x, mean(sample_means_30), sd(sample_means_30)) * 1000 * 
+        diff(range(sample_means_30)) / 30,
+      add = TRUE, col = "#c8832a", lwd = 2)
+
+par(mfrow = c(1, 1))
+```
+
+### Standard Error of the Mean (SEM)
+
+The standard error measures how precisely a sample mean estimates the true
+population mean. It shrinks as sample size grows — with more data, your
+estimate becomes more reliable.
+
+$$SE = \frac{s}{\sqrt{n}}$$
+
+```{r se-demo}
+# Course time-use data (hours spent outside class per week)
+# R1 = Section 1, R2 = Section 2
+R1 <- c(4.5, 2, 10, 7, 10, 10, 6.5, 4, 4, 9, 13, 5, 4.5, 6, 8, 7.5, 4)
+R2 <- c(10, 6, 8, 8, 8, 8, 4.5, 8, 3, 10, 10, 9.5, 11, 6, 9)
+
+se <- function(x) sd(x, na.rm = TRUE) / sqrt(sum(!is.na(x)))
+
+cat("Section 1 — Mean:", round(mean(R1, na.rm=TRUE), 1),
+    "  SD:", round(sd(R1, na.rm=TRUE), 1),
+    "  SE:", round(se(R1), 2), "\n")
+cat("Section 2 — Mean:", round(mean(R2, na.rm=TRUE), 1),
+    "  SD:", round(sd(R2, na.rm=TRUE), 1),
+    "  SE:", round(se(R2), 2), "\n")
+```
+
+### Error bars: SD vs. SE — which to use?
+
+This is one of the most misunderstood choices in data visualisation.
+
+<div class="callout callout-warn">
+<strong>⚠️ SD ≠ SE — and the difference matters</strong>
+
+**SD error bars** show the spread of your *data*. Use these when you want
+readers to understand the variability among individual observations.
+
+**SE error bars** show the precision of your *mean estimate*. Use these
+(or CI bars, below) when you are making an inferential claim — comparing
+groups, testing hypotheses.
+
+SE bars are always **narrower** than SD bars (by a factor of $\sqrt{n}$).
+Papers that use SE bars without saying so make results look more precise
+than they are. Always label your error bars.
+</div>
+
+```{r error-bars, echo=FALSE, fig.cap="SD vs SE error bars for the same data (course time-use, two sections). SD bars describe data spread; SE bars describe uncertainty about the mean. The difference grows with sample size.", fig.height=4.5}
+groups <- c("Section 1", "Section 2")
+means  <- c(mean(R1, na.rm=TRUE), mean(R2, na.rm=TRUE))
+sds    <- c(sd(R1, na.rm=TRUE),   sd(R2, na.rm=TRUE))
+ses    <- c(se(R1), se(R2))
+
+par(las = 1, mar = c(4, 5, 3, 1), mfrow = c(1, 2))
+
+# SD bars
+bp <- barplot(means, names.arg = groups, ylim = c(0, 14),
+              col = c("#4a7c5e", "#8aad96"), border = NA,
+              ylab = "Hours / week", main = "Error bars = ±1 SD",
+              cex.main = 0.95)
+arrows(bp, means - sds, bp, means + sds,
+       angle = 90, code = 3, length = 0.08, lwd = 2, col = "#1a1a18")
+
+# SE bars
+bp2 <- barplot(means, names.arg = groups, ylim = c(0, 14),
+               col = c("#4a7c5e", "#8aad96"), border = NA,
+               ylab = "Hours / week", main = "Error bars = ±1 SE",
+               cex.main = 0.95)
+arrows(bp2, means - ses, bp2, means + ses,
+       angle = 90, code = 3, length = 0.08, lwd = 2, col = "#1a1a18")
+
+par(mfrow = c(1, 1))
+```
+
+---
+
+## 5. Confidence Intervals {#ci}
+
+A confidence interval (CI) is the most practically useful way to express
+uncertainty. Rather than showing ±1 SE (which has no direct probability
+interpretation), a **95% CI** gives you a range that, if you repeated
+the study many times, would contain the true mean in 95% of cases.
+
+### Formula
+
+$$CI_{95} = \bar{x} \pm t^*_{n-1} \times SE$$
+
+where $t^*_{n-1}$ is the critical value from the t-distribution with $n-1$
+degrees of freedom. For large samples ($n > 30$), $t^* \approx 1.96$.
+For smaller samples, $t^*$ is larger, making the CI wider to reflect
+greater uncertainty.
+
+```{r ci-calc}
+ci <- function(x, level = 0.95) {
+  x   <- x[!is.na(x)]
+  n   <- length(x)
+  m   <- mean(x)
+  s   <- sd(x)
+  se  <- s / sqrt(n)
+  t_star <- qt((1 + level) / 2, df = n - 1)
+  c(mean  = m,
+    lower = m - t_star * se,
+    upper = m + t_star * se,
+    t_star = t_star)
+}
+
+ci_R1 <- ci(R1)
+ci_R2 <- ci(R2)
+
+cat("Section 1 — 95% CI: [",
+    round(ci_R1["lower"], 1), ",",
+    round(ci_R1["upper"], 1), "]  (t* =", round(ci_R1["t_star"], 2), ")\n")
+cat("Section 2 — 95% CI: [",
+    round(ci_R2["lower"], 1), ",",
+    round(ci_R2["upper"], 1), "]  (t* =", round(ci_R2["t_star"], 2), ")\n")
+```
+
+### Visualising CIs vs. SD bars
+
+```{r ci-plot, echo=FALSE, fig.cap="95% confidence intervals (left) vs. ±1 SD bars (right) for the same course time-use data. CIs are the preferred choice for inference: non-overlapping CIs suggest a statistically meaningful difference between groups.", fig.height=4.5}
+par(las = 1, mar = c(4, 5, 3, 1), mfrow = c(1, 2))
+
+# CI plot
+plot(NULL, xlim = c(0.5, 2.5), ylim = c(0, 14),
+     xaxt = "n", xlab = "", ylab = "Hours / week",
+     main = "95% Confidence Intervals", cex.main = 0.95)
+axis(1, at = 1:2, labels = groups)
+
+for (i in 1:2) {
+  ci_val <- if (i == 1) ci_R1 else ci_R2
+  col_i  <- c("#4a7c5e", "#2d5a3d")[i]
+  points(i, ci_val["mean"], pch = 16, cex = 1.4, col = col_i)
+  arrows(i, ci_val["lower"], i, ci_val["upper"],
+         angle = 90, code = 3, length = 0.1, lwd = 2.5, col = col_i)
+}
+abline(h = 6, col = "#c8832a", lty = 2, lwd = 1.2)
+legend("topright", legend = "Expected 6 hrs", col = "#c8832a", lty = 2, bty = "n", cex = 0.8)
+
+# SD plot for comparison
+plot(NULL, xlim = c(0.5, 2.5), ylim = c(0, 14),
+     xaxt = "n", xlab = "", ylab = "Hours / week",
+     main = "±1 SD (for comparison)", cex.main = 0.95)
+axis(1, at = 1:2, labels = groups)
+
+for (i in 1:2) {
+  m_i  <- means[i]
+  sd_i <- sds[i]
+  col_i <- c("#4a7c5e", "#2d5a3d")[i]
+  points(i, m_i, pch = 16, cex = 1.4, col = col_i)
+  arrows(i, m_i - sd_i, i, m_i + sd_i,
+         angle = 90, code = 3, length = 0.1, lwd = 2.5, col = col_i)
+}
+
+par(mfrow = c(1, 1))
+```
+
+<div class="callout callout-tip">
+<strong>💡 Interpreting CI overlap</strong>
+
+**Non-overlapping CIs** → strong evidence the groups differ. <br>
+**Slightly overlapping CIs** → groups may still differ (a formal test is needed). <br>
+**Heavily overlapping CIs** → little evidence of a difference.
+
+Note: the 95% CI overlap rule is a visual heuristic, not a substitute for a
+t-test. Two groups can have p < 0.05 even when their CIs slightly overlap.
+</div>
+
+---
+
+## 6. Putting It All Together {#putting-together}
+
+Here is a complete descriptive summary workflow using the `t-test` dataset
+from the next module — time spent outside class per week for both sections.
+
+```{r full-summary}
+# A clean summary table
+library(dplyr)
+
+data.frame(
+  Section = c("Section 1", "Section 2"),
+  n       = c(sum(!is.na(R1)), sum(!is.na(R2))),
+  Mean    = round(c(mean(R1, na.rm=TRUE), mean(R2, na.rm=TRUE)), 1),
+  Median  = round(c(median(R1, na.rm=TRUE), median(R2, na.rm=TRUE)), 1),
+  SD      = round(c(sd(R1, na.rm=TRUE),   sd(R2, na.rm=TRUE)), 1),
+  SE      = round(c(se(R1), se(R2)), 2),
+  CI_lower = round(c(ci_R1["lower"], ci_R2["lower"]), 1),
+  CI_upper = round(c(ci_R1["upper"], ci_R2["upper"]), 1)
+) |> knitr::kable(
+  col.names = c("Section", "n", "Mean", "Median", "SD", "SE", "95% CI lower", "95% CI upper"),
+  caption   = "Descriptive statistics: hours per week outside class, by section."
+)
+```
+
+```{r dotplot-final, echo=FALSE, fig.cap="Final summary plot: individual observations (dots), mean (filled point), and 95% CI (error bars) for both sections. Showing the raw data alongside summaries is best practice — it prevents hiding structure that summary statistics miss.", fig.height=5}
+set.seed(1)
+par(las = 1, mar = c(4, 5, 3, 1))
+plot(NULL, xlim = c(0.5, 2.5), ylim = c(0, 16),
+     xaxt = "n", xlab = "", ylab = "Hours outside class / week",
+     main = "Course Time Use by Section\n(dots = individual students)")
+axis(1, at = 1:2, labels = groups)
+abline(h = 6, col = "#c8832a", lty = 2, lwd = 1.2)
+
+for (i in 1:2) {
+  raw    <- if (i == 1) R1 else R2
+  raw    <- raw[!is.na(raw)]
+  ci_val <- if (i == 1) ci_R1 else ci_R2
+  col_i  <- c("#4a7c5e", "#2d5a3d")[i]
+
+  # Jitter raw points
+  jx <- jitter(rep(i, length(raw)), amount = 0.08)
+  points(jx, raw, pch = 20, cex = 0.9,
+         col = adjustcolor(col_i, alpha.f = 0.55))
+
+  # Mean and CI
+  points(i, ci_val["mean"], pch = 16, cex = 1.6, col = col_i)
+  arrows(i, ci_val["lower"], i, ci_val["upper"],
+         angle = 90, code = 3, length = 0.1, lwd = 2.5, col = col_i)
+}
+legend("topright",
+       legend = c("Individual student", "Mean ± 95% CI", "Expected 6 hrs"),
+       pch    = c(20, 16, NA), lty = c(NA, 1, 2),
+       col    = c(adjustcolor("#4a7c5e", 0.55), "#4a7c5e", "#c8832a"),
+       bty = "n", cex = 0.85)
+```
+
+<div class="key-box">
+<h4>🔑 Key takeaways</h4>
+<ul>
+<li><strong>Mean</strong> is sensitive to outliers; <strong>median</strong> is resistant. Report both for skewed data.</li>
+<li><strong>SD</strong> describes variability in your <em>data</em>. <strong>SE</strong> describes variability in your <em>mean estimate</em>. Never confuse them.</li>
+<li>The <strong>normal distribution</strong> is characterised by mean and SD; 95% of values fall within ±2 SD of the mean.</li>
+<li><strong>95% CI</strong> is the preferred way to show uncertainty — use it instead of SE bars whenever you are making an inference.</li>
+<li>Always <strong>show the raw data</strong> alongside summary statistics. Summary plots alone can hide bimodality, outliers, and small sample sizes.</li>
+</ul>
+</div>
+
+---
+
+### What's next?
+
+With these descriptive tools in hand, the next modules build directly on them:
+
+- **[t-test](TimeOutSideClass.html)** — are the two section means significantly different?
+- **[ANOVA](../ANOVA.html)** — extend the comparison to three or more groups
+- **[Regression](../Regression.html)** — describe the relationship between two continuous variables
+
+```{r session-info, echo=FALSE}
+# sessionInfo()   # uncomment if needed for reproducibility reporting
+```
+
+<footer class="page-footer">
+EA030 Basic Statistics — Module 01
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>

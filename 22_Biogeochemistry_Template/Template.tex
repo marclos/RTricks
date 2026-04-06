@@ -1,0 +1,123 @@
+\documentclass{tufte-handout}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{color}
+
+\graphicspath{{/home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/}}
+
+\lstset{
+  language=R,
+  basicstyle=\small\ttfamily,
+  commentstyle=\color{gray},
+  breaklines=true
+}
+
+\bibliographystyle{plainnat}
+
+% ── Fill in your details ──────────────────────────────────────────────────────
+\title{Report Title}
+\author{Your Name}
+\date{\today}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent One-paragraph summary of your topic, methods, and findings \citep{R-base}.
+\end{abstract}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Introduction}
+
+\newthought{Write your introduction here.}
+Use sidenotes for supplementary details.\sidenote{Like this. Keep them brief.}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Graphics}
+
+% Full-width figure — spans text column and margin
+\begin{figure*}
+  \includegraphics[width=\linewidth]{your-plot}% filename in figures/
+  \caption{Full-width figure caption. Describe the key finding.}
+\end{figure*}
+
+% Margin figure — sits in the right margin
+\begin{marginfigure}
+  \includegraphics[width=\linewidth]{your-margin-plot}
+  \caption{Margin figure caption.}
+\end{marginfigure}
+
+% Body-width figure
+\begin{figure}
+  \includegraphics[width=\linewidth]{your-body-plot}
+  \caption{Body-width figure caption.}
+\end{figure}
+
+Save R plots to the \texttt{figures/} folder like so:
+
+\begin{lstlisting}
+library(ggplot2)
+p <- ggplot(mtcars, aes(wt, mpg)) + geom_point() +
+       labs(x = "Weight (1000 lbs)", y = "MPG")
+ggsave("figures/your-plot.pdf", p, width = 6, height = 4)
+\end{lstlisting}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Analysis}
+
+Write your analysis here \citep{rmarkdown2018, rmarkdown2020}.
+Inline math: $\bar{x} = \frac{1}{n}\sum x_i$. Display math:
+\[
+  s^{2} = \frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})^{2}
+\]
+
+\begin{table}
+  \centering
+  \caption{Summary table --- replace with your data.}
+  \begin{tabular}{lrrr}
+    \toprule
+    Group & $n$ & Mean & SD \\
+    \midrule
+    A & 50 & 12.3 & 2.1 \\
+    B & 48 & 14.7 & 1.9 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Conclusion}
+
+Summarise key findings here.
+
+% ──────────────────────────────────────────────────────────────────────────────
+\section{Glossary}
+
+\begin{description}
+  \item[\textbf{R}] A free, open-source language and environment for statistical
+    computing and graphics, maintained by the R Foundation \citep{R-base}.
+  \item[\textbf{R Markdown}] A file format (\texttt{.Rmd}) that combines prose,
+    R code, and output into a single reproducible document \citep{R-rmarkdown}.
+  \item[\textbf{Tufte Handout}] A document class inspired by Edward Tufte's
+    books, featuring wide margins for sidenotes and figures.
+  \item[\textbf{Sidenote}] A marginal annotation that supplements body text
+    without interrupting reading flow; created with \texttt{\textbackslash sidenote\{\}}.
+  \item[\textbf{Reproducible Research}] The practice of embedding code, data,
+    and narrative together so results can be independently verified and rerun.
+  \item[\textbf{\texttt{graphicspath}}] A \LaTeX{} command that tells the
+    compiler where to look for image files, avoiding full paths in every
+    \texttt{\textbackslash includegraphics} call.
+  % ── Add your own terms below ─────────────────────────────────────────────
+  \item[\textbf{Term 7}] Your definition here.
+\end{description}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\bibliography{references}
+
+\end{document}

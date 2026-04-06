@@ -1,0 +1,37 @@
+\begin{thebibliography}{4}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Allaire et~al.(2023)Allaire, Xie, Dervieux, McPherson, Luraschi,
+  Ushey, Atkins, Wickham, Cheng, Chang, and Iannone]{R-rmarkdown}
+JJ~Allaire, Yihui Xie, Christophe Dervieux, Jonathan McPherson, Javier
+  Luraschi, Kevin Ushey, Aron Atkins, Hadley Wickham, Joe Cheng, Winston Chang,
+  and Richard Iannone.
+\newblock \emph{rmarkdown: Dynamic Documents for R}, 2023.
+\newblock URL \url{https://github.com/rstudio/rmarkdown}.
+\newblock R package version 2.25.
+
+\bibitem[{R Core Team}(2022)]{R-base}
+{R Core Team}.
+\newblock \emph{R: A Language and Environment for Statistical Computing}.
+\newblock R Foundation for Statistical Computing, Vienna, Austria, 2022.
+\newblock URL \url{https://www.R-project.org/}.
+
+\bibitem[Xie et~al.(2018)Xie, Allaire, and Grolemund]{rmarkdown2018}
+Yihui Xie, J.J. Allaire, and Garrett Grolemund.
+\newblock \emph{R Markdown: The Definitive Guide}.
+\newblock Chapman and Hall/CRC, Boca Raton, Florida, 2018.
+\newblock ISBN 9781138359338.
+\newblock URL \url{https://bookdown.org/yihui/rmarkdown}.
+
+\bibitem[Xie et~al.(2020)Xie, Dervieux, and Riederer]{rmarkdown2020}
+Yihui Xie, Christophe Dervieux, and Emily Riederer.
+\newblock \emph{R Markdown Cookbook}.
+\newblock Chapman and Hall/CRC, Boca Raton, Florida, 2020.
+\newblock ISBN 9780367563837.
+\newblock URL \url{https://bookdown.org/yihui/rmarkdown-cookbook}.
+
+\end{thebibliography}
