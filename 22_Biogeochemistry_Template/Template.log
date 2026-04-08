@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  6 APR 2026 10:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2023.6.21)  6 APR 2026 17:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1115,31 +1115,31 @@ e
 \big@size=\dimen154
 \langwohyphens=\language3
 \c@lstlisting=\count138
-LaTeX Font Info:    Try loading font information for OT1+pplx on input line 40.
+LaTeX Font Info:    Try loading font information for OT1+pplx on input line 39.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pplx.fd
 File: ot1pplx.fd 2004/09/06 font definitions for OT1/pplx.
 )
-LaTeX Font Info:    Try loading font information for OML+zplm on input line 40.
+LaTeX Font Info:    Try loading font information for OML+zplm on input line 39.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlzplm.fd
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMS+zplm on input line 40.
+LaTeX Font Info:    Try loading font information for OMS+zplm on input line 39.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omszplm.fd
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
-LaTeX Font Info:    Try loading font information for OMX+zplm on input line 40.
+LaTeX Font Info:    Try loading font information for OMX+zplm on input line 39.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxzplm.fd
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
-LaTeX Font Info:    Try loading font information for OT1+zplm on input line 40.
+LaTeX Font Info:    Try loading font information for OT1+zplm on input line 39.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1zplm.fd
@@ -1149,7 +1149,7 @@ File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 LaTeX Warning: Marginpar on page 1 moved.
 
 </home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-plot.png, id=2
-6, 789.95125pt x 495.8525pt>
+8, 789.95125pt x 495.8525pt>
 File: /home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-plot.png 
 Graphic file (type png)
 <use /home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-plot.png>
@@ -1158,7 +1158,7 @@ ures/your-plot.png  used on input line 47. on input line 47.
 Package pdftex.def Info: Requested size: 480.0pt x 301.29683pt on input line 47
 .
 </home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-margin-plot.pn
-g, id=27, 789.95125pt x 495.8525pt>
+g, id=29, 789.95125pt x 495.8525pt>
 File: /home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-margin-pl
 ot.png Graphic file (type png)
 <use /home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-margin-plo
@@ -1167,7 +1167,7 @@ Package pdftex.def Info: /home/mwl04747/RTricks/22_Biogeochemistry_Template/fig
 ures/your-margin-plot.png  used on input line 53. on input line 53.
 Package pdftex.def Info: Requested size: 144.0pt x 90.3845pt on input line 53.
 </home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-body-plot.png,
- id=28, 789.95125pt x 495.8525pt>
+ id=30, 789.95125pt x 495.8525pt>
 File: /home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-body-plot
 .png Graphic file (type png)
 <use /home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-body-plot.
@@ -1197,11 +1197,10 @@ LaTeX Font Info:    Font shape `T1/fvm/b/n' will be
 
 {/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map} </home/mwl04
 747/RTricks/22_Biogeochemistry_Template/figures/your-plot.png> </home/mwl04747/
-RTricks/22_Biogeochemistry_Template/figures/your-margin-plot.png>]
+RTricks/22_Biogeochemistry_Template/figures/your-margin-plot.png>] [2 </home/mw
+l04747/RTricks/22_Biogeochemistry_Template/figures/your-body-plot.png>]
 LaTeX Font Info:    Font shape `T1/pplj/bx/it' in size <10> not available
-(Font)              Font shape `T1/pplj/b/it' tried instead on input line 103.
- [2 </home/mwl04747/RTricks/22_Biogeochemistry_Template/figures/your-body-plot.
-png>]
+(Font)              Font shape `T1/pplj/b/it' tried instead on input line 111.
 LaTeX Font Info:    Font shape `T1/fvm/bx/it' in size <10> not available
 (Font)              Font shape `T1/fvm/b/sl' tried instead on input line 113.
 LaTeX Font Info:    Font shape `T1/fvm/b/sl' will be
@@ -1215,17 +1214,17 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 123.
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 123.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 123.
 Package rerunfilecheck Info: File `Template.out' has not changed.
-(rerunfilecheck)             Checksum: 44AB86EAA917A75C1285E3D71E572D93;450.
+(rerunfilecheck)             Checksum: 0FC9831FE2A9C9BEF3D805CA424D5AEE;529.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 123.
  ) 
 Here is how much of TeX's memory you used:
- 15190 strings out of 494917
- 210324 string characters out of 6180699
- 355461 words of memory out of 5000000
- 18190 multiletter control sequences out of 15000+600000
+ 15195 strings out of 494917
+ 210468 string characters out of 6180699
+ 355637 words of memory out of 5000000
+ 18194 multiletter control sequences out of 15000+600000
  61130 words of font info for 100 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 45i,12n,72p,270b,1785s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 45i,12n,72p,270b,2504s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/
@@ -1238,10 +1237,10 @@ f-dist/fonts/type1/public/bera/fvmr8a.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/urw/palatino/uplbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/p
 alatino/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr
 i8a.pfb>
-Output written on Template.pdf (3 pages, 404384 bytes).
+Output written on Template.pdf (3 pages, 403591 bytes).
 PDF statistics:
- 128 PDF objects out of 1000 (max. 8388607)
- 103 compressed objects within 2 object streams
- 18 named destinations out of 1000 (max. 500000)
+ 132 PDF objects out of 1000 (max. 8388607)
+ 107 compressed objects within 2 object streams
+ 19 named destinations out of 1000 (max. 500000)
  1080 words of extra memory for PDF output out of 10000 (max. 10000000)
 

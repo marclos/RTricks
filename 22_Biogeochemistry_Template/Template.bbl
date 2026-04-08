@@ -1,4 +1,4 @@
-\begin{thebibliography}{4}
+\begin{thebibliography}{5}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -19,6 +19,12 @@ JJ~Allaire, Yihui Xie, Christophe Dervieux, Jonathan McPherson, Javier
 \newblock \emph{R: A Language and Environment for Statistical Computing}.
 \newblock R Foundation for Statistical Computing, Vienna, Austria, 2022.
 \newblock URL \url{https://www.R-project.org/}.
+
+\bibitem[Vitousek and Hooper(1993)]{vitousek1993biological}
+Peter~M Vitousek and DU~Hooper.
+\newblock Biological diversity and terrestrial ecosystem biogeochemistry.
+\newblock In \emph{Biodiversity and ecosystem function}, pages 3--14. Springer,
+  1993.
 
 \bibitem[Xie et~al.(2018)Xie, Allaire, and Grolemund]{rmarkdown2018}
 Yihui Xie, J.J. Allaire, and Garrett Grolemund.

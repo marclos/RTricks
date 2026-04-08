@@ -1,0 +1,13 @@
+camera_id,behavior,hour,n_events
+P70-03,movement,5,3
+P70-03,investigation,6,5
+P70-03,vigilance,7,2
+P70-03,stationary,8,1
+T20-03,movement,5,4
+T20-03,investigation,6,2
+T20-03,vigilance,7,1
+T20-03,stationary,8,2
+P70-01,movement,5,1
+P70-01,investigation,6,3
+P70-01,vigilance,7,2
+P70-01,stationary,8,1
