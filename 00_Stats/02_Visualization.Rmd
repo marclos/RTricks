@@ -1,0 +1,1042 @@
+---
+title: "Data Visualization"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/basic_statistics/02_Visualization.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 7,
+  fig.height = 4
+)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); font-size: 17px; line-height: 1.75; }
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 4vw 80px !important; }
+h1.title, h4.author, h4.date { display: none; }
+
+/* Page header */
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+/* Section nav pills */
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+/* Section headings */
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+
+/* Body text */
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+
+/* Code */
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+/* Callout boxes */
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+/* Plot type selector grid */
+.plot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin: 2em 0 2.5em;
+}
+.plot-card {
+  background: var(--white); border: 1px solid var(--parchment);
+  border-radius: 6px; padding: 14px 16px;
+  box-shadow: var(--card-shadow);
+}
+.plot-card .pc-type {
+  font-family: 'Source Code Pro', monospace; font-size: .72rem;
+  font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: 4px;
+}
+.plot-card .pc-name {
+  font-family: 'Libre Baskerville', serif; font-size: .95rem;
+  font-weight: 700; color: var(--forest); margin-bottom: 3px;
+}
+.plot-card .pc-when { font-size: .82rem; color: var(--charcoal); line-height: 1.45; }
+.plot-card a { color: var(--fern); font-size: .78rem; text-decoration: none; }
+
+/* Key concept summary boxes */
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+/* Do / Don't side-by-side */
+.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 1.4em 0; }
+.do-box, .dont-box {
+  padding: .6em 1em; border-radius: 5px; font-size: .88em; line-height: 1.55;
+}
+.do-box   { background: #f1f8f1; border-left: 5px solid #2e7d32; }
+.dont-box { background: #fff8f4; border-left: 5px solid #e65100; }
+.do-box strong   { color: #1b5e20; display: block; margin-bottom: .25em; }
+.dont-box strong { color: #bf360c; display: block; margin-bottom: .25em; }
+
+/* Tables */
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+/* Footer */
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Basic Statistics &mdash; Module 03</div>
+<h1>Data <span>Visualization</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<a class="back-link" href="../index.html">&#8592; Back to Basic Statistics</a>
+</div>
+
+<div class="section-nav">
+<a href="#why">Why Visualize?</a>
+<a href="#grammar">Grammar of Graphics</a>
+<a href="#one-continuous">One Continuous</a>
+<a href="#one-categorical">One Categorical</a>
+<a href="#cont-by-group">Continuous × Group</a>
+<a href="#two-continuous">Two Continuous</a>
+<a href="#time-series">Time Series</a>
+<a href="#design">Design Principles</a>
+<a href="#choosing">Choosing a Plot</a>
+</div>
+
+> **What this module covers.** A well-chosen graph can reveal structure that
+> no summary statistic captures — and an ill-chosen one can hide it. This module
+> builds a systematic toolkit for data visualization in R using `ggplot2`, from
+> the underlying *grammar of graphics* to the practical decisions that make a
+> plot honest, clear, and publication-ready.
+
+---
+
+## 1. Why Visualize Before You Model? {#why}
+
+Anscombe's Quartet (1973) is the classic demonstration that four datasets with
+*identical* summary statistics can look completely different. The same principle
+applies constantly in environmental data: means and standard deviations are not
+enough.
+
+```{r anscombe-data}
+# Anscombe's Quartet is built into base R
+data(anscombe)
+
+# Reshape to long format for ggplot
+ansc_long <- data.frame(
+  set = rep(1:4, each = 11),
+  x   = c(anscombe$x1, anscombe$x2, anscombe$x3, anscombe$x4),
+  y   = c(anscombe$y1, anscombe$y2, anscombe$y3, anscombe$y4)
+)
+```
+
+```{r anscombe-stats}
+# All four datasets have (nearly) identical summary statistics
+ansc_long |>
+  group_by(set) |>
+  summarise(
+    mean_x = round(mean(x), 2),
+    mean_y = round(mean(y), 2),
+    sd_x   = round(sd(x),   2),
+    sd_y   = round(sd(y),   2),
+    r      = round(cor(x, y), 2)
+  ) |>
+  knitr::kable(
+    col.names = c("Dataset", "Mean X", "Mean Y", "SD X", "SD Y", "Correlation r"),
+    caption   = "Anscombe's Quartet: four structurally different datasets with identical summary statistics."
+  )
+```
+
+```{r anscombe-plot, echo=FALSE, fig.cap="Anscombe's Quartet. Identical means, SDs, and correlations — but completely different structures. Dataset 1 alone suits linear regression; the others reveal a curve, an outlier, and a leverage point. Without plotting, you would never know.", fig.height=5}
+ggplot(ansc_long, aes(x, y)) +
+  geom_point(colour = "#4a7c5e", size = 2.2, alpha = 0.85) +
+  geom_smooth(method = "lm", se = FALSE,
+              colour = "#c8832a", linewidth = 0.9, linetype = "dashed") +
+  facet_wrap(~ paste("Dataset", set), nrow = 2) +
+  labs(x = "X", y = "Y",
+       title = "Anscombe's Quartet: Always Plot Your Data") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title   = element_text(family = "serif", face = "bold",
+                                colour = "#1e3a2f", size = 13),
+    strip.text   = element_text(family = "mono", size = 9,
+                                colour = "#2d5a3d", face = "bold"),
+    panel.border = element_rect(colour = "#d4e6da", fill = NA)
+  )
+```
+
+<div class="callout callout-concept">
+<strong>📌 Visualize → Summarize → Model</strong>
+
+This is the correct order of operations. Plotting first lets you:
+detect outliers and data entry errors before they corrupt an analysis;
+check whether a linear model is even appropriate; identify subgroups or
+bimodal distributions that a single mean obscures; and communicate results
+to an audience that cannot read a regression table.
+</div>
+
+---
+
+## 2. The Grammar of Graphics {#grammar}
+
+`ggplot2` is built on a systematic *grammar* — a set of independent components
+that can be composed to describe any statistical graphic. Understanding the
+grammar means you are never guessing syntax; you are assembling known parts.
+
+### The seven layers
+
+Every `ggplot2` plot is built from up to seven layers stacked on top of each other:
+
+```{r grammar-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    Layer       = c("**Data**", "**Aesthetics** `aes()`", "**Geometry** `geom_*()`",
+                    "**Statistics** `stat_*()`", "**Scales** `scale_*()`",
+                    "**Facets** `facet_*()`", "**Theme** `theme()`"),
+    Purpose     = c("The data frame being plotted",
+                    "Map variables to visual properties: x, y, colour, fill, size, shape",
+                    "The geometric object: point, line, bar, boxplot, ribbon…",
+                    "Statistical transformation before drawing: bin, smooth, summarise",
+                    "Control axis limits, colour palettes, axis labels",
+                    "Split the plot into small multiples by a grouping variable",
+                    "All non-data ink: fonts, grid lines, background, margins"),
+    Example     = c("`data = river_df`",
+                    "`aes(x = temp, y = DO, colour = site)`",
+                    "`geom_point()`, `geom_line()`, `geom_boxplot()`",
+                    "`stat_smooth()`, `stat_bin()`",
+                    "`scale_colour_manual()`, `scale_x_log10()`",
+                    "`facet_wrap(~ year)`, `facet_grid(site ~ season)`",
+                    "`theme_minimal()`, `theme(legend.position = 'bottom')`")
+  ),
+  col.names = c("Layer", "Purpose", "Example"),
+  escape    = FALSE
+)
+```
+
+### Minimal working example
+
+```{r grammar-example, fig.cap="A minimal ggplot2 scatterplot using only three required layers: data, aesthetics, and geometry. Every additional layer is optional refinement.", fig.height=3.5}
+set.seed(1)
+river <- data.frame(
+  temp_C = runif(50, 12, 24),
+  DO_mgl = 14 - 0.35 * runif(50, 12, 24) + rnorm(50, 0, 0.5),
+  site   = sample(c("Upstream", "Downstream"), 50, replace = TRUE)
+)
+
+# Layer 1: data.  Layer 2: aesthetics.  Layer 3: geometry.
+ggplot(data = river,                        # Layer 1 — data
+       aes(x = temp_C, y = DO_mgl,          # Layer 2 — aesthetics
+           colour = site)) +
+  geom_point(size = 2.5, alpha = 0.8)       # Layer 3 — geometry
+```
+
+Now add refinement layers one at a time:
+
+```{r grammar-full, fig.cap="The same plot with scales, a smoother, and a theme added. Each layer is independent — remove any one without breaking the others.", fig.height=4}
+ggplot(river, aes(x = temp_C, y = DO_mgl, colour = site)) +
+  geom_point(size = 2.2, alpha = 0.75) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 0.8) +   # stat layer
+  scale_colour_manual(                                          # scale layer
+    values = c("Upstream" = "#4a7c5e", "Downstream" = "#c8832a"),
+    name   = "Site"
+  ) +
+  labs(                                                         # labels
+    x     = "Water temperature (°C)",
+    y     = "Dissolved oxygen (mg/L)",
+    title = "DO vs. Temperature — Two River Sites"
+  ) +
+  theme_minimal(base_size = 12) +                              # theme layer
+  theme(
+    plot.title  = element_text(family = "serif", face = "bold",
+                               colour = "#1e3a2f"),
+    legend.position = "top"
+  )
+```
+
+<div class="callout callout-formula">
+<strong>⚙️ The ggplot2 template — memorise this</strong><br>
+<code>ggplot(data, aes(...)) + geom_*() + scale_*() + labs() + theme_*()</code><br><br>
+Only <code>ggplot()</code> and one <code>geom_*()</code> are required.
+Everything else is optional. Add layers with <code>+</code>, never <code>|></code>.
+</div>
+
+---
+
+## 3. One Continuous Variable {#one-continuous}
+
+When you have a single continuous measurement, your first goal is to understand
+its **distribution** — shape, centre, spread, and any unusual features.
+
+### Histogram
+
+The histogram bins the data and plots counts (or density) per bin. The choice
+of bin width is consequential: too wide hides structure, too narrow produces noise.
+
+```{r hist-data}
+set.seed(5)
+# Daily maximum ozone (ppb) at a monitoring station — one year
+ozone <- data.frame(
+  ppb  = c(rnorm(200, mean = 38, sd = 9),    # typical summer days
+           rnorm(165, mean = 22, sd = 6)),    # winter / clean days
+  season = c(rep("Summer", 200), rep("Winter", 165))
+)
+```
+
+```{r histogram, fig.cap="Distribution of daily maximum ozone. Using `bins = 30` (the default) vs. a carefully chosen `binwidth` — the narrower bins reveal the bimodal structure that the coarser histogram obscures.", fig.height=4, fig.width=7}
+p1 <- ggplot(ozone, aes(ppb)) +
+  geom_histogram(bins = 10, fill = "#4a7c5e", colour = "white", alpha = 0.9) +
+  labs(title = "bins = 10 (too coarse)", x = "Ozone (ppb)", y = "Count") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title = element_text(family = "serif", colour = "#1e3a2f"))
+
+p2 <- ggplot(ozone, aes(ppb)) +
+  geom_histogram(binwidth = 2, fill = "#4a7c5e", colour = "white", alpha = 0.9) +
+  labs(title = "binwidth = 2 (reveals bimodality)", x = "Ozone (ppb)", y = "Count") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title = element_text(family = "serif", colour = "#1e3a2f"))
+
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
+
+### Density plot
+
+A kernel density estimate (KDE) is a smoothed histogram — useful when you want
+to compare distributions without the bin-width problem. Overlay multiple groups
+using transparency (`alpha`).
+
+```{r density, fig.cap="Kernel density estimates of ozone by season. Overlapping semi-transparent fills allow direct comparison without stacking. The bimodal overall distribution is clearly driven by the two seasons.", fig.height=4}
+ggplot(ozone, aes(ppb, fill = season, colour = season)) +
+  geom_density(alpha = 0.35, linewidth = 0.9) +
+  scale_fill_manual(values  = c("Summer" = "#c8832a", "Winter" = "#4a7c5e")) +
+  scale_colour_manual(values = c("Summer" = "#c8832a", "Winter" = "#4a7c5e")) +
+  labs(x = "Ozone (ppb)", y = "Density",
+       title  = "Ozone Distribution by Season",
+       fill   = NULL, colour = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    legend.position = "top"
+  )
+```
+
+<div class="callout callout-tip">
+<strong>💡 Histogram vs. density plot</strong>
+
+Use a **histogram** when showing actual counts matters — for instance, to
+communicate sample size visually alongside distribution shape. Use a
+**density plot** when overlaying two or more groups for comparison; raw
+count histograms of different-sized groups are visually misleading.
+To get the best of both: `geom_histogram(aes(y = after_stat(density)))` puts
+histograms on the density scale so an overlaid `geom_density()` aligns correctly.
+</div>
+
+---
+
+## 4. One Categorical Variable {#one-categorical}
+
+When you need to show counts or proportions across categories, the bar chart
+is the natural choice — provided you follow a few conventions that prevent
+distortion.
+
+```{r bar-data}
+set.seed(8)
+# Land-cover classification from remote sensing (n = 300 parcels)
+landcover <- data.frame(
+  class = sample(
+    c("Forest", "Shrubland", "Grassland", "Wetland", "Developed"),
+    size = 300, replace = TRUE,
+    prob = c(0.34, 0.22, 0.18, 0.12, 0.14)
+  )
+)
+```
+
+```{r barplot, fig.cap="Land-cover class frequencies. Categories are sorted by count (most to least common) using `fct_infreq()`. A sorted bar chart lets the reader rank categories at a glance; alphabetical ordering forces the eye to search.", fig.height=4}
+landcover |>
+  count(class) |>
+  mutate(class = forcats::fct_reorder(class, n, .desc = TRUE)) |>
+  ggplot(aes(class, n, fill = class)) +
+  geom_col(width = 0.6, colour = "#1e3a2f", alpha = 0.88) +
+  geom_text(aes(label = n), vjust = -0.4,
+            family = "mono", size = 3.5, colour = "#1e3a2f") +
+  scale_fill_manual(values = c(
+    "Forest"    = "#1e3a2f",
+    "Shrubland" = "#4a7c5e",
+    "Grassland" = "#8aad96",
+    "Wetland"   = "#2e7d94",
+    "Developed" = "#c8832a"
+  )) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+  labs(x = NULL, y = "Number of parcels",
+       title = "Land-Cover Classification — 300 Parcels") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    legend.position = "none",
+    panel.grid.major.x = element_blank()
+  )
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ The "bar chart with error bars" problem</strong>
+
+A bar chart of means with error bars — sometimes called a "dynamite plot" —
+is one of the most overused and misleading plot types in ecology. The bar
+implies that data begin at zero, which focuses attention on the wrong feature
+(the mean height, not the spread). It also hides whether the distribution is
+symmetric, skewed, bimodal, or contains outliers. See Section 5 for better
+alternatives when the goal is to compare group means.
+</div>
+
+---
+
+## 5. Continuous Variable by Group {#cont-by-group}
+
+This is the most common plotting task in environmental science: comparing a
+measurement across two or more groups. A family of plot types exists, each
+with different strengths.
+
+```{r group-data}
+set.seed(14)
+# Macroinvertebrate EPT richness (sensitive taxa) at four stream sites
+ept <- data.frame(
+  site     = rep(c("Reference", "Urban", "Agricultural", "Mining"), each = 30),
+  richness = c(
+    round(rnorm(30, 12, 2.1)),   # Reference  — highest quality
+    round(rnorm(30,  7, 2.8)),   # Urban
+    round(rnorm(30,  9, 2.4)),   # Agricultural
+    round(rnorm(30,  4, 1.9))    # Mining — most impaired
+  )
+) |>
+  mutate(site = factor(site,
+    levels = c("Reference", "Agricultural", "Urban", "Mining")))
+```
+
+### Boxplot — the workhorse
+
+Shows median, IQR, whiskers (1.5×IQR), and outliers. Always add the raw data
+as jittered points so the reader sees both distribution and sample size.
+
+```{r boxplot, fig.cap="EPT richness across four stream sites. Boxes show the IQR; horizontal bars the median; jittered points show all individual observations. Colour is redundant with the x-axis position — it aids quick group identification.", fig.height=4.5}
+ggplot(ept, aes(site, richness, fill = site)) +
+  geom_boxplot(width = 0.45, outlier.shape = NA,     # hide outlier points —
+               colour = "#1e3a2f", alpha = 0.75,     # we show all raw data below
+               linewidth = 0.6) +
+  geom_jitter(aes(colour = site), width = 0.18,
+              size = 1.6, alpha = 0.45) +
+  scale_fill_manual(values = c(
+    "Reference"    = "#1e3a2f",
+    "Agricultural" = "#8aad96",
+    "Urban"        = "#c8832a",
+    "Mining"       = "#7a3a2f"
+  )) +
+  scale_colour_manual(values = c(
+    "Reference"    = "#1e3a2f",
+    "Agricultural" = "#4a7c5e",
+    "Urban"        = "#c8832a",
+    "Mining"       = "#7a3a2f"
+  )) +
+  labs(x = NULL, y = "EPT richness (no. of taxa)",
+       title = "Macroinvertebrate EPT Richness by Stream Site") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title         = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    legend.position    = "none",
+    panel.grid.major.x = element_blank()
+  )
+```
+
+### Violin plot — shows the full distribution shape
+
+When sample size is large enough (n ≥ 25 per group), a violin plot is superior
+to a boxplot because it reveals bimodality and skewness that the box hides.
+
+```{r violin, fig.cap="Violin plots of EPT richness. The width of each violin at any given y-value is proportional to the density of observations at that value. The embedded boxplot preserves the median and IQR summary.", fig.height=4.5}
+ggplot(ept, aes(site, richness, fill = site)) +
+  geom_violin(trim = TRUE, colour = "#1e3a2f",
+              alpha = 0.7, linewidth = 0.5) +
+  geom_boxplot(width = 0.08, fill = "white",
+               colour = "#1e3a2f", outlier.shape = NA, linewidth = 0.7) +
+  scale_fill_manual(values = c(
+    "Reference"    = "#1e3a2f",
+    "Agricultural" = "#8aad96",
+    "Urban"        = "#c8832a",
+    "Mining"       = "#7a3a2f"
+  )) +
+  labs(x = NULL, y = "EPT richness (no. of taxa)",
+       title = "Violin + Boxplot: Full Distribution Shape") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title         = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    legend.position    = "none",
+    panel.grid.major.x = element_blank()
+  )
+```
+
+### Point + CI plot — for inference
+
+When your goal is *comparison of means* (i.e., you are about to run a t-test or
+ANOVA), show the mean and 95% confidence interval explicitly. This is more honest
+than a "dynamite plot" and more focused than a boxplot.
+
+```{r point-ci, fig.cap="Mean EPT richness ± 95% CI by site. Non-overlapping intervals between Reference and Mining provide strong visual evidence of a meaningful difference. This plot directly mirrors what a t-test or ANOVA tests.", fig.height=4}
+ept_summary <- ept |>
+  group_by(site) |>
+  summarise(
+    n    = n(),
+    mean = mean(richness),
+    se   = sd(richness) / sqrt(n),
+    t_crit = qt(0.975, df = n - 1),
+    lower  = mean - t_crit * se,
+    upper  = mean + t_crit * se
+  )
+
+ggplot(ept_summary, aes(site, mean, colour = site)) +
+  geom_hline(yintercept = ept_summary$mean[ept_summary$site == "Reference"],
+             linetype = "dashed", colour = "#aaaaaa", linewidth = 0.6) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                width = 0.15, linewidth = 1.1) +
+  geom_point(size = 4) +
+  scale_colour_manual(values = c(
+    "Reference"    = "#1e3a2f",
+    "Agricultural" = "#4a7c5e",
+    "Urban"        = "#c8832a",
+    "Mining"       = "#7a3a2f"
+  )) +
+  labs(x = NULL, y = "Mean EPT richness ± 95% CI",
+       title = "Mean EPT Richness with 95% Confidence Intervals") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    legend.position = "none"
+  )
+```
+
+<div class="callout callout-concept">
+<strong>📌 When to use each group-comparison plot</strong>
+
+<strong>Boxplot:</strong> default choice for most ecological data; works well for n ≥ 10 per group; always layer raw data on top.<br>
+<strong>Violin:</strong> upgrade when n ≥ 25 and distribution shape matters — detecting bimodality in species abundance, for instance.<br>
+<strong>Point + CI:</strong> use when your primary message is inferential — "these groups are or are not significantly different". Pairs naturally with ANOVA results.
+</div>
+
+---
+
+## 6. Two Continuous Variables {#two-continuous}
+
+### Scatterplot with smoother
+
+Use `geom_smooth()` to overlay a trend line. The default method `"loess"` is
+non-parametric and reveals non-linear patterns. Use `method = "lm"` when you
+are specifically asserting a linear relationship.
+
+```{r scatter-data}
+set.seed(21)
+n <- 80
+soil <- data.frame(
+  organic_pct = runif(n, 1, 8),
+  moisture    = NA,
+  bulk_density = NA
+)
+soil$moisture     <- 12 + 4.5 * soil$organic_pct + rnorm(n, 0, 3)
+soil$bulk_density <- 1.85 - 0.08 * soil$organic_pct + rnorm(n, 0, 0.08)
+soil$land_use     <- sample(c("Forest", "Cropland"), n, replace = TRUE,
+                             prob = c(0.5, 0.5))
+```
+
+```{r scatter-loess, fig.cap="Soil moisture increases with organic matter content. The loess smoother (blue) reveals a slightly non-linear relationship — the slope flattens at high organic matter. The linear fit (dashed) would miss this. Point colour encodes land use.", fig.height=4.5}
+ggplot(soil, aes(organic_pct, moisture, colour = land_use)) +
+  geom_point(size = 2.2, alpha = 0.7) +
+  geom_smooth(aes(group = 1), method  = "loess", span = 0.8,
+              colour = "#1e3a2f", fill = "#d4e6da",
+              linewidth = 1, se = TRUE) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE,
+              colour = "#c8832a", linetype = "dashed",
+              linewidth = 0.8) +
+  scale_colour_manual(
+    values = c("Forest" = "#4a7c5e", "Cropland" = "#c8832a"),
+    name   = "Land use"
+  ) +
+  labs(
+    x     = "Soil organic matter (%)",
+    y     = "Volumetric moisture (%)",
+    title = "Soil Moisture vs. Organic Matter"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    legend.position = "top"
+  )
+```
+
+### Small multiples (facets)
+
+When you have a third grouping variable, `facet_wrap()` produces **small
+multiples** — the same axes and scales repeated across groups, which makes
+cross-group comparison easier than overlaying everything on one plot.
+
+```{r facets, fig.cap="The organic matter–moisture relationship faceted by land use. Keeping the axes identical across panels allows direct comparison of both slope and intercept. Cropland soils retain less moisture at a given organic matter level.", fig.height=4}
+ggplot(soil, aes(organic_pct, moisture)) +
+  geom_point(aes(colour = land_use), size = 1.9, alpha = 0.65) +
+  geom_smooth(method = "lm", colour = "#1e3a2f",
+              fill = "#d4e6da", linewidth = 1) +
+  facet_wrap(~ land_use) +
+  scale_colour_manual(values = c("Forest" = "#4a7c5e", "Cropland" = "#c8832a")) +
+  labs(x = "Soil organic matter (%)", y = "Volumetric moisture (%)") +
+  theme_minimal(base_size = 12) +
+  theme(
+    strip.text      = element_text(family = "mono", face = "bold",
+                                   colour = "#1e3a2f", size = 10),
+    legend.position = "none"
+  )
+```
+
+### Correlation matrix for exploratory analysis
+
+When you have several continuous variables and want a quick overview of their
+pairwise relationships, a pairs plot is invaluable.
+
+```{r pairs, fig.cap="Lower triangle: scatterplots with loess smoothers. Diagonal: variable name. Upper triangle would show correlation coefficients (see `GGally::ggpairs()` for a polished version). Bulk density is inversely related to both moisture and organic matter — classic compaction signal.", fig.height=5, fig.width=6}
+pairs(
+  soil[, c("organic_pct", "moisture", "bulk_density")],
+  pch    = 20, cex = 0.7,
+  col    = ifelse(soil$land_use == "Forest", "#4a7c5e", "#c8832a"),
+  labels = c("Organic\nmatter (%)", "Moisture\n(%)", "Bulk\ndensity\n(g/cm³)"),
+  panel  = function(x, y, ...) {
+    points(x, y, ...)
+    lines(lowess(x, y), col = "#1e3a2f", lwd = 1.5)
+  },
+  main = "Soil Variable Pairs"
+)
+```
+
+---
+
+## 7. Time Series {#time-series}
+
+Environmental data are often collected over time. Connecting observations with
+a line communicates temporal continuity; adding points marks the actual
+measurement occasions.
+
+```{r ts-data}
+set.seed(33)
+# Monthly mean streamflow (m³/s) — 5 years of a hypothetical CA watershed
+months <- seq(as.Date("2019-01-01"), as.Date("2023-12-01"), by = "month")
+n_mo   <- length(months)
+
+# Seasonal signal + long-term decline + noise
+seasonal   <- 12 * sin((seq_len(n_mo) - 2) * 2 * pi / 12) + 8
+trend      <- seq(0, -4, length.out = n_mo)
+streamflow <- data.frame(
+  date  = months,
+  flow  = pmax(0.2, seasonal + trend + rnorm(n_mo, 0, 2)),
+  year  = format(months, "%Y")
+)
+```
+
+```{r ts-annual, fig.cap="Monthly mean streamflow over five years. The line reveals the annual wet-season pulse; points mark individual monthly measurements. The declining trend is subtle but visible by comparing peak flows across years.", fig.height=4}
+ggplot(streamflow, aes(date, flow)) +
+  geom_area(fill = "#d4e6da", colour = NA, alpha = 0.6) +
+  geom_line(colour = "#2d5a3d", linewidth = 0.85) +
+  geom_point(colour = "#1e3a2f", size = 1.2, alpha = 0.6) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  labs(
+    x     = NULL,
+    y     = "Mean monthly streamflow (m³/s)",
+    title = "Streamflow — Hypothetical CA Watershed, 2019–2023"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+### Seasonal decomposition plot
+
+Faceting by year allows direct visual comparison of the seasonal cycle
+across years — much clearer than trying to read inter-annual differences
+from the single time series above.
+
+```{r ts-faceted, fig.cap="Streamflow by month, faceted by year. Each panel shares the same x-axis (month of year) and y-axis scale, making it easy to compare peak-flow timing and magnitude across years. The declining late-season flow is especially clear.", fig.height=4}
+streamflow |>
+  mutate(month_num = as.integer(format(date, "%m")),
+         month_lbl = format(date, "%b")) |>
+  mutate(month_lbl = factor(month_lbl, levels = month.abb)) |>
+  ggplot(aes(month_lbl, flow, group = year, colour = year)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.8) +
+  scale_colour_manual(
+    values = c("2019" = "#1e3a2f", "2020" = "#2d5a3d",
+               "2021" = "#4a7c5e", "2022" = "#8aad96", "2023" = "#c8832a"),
+    name = "Year"
+  ) +
+  labs(x = NULL, y = "Streamflow (m³/s)",
+       title = "Monthly Streamflow by Year") +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    axis.text.x     = element_text(size = 8),
+    legend.position = "top"
+  )
+```
+
+---
+
+## 8. Design Principles {#design}
+
+Technical correctness is necessary but not sufficient. A plot also needs to
+communicate clearly. These principles have empirical support from perceptual
+research.
+
+### Colour
+
+Colour is the most misused visual channel. Three rules cover most situations:
+
+<div class="do-dont">
+<div class="do-box">
+<strong>✅ Do</strong>
+Use a <strong>qualitative</strong> palette (e.g., ColorBrewer Set2) for nominal categories
+where no ordering exists. Use a <strong>sequential</strong> palette (dark→light) for
+ordered or quantitative data. Use <strong>diverging</strong> palettes (two hues meeting
+at a neutral midpoint) for data centred on a meaningful zero, like anomalies
+from a long-term average. Test your palette with a colour-blindness simulator.
+</div>
+<div class="dont-box">
+<strong>❌ Don't</strong>
+Use the default rainbow palette — it has no perceptual order and is
+uninterpretable to red-green colourblind readers (~8% of men).
+Never use colour alone to encode a data dimension; also vary shape or line
+type so the plot is legible in black-and-white print and to colourblind readers.
+Do not use more than ~6–7 distinct colours in one plot.
+</div>
+</div>
+
+```{r colour-demo, fig.cap="Left: rainbow palette — perceptually non-monotone, inaccessible. Right: ColorBrewer 'Dark2' qualitative palette — balanced, colourblind-friendly. Both show the same EPT richness data.", fig.height=3.5, fig.width=7}
+p_bad <- ggplot(ept, aes(site, richness, fill = site)) +
+  geom_boxplot(outlier.shape = NA, linewidth = 0.5) +
+  scale_fill_manual(values = c("red", "orange", "green", "blue")) +
+  labs(title = "❌ Rainbow colours", x = NULL, y = "EPT richness") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none",
+        plot.title = element_text(colour = "#bf360c", face = "bold"))
+
+p_good <- ggplot(ept, aes(site, richness, fill = site)) +
+  geom_boxplot(outlier.shape = NA, linewidth = 0.5) +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "✅ ColorBrewer 'Dark2'", x = NULL, y = "EPT richness") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none",
+        plot.title = element_text(colour = "#1b5e20", face = "bold"))
+
+gridExtra::grid.arrange(p_bad, p_good, ncol = 2)
+```
+
+### Axis scales and the zero baseline
+
+```{r axes-demo, fig.cap="Left: y-axis truncated at 3 — the Urban–Mining difference looks enormous. Right: y-axis starting at 0 shows the true proportion of the range occupied by the difference. Truncating axes exaggerates effects and can mislead readers.", fig.height=3.5, fig.width=7}
+p_trunc <- ggplot(ept_summary, aes(site, mean, colour = site)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                width = 0.15, linewidth = 1) +
+  geom_point(size = 3.5) +
+  coord_cartesian(ylim = c(3, 14)) +
+  scale_colour_manual(values = c("#1e3a2f","#4a7c5e","#c8832a","#7a3a2f")) +
+  labs(title = "❌ Truncated y-axis", x = NULL, y = "Mean EPT richness") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none",
+        plot.title = element_text(colour = "#bf360c", face = "bold"))
+
+p_zero <- ggplot(ept_summary, aes(site, mean, colour = site)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                width = 0.15, linewidth = 1) +
+  geom_point(size = 3.5) +
+  expand_limits(y = 0) +
+  scale_colour_manual(values = c("#1e3a2f","#4a7c5e","#c8832a","#7a3a2f")) +
+  labs(title = "✅ Axis from zero", x = NULL, y = "Mean EPT richness") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none",
+        plot.title = element_text(colour = "#1b5e20", face = "bold"))
+
+gridExtra::grid.arrange(p_trunc, p_zero, ncol = 2)
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ The zero-baseline exception</strong>
+
+The "start at zero" rule applies to <strong>bar charts and area charts</strong>,
+where the encoded quantity is the bar's height or the filled area.
+For <strong>point-and-line plots and scatterplots</strong>, forcing a zero baseline
+often wastes most of the plot area and obscures variation that is scientifically
+meaningful. Judgment is required; the key is that the axis range should not
+exaggerate or minimise the effect relative to what is natural for the variable.
+</div>
+
+### The data-ink ratio
+
+Edward Tufte's principle: every drop of ink should encode data. Remove
+gridlines, borders, and tick marks that do not help the reader.
+
+```{r theme-demo, fig.cap="Left: default ggplot2 grey theme — heavy grid, bold background, double-encoded axis. Right: `theme_minimal()` with further refinement — the same data, more signal, less noise.", fig.height=3.5, fig.width=7}
+base_plot <- ggplot(soil, aes(organic_pct, moisture)) +
+  geom_point(colour = "#4a7c5e", alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, colour = "#1e3a2f") +
+  labs(x = "Organic matter (%)", y = "Moisture (%)")
+
+p_default <- base_plot +
+  labs(title = "❌ Default grey theme") +
+  theme_grey(base_size = 11) +
+  theme(plot.title = element_text(colour = "#bf360c", face = "bold"))
+
+p_clean <- base_plot +
+  labs(title = "✅ Minimal theme, refined") +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(family = "serif", face = "bold",
+                                    colour = "#1b5e20"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(colour = "#ede8df", linewidth = 0.5),
+    axis.line        = element_line(colour = "#3a3a38", linewidth = 0.4)
+  )
+
+gridExtra::grid.arrange(p_default, p_clean, ncol = 2)
+```
+
+### Labelling and annotation
+
+Axis labels must include **units**. Titles should state the finding, not just
+the variable names. Annotations (`annotate()`, `geom_text()`) can replace
+or supplement a legend, reducing eye travel.
+
+```{r annotation, fig.cap="Direct annotation replaces the legend entirely — the reader's eye never has to leave the plot. The title states the finding ('Moisture increases with organic matter') rather than just naming the axes.", fig.height=4}
+soil_means <- soil |>
+  group_by(land_use) |>
+  summarise(x = mean(organic_pct), y = mean(moisture))
+
+ggplot(soil, aes(organic_pct, moisture, colour = land_use)) +
+  geom_point(size = 2, alpha = 0.55) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+  geom_text(data = soil_means,
+            aes(x = x + 0.3, y = y + 2, label = land_use, colour = land_use),
+            fontface = "bold", family = "mono", size = 3.8) +
+  scale_colour_manual(values = c("Forest" = "#1e3a2f", "Cropland" = "#c8832a")) +
+  labs(
+    x     = "Soil organic matter (%)",
+    y     = "Volumetric moisture (%)",
+    title = "Moisture increases with organic matter — more strongly in forest soils"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold",
+                                   colour = "#1e3a2f", size = 11),
+    legend.position = "none"
+  )
+```
+
+---
+
+## 9. Choosing the Right Plot {#choosing}
+
+```{r choice-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    Goal = c(
+      "Understand distribution of one variable",
+      "Understand distribution of one variable",
+      "Count observations per category",
+      "Compare distributions across groups",
+      "Compare distributions across groups (large n)",
+      "Compare means across groups (inference)",
+      "Show relationship between two continuous variables",
+      "Show three variables simultaneously",
+      "Show change over time",
+      "Compare many variables pairwise"
+    ),
+    `Best choice` = c(
+      "Histogram (`geom_histogram()`)",
+      "Density plot (`geom_density()`)",
+      "Bar chart, sorted (`geom_col()` + `fct_reorder()`)",
+      "Boxplot + jitter (`geom_boxplot()` + `geom_jitter()`)",
+      "Violin + embedded boxplot (`geom_violin()` + `geom_boxplot()`)",
+      "Point + CI (`geom_point()` + `geom_errorbar()`)",
+      "Scatterplot + smoother (`geom_point()` + `geom_smooth()`)",
+      "Scatterplot, colour/size encodes 3rd variable",
+      "Line plot (`geom_line()` + `scale_x_date()`)",
+      "Pairs plot (`pairs()` or `GGally::ggpairs()`)"
+    ),
+    `Avoid` = c(
+      "Pie chart; bars of means",
+      "Histogram with too few or too many bins",
+      "Pie chart; 3-D bar chart",
+      "Bar chart of means only ('dynamite plot')",
+      "Single mean ± SD bar",
+      "Bar chart of means without CI",
+      "Line chart (implies continuity between discrete points)",
+      "3-D scatterplot (almost never interpretable)",
+      "Bar chart; connecting non-temporal measurements",
+      "Correlation heatmap without scatterplot check"
+    )
+  ),
+  col.names = c("Goal", "Best choice", "Avoid"),
+  caption   = "Plot selection guide. The best choice depends on your data structure and the question you want to answer visually."
+)
+```
+
+<div class="key-box">
+<h4>🔑 Key visualization takeaways</h4>
+<ul>
+<li><strong>Plot first, always.</strong> Summary statistics can be identical across structurally different datasets (Anscombe's Quartet). A histogram or scatterplot takes 2 lines of code and catches errors that hours of modelling will not.</li>
+<li><strong>The grammar of graphics</strong> is data + aesthetics + geometry + optional refinements. Build plots layer by layer; each component is independent.</li>
+<li><strong>Show the raw data</strong> whenever n is small enough. Overlay jittered points on boxplots; show individual dots on bar charts. Summary statistics that hide data are dishonest.</li>
+<li><strong>Use 95% CI bars, not SD bars</strong>, when making inferential comparisons. Label error bars explicitly — readers cannot tell SD from SE from CI by looking.</li>
+<li><strong>Colour for communication, not decoration.</strong> Use colourblind-safe palettes, never more than ~6 categories, and always a non-colour backup encoding (shape, linetype).</li>
+<li><strong>Titles state findings</strong> ("Moisture increases with organic matter"), not variable names ("Organic matter vs. moisture"). Your reader should understand the main message without reading the caption.</li>
+</ul>
+</div>
+
+---
+
+### What's next?
+
+- **[Describing Data](01_Describing_Data.html)** — means, SD, SE, and CIs
+- **[Four Frameworks](02_Four_Frameworks.html)** — choosing the right statistical test
+- **[t-test in depth](TimeOutSideClass.html)** — worked example with course data
+
+```{r session-info, echo=FALSE}
+# sessionInfo()   # uncomment for reproducibility reporting
+```
+
+<footer class="page-footer">
+EA030 Basic Statistics &mdash; Module 03
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>

@@ -1,0 +1,1049 @@
+---
+title: "Signal Over Noise"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/basic_statistics/04_Signal_Over_Noise.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 7,
+  fig.height = 4
+)
+library(ggplot2)
+library(dplyr)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); font-size: 17px; line-height: 1.75; }
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 4vw 80px !important; }
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+/* Signal/noise ratio diagram */
+.ratio-display {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; margin: 2em 0; font-family: 'Libre Baskerville', serif;
+}
+.ratio-num, .ratio-den {
+  text-align: center; padding: 16px 28px; border-radius: 6px;
+  box-shadow: var(--card-shadow);
+}
+.ratio-num { background: var(--forest); color: #fff; }
+.ratio-num .rn-label { font-size: .72rem; font-family: 'Source Code Pro', monospace;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--sage); margin-bottom: 4px; }
+.ratio-num .rn-value { font-size: 1.5rem; font-weight: 700; color: #fff; }
+.ratio-den { background: var(--parchment); color: var(--ink); }
+.ratio-den .rn-label { font-size: .72rem; font-family: 'Source Code Pro', monospace;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--dust); margin-bottom: 4px; }
+.ratio-den .rn-value { font-size: 1.5rem; font-weight: 700; color: var(--charcoal); }
+.ratio-div { font-size: 2.5rem; color: var(--amber); font-weight: 700; line-height: 1; }
+.ratio-eq  { font-size: 1.3rem; color: var(--dust); }
+.ratio-result { font-size: 1.6rem; font-weight: 700;
+  font-family: 'Source Code Pro', monospace; color: var(--amber); }
+
+/* Step badges */
+.step-badge {
+  display: inline-block; background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 3px; margin-right: 8px; vertical-align: middle;
+}
+
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Basic Statistics &mdash; Module 04</div>
+<h1>Signal <span>Over Noise</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<a class="back-link" href="index.html">&#8592; Back to Basic Statistics</a>
+</div>
+
+<div class="section-nav">
+<a href="#core-idea">The Core Idea</a>
+<a href="#null-world">The Null World</a>
+<a href="#monte-carlo">Monte Carlo</a>
+<a href="#permutation">Permutation Test</a>
+<a href="#t-dist">The t-Distribution</a>
+<a href="#f-dist">The F-Distribution</a>
+<a href="#convergence">Two Roads, One Answer</a>
+</div>
+
+> **What this module covers.** Every classical statistical test — t-test, ANOVA,
+> regression — is a formalisation of the same underlying question: *is the pattern
+> I see in my data larger than what I would expect from chance variation alone?*
+> This module builds that intuition from scratch using Monte Carlo simulation,
+> then shows how the t and F distributions are just efficient shortcuts to the
+> same answer.
+
+---
+
+## 1. The Core Idea: Signal Over Noise {#core-idea}
+
+Every statistical test computes some version of this ratio:
+
+<div class="ratio-display">
+<div class="ratio-num">
+  <div class="rn-label">Signal</div>
+  <div class="rn-value">effect size</div>
+</div>
+<div class="ratio-div">÷</div>
+<div class="ratio-den">
+  <div class="rn-label">Noise</div>
+  <div class="rn-value">chance variation</div>
+</div>
+<div class="ratio-eq">=</div>
+<div class="ratio-result">test statistic</div>
+</div>
+
+**Signal** is the pattern you care about: the difference between group means,
+the slope of a regression line, the change in frequency across categories.
+
+**Noise** is the variation that exists even when nothing interesting is happening:
+individual differences between organisms, measurement error, spatial and temporal
+heterogeneity, the irreducible randomness of the natural world.
+
+A test statistic close to **zero** means signal and noise are the same size —
+the pattern is indistinguishable from background variation. A large test statistic
+means the signal is much larger than expected from noise alone — the pattern is
+*rare* under the assumption that nothing is happening.
+
+```{r signal-noise-intuition, echo=FALSE, fig.cap="Three scenarios with different signal-to-noise ratios. Left: large signal, small noise — the groups are clearly different. Middle: moderate signal, moderate noise — uncertain. Right: small signal, large noise — the groups are indistinguishable. The *ratio* determines what a test can detect, not either quantity alone.", fig.height=3.8}
+set.seed(42)
+par(mfrow = c(1, 3), mar = c(3, 3, 3, 1), las = 1)
+
+scenarios <- list(
+  list(mu = c(5, 9), sd = 0.8, title = "Large signal\nSmall noise\nS/N = 5.0"),
+  list(mu = c(5, 7), sd = 1.5, title = "Moderate signal\nModerate noise\nS/N = 1.3"),
+  list(mu = c(5, 5.5), sd = 3.0, title = "Small signal\nLarge noise\nS/N = 0.2")
+)
+
+for (s in scenarios) {
+  grp <- rep(c("A", "B"), each = 30)
+  y   <- c(rnorm(30, s$mu[1], s$sd), rnorm(30, s$mu[2], s$sd))
+  boxplot(y ~ grp,
+          col    = c("#4a7c5e", "#c8832a"),
+          border = "#1e3a2f",
+          main   = s$title,
+          xlab   = "", ylab   = "",
+          outline = TRUE,
+          cex.main = 0.88,
+          frame.plot = FALSE)
+  stripchart(y ~ grp, method = "jitter", jitter = 0.12,
+             pch = 20, cex = 0.6, col = adjustcolor("#1e3a2f", 0.4),
+             vertical = TRUE, add = TRUE)
+}
+par(mfrow = c(1, 1))
+```
+
+### Signal-to-noise in the t-statistic
+
+For a two-group comparison, the signal-to-noise ratio is the t-statistic:
+
+$$t = \frac{\underbrace{\bar{x}_A - \bar{x}_B}_{\text{signal: observed difference}}}
+           {\underbrace{SE_{\text{diff}}}_{\text{noise: expected sampling variation}}}$$
+
+For the F-statistic in ANOVA:
+
+$$F = \frac{\underbrace{MS_{\text{between}}}_{\text{signal: variance explained by groups}}}
+           {\underbrace{MS_{\text{within}}}_{\text{noise: variance within groups}}}$$
+
+Both are signal-over-noise ratios. They differ only in what "signal" and "noise" mean
+geometrically. The core question is always the same: **how often would we see a ratio
+this large if there were actually no effect?**
+
+---
+
+## 2. The Null World — What If Nothing Were Happening? {#null-world}
+
+To decide whether an observed signal-to-noise ratio is large, we need to know the
+**distribution of that ratio under the null hypothesis** — i.e., in a world where the
+groups have identical population means and any apparent difference is pure chance.
+
+There are two ways to construct this null distribution:
+
+1. **Simulation (Monte Carlo / permutation):** Shuffle the data to destroy any real
+   group structure. Compute the test statistic many times. The histogram of those
+   values *is* the empirical null distribution.
+
+2. **Mathematics (t, F distributions):** Mathematicians derived the exact shape of
+   these null distributions analytically. We compare our observed statistic to the
+   theoretical curve rather than simulating.
+
+Both approaches answer the same question. Simulation is slower but requires no
+assumptions beyond exchangeability. Theory is instant but requires the data to satisfy
+certain conditions (normality, equal variance, independence). We build the simulation
+first because it makes the logic completely transparent.
+
+---
+
+## 3. Monte Carlo Simulation: Building Intuition {#monte-carlo}
+
+Before looking at real data, let us build intuition by *watching* what happens when
+we know for certain that the null hypothesis is true.
+
+### Generating null data
+
+We will create two groups drawn from **identical** populations. Any difference
+between their means is pure sampling noise — there is no signal by construction.
+
+```{r null-generation}
+set.seed(7)
+
+# Two groups from the SAME population — null is true by construction
+n_per_group  <- 20
+true_mean    <- 10
+true_sd      <- 3
+
+group_A_null <- rnorm(n_per_group, mean = true_mean, sd = true_sd)
+group_B_null <- rnorm(n_per_group, mean = true_mean, sd = true_sd)
+
+cat("Group A mean:", round(mean(group_A_null), 2), "\n")
+cat("Group B mean:", round(mean(group_B_null), 2), "\n")
+cat("Observed difference:", round(mean(group_A_null) - mean(group_B_null), 2), "\n")
+```
+
+Even though both groups were drawn from the same distribution, we observe a
+non-zero difference. This is sampling variation — noise. The question is: *how
+often does sampling produce a difference at least this large?*
+
+### Repeating the experiment 5,000 times
+
+We simulate 5,000 "experiments" under the null (both groups from the same population),
+record the mean difference each time, and build the null distribution.
+
+```{r monte-carlo-null, cache=FALSE}
+set.seed(99)
+n_sims       <- 5000
+null_diffs   <- numeric(n_sims)
+
+for (i in seq_len(n_sims)) {
+  A <- rnorm(n_per_group, mean = true_mean, sd = true_sd)
+  B <- rnorm(n_per_group, mean = true_mean, sd = true_sd)
+  null_diffs[i] <- mean(A) - mean(B)
+}
+
+cat("Null distribution summary:\n")
+round(quantile(null_diffs, c(0.025, 0.05, 0.25, 0.50, 0.75, 0.95, 0.975)), 2)
+```
+
+```{r mc-null-plot, echo=FALSE, fig.cap="The null distribution of mean differences when both groups are drawn from the same population (n = 20 each, 5,000 simulations). The distribution is centred on zero and roughly normal. The amber shaded tails contain 5% of simulations — our conventional Type I error threshold.", fig.height=4}
+par(mar = c(4, 4, 3, 1), las = 1)
+
+hist(null_diffs,
+     breaks = 60,
+     col    = "#d4e6da",
+     border = "white",
+     main   = "Null Distribution of Mean Differences (5,000 simulations)",
+     xlab   = expression(bar(x)[A] - bar(x)[B]),
+     ylab   = "Frequency",
+     cex.main = 0.92)
+
+# Shade the 5% tails
+q025 <- quantile(null_diffs, 0.025)
+q975 <- quantile(null_diffs, 0.975)
+
+tail_breaks_lo <- hist(null_diffs[null_diffs <= q025], breaks = 60, plot = FALSE)
+tail_breaks_hi <- hist(null_diffs[null_diffs >= q975], breaks = 60, plot = FALSE)
+
+rect(tail_breaks_lo$breaks[-length(tail_breaks_lo$breaks)], 0,
+     tail_breaks_lo$breaks[-1], tail_breaks_lo$counts,
+     col = adjustcolor("#c8832a", 0.7), border = NA)
+rect(tail_breaks_hi$breaks[-length(tail_breaks_hi$breaks)], 0,
+     tail_breaks_hi$breaks[-1], tail_breaks_hi$counts,
+     col = adjustcolor("#c8832a", 0.7), border = NA)
+
+abline(v = 0,    col = "#1e3a2f",  lwd = 2, lty = 1)
+abline(v = q025, col = "#c8832a",  lwd = 1.5, lty = 2)
+abline(v = q975, col = "#c8832a",  lwd = 1.5, lty = 2)
+
+legend("topright",
+       legend = c("Null mean (0)", "2.5th / 97.5th percentile", "5% tail region"),
+       col    = c("#1e3a2f", "#c8832a", adjustcolor("#c8832a", 0.7)),
+       lty    = c(1, 2, NA), pch = c(NA, NA, 15),
+       bty    = "n", cex = 0.82)
+
+text(q025 - 0.05, max(table(cut(null_diffs, 60))) * 0.85,
+     paste0("2.5%\n(", round(q025, 2), ")"),
+     col = "#c8832a", cex = 0.75, adj = 1)
+text(q975 + 0.05, max(table(cut(null_diffs, 60))) * 0.85,
+     paste0("97.5%\n(", round(q975, 2), ")"),
+     col = "#c8832a", cex = 0.75, adj = 0)
+```
+
+<div class="callout callout-concept">
+<strong>📌 What the null distribution tells us</strong>
+
+The amber tails contain exactly 5% of all simulated differences — values so
+extreme they would arise by chance less than 1 in 20 times when the null is
+true. This 5% is our conventional **α = 0.05** threshold. An observed difference
+that falls in the tail is called "statistically significant" — not because it
+is important, but because it is <em>rare under the null hypothesis</em>.
+</div>
+
+---
+
+## 4. Permutation Test on Real Data {#permutation}
+
+Now we apply the same logic to real data — but instead of generating new data from
+a known distribution, we **shuffle** the existing observations to destroy the real
+group structure. This is a **permutation test**, and it is the most assumption-free
+way to construct a null distribution.
+
+### The dataset: lead in drinking water by pipe material
+
+```{r lead-data}
+set.seed(3)
+# Lead concentration (µg/L) sampled from buildings with different pipe material
+# EPA action level: 15 µg/L
+lead <- data.frame(
+  pipe    = rep(c("Lead/Lead-solder", "Copper/PVC"), c(28, 32)),
+  lead_ppb = c(
+    round(rlnorm(28, meanlog = 2.6, sdlog = 0.55)),   # older lead pipes
+    round(rlnorm(32, meanlog = 1.6, sdlog = 0.50))    # modern copper/PVC
+  )
+)
+```
+
+```{r lead-plot, fig.cap="Lead concentration by pipe material. Each point is one building sample. The EPA action level (15 µg/L) is shown as a dashed line. Lead/lead-solder pipes produce substantially higher concentrations.", fig.height=4}
+ggplot(lead, aes(pipe, lead_ppb, fill = pipe)) +
+  geom_boxplot(width = 0.45, outlier.shape = NA,
+               colour = "#1e3a2f", alpha = 0.75, linewidth = 0.6) +
+  geom_jitter(aes(colour = pipe), width = 0.18,
+              size = 1.8, alpha = 0.5) +
+  geom_hline(yintercept = 15, linetype = "dashed",
+             colour = "#bf360c", linewidth = 0.9) +
+  annotate("text", x = 2.48, y = 17,
+           label = "EPA action level (15 µg/L)",
+           colour = "#bf360c", size = 3.2, hjust = 1, fontface = "italic") +
+  scale_fill_manual(values  = c("Lead/Lead-solder" = "#7a3a2f",
+                                "Copper/PVC"       = "#4a7c5e")) +
+  scale_colour_manual(values = c("Lead/Lead-solder" = "#7a3a2f",
+                                 "Copper/PVC"       = "#4a7c5e")) +
+  labs(x = NULL, y = "Lead concentration (µg/L)",
+       title = "Tap Water Lead Concentration by Pipe Material") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title         = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    legend.position    = "none",
+    panel.grid.major.x = element_blank()
+  )
+```
+
+```{r lead-observed}
+# The observed difference in means — our "signal"
+obs_diff <- mean(lead$lead_ppb[lead$pipe == "Lead/Lead-solder"]) -
+            mean(lead$lead_ppb[lead$pipe == "Copper/PVC"])
+cat("Observed mean difference:", round(obs_diff, 2), "µg/L\n")
+```
+
+### <span class="step-badge">Step 1</span> Understand what shuffling does
+
+The key insight: if pipe material has **no effect** on lead concentration, then the
+labels "Lead/Lead-solder" and "Copper/PVC" are arbitrary — we could randomly
+reassign them and the difference in means would look just like our real difference.
+
+Shuffling the labels destroys any real association while preserving the marginal
+distribution of the data. The collection of mean differences from many shuffles
+*is* the null distribution.
+
+```{r shuffle-demo}
+# One single shuffle — what does a "null" difference look like?
+set.seed(42)
+shuffled_labels <- sample(lead$pipe)    # randomly reassign pipe labels
+one_null_diff   <- mean(lead$lead_ppb[shuffled_labels == "Lead/Lead-solder"]) -
+                   mean(lead$lead_ppb[shuffled_labels == "Copper/PVC"])
+cat("One null difference (shuffled):", round(one_null_diff, 2), "µg/L\n")
+cat("Observed difference:           ", round(obs_diff, 2),      "µg/L\n")
+```
+
+### <span class="step-badge">Step 2</span> Repeat 9,999 times
+
+```{r permutation-test, cache=FALSE}
+set.seed(1234)
+n_perms     <- 9999
+perm_diffs  <- numeric(n_perms)
+
+for (i in seq_len(n_perms)) {
+  shuffled        <- sample(lead$pipe)
+  perm_diffs[i]   <- mean(lead$lead_ppb[shuffled == "Lead/Lead-solder"]) -
+                     mean(lead$lead_ppb[shuffled == "Copper/PVC"])
+}
+
+# p-value: proportion of null differences >= observed (one-tailed)
+# Two-tailed: proportion of |null differences| >= |observed|
+p_perm <- mean(abs(perm_diffs) >= abs(obs_diff))
+cat("Permutation p-value (two-tailed):", p_perm, "\n")
+cat("Observed difference falls in the",
+    round(mean(perm_diffs < obs_diff) * 100, 1),
+    "th percentile of the null distribution.\n")
+```
+
+### <span class="step-badge">Step 3</span> Visualise the observed statistic against the null
+
+```{r permutation-plot, echo=FALSE, fig.cap="The permutation null distribution of mean differences (9,999 shuffles). The observed difference of ~9 µg/L (red line) sits far into the right tail — it would almost never arise by chance if pipe material had no effect. The permutation p-value is the proportion of null differences exceeding the red line.", fig.height=4.5}
+par(mar = c(4.5, 4, 3.5, 1), las = 1)
+
+hist(perm_diffs,
+     breaks   = 80,
+     col      = "#d4e6da",
+     border   = "white",
+     main     = "Permutation Null Distribution — Lead Concentration",
+     xlab     = "Mean difference: Lead pipes − Copper/PVC (µg/L)",
+     ylab     = "Frequency",
+     cex.main = 0.92,
+     xlim     = range(c(perm_diffs, obs_diff * 1.1)))
+
+# Shade region more extreme than observed
+extreme_lo <- perm_diffs[perm_diffs <=  -abs(obs_diff)]
+extreme_hi <- perm_diffs[perm_diffs >=   abs(obs_diff)]
+
+if (length(extreme_hi) > 0) {
+  h_hi <- hist(extreme_hi, breaks = 80, plot = FALSE)
+  rect(h_hi$breaks[-length(h_hi$breaks)], 0,
+       h_hi$breaks[-1], h_hi$counts,
+       col = adjustcolor("#c8832a", 0.65), border = NA)
+}
+if (length(extreme_lo) > 0) {
+  h_lo <- hist(extreme_lo, breaks = 80, plot = FALSE)
+  rect(h_lo$breaks[-length(h_lo$breaks)], 0,
+       h_lo$breaks[-1], h_lo$counts,
+       col = adjustcolor("#c8832a", 0.65), border = NA)
+}
+
+abline(v =  obs_diff, col = "#bf360c", lwd = 2.5, lty = 1)
+abline(v = -obs_diff, col = "#bf360c", lwd = 2.5, lty = 2)
+abline(v = 0,         col = "#1e3a2f", lwd = 1.5, lty = 3)
+
+legend("topright",
+       legend = c(
+         paste0("Observed diff = +", round(obs_diff, 1), " µg/L"),
+         paste0("Mirror (−", round(obs_diff, 1), " µg/L)"),
+         paste0("Null mean (0)"),
+         paste0("p = ", p_perm, "  (shaded area)")
+       ),
+       col  = c("#bf360c", "#bf360c", "#1e3a2f", adjustcolor("#c8832a", 0.65)),
+       lty  = c(1, 2, 3, NA), pch = c(NA, NA, NA, 15),
+       bty  = "n", cex = 0.80)
+```
+
+<div class="callout callout-formula">
+<strong>⚙️ Computing the permutation p-value</strong><br>
+<code>p_value &lt;- mean(abs(perm_diffs) &gt;= abs(obs_diff))</code><br><br>
+This counts the fraction of shuffled experiments that produced a difference
+at least as extreme as the one we observed. That fraction is the probability
+of seeing our data — or something more extreme — if the null were true.
+No formula required. The simulation <em>is</em> the calculation.
+</div>
+
+---
+
+## 5. From Simulation to Theory: The t-Distribution {#t-dist}
+
+The permutation test is the most honest approach, but it requires computing
+thousands of shuffles. Mathematicians asked: *what shape does the null distribution
+of a signal-to-noise ratio always take, if the data are normally distributed?*
+The answer is the **t-distribution**.
+
+### Watching the t-statistic accumulate under the null
+
+We repeat the same logic as the Monte Carlo section, but now we standardise the
+mean difference by its standard error — computing the t-statistic each time.
+
+```{r t-null-build, cache=FALSE}
+set.seed(77)
+n_sims  <- 10000
+t_nulls <- numeric(n_sims)
+
+for (i in seq_len(n_sims)) {
+  A <- rnorm(20, mean = 0, sd = 1)   # both from N(0,1) — null true
+  B <- rnorm(20, mean = 0, sd = 1)
+  t_nulls[i] <- t.test(A, B)$statistic
+}
+```
+
+```{r t-dist-plot, echo=FALSE, fig.cap="Histogram of 10,000 simulated t-statistics when the null is true (both groups from N(0,1), n = 20 each). The theoretical t-distribution with df = 38 (amber curve) fits perfectly. The simulation and the formula describe the same null distribution — the formula is just much faster.", fig.height=4.5}
+par(mar = c(4.5, 4, 3.5, 1), las = 1)
+
+hist(t_nulls,
+     breaks  = 70,
+     freq    = FALSE,
+     col     = "#d4e6da",
+     border  = "white",
+     main    = "Simulated t-statistics vs. Theoretical t-distribution (df = 38)",
+     xlab    = "t-statistic",
+     ylab    = "Density",
+     xlim    = c(-5, 5),
+     cex.main = 0.92)
+
+# Overlay theoretical t-distribution
+x_seq <- seq(-5, 5, length.out = 500)
+lines(x_seq, dt(x_seq, df = 38),
+      col = "#c8832a", lwd = 2.5)
+
+# Mark critical values
+t_crit <- qt(0.975, df = 38)
+abline(v =  t_crit, col = "#1e3a2f", lwd = 1.5, lty = 2)
+abline(v = -t_crit, col = "#1e3a2f", lwd = 1.5, lty = 2)
+
+legend("topright",
+       legend = c("Simulated t-statistics", "Theoretical t(df=38)",
+                  paste0("±", round(t_crit, 2), "  (α = 0.05 cutoffs)")),
+       col    = c(adjustcolor("#4a7c5e", 0.8), "#c8832a", "#1e3a2f"),
+       lty    = c(NA, 1, 2), pch = c(15, NA, NA),
+       bty    = "n", cex = 0.82)
+```
+
+### Applying the t-test to the lead data
+
+```{r t-test-lead}
+t_result <- t.test(lead_ppb ~ pipe, data = lead)
+print(t_result)
+```
+
+```{r t-test-plot, echo=FALSE, fig.cap="The observed t-statistic from the lead data (red line) placed on the theoretical t-distribution under the null. The shaded amber region is the two-tailed rejection area (α = 0.05). Our observed t sits far into the tail — the same conclusion reached by the permutation test, now from a formula.", fig.height=4.5}
+df_t     <- t_result$parameter          # degrees of freedom
+t_obs    <- abs(t_result$statistic)     # observed |t|
+t_crit_2 <- qt(0.975, df = df_t)
+
+par(mar = c(4.5, 4, 3.5, 1), las = 1)
+x_seq <- seq(-6, 6, length.out = 600)
+
+plot(x_seq, dt(x_seq, df = df_t),
+     type = "l", lwd = 2.5, col = "#1e3a2f",
+     main = paste0("t-distribution (df = ", round(df_t, 0),
+                   ") — Lead Pipe vs. Copper/PVC"),
+     xlab = "t-statistic", ylab = "Density",
+     ylim = c(0, 0.42), cex.main = 0.92)
+
+# Shade rejection tails
+x_lo <- x_seq[x_seq <= -t_crit_2]
+x_hi <- x_seq[x_seq >=  t_crit_2]
+polygon(c(x_lo[1], x_lo, x_lo[length(x_lo)]),
+        c(0, dt(x_lo, df_t), 0),
+        col = adjustcolor("#c8832a", 0.55), border = NA)
+polygon(c(x_hi[1], x_hi, x_hi[length(x_hi)]),
+        c(0, dt(x_hi, df_t), 0),
+        col = adjustcolor("#c8832a", 0.55), border = NA)
+
+# Shade area more extreme than observed
+x_obs_hi <- x_seq[x_seq >=  t_obs]
+x_obs_lo <- x_seq[x_seq <= -t_obs]
+polygon(c(x_obs_hi[1], x_obs_hi, x_obs_hi[length(x_obs_hi)]),
+        c(0, dt(x_obs_hi, df_t), 0),
+        col = adjustcolor("#bf360c", 0.45), border = NA)
+polygon(c(x_obs_lo[1], x_obs_lo, x_obs_lo[length(x_obs_lo)]),
+        c(0, dt(x_obs_lo, df_t), 0),
+        col = adjustcolor("#bf360c", 0.45), border = NA)
+
+abline(v =  t_obs, col = "#bf360c", lwd = 2.5)
+abline(v = -t_obs, col = "#bf360c", lwd = 2.5, lty = 2)
+abline(v =  t_crit_2, col = "#c8832a", lwd = 1.4, lty = 3)
+abline(v = -t_crit_2, col = "#c8832a", lwd = 1.4, lty = 3)
+
+legend("topright",
+       legend = c(
+         paste0("Observed |t| = ", round(t_obs, 2)),
+         paste0("Critical t = ±", round(t_crit_2, 2), "  (α = 0.05)"),
+         paste0("p = ", formatC(t_result$p.value, format = "e", digits = 2))
+       ),
+       col  = c("#bf360c", "#c8832a", adjustcolor("#bf360c", 0.45)),
+       lty  = c(1, 3, NA), pch = c(NA, NA, 15),
+       bty  = "n", cex = 0.82)
+```
+
+### The t-distribution family: degrees of freedom
+
+The t-distribution is actually a *family* of curves, indexed by **degrees of freedom**
+(df). With small samples, the tails are heavier — reflecting greater uncertainty.
+As df → ∞, the t-distribution converges to the standard normal.
+
+```{r t-family, echo=FALSE, fig.cap="The t-distribution for different degrees of freedom. Small df produces heavy tails — small samples generate more extreme statistics by chance, so the critical value must be larger to maintain α = 0.05. With df ≥ 30, the t-distribution is almost indistinguishable from the normal.", fig.height=4}
+par(mar = c(4, 4, 3, 1), las = 1)
+x_seq <- seq(-5, 5, length.out = 500)
+
+plot(x_seq, dnorm(x_seq), type = "l",
+     col = "#1a1a18", lwd = 2.5, lty = 1,
+     ylim = c(0, 0.42),
+     main = "t-distribution Family by Degrees of Freedom",
+     xlab = "t", ylab = "Density",
+     cex.main = 0.92)
+
+dfs   <- c(3, 5, 10, 30)
+cols  <- c("#bf360c", "#c8832a", "#4a7c5e", "#8aad96")
+lwidths <- c(2, 1.8, 1.5, 1.2)
+
+for (k in seq_along(dfs)) {
+  lines(x_seq, dt(x_seq, df = dfs[k]),
+        col = cols[k], lwd = lwidths[k], lty = 1)
+}
+
+t_crits <- c(qt(0.975, 3), qt(0.975, 5), qt(0.975, 10),
+             qt(0.975, 30), qnorm(0.975))
+crit_labels <- paste0(c("df=3", "df=5", "df=10", "df=30", "Normal"),
+                      "\nt*=", round(t_crits, 2))
+
+legend("topright",
+       legend = crit_labels,
+       col    = c(cols, "#1a1a18"),
+       lwd    = c(lwidths, 2.5), lty = 1,
+       bty    = "n", cex = 0.72)
+```
+
+<div class="callout callout-concept">
+<strong>📌 Why degrees of freedom shrink the distribution's tails</strong>
+
+With only a few observations, your sample standard deviation is an unreliable
+estimate of the population SD. Sometimes it underestimates by a lot — which
+makes the t-statistic artificially large even when the null is true.
+The t-distribution with small df compensates by having heavier tails:
+it expects to see large values occasionally just from estimation error,
+so it demands a larger observed t before calling a result "rare."
+As sample size grows, the SD estimate becomes reliable and the t-distribution
+narrows toward the normal.
+</div>
+
+---
+
+## 6. The F-Distribution: Signal Over Noise for Multiple Groups {#f-dist}
+
+When comparing **three or more** groups, the t-statistic generalises to the
+**F-statistic**, which is the ratio of variance *between* groups to variance
+*within* groups. The same signal-over-noise logic applies.
+
+### Building the F null distribution by simulation
+
+```{r f-null-build, cache=FALSE}
+set.seed(55)
+n_sims  <- 10000
+f_nulls <- numeric(n_sims)
+
+# Null: three groups from identical populations
+for (i in seq_len(n_sims)) {
+  grp <- factor(rep(c("A","B","C"), each = 15))
+  y   <- rnorm(45, mean = 0, sd = 1)
+  f_nulls[i] <- summary(aov(y ~ grp))[[1]]["grp", "F value"]
+}
+```
+
+```{r f-null-plot, echo=FALSE, fig.cap="Simulated F-statistics when all three groups are drawn from the same population (n = 15 per group). The theoretical F-distribution F(2, 42) (amber curve) fits the simulation perfectly. The F-distribution is right-skewed and bounded below by zero — unlike the symmetric t-distribution.", fig.height=4.5}
+par(mar = c(4.5, 4, 3.5, 1), las = 1)
+
+hist(f_nulls,
+     breaks  = 80,
+     freq    = FALSE,
+     col     = "#d4e6da",
+     border  = "white",
+     main    = "Simulated F-statistics vs. Theoretical F(2, 42) — Null True",
+     xlab    = "F-statistic",
+     ylab    = "Density",
+     xlim    = c(0, 8),
+     cex.main = 0.92)
+
+x_f <- seq(0.001, 8, length.out = 500)
+lines(x_f, df(x_f, df1 = 2, df2 = 42),
+      col = "#c8832a", lwd = 2.5)
+
+f_crit <- qf(0.95, df1 = 2, df2 = 42)
+abline(v = f_crit, col = "#1e3a2f", lwd = 1.8, lty = 2)
+
+# shade rejection region
+x_rej <- x_f[x_f >= f_crit]
+polygon(c(x_rej[1], x_rej, x_rej[length(x_rej)]),
+        c(0, df(x_rej, 2, 42), 0),
+        col = adjustcolor("#c8832a", 0.5), border = NA)
+
+legend("topright",
+       legend = c("Simulated F-statistics", "Theoretical F(2, 42)",
+                  paste0("Critical F = ", round(f_crit, 2), "  (α = 0.05)"),
+                  "Rejection region (5%)"),
+       col    = c(adjustcolor("#4a7c5e", 0.8), "#c8832a", "#1e3a2f",
+                  adjustcolor("#c8832a", 0.5)),
+       lty    = c(NA, 1, 2, NA), pch = c(15, NA, NA, 15),
+       bty    = "n", cex = 0.80)
+```
+
+### Applying the F-test: nitrogen across land-use types
+
+```{r f-real-data}
+set.seed(42)
+nitrogen <- data.frame(
+  landuse = rep(c("Forest", "Grassland", "Cropland"), each = 25),
+  N_gkg   = c(rnorm(25, 4.8, 0.7),
+              rnorm(25, 3.2, 0.9),
+              rnorm(25, 1.9, 0.6))
+)
+
+model_aov <- aov(N_gkg ~ landuse, data = nitrogen)
+aov_table <- summary(model_aov)[[1]]
+F_obs     <- aov_table["landuse", "F value"]
+df1       <- aov_table["landuse", "Df"]
+df2       <- aov_table["Residuals", "Df"]
+
+cat("Between-group MS (signal):", round(aov_table["landuse",   "Mean Sq"], 3), "\n")
+cat("Within-group MS  (noise): ", round(aov_table["Residuals", "Mean Sq"], 3), "\n")
+cat("F = signal / noise =",       round(F_obs, 2), "\n")
+cat("p-value:                 ",  round(aov_table["landuse", "Pr(>F)"], 6), "\n")
+```
+
+```{r f-observed-plot, echo=FALSE, fig.cap="The observed F-statistic (red line) from the soil nitrogen ANOVA placed on the F(2, 72) null distribution. The observed F is so large it falls entirely beyond the plotted rejection region — correspondingly, p < 0.0001. The ratio of between-group to within-group variance is far larger than chance produces.", fig.height=4.5}
+par(mar = c(4.5, 4, 3.5, 1), las = 1)
+
+x_f2 <- seq(0.001, max(F_obs * 1.15, 6), length.out = 600)
+f_crit2 <- qf(0.95, df1 = df1, df2 = df2)
+
+plot(x_f2, df(x_f2, df1, df2),
+     type = "l", lwd = 2.5, col = "#1e3a2f",
+     main = paste0("F(", df1, ", ", df2, ") — Soil Nitrogen ANOVA"),
+     xlab = "F-statistic", ylab = "Density",
+     xlim = c(0, max(F_obs * 1.1, 6)),
+     ylim = c(0, 0.80),
+     cex.main = 0.92)
+
+# Shade rejection region (theoretical)
+x_rej2 <- x_f2[x_f2 >= f_crit2]
+polygon(c(x_rej2[1], x_rej2, x_rej2[length(x_rej2)]),
+        c(0, df(x_rej2, df1, df2), 0),
+        col = adjustcolor("#c8832a", 0.5), border = NA)
+
+# Shade area beyond observed F
+x_obs_f <- x_f2[x_f2 >= F_obs]
+if (length(x_obs_f) > 0) {
+  polygon(c(x_obs_f[1], x_obs_f, x_obs_f[length(x_obs_f)]),
+          c(0, df(x_obs_f, df1, df2), 0),
+          col = adjustcolor("#bf360c", 0.5), border = NA)
+}
+
+abline(v = f_crit2, col = "#c8832a", lwd = 1.8, lty = 2)
+abline(v = F_obs,   col = "#bf360c", lwd = 2.5)
+
+legend("topright",
+       legend = c(
+         paste0("Observed F = ", round(F_obs, 1)),
+         paste0("Critical F = ", round(f_crit2, 2), "  (α = 0.05)"),
+         "5% rejection region",
+         paste0("p(F ≥ ", round(F_obs, 1), ") ≈ 0")
+       ),
+       col  = c("#bf360c", "#c8832a",
+                adjustcolor("#c8832a", 0.5), adjustcolor("#bf360c", 0.5)),
+       lty  = c(1, 2, NA, NA), pch = c(NA, NA, 15, 15),
+       bty  = "n", cex = 0.82)
+
+# Decomposition annotation
+legend("topleft",
+       legend = c(
+         paste0("Signal (MS_between) = ", round(aov_table["landuse",   "Mean Sq"], 2)),
+         paste0("Noise  (MS_within)  = ", round(aov_table["Residuals", "Mean Sq"], 2)),
+         paste0("F = ", round(F_obs, 2))
+       ),
+       bty = "n", cex = 0.80,
+       text.col = c("#1e3a2f", "#4a7c5e", "#bf360c"))
+```
+
+### Decomposing the variance in a table
+
+```{r anova-decomposition}
+# Manual variance decomposition — showing the signal/noise arithmetic
+grand_mean  <- mean(nitrogen$N_gkg)
+group_means <- tapply(nitrogen$N_gkg, nitrogen$landuse, mean)
+group_sizes <- tapply(nitrogen$N_gkg, nitrogen$landuse, length)
+
+SS_between <- sum(group_sizes * (group_means - grand_mean)^2)
+SS_within  <- sum(tapply(seq_along(nitrogen$N_gkg), nitrogen$landuse,
+                  function(i) sum((nitrogen$N_gkg[i] - mean(nitrogen$N_gkg[i]))^2)))
+SS_total   <- sum((nitrogen$N_gkg - grand_mean)^2)
+
+df_between <- length(group_means) - 1
+df_within  <- nrow(nitrogen) - length(group_means)
+
+MS_between <- SS_between / df_between
+MS_within  <- SS_within  / df_within
+
+knitr::kable(
+  data.frame(
+    Source     = c("Between groups (signal)", "Within groups (noise)", "Total"),
+    SS         = round(c(SS_between, SS_within, SS_total), 2),
+    df         = c(df_between, df_within, df_between + df_within),
+    MS         = round(c(MS_between, MS_within, NA), 3),
+    F          = c(round(MS_between / MS_within, 2), NA, NA),
+    `p-value`  = c(round(pf(MS_between/MS_within, df_between, df_within,
+                            lower.tail = FALSE), 6), NA, NA)
+  ),
+  col.names = c("Source", "Sum of Squares", "df", "Mean Square", "F", "p-value"),
+  caption = "ANOVA decomposition: the F-statistic is the ratio of between-group mean square (signal) to within-group mean square (noise).",
+  na.encode = FALSE
+)
+```
+
+---
+
+## 7. Two Roads to the Same Answer {#convergence}
+
+The permutation test and the t/F-test give the same conclusion because they are
+asking the same question in different ways. Here we verify this side-by-side.
+
+```{r two-roads, cache=FALSE}
+set.seed(888)
+
+# ── Observed F for the nitrogen data ──────────────────────────────────────────
+F_obs_check <- summary(aov(N_gkg ~ landuse, data = nitrogen))[[1]][1, "F value"]
+
+# ── Permutation F-distribution ────────────────────────────────────────────────
+n_perm   <- 9999
+perm_F   <- numeric(n_perm)
+
+for (i in seq_len(n_perm)) {
+  shuffled_groups <- sample(nitrogen$landuse)
+  perm_F[i] <- summary(
+    aov(nitrogen$N_gkg ~ shuffled_groups)
+  )[[1]][1, "F value"]
+}
+
+p_permutation <- mean(perm_F >= F_obs_check)
+
+# ── Parametric p-value ────────────────────────────────────────────────────────
+p_parametric <- summary(model_aov)[[1]]["landuse", "Pr(>F)"]
+
+cat("─── Permutation test ────────────────────────────────\n")
+cat("Permutation p-value:", p_permutation, "\n\n")
+cat("─── Parametric F-test ───────────────────────────────\n")
+cat("Parametric  p-value:", round(p_parametric, 6), "\n")
+```
+
+```{r two-roads-plot, echo=FALSE, fig.cap="Left: the permutation null distribution of F (grey bars) with the observed F marked in red. Right: the theoretical F(2, 72) null distribution with the same observed statistic. Both methods place the observed F far into the tail. The tiny difference between the two p-values is pure Monte Carlo sampling noise.", fig.height=4.5, fig.width=8}
+par(mfrow = c(1, 2), mar = c(4, 4, 3, 1), las = 1)
+
+# --- Permutation ---
+hist(perm_F,
+     breaks = 60, freq = FALSE,
+     col = "#d4e6da", border = "white",
+     main = "Permutation Null\n(9,999 shuffles)",
+     xlab = "F-statistic", ylab = "Density",
+     xlim = c(0, max(perm_F, F_obs_check) * 1.05),
+     cex.main = 0.9)
+extreme_perm <- perm_F[perm_F >= F_obs_check]
+if (length(extreme_perm) > 0) {
+  h_ex <- hist(extreme_perm, breaks = 60, plot = FALSE)
+  rect(h_ex$breaks[-length(h_ex$breaks)], 0,
+       h_ex$breaks[-1], h_ex$counts / (length(perm_F) * diff(h_ex$breaks[1:2])),
+       col = adjustcolor("#c8832a", 0.6), border = NA)
+}
+abline(v = F_obs_check, col = "#bf360c", lwd = 2.5)
+text(F_obs_check * 0.82, par("usr")[4] * 0.92,
+     paste0("p = ", p_permutation),
+     col = "#bf360c", cex = 0.82, font = 2)
+
+# --- Theoretical ---
+x_f3 <- seq(0.001, max(F_obs_check * 1.1, 6), length.out = 500)
+plot(x_f3, df(x_f3, df1 = 2, df2 = 72),
+     type = "l", lwd = 2.5, col = "#1e3a2f",
+     main = "Theoretical F(2, 72)\n(parametric test)",
+     xlab = "F-statistic", ylab = "Density",
+     xlim = c(0, max(F_obs_check * 1.1, 6)),
+     cex.main = 0.9)
+x_rej3 <- x_f3[x_f3 >= F_obs_check]
+if (length(x_rej3) > 0) {
+  polygon(c(x_rej3[1], x_rej3, x_rej3[length(x_rej3)]),
+          c(0, df(x_rej3, 2, 72), 0),
+          col = adjustcolor("#c8832a", 0.55), border = NA)
+}
+abline(v = F_obs_check, col = "#bf360c", lwd = 2.5)
+text(F_obs_check * 0.82, par("usr")[4] * 0.92,
+     paste0("p ≈ ", formatC(p_parametric, format = "e", digits = 1)),
+     col = "#bf360c", cex = 0.82, font = 2)
+
+par(mfrow = c(1, 1))
+```
+
+<div class="callout callout-tip">
+<strong>💡 When the two approaches disagree</strong>
+
+Permutation and parametric tests give almost identical p-values when the
+parametric assumptions (normality, equal variances) are satisfied — as they
+do here. They diverge when the data are strongly non-normal or when group
+variances differ dramatically. In those cases, the permutation p-value is
+more trustworthy because it makes no distributional assumptions. The practical
+rule: if `shapiro.test()` or a Q-Q plot raises concerns, check your parametric
+p-value against a permutation or bootstrap equivalent.
+</div>
+
+---
+
+<div class="key-box">
+<h4>🔑 Signal over noise — key takeaways</h4>
+<ul>
+<li><strong>Every test statistic is a signal-to-noise ratio.</strong> Signal is the pattern you care about (difference in means, slope, variance between groups). Noise is the variation that exists even when nothing is happening (within-group spread, estimation uncertainty).</li>
+<li><strong>The p-value is a rarity statement:</strong> "If the null hypothesis were true, data as extreme as mine would arise <em>p</em> × 100% of the time." It is not the probability that the null is true, nor a measure of effect size.</li>
+<li><strong>Monte Carlo simulation makes the logic transparent.</strong> Shuffle the labels, compute the statistic, repeat 10,000 times. The histogram you get <em>is</em> the null distribution. The p-value is just the fraction of bars to the right of your observed value.</li>
+<li><strong>The t and F distributions are mathematical shortcuts</strong> to the same null distribution, valid when data are approximately normal with equal group variances. Use <code>t.test()</code> and <code>aov()</code> — they are fast and well-studied. Use permutation tests when assumptions are violated.</li>
+<li><strong>Degrees of freedom control tail heaviness.</strong> Small samples produce larger test statistics by chance alone, so the critical value must be larger — which is why a t-test with n = 5 requires a bigger observed difference than one with n = 50 to reach the same α threshold.</li>
+<li><strong>Statistical significance ≠ practical importance.</strong> A very large sample can make a tiny, ecologically irrelevant difference highly significant. Always report effect sizes (Cohen's d, η², odds ratio) alongside p-values.</li>
+</ul>
+</div>
+
+---
+
+### What's next?
+
+- **[Four Frameworks](02_Four_Frameworks.html)** — which test to use for each data type
+- **[Describing Data](01_Describing_Data.html)** — mean, SD, SE, and confidence intervals
+- **[t-test in depth](TimeOutSideClass.html)** — full worked example with course data
+
+```{r session-info, echo=FALSE}
+# sessionInfo()
+```
+
+<footer class="page-footer">
+EA030 Basic Statistics &mdash; Module 04
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>
