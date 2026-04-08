@@ -1,0 +1,458 @@
+---
+title: "ANOVA & Group Comparisons"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/basic_statistics/08_ANOVA.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 7,
+  fig.height = 4
+)
+library(ggplot2)
+library(dplyr)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest: #1e3a2f; --moss: #2d5a3d; --fern: #4a7c5e; --sage: #8aad96;
+  --mist: #d4e6da; --cream: #f7f3ed; --parchment: #ede8df;
+  --ink: #1a1a18; --charcoal: #3a3a38; --dust: #7a7a72;
+  --amber: #c8832a; --amber-lt: #e8a84a; --white: #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); font-size: 17px; line-height: 1.75; padding-left: clamp(14px, 4vw, 48px); padding-right: clamp(14px, 4vw, 48px); padding-bottom: 80px; }
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header { margin-left: calc(-1 * clamp(14px, 4vw, 48px)); margin-right: calc(-1 * clamp(14px, 4vw, 48px)); }
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header { background-image: repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px), linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%); color: #fff; padding: 44px 4vw 36px; margin: 0 0 48px; border-bottom: 4px solid var(--amber); position: relative; overflow: hidden; }
+.page-header::after { content: ''; position: absolute; right: -40px; top: -40px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%); pointer-events: none; }
+.page-header .module-tag { display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45); padding: 3px 10px; border-radius: 2px; margin-bottom: 12px; }
+.page-header h1 { font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px; }
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link { display: inline-block; margin-top: 16px; font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em; color: var(--amber-lt); text-decoration: none; border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px; transition: background .2s; }
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px; padding-bottom: 20px; border-bottom: 1px solid var(--parchment); }
+.section-nav a { font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--fern); text-decoration: none; border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px; background: var(--white); transition: background .2s, color .2s; }
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h2 { font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700; color: var(--forest); margin-top: 56px; margin-bottom: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--parchment); }
+h3 { font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700; color: var(--moss); margin-top: 28px; margin-bottom: 4px; }
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+code { font-family: 'Source Code Pro', monospace; font-size: .84em; background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px; }
+pre { background: var(--ink); color: #e8e6df; border-radius: 5px; padding: 14px 18px; font-size: .83rem; line-height: 1.55; overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0; }
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout { border-left: 5px solid; padding: .65em 1.1em; margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6; }
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0; font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th { background: var(--forest); color: #fff; font-family: 'Source Code Pro', monospace; font-size: .76rem; letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left; }
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+.key-box { background: var(--forest); color: #fff; border-radius: 6px; padding: 20px 24px; margin: 2em 0; font-size: .9rem; }
+.key-box h4 { font-family: 'Libre Baskerville', serif; color: var(--sage); font-size: 1rem; margin-bottom: 10px; }
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+.page-footer { background: var(--ink); color: rgba(255,255,255,.42); text-align: center; padding: 24px 4vw; margin: 60px calc(-1 * clamp(14px, 4vw, 48px)) 0; font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em; }
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Basic Statistics &mdash; Module 08</div>
+<h1>ANOVA & <span>Group Comparisons</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
+</div>
+
+<div class="section-nav">
+<a href="#concept">The Concept</a>
+<a href="#partition">Partitioning Variance</a>
+<a href="#oneway">One-Way ANOVA</a>
+<a href="#posthoc">Post-hoc Tests</a>
+<a href="#assumptions">Assumptions</a>
+<a href="#nonparametric">Nonparametric</a>
+<a href="#twoway">Two-Way ANOVA</a>
+<a href="#viz">Visualization</a>
+</div>
+
+> **What this module covers.** ANOVA (Analysis of Variance) tests whether any of
+> three or more group means differ. It does this by asking whether the variation
+> *between* groups is larger than the variation *within* groups — the signal-to-noise
+> ratio introduced in Module 04. This tutorial covers one-way ANOVA, post-hoc
+> comparisons, assumption checking, and an introduction to two-way ANOVA with
+> interaction.
+
+---
+
+## 1. The Concept: Why Not Just Run More t-Tests? {#concept}
+
+Suppose you measure PM2.5 at three sites (urban, suburban, rural) and want to know
+whether air quality differs by location. You could run three t-tests: urban vs.
+suburban, urban vs. rural, suburban vs. rural.
+
+The problem: with three tests at α = 0.05, the probability of at least one false
+positive is $1 - (1 - 0.05)^3 = 0.143$ — nearly 14%. With 10 groups the problem is
+catastrophic. ANOVA tests *all* groups simultaneously with a single α level,
+controlling the family-wise error rate.
+
+<div class="callout callout-concept">
+<strong>📌 ANOVA's null hypothesis</strong>
+$H_0: \mu_1 = \mu_2 = \cdots = \mu_k$ (all group means are equal)
+
+$H_A$: at least one pair of means differs
+
+ANOVA tells you *whether* any group differs, not *which* ones. Post-hoc tests answer
+the follow-up question.
+</div>
+
+---
+
+## 2. Partitioning Variance {#partition}
+
+ANOVA decomposes the total variation in y into two components:
+
+$$\underbrace{SS_\text{total}}_{\text{all variation}} = \underbrace{SS_\text{between}}_{\text{group effect}} + \underbrace{SS_\text{within}}_{\text{random error}}$$
+
+| Source | SS | df | MS | F |
+|---|---|---|---|---|
+| Between groups | $\sum_j n_j(\bar y_j - \bar y)^2$ | $k-1$ | $SS_B / (k-1)$ | $MS_B / MS_W$ |
+| Within groups | $\sum_j \sum_i (y_{ij} - \bar y_j)^2$ | $N-k$ | $SS_W / (N-k)$ | — |
+| Total | $\sum_j \sum_i (y_{ij} - \bar y)^2$ | $N-1$ | — | — |
+
+The F-statistic is the ratio of between-group variance to within-group variance.
+Under $H_0$, both estimate the same population variance, so F ≈ 1. A large F indicates
+the group means are more spread apart than chance alone would produce.
+
+---
+
+## 3. One-Way ANOVA in R {#oneway}
+
+### The dataset
+
+We use plant weight data from a classic fertilizer experiment: three groups (control,
+treatment 1, treatment 2) with 10 plants each.
+
+```{r data-setup}
+data(PlantGrowth)
+str(PlantGrowth)
+table(PlantGrowth$group)
+```
+
+### Visualize first
+
+```{r group-plot, fig.cap="Dry weight of plants by treatment group. Points are individual plants; box = IQR; line = median. Showing raw data alongside summaries is always best practice.", fig.height=4}
+ggplot(PlantGrowth, aes(x = group, y = weight, color = group)) +
+  geom_boxplot(outlier.shape = NA, width = 0.4, linewidth = 0.8) +
+  geom_jitter(width = 0.12, size = 2, alpha = 0.7) +
+  scale_color_manual(values = c("#4a7c5e", "#c8832a", "#8b3a2a")) +
+  labs(x = "Treatment group", y = "Dry weight (g)",
+       title = "Plant growth by treatment") +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "none")
+```
+
+### Fit the ANOVA
+
+The recommended workflow in R is: fit with `lm()`, then pass to `anova()`. This keeps
+the output consistent with the regression framework you learned in Module 07.
+
+```{r fit-anova}
+mod_anova <- lm(weight ~ group, data = PlantGrowth)
+anova(mod_anova)
+```
+
+Equivalently, you can use `aov()`:
+
+```{r aov-equivalent}
+mod_aov <- aov(weight ~ group, data = PlantGrowth)
+summary(mod_aov)
+```
+
+Both give identical results. The ANOVA table shows:
+
+- **Df**: degrees of freedom — 2 for between (3 groups − 1), 27 for within (30 obs − 3).
+- **Sum Sq**: the between-group and within-group sums of squares.
+- **Mean Sq**: SS / df for each source.
+- **F value**: the F-statistic = MS_between / MS_within.
+- **Pr(>F)**: p-value. If < α, reject $H_0$.
+
+<div class="callout callout-concept">
+<strong>📌 Effect size: η²</strong>
+$\eta^2 = SS_\text{between} / SS_\text{total}$ is the proportion of total variance
+explained by the group factor — analogous to R² in regression. Values of 0.01, 0.06,
+and 0.14 are conventionally described as small, medium, and large.
+
+```r
+ss    <- anova(mod_anova)$"Sum Sq"
+eta2  <- ss[1] / sum(ss)
+```
+</div>
+
+---
+
+## 4. Post-hoc Tests {#posthoc}
+
+A significant ANOVA F-test tells you that *some* groups differ. Post-hoc tests
+identify *which* pairs differ while controlling for multiple comparisons.
+
+### Tukey's Honest Significant Difference (HSD)
+
+Tukey's HSD is the most common choice when you want to compare all pairwise combinations.
+It controls the family-wise error rate exactly at α.
+
+```{r tukey}
+tukey_res <- TukeyHSD(mod_aov, conf.level = 0.95)
+tukey_res
+```
+
+```{r tukey-plot, fig.cap="Tukey 95% family-wise confidence intervals for all pairwise group differences. Intervals that do not cross zero indicate a statistically significant difference.", fig.height=3.5}
+par(las = 1, mar = c(4.5, 8, 3, 1))
+plot(tukey_res, col = "#4a7c5e")
+```
+
+### Interpreting the output
+
+Each row shows one pairwise comparison. The columns are:
+
+| Column | Meaning |
+|---|---|
+| `diff` | Estimated difference in group means |
+| `lwr`, `upr` | 95% confidence interval for the difference |
+| `p adj` | Tukey-adjusted p-value |
+
+An interval that does not include zero, or a p-value < α, indicates the two groups
+are statistically different.
+
+### Bonferroni correction (manual)
+
+For a smaller set of planned comparisons, the Bonferroni correction is
+straightforward: divide α by the number of comparisons.
+
+```{r bonferroni}
+pairwise.t.test(PlantGrowth$weight, PlantGrowth$group,
+                p.adjust.method = "bonferroni")
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ Planned vs. unplanned comparisons</strong>
+If you specified your hypotheses *before* seeing the data, a smaller set of
+planned contrasts is appropriate and more powerful than Tukey HSD. If you are
+doing exploratory pairwise comparisons after a significant F-test, use Tukey HSD
+or Bonferroni to control inflation of the false positive rate.
+</div>
+
+---
+
+## 5. Checking ANOVA Assumptions {#assumptions}
+
+One-way ANOVA requires: (1) independence of observations, (2) normally distributed
+residuals within each group, and (3) equal variances across groups (homoscedasticity).
+
+### Residual normality
+
+```{r qq-anova, fig.cap="Q-Q plot of ANOVA residuals. Points close to the diagonal support the normality assumption.", fig.height=3.5}
+par(las = 1, mar = c(4.5, 4.5, 3, 1))
+qqnorm(residuals(mod_anova), main = "Q-Q Plot of ANOVA Residuals",
+       col = "#4a7c5e", pch = 20)
+qqline(residuals(mod_anova), col = "#c8832a", lwd = 2)
+```
+
+```{r shapiro}
+shapiro.test(residuals(mod_anova))
+```
+
+### Equal variances: Levene's test
+
+```{r levene}
+# Base R: Bartlett's test (sensitive to non-normality)
+bartlett.test(weight ~ group, data = PlantGrowth)
+```
+
+<div class="callout callout-tip">
+<strong>💡 ANOVA is robust to mild violations</strong>
+ANOVA is reasonably robust to moderate departures from normality, especially with
+equal group sizes. It is more sensitive to unequal variances when group sizes differ.
+If Levene's or Bartlett's test is significant, consider Welch's one-way ANOVA
+(`oneway.test()`) which does not assume equal variances.
+</div>
+
+### Welch's ANOVA (robust to unequal variances)
+
+```{r welch-anova}
+oneway.test(weight ~ group, data = PlantGrowth, var.equal = FALSE)
+```
+
+---
+
+## 6. Nonparametric Alternative: Kruskal–Wallis Test {#nonparametric}
+
+When the normality assumption is seriously violated and transformations do not help,
+the Kruskal–Wallis test is the nonparametric counterpart of one-way ANOVA. It ranks
+all observations and tests whether the rank distributions differ across groups.
+
+```{r kruskal}
+kruskal.test(weight ~ group, data = PlantGrowth)
+```
+
+Post-hoc: pairwise Wilcoxon tests with Bonferroni or BH correction.
+
+```{r kruskal-posthoc}
+pairwise.wilcox.test(PlantGrowth$weight, PlantGrowth$group,
+                     p.adjust.method = "BH")
+```
+
+---
+
+## 7. Two-Way ANOVA {#twoway}
+
+Two-way ANOVA tests the effects of two categorical predictors simultaneously and
+their **interaction** — whether the effect of one factor depends on the level of
+the other.
+
+### Model structure
+
+```{r twoway-data}
+# Use ToothGrowth: tooth length by supplement type and dose
+data(ToothGrowth)
+ToothGrowth$dose <- factor(ToothGrowth$dose)
+str(ToothGrowth)
+```
+
+```{r twoway-fit}
+mod_2way <- lm(len ~ supp * dose, data = ToothGrowth)
+anova(mod_2way)
+```
+
+The ANOVA table now has three rows: main effect of `supp`, main effect of `dose`, and
+the `supp:dose` interaction. A significant interaction means the effect of supplement
+type differs across dose levels — the two factors are not independent.
+
+### Interaction plot
+
+```{r interaction-plot, fig.cap="Interaction plot: tooth length by dose and supplement. Non-parallel lines indicate an interaction between the two factors — the supplement effect is larger at lower doses.", fig.height=4}
+ToothGrowth |>
+  group_by(supp, dose) |>
+  summarise(mean_len = mean(len), se_len = sd(len) / sqrt(n()), .groups = "drop") |>
+  ggplot(aes(x = dose, y = mean_len, color = supp, group = supp)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = mean_len - se_len, ymax = mean_len + se_len),
+                width = 0.12) +
+  scale_color_manual(values = c("#4a7c5e", "#c8832a")) +
+  labs(x = "Dose (mg/day)", y = "Tooth length (mm)",
+       title = "Tooth length by supplement and dose",
+       color = "Supplement") +
+  theme_minimal(base_size = 13)
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ If the interaction is significant, do not interpret main effects alone</strong>
+A significant interaction means the effect of each factor depends on the level of the
+other. Report and interpret the interaction first; the main effects become secondary
+descriptions. Ignoring a significant interaction and reporting only main effects is a
+common and serious misinterpretation.
+</div>
+
+---
+
+## 8. Visualizing Group Differences {#viz}
+
+A well-designed group comparison plot always shows: (1) the raw data, (2) a measure
+of center, and (3) a measure of uncertainty.
+
+```{r final-viz, fig.cap="Recommended visualization for group comparisons: raw jittered points (low alpha), group mean (filled point), and 95% confidence interval (error bar).", fig.height=4.5}
+PlantGrowth |>
+  group_by(group) |>
+  summarise(
+    mean_w = mean(weight),
+    ci_lo  = mean_w - qt(0.975, n() - 1) * sd(weight) / sqrt(n()),
+    ci_hi  = mean_w + qt(0.975, n() - 1) * sd(weight) / sqrt(n()),
+    .groups = "drop"
+  ) -> pg_ci
+
+ggplot(PlantGrowth, aes(x = group, y = weight)) +
+  geom_jitter(width = 0.1, alpha = 0.45, size = 2,
+              color = "#4a7c5e") +
+  geom_point(data = pg_ci, aes(y = mean_w),
+             size = 4, color = "#1e3a2f") +
+  geom_errorbar(data = pg_ci, aes(y = mean_w, ymin = ci_lo, ymax = ci_hi),
+                width = 0.18, linewidth = 1, color = "#1e3a2f") +
+  labs(x = "Treatment group", y = "Dry weight (g)",
+       title = "Plant growth: mean ± 95% CI with raw data") +
+  theme_minimal(base_size = 13)
+```
+
+<div class="key-box">
+<h4>🔑 Key takeaways</h4>
+<ul>
+<li>ANOVA tests whether any of k group means differ using a single F-test, avoiding
+the multiple-comparison inflation of repeated t-tests.</li>
+<li>A significant F only tells you *some* groups differ. Use <strong>Tukey HSD</strong>
+to identify which pairs are different.</li>
+<li>Check the <strong>LINE assumptions</strong> as you would for regression — ANOVA is
+the same model, just with a categorical predictor.</li>
+<li>If variances are unequal, use <code>oneway.test(var.equal = FALSE)</code>.
+If normality is seriously violated, use the <strong>Kruskal–Wallis test</strong>.</li>
+<li>A significant <strong>interaction</strong> in two-way ANOVA must be reported and
+interpreted before main effects.</li>
+</ul>
+</div>
+
+---
+
+### What's next?
+
+- **[Simple Linear Regression](07_Simple_Linear_Regression.html)** — continuous predictor
+  version of the same F-test framework
+- **[Logistic Regression](09_Logistic_Regression.html)** — extend to binary outcomes
+- **[Mixed-Effects Models](../advanced_stats/mixed_effects.html)** — handle repeated
+  measures and nested designs
+
+```{r session-info, echo=FALSE}
+# sessionInfo()
+```
+
+<footer class="page-footer">
+EA030 Basic Statistics — Module 08
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>

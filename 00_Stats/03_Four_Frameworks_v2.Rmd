@@ -13,7 +13,7 @@ knit: (function(inputFile, encoding) {
       inputFile,
       encoding = encoding,
       output_file = file.path(dirname(inputFile),
-                              "../docs/basic_statistics/03_Four_Frameworks.html")
+                              "../docs/basic_statistics/02_Four_Frameworks.html")
     )
   })
 ---
@@ -53,8 +53,21 @@ library(dplyr)
 }
 
 html { scroll-behavior: smooth; }
-body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); font-size: 17px; line-height: 1.75; }
-.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 4vw 80px !important; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
 h1.title, h4.author, h4.date { display: none; }
 
 /* Page header */
@@ -219,7 +232,7 @@ tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
 <div class="module-tag">EA030 &mdash; Basic Statistics &mdash; Module 02</div>
 <h1>Four <span>Frameworks of Statistical Analysis</span></h1>
 <p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
-<a class="back-link" href="../index.html">&#8592; Back to Basic Statistics</a>
+<a class="back-link" href="index.html">&#8592; Back to Basic Statistics</a>
 </div>
 
 <div class="section-nav">

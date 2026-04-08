@@ -1,0 +1,460 @@
+---
+title: "Logistic Regression"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/basic_statistics/09_Logistic_Regression.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 7,
+  fig.height = 4
+)
+library(ggplot2)
+library(dplyr)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest: #1e3a2f; --moss: #2d5a3d; --fern: #4a7c5e; --sage: #8aad96;
+  --mist: #d4e6da; --cream: #f7f3ed; --parchment: #ede8df;
+  --ink: #1a1a18; --charcoal: #3a3a38; --dust: #7a7a72;
+  --amber: #c8832a; --amber-lt: #e8a84a; --white: #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); font-size: 17px; line-height: 1.75; padding-left: clamp(14px, 4vw, 48px); padding-right: clamp(14px, 4vw, 48px); padding-bottom: 80px; }
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header { margin-left: calc(-1 * clamp(14px, 4vw, 48px)); margin-right: calc(-1 * clamp(14px, 4vw, 48px)); }
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header { background-image: repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px), linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%); color: #fff; padding: 44px 4vw 36px; margin: 0 0 48px; border-bottom: 4px solid var(--amber); position: relative; overflow: hidden; }
+.page-header::after { content: ''; position: absolute; right: -40px; top: -40px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%); pointer-events: none; }
+.page-header .module-tag { display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45); padding: 3px 10px; border-radius: 2px; margin-bottom: 12px; }
+.page-header h1 { font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px; }
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link { display: inline-block; margin-top: 16px; font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em; color: var(--amber-lt); text-decoration: none; border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px; transition: background .2s; }
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px; padding-bottom: 20px; border-bottom: 1px solid var(--parchment); }
+.section-nav a { font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--fern); text-decoration: none; border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px; background: var(--white); transition: background .2s, color .2s; }
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h2 { font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700; color: var(--forest); margin-top: 56px; margin-bottom: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--parchment); }
+h3 { font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700; color: var(--moss); margin-top: 28px; margin-bottom: 4px; }
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+code { font-family: 'Source Code Pro', monospace; font-size: .84em; background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px; }
+pre { background: var(--ink); color: #e8e6df; border-radius: 5px; padding: 14px 18px; font-size: .83rem; line-height: 1.55; overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0; }
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout { border-left: 5px solid; padding: .65em 1.1em; margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6; }
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0; font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th { background: var(--forest); color: #fff; font-family: 'Source Code Pro', monospace; font-size: .76rem; letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left; }
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+.key-box { background: var(--forest); color: #fff; border-radius: 6px; padding: 20px 24px; margin: 2em 0; font-size: .9rem; }
+.key-box h4 { font-family: 'Libre Baskerville', serif; color: var(--sage); font-size: 1rem; margin-bottom: 10px; }
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+.page-footer { background: var(--ink); color: rgba(255,255,255,.42); text-align: center; padding: 24px 4vw; margin: 60px calc(-1 * clamp(14px, 4vw, 48px)) 0; font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em; }
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Advanced Statistics &mdash; Module 09</div>
+<h1>Logistic <span>Regression</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
+</div>
+
+<div class="section-nav">
+<a href="#why">Why Logistic?</a>
+<a href="#model">The Model</a>
+<a href="#fitting">Fitting in R</a>
+<a href="#output">Reading Output</a>
+<a href="#oddsratios">Odds Ratios</a>
+<a href="#predictions">Predictions</a>
+<a href="#diagnostics">Diagnostics</a>
+<a href="#roc">ROC & AUC</a>
+</div>
+
+> **What this module covers.** When your outcome is binary — present/absent,
+> exceeded/not exceeded, survived/died — ordinary linear regression fails because
+> it can predict probabilities outside [0, 1]. Logistic regression solves this
+> by modeling the *log-odds* of the outcome, producing well-calibrated probabilities
+> and interpretable odds ratios. This tutorial covers the full workflow: fitting
+> with `glm()`, interpreting coefficients as odds ratios, assessing model fit,
+> and evaluating predictive performance with ROC curves.
+
+---
+
+## 1. Why Not Just Use Linear Regression? {#why}
+
+Suppose you want to predict whether a river site exceeds a pollution threshold
+(1 = exceeds, 0 = does not) based on upstream land-use intensity. If you fit a
+straight line through 0s and 1s, two problems arise immediately:
+
+1. **Out-of-range predictions.** A line can predict probabilities below 0 or
+   above 1, which are nonsensical.
+2. **Non-constant variance.** The variance of a binary outcome is $p(1-p)$, which
+   changes with p — violating the homoscedasticity assumption of linear regression.
+
+Logistic regression maps the linear predictor to a probability using the
+**logistic (sigmoid) function**, guaranteeing predictions in (0, 1).
+
+```{r sigmoid-plot, echo=FALSE, fig.cap="The logistic (sigmoid) function maps any real-valued linear predictor to a probability between 0 and 1. The S-shape reflects how the response to increasing x is strongest in the middle of the probability range."}
+x_seq <- seq(-6, 6, length.out = 300)
+y_sig <- 1 / (1 + exp(-x_seq))
+
+par(las = 1, mar = c(4.5, 4.5, 2.5, 1))
+plot(x_seq, y_sig, type = "l", lwd = 2.5, col = "#1e3a2f",
+     xlab = "Linear predictor (β₀ + β₁x)", ylab = "P(Y = 1)",
+     main = "The Logistic Function: Linear Predictor → Probability",
+     ylim = c(-0.05, 1.05))
+abline(h = c(0, 0.5, 1), col = c("#c8832a", "#4a7c5e", "#c8832a"),
+       lty = c(2, 3, 2), lwd = 1.2)
+abline(v = 0, col = "#4a7c5e", lty = 3, lwd = 1.2)
+legend("topleft",
+       legend = c("Logistic function", "P = 0.5 threshold"),
+       col = c("#1e3a2f", "#4a7c5e"), lty = c(1, 3), lwd = c(2.5, 1.2),
+       bty = "n", cex = 0.85)
+```
+
+---
+
+## 2. The Logistic Regression Model {#model}
+
+The model links the probability of the outcome p to predictors through the **logit**
+(log-odds) transformation:
+
+$$\log\left(\frac{p}{1-p}\right) = \beta_0 + \beta_1 x_1 + \cdots + \beta_k x_k$$
+
+Solving for p:
+
+$$p = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x)}} = \text{logistic}(\beta_0 + \beta_1 x)$$
+
+The coefficients $\beta$ are estimated by **maximum likelihood** (not least squares).
+The log-likelihood measures how well the model's predicted probabilities match the
+observed 0/1 outcomes.
+
+<div class="callout callout-formula">
+<strong>Key relationships</strong>
+
+- **Log-odds (logit):** log(p / (1-p)) — ranges from −∞ to +∞
+- **Odds:** p / (1-p) — ranges from 0 to +∞
+- **Probability:** p = logistic(log-odds) — ranges from 0 to 1
+- **Odds ratio (OR):** exp(β) — the multiplicative change in odds per unit increase in x
+</div>
+
+---
+
+## 3. Fitting Logistic Regression in R {#fitting}
+
+We use a dataset of 189 low-birth-weight births from `MASS::birthwt`. The outcome is
+whether birth weight was below 2.5 kg (`low`: 1 = low, 0 = normal).
+
+```{r data}
+library(MASS)
+data(birthwt)
+
+# Recode for clarity
+bw <- birthwt |>
+  mutate(
+    low     = factor(low,   labels = c("Normal", "Low")),
+    smoke   = factor(smoke, labels = c("Non-smoker", "Smoker")),
+    race    = factor(race,  labels = c("White", "Black", "Other")),
+    ht      = factor(ht,    labels = c("No hypertension", "Hypertension")),
+    low_bin = as.integer(low == "Low")   # keep numeric version for glm
+  )
+
+table(bw$low)
+```
+
+### Explore predictors first
+
+```{r explore, fig.cap="Birth weight by maternal smoking status. Low birth weight is more common among smokers — consistent with the known physiological pathway.", fig.height=3.5}
+bw |>
+  count(smoke, low) |>
+  group_by(smoke) |>
+  mutate(pct = n / sum(n)) |>
+  filter(low == "Low") |>
+  ggplot(aes(x = smoke, y = pct, fill = smoke)) +
+  geom_col(width = 0.5) +
+  scale_fill_manual(values = c("#4a7c5e", "#c8832a")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = NULL, y = "Proportion with low birth weight",
+       title = "Low birth weight by smoking status") +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "none")
+```
+
+### Fit the model
+
+```{r fit-glm}
+mod_logit <- glm(low_bin ~ smoke + age + lwt + race + ht,
+                 data   = bw,
+                 family = binomial(link = "logit"))
+```
+
+The key argument is `family = binomial(link = "logit")`. This tells `glm()` that:
+(1) the outcome is binary (Bernoulli distribution), and (2) the link function is the
+logit, connecting the linear predictor to the probability.
+
+---
+
+## 4. Reading `summary()` Output {#output}
+
+```{r glm-summary}
+summary(mod_logit)
+```
+
+The coefficients table has the same columns as `lm()` — Estimate, Std. Error, z value,
+Pr(>|z|) — but the test statistic is a z-test (Wald test), not a t-test.
+
+**Deviance.** The logistic model uses *deviance* (−2 × log-likelihood) instead of
+residual sums of squares. The Null deviance is for a model with only an intercept;
+the Residual deviance is for your model. A substantial drop indicates the predictors
+explain something.
+
+**AIC.** Akaike Information Criterion = deviance + 2k. Smaller is better; use AIC
+to compare competing models.
+
+<div class="callout callout-warn">
+<strong>⚠️ Coefficients are on the log-odds scale</strong>
+A coefficient of 0.72 for `smokerSmoker` does not mean smoking increases the
+probability by 72 percentage points. It means the log-odds increase by 0.72. To
+get the odds ratio, exponentiate: exp(0.72) ≈ 2.05. To get predicted probabilities,
+use <code>predict(mod, type = "response")</code>.
+</div>
+
+---
+
+## 5. Odds Ratios {#oddsratios}
+
+Odds ratios are the most common effect size for logistic regression. OR > 1 means the
+predictor increases the odds of the outcome; OR < 1 means it decreases the odds.
+
+```{r odds-ratios}
+# Exponentiate coefficients and confidence intervals
+or_table <- exp(cbind(OR = coef(mod_logit), confint(mod_logit)))
+round(or_table, 3)
+```
+
+```{r or-forest, fig.cap="Odds ratio plot with 95% confidence intervals. OR > 1 increases the odds of low birth weight; OR < 1 decreases them. The vertical dashed line at OR = 1 is the null hypothesis of no effect.", fig.height=4}
+or_df <- as.data.frame(or_table[-1, ])   # drop intercept
+or_df$term <- rownames(or_df)
+names(or_df)[2:3] <- c("ci_lo", "ci_hi")
+
+ggplot(or_df, aes(x = term, y = OR)) +
+  geom_point(size = 3, color = "#4a7c5e") +
+  geom_errorbar(aes(ymin = ci_lo, ymax = ci_hi),
+                width = 0.2, color = "#4a7c5e") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "#c8832a") +
+  coord_flip() +
+  scale_y_log10() +
+  labs(x = NULL, y = "Odds Ratio (log scale)",
+       title = "Logistic Regression: Odds Ratios and 95% CI") +
+  theme_minimal(base_size = 12)
+```
+
+---
+
+## 6. Predicted Probabilities {#predictions}
+
+Unlike linear regression, logistic regression predictions are probabilities, not raw
+response values. Use `type = "response"` with `predict()`.
+
+```{r predicted-probs, fig.cap="Predicted probability of low birth weight as a function of maternal weight at last menstrual period, holding other predictors at reference levels. Smoking status shifts the curve upward.", fig.height=4}
+# Predictions across maternal weight range, by smoking status
+new_data <- expand.grid(
+  lwt   = seq(80, 250, by = 2),
+  smoke = factor(c("Non-smoker", "Smoker"), levels = levels(bw$smoke)),
+  age   = median(bw$age),
+  race  = "White",
+  ht    = "No hypertension"
+)
+new_data$pred_prob <- predict(mod_logit, newdata = new_data, type = "response")
+
+ggplot(new_data, aes(x = lwt, y = pred_prob, color = smoke)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(values = c("#4a7c5e", "#c8832a")) +
+  labs(x = "Maternal weight (lbs)", y = "P(low birth weight)",
+       title = "Predicted probability of low birth weight",
+       color = "Smoking status") +
+  theme_minimal(base_size = 13)
+```
+
+---
+
+## 7. Model Diagnostics {#diagnostics}
+
+### Deviance goodness-of-fit
+
+The likelihood ratio test compares your model to the null (intercept-only) model.
+
+```{r lrt}
+mod_null <- glm(low_bin ~ 1, data = bw, family = binomial)
+anova(mod_null, mod_logit, test = "Chisq")
+```
+
+### Pseudo-R² (McFadden)
+
+```{r pseudo-r2}
+pseudo_r2 <- 1 - logLik(mod_logit) / logLik(mod_null)
+```
+
+McFadden pseudo-R² = **`r round(as.numeric(pseudo_r2), 3)`**.
+
+McFadden values of 0.2–0.4 indicate good fit; above 0.4 is excellent. This is not
+directly comparable to OLS R² — it measures relative improvement over the null model.
+
+### Binned residual plot
+
+```{r binned-residuals, fig.cap="Binned residual plot. Bins within the grey bands (±2 SE) suggest adequate fit. Points outside the bands may indicate model misspecification or influential observations.", fig.height=4}
+# Manual binned residual plot (avoids arm package dependency)
+pred   <- predict(mod_logit, type = "response")
+resid  <- bw$low_bin - pred
+n_bins <- 20
+breaks <- quantile(pred, probs = seq(0, 1, length.out = n_bins + 1))
+bin_id <- cut(pred, breaks = breaks, include.lowest = TRUE, labels = FALSE)
+
+bin_df <- data.frame(pred, resid, bin_id) |>
+  group_by(bin_id) |>
+  summarise(mean_pred = mean(pred), mean_resid = mean(resid),
+            se = sd(resid) / sqrt(n()), .groups = "drop")
+
+ggplot(bin_df, aes(x = mean_pred, y = mean_resid)) +
+  geom_ribbon(aes(ymin = -2 * se, ymax = 2 * se), alpha = 0.15, fill = "#4a7c5e") +
+  geom_point(color = "#1e3a2f", size = 2.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#c8832a") +
+  labs(x = "Predicted probability", y = "Average residual",
+       title = "Binned residual plot") +
+  theme_minimal(base_size = 12)
+```
+
+---
+
+## 8. ROC Curve and AUC {#roc}
+
+The **receiver operating characteristic (ROC) curve** shows how well the model
+discriminates between the two outcome classes across all possible probability
+thresholds. The **area under the curve (AUC)** summarizes discrimination in a single
+number: 0.5 = random guessing; 1.0 = perfect discrimination.
+
+```{r roc, fig.cap="ROC curve for the low birth weight model. AUC > 0.7 indicates acceptable discrimination. The dashed diagonal is a model that guesses randomly (AUC = 0.5).", fig.height=4}
+# Compute sensitivity and specificity at each threshold
+thresholds <- seq(0, 1, length.out = 300)
+pred_prob  <- predict(mod_logit, type = "response")
+obs        <- bw$low_bin
+
+roc_df <- data.frame(
+  threshold = thresholds,
+  sens = sapply(thresholds, function(t) mean((pred_prob >= t)[obs == 1])),
+  spec = sapply(thresholds, function(t) mean((pred_prob <  t)[obs == 0]))
+)
+
+# AUC via trapezoidal rule
+auc <- abs(sum(diff(1 - roc_df$spec) * roc_df$sens[-nrow(roc_df)]))
+
+ggplot(roc_df, aes(x = 1 - spec, y = sens)) +
+  geom_line(color = "#1e3a2f", linewidth = 1.2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed",
+              color = "#c8832a", linewidth = 0.8) +
+  annotate("text", x = 0.7, y = 0.2,
+           label = paste0("AUC = ", round(auc, 3)),
+           color = "#1e3a2f", size = 4.5, fontface = "bold") +
+  labs(x = "1 − Specificity (False Positive Rate)",
+       y = "Sensitivity (True Positive Rate)",
+       title = "ROC Curve — Low Birth Weight Model") +
+  coord_equal() +
+  theme_minimal(base_size = 12)
+```
+
+### Choosing a classification threshold
+
+The default threshold of 0.5 is not always optimal. A confusion matrix at 0.5
+shows the trade-off between sensitivity (catching true positives) and specificity
+(avoiding false positives).
+
+```{r confusion-matrix}
+pred_class <- ifelse(pred_prob >= 0.5, 1, 0)
+table(Predicted = pred_class, Observed = obs)
+```
+
+<div class="callout callout-tip">
+<strong>💡 When to adjust the threshold</strong>
+In public health contexts, false negatives (missing a high-risk case) may be more
+costly than false positives. Lowering the threshold increases sensitivity at the
+cost of specificity. The optimal threshold depends on the relative costs of the two
+error types — a decision that requires domain knowledge, not statistics alone.
+</div>
+
+<div class="key-box">
+<h4>🔑 Key takeaways</h4>
+<ul>
+<li>Use <code>glm(y ~ x, family = binomial)</code> for binary outcomes. Linear regression
+will produce nonsensical probability predictions for extreme x values.</li>
+<li>Coefficients are on the <strong>log-odds scale</strong>. Always exponentiate with
+<code>exp(coef(mod))</code> to get interpretable <strong>odds ratios</strong>.</li>
+<li>OR > 1 increases the odds; OR < 1 decreases them. An OR of 2 means the odds
+double for a one-unit increase in x.</li>
+<li>Use <code>predict(type = "response")</code> to get predicted <strong>probabilities</strong>.</li>
+<li>Evaluate discrimination with <strong>AUC</strong>: above 0.7 is acceptable; above
+0.8 is good. Check calibration with a binned residual plot.</li>
+</ul>
+</div>
+
+---
+
+### What's next?
+
+- **[Survival Analysis](06_Survival_Analysis.html)** — extend to binary outcomes with
+  a time dimension and censored observations
+- **[Multiple Regression & GLMs](../advanced_stats/multiple_regression.html)** — count
+  outcomes (Poisson), overdispersion, and model selection
+
+```{r session-info, echo=FALSE}
+# sessionInfo()
+```
+
+<footer class="page-footer">
+EA030 Advanced Statistics — Module 09
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>

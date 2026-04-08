@@ -258,7 +258,9 @@ tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
 Anscombe's Quartet (1973) is the classic demonstration that four datasets with
 *identical* summary statistics can look completely different. The same principle
 applies constantly in environmental data: means and standard deviations are not
-enough.
+enough. 
+
+[]
 
 ```{r anscombe-data}
 # Anscombe's Quartet is built into base R
