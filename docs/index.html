@@ -197,7 +197,7 @@ text-decoration: none; padding: 12px 14px; border-bottom: 2px solid transparent;
 .site-nav a:hover { color: var(--amber-lt); border-bottom-color: var(--amber); }
 .nav-divider { font-family: 'Source Code Pro', monospace; font-size: .6rem; color: rgba(255,255,255,.2); padding: 12px 4px; align-self: center; }
 
-.page-body { max-width: 1100px; margin: 0 auto; padding: 52px 6vw 80px; }
+.page-body { max-width: 1100px; margin: 0 auto; padding: 52px clamp(14px, 4vw, 60px) 80px; }
 
 .section-header { margin-top: 52px; margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid var(--parchment); }
 #getting-started .section-header { margin-top: 0; }
@@ -398,7 +398,7 @@ Signal over Noise
 </div>
 <p class="card-desc">
 Every classical statistical test — t-test, ANOVA, regression — is a
-formalisation of the same underlying question: is the pattern I see in
+formalization of the same underlying question: is the pattern I see in
 my data larger than what I would expect from chance variation alone?
 </p>
 <span class="card-tag">inference</span> </a>
@@ -412,7 +412,8 @@ t-tests, Wilcoxon tests, proportions tests. Effect sizes, p-values,
 common misconceptions.
 </p>
 <span class="card-tag">inference</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">📉</span>
+<a class="card" href="basic_statistics/06_Simple_Linear_Regression.html">
+<span class="card-icon">📉</span>
 <div class="card-title">
 Simple Linear Regression
 </div>
@@ -420,16 +421,34 @@ Simple Linear Regression
 Fitting, diagnosing, and interpreting OLS models with lm(). Residual
 plots and leverage.
 </p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🎲</span>
+<span class="card-tag">regression</span> </a>
+<a class="card" href="basic_statistics/07_ANOVA.html"> <span class="card-icon">🎲</span>
 <div class="card-title">
 ANOVA &amp; Group Comparisons
 </div>
 <p class="card-desc">
-One-way and two-way ANOVA, post-hoc tests, and visualising group
+One-way and two-way ANOVA, post-hoc tests, and visualizing group
 differences.
 </p>
+<span class="card-tag">anova</span> </a>
+<a class="card coming-soon" href="basic_statistics/08..."> <span class="card-icon">🎲</span>
+<div class="card-title">
+Test for Association
+</div>
+<p class="card-desc">
+.
+</p>
 <span class="card-tag">coming soon</span> </a>
+<a class="card" href="basic_statistics/09_Logistic_Regression.html">
+<span class="card-icon">📊</span>
+<div class="card-title">
+Logistic Regression
+</div>
+<p class="card-desc">
+Modeling binary outcomes — presence/absence, exceedance, survival — with
+logistic regression. Odds ratios, ROC curves, and model diagnostics.
+</p>
+<span class="card-tag">logistic</span> </a>
 <a class="card coming-soon" href="#"> <span class="card-icon">📐</span>
 <div class="card-title">
 Correlation Analysis
@@ -461,6 +480,16 @@ Multiple predictors, interactions, model selection (AIC), and GLMs for
 count and binary data.
 </p>
 <span class="card-tag">coming soon</span> </a>
+<a class="card" href="basic_statistics/12_Survival_Analysis.html"> <span class="card-icon">⏱️</span>
+<div class="card-title">
+Survival Analysis
+</div>
+<p class="card-desc">
+Time-to-event analysis with Kaplan–Meier curves, log-rank tests, and Cox
+proportional hazards models. Applied to algae growth experiments and
+right-censored environmental data.
+</p>
+<span class="card-tag">survival</span> </a>
 <a class="card coming-soon" href="#"> <span class="card-icon">🏔️</span>
 <div class="card-title">
 Mixed-Effects Models
@@ -488,7 +517,7 @@ PCA, NMDS, and RDA for community and environmental gradient data using
 vegan.
 </p>
 <span class="card-tag">coming soon</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">⏱️</span>
+<a class="card coming-soon" href="#"> <span class="card-icon">📈</span>
 <div class="card-title">
 Time-Series Analysis
 </div>
@@ -502,7 +531,7 @@ lubridate and tsibble.
 Bootstrapping &amp; Permutation
 </div>
 <p class="card-desc">
-Resampling-based inference, confidence intervals, and randomisation
+Resampling-based inference, confidence intervals, and randomization
 tests.
 </p>
 <p><span class="card-tag">coming soon</span> </a></p>
@@ -592,7 +621,7 @@ Analyzing EPA PM2.5 Data
 </div>
 <p class="card-desc">
 Thirty years of daily fine particulate matter (PM2.5) for a US county.
-Download EPA AQS data, clean monitoring records, visualise long-term
+Download EPA AQS data, clean monitoring records, visualize long-term
 trends, compute monthly means with 95% CIs by decade, and evaluate
 exceedances of the 24-hr NAAQS (35 µg/m³). Includes environmental
 justice discussion. Helper functions in 06_EPA_PM25/.
@@ -653,9 +682,9 @@ and precipitation records.
 Regional Climate Trends
 </div>
 <p class="card-desc">
-Analysing long-term temperature and precipitation patterns across
+Analyzing long-term temperature and precipitation patterns across
 Southern California using PRISM and NOAA station data. Trend detection
-with Mann-Kendall tests and visualisation of seasonal shifts.
+with Mann-Kendall tests and visualization of seasonal shifts.
 </p>
 <span class="card-tag">climate</span> </a>
 <a class="card coming-soon" href="#"> <span class="card-icon">🏙️</span>

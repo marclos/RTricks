@@ -13,7 +13,7 @@ knit: (function(inputFile, encoding) {
       inputFile,
       encoding = encoding,
       output_file = file.path(dirname(inputFile),
-                              "../docs/basic_statistics/06_Survival_Analysis.html")
+                              "../docs/basic_statistics/12_Survival_Analysis.html")
     )
   })
 ---
