@@ -28,13 +28,14 @@ vignettes/*.pdf
 01_index/
 01_Stats/
 01_RGuides
-15_Mapping_Contamination/
-13_Heat_Islands
 14_Time_Series
+15_Mapping_Contamination/
 19_Survival_Analysis/
 A04_Regional_Climate_Trends/
 A07_EPA_PM25
 A08_Raspberry_Pi_Analysis/
+A09_Compost_Maturity/
+A13_Heat_Islands/
 DRAFT/
 OLD/
 
