@@ -386,7 +386,7 @@ list is needed — and no trailing-comma errors.
 
 ```{r load-data}
 # ── Set to the folder containing your CSV files ──────────────────────────────
-data_dir <- "/home/mwl04747/RTricks/09_Raspberry_Pi_Analysis/Data_S2026"   # <-- change this path if your files are elsewhere
+data_dir <- "/home/mwl04747/RTricks/28_Raspberry_Pi_Analysis/Data_S2026"   # <-- change this path if your files are elsewhere
 
 # ── Helper: read one CSV and apply the clock correction ──────────────────────
 read_sensor <- function(path, sensor_id, offsets_tbl) {
