@@ -1,0 +1,1382 @@
+---
+title: "RMarkdown and knitr"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/RGuides/02_RMarkdown_knitr.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 7,
+  fig.height = 4
+)
+library(tibble)
+library(knitr)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important;
+                  padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px,
+      rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+h4 {
+  font-family: 'Source Code Pro', monospace; font-size: .9rem; font-weight: 600;
+  color: var(--charcoal); margin-top: 20px; margin-bottom: 4px;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+blockquote {
+  border-left: 4px solid var(--sage); margin: 1.2em 0;
+  padding: .5em 1em; background: var(--white);
+  border-radius: 0 5px 5px 0; font-size: .94em; color: var(--charcoal);
+}
+
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+
+/* ── Anatomy diagram ──────────────────────────────────────────────────────── */
+.anatomy {
+  border: 2px solid var(--parchment); border-radius: 6px;
+  overflow: hidden; margin: 1.6em 0; box-shadow: var(--card-shadow);
+  font-family: 'Source Code Pro', monospace; font-size: .82rem; line-height: 1.6;
+}
+.anatomy-row {
+  display: flex; align-items: stretch;
+}
+.anatomy-label {
+  flex: 0 0 140px; background: var(--forest); color: var(--sage);
+  font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; padding: 12px 14px;
+  display: flex; align-items: center;
+}
+.anatomy-code {
+  flex: 1; padding: 12px 16px; white-space: pre; overflow-x: auto;
+}
+.anatomy-row:nth-child(1) .anatomy-code { background: #1e2d3a; color: #e8c97a; }
+.anatomy-row:nth-child(2) .anatomy-code { background: #1a2a1e; color: #a8d8b0; }
+.anatomy-row:nth-child(3) .anatomy-code { background: #2a2210; color: #e8c97a; }
+.anatomy-row:nth-child(4) .anatomy-code { background: var(--cream);  color: var(--ink);
+                                           font-family: 'Lato', sans-serif;
+                                           font-size: .88rem; }
+.anatomy-divider { height: 2px; background: var(--parchment); }
+
+/* ── Chunk option cards ───────────────────────────────────────────────────── */
+.opt-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px; margin: 1.4em 0;
+}
+.opt-card {
+  background: var(--white); border: 1px solid var(--mist);
+  border-top: 3px solid var(--fern); border-radius: 4px;
+  padding: 12px 14px; box-shadow: var(--card-shadow);
+}
+.opt-card .oc-name {
+  font-family: 'Source Code Pro', monospace; font-size: .85rem;
+  font-weight: 600; color: var(--forest); margin-bottom: 3px;
+}
+.opt-card .oc-vals {
+  font-family: 'Source Code Pro', monospace; font-size: .73rem;
+  color: var(--dust); margin-bottom: 6px;
+}
+.opt-card .oc-desc { font-size: .82rem; color: var(--charcoal); line-height: 1.45; }
+
+/* ── Inline-R demo strip ──────────────────────────────────────────────────── */
+.inline-demo {
+  background: var(--white); border: 1px solid var(--mist);
+  border-radius: 5px; padding: 14px 18px; margin: 1.2em 0;
+  box-shadow: var(--card-shadow);
+}
+.inline-demo .id-source {
+  font-family: 'Source Code Pro', monospace; font-size: .82rem;
+  background: var(--ink); color: #e8e6df; padding: 8px 12px;
+  border-radius: 4px 4px 0 0; border-left: 4px solid var(--amber);
+  white-space: pre-wrap; margin: 0 -18px 0 -18px;
+}
+.inline-demo .id-renders {
+  font-size: .88rem; color: var(--charcoal); padding: 10px 0 0 0;
+  border-top: 1px dashed var(--parchment); margin-top: 10px;
+}
+.inline-demo .id-label {
+  font-family: 'Source Code Pro', monospace; font-size: .65rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--dust); margin-bottom: 4px;
+}
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment);
+           vertical-align: top; }
+tbody td:first-child { font-family: 'Source Code Pro', monospace;
+                       color: var(--forest); font-weight: 600; white-space: nowrap; }
+
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Core R Skills &mdash; Module 02</div>
+<h1>RMarkdown <span>&amp; knitr</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<a class="back-link" href="../index.html">&#8592; Back to R Tricks</a>
+</div>
+
+<div class="section-nav">
+<a href="#what-is-rmd">What is Rmd?</a>
+<a href="#anatomy">Anatomy</a>
+<a href="#yaml">YAML Header</a>
+<a href="#markdown">Markdown Prose</a>
+<a href="#chunks">Code Chunks</a>
+<a href="#chunk-options">Chunk Options</a>
+<a href="#inline">Inline R</a>
+<a href="#setup-chunk">The Setup Chunk</a>
+<a href="#images">Images</a>
+<a href="#citations">Citations</a>
+<a href="#rendering">Rendering</a>
+<a href="#troubleshooting">Troubleshooting</a>
+</div>
+
+> **What this module covers.** An R Markdown file (`.Rmd`) weaves prose,
+> code, and output into a single reproducible document. When you click
+> **Knit**, knitr runs every chunk, captures its output, and pandoc
+> converts everything to HTML, PDF, or Word. This module walks through
+> every part of an Rmd file from scratch — YAML headers, markdown syntax,
+> chunk options, inline R, and the rendering pipeline — so you understand
+> not just *what* to write but *why* it works.
+
+<hr>
+
+## 1. What Is R Markdown? {#what-is-rmd}
+
+A plain `.R` script runs code and prints results to the Console. A
+`.Rmd` file does the same thing, but also lets you write formatted prose
+*around* that code — headings, paragraphs, bullet lists, equations — and
+produce a polished output document that a reader who has never opened
+RStudio can read.
+
+The three technologies involved are:
+
+| Layer | Tool | Role |
+|---|---|---|
+| Text markup | **Markdown** | Headings, bold, lists, links, equations |
+| Code execution | **knitr** | Runs R chunks, captures output and plots |
+| Document conversion | **pandoc** | Converts the combined result to HTML/PDF/Word |
+
+You never call pandoc or knitr directly. Clicking **Knit** (or running
+`rmarkdown::render()`) triggers all three in sequence.
+
+<div class="callout callout-tip">
+<strong>💡 Create your first Rmd now</strong>
+In RStudio: <strong>File → New File → R Markdown…</strong>. Choose HTML
+output. RStudio generates a template with all three sections already present
+— read it, then delete everything below the setup chunk and start fresh.
+</div>
+
+<hr>
+
+## 2. The Anatomy of an Rmd File {#anatomy}
+
+Every Rmd file has exactly three kinds of content, always in this order at
+the top:
+
+<div class="anatomy">
+<div class="anatomy-row">
+<div class="anatomy-label">YAML Header</div>
+<div class="anatomy-code">---
+title: "My Report"
+author: "Marc Los Huertos"
+output: html_document
+---</div>
+</div>
+<div class="anatomy-divider"></div>
+<div class="anatomy-row">
+<div class="anatomy-label">Setup Chunk</div>
+<div class="anatomy-code">```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+```</div>
+</div>
+<div class="anatomy-divider"></div>
+<div class="anatomy-row">
+<div class="anatomy-label">Code Chunk</div>
+<div class="anatomy-code">```{r my-analysis}
+x <- c(1, 4, 9, 16, 25)
+mean(x)
+```</div>
+</div>
+<div class="anatomy-divider"></div>
+<div class="anatomy-row">
+<div class="anatomy-label">Prose</div>
+<div class="anatomy-code">## Results
+<br>
+The mean value was `r mean(c(1,4,9,16,25))`.
+We collected data at **five** sites.</div>
+</div>
+</div>
+
+These three elements — YAML, chunks, and prose — can appear in any order
+after the header, interleaved as many times as needed. The YAML block must
+be the very first thing in the file.
+
+<hr>
+
+## 3. The YAML Header {#yaml}
+
+The YAML header controls the document's metadata and output format. It is
+delimited by triple-dashes (`---`) and must appear at the very top of
+the file, before any other content.
+
+### Minimal header
+
+<pre><code>---
+title: "Air Quality Analysis"
+author: "Marc Los Huertos"
+date: "2024-03-15"
+output: html_document
+<hr>
+</code></pre>
+
+### Dynamic date
+
+Hard-coding the date means it goes stale. Use inline R instead so the date
+updates every time you knit:
+
+<pre><code>date: "Compiled &#96;r format(Sys.Date(), '%Y-%m-%d')&#96;"
+</code></pre>
+
+### Output formats
+
+The `output:` field determines what pandoc produces. The most common options:
+
+| output value | Produces | Requires |
+|---|---|---|
+| `html_document` | Self-contained HTML file | nothing extra |
+| `pdf_document` | PDF via LaTeX | a LaTeX installation (TinyTeX) |
+| `word_document` | `.docx` Word file | nothing extra |
+| `github_document` | Markdown for GitHub | nothing extra |
+
+### HTML document options
+
+<pre><code>output:
+  html_document:
+    toc: true              # table of contents
+    toc_float: true        # floating sidebar TOC
+    toc_depth: 3           # include h1, h2, h3 headings
+    number_sections: true  # auto-number headings
+    theme: flatly          # Bootswatch CSS theme
+    highlight: tango       # syntax highlighting style
+    self_contained: true   # embed all CSS/JS — one portable file
+    df_print: paged        # paginated data frames
+    code_folding: hide     # show "Code" buttons, hide by default
+</code></pre>
+
+<div class="callout callout-warn">
+<strong>⚠️ YAML is whitespace-sensitive</strong>
+Indentation in YAML is <em>exactly two spaces</em> — not tabs, not four
+spaces. A misaligned line causes a cryptic parse error and the document
+will not knit. If you see <code>Error in yaml::yaml.load()</code>, the
+problem is almost always indentation or a missing colon.
+</div>
+
+### The custom `knit:` function
+
+The modules in this course use a custom `knit:` field to redirect the
+output HTML to a specific folder. This is what lets the knit button send
+the file directly to the `docs/` folder without any manual copying:
+
+<pre><code>knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/RGuides/02_RMarkdown_knitr.html")
+    )
+  })
+</code></pre>
+
+Without this, clicking Knit places the HTML in the same folder as the Rmd.
+The `file.path(dirname(inputFile), "../docs/...")` pattern navigates
+relative to the Rmd's location — so the path works on any machine
+regardless of the absolute path to the project.
+
+<div class="callout callout-concept">
+<strong>📁 dirname() and relative paths</strong>
+<code>dirname(inputFile)</code> returns the folder the Rmd lives in.
+<code>"../docs/RGuides/..."</code> then navigates one level up (<code>..</code>)
+and into <code>docs/RGuides/</code>. This means the Rmd and the docs folder
+must be siblings — both children of the same project root — for the path to
+resolve correctly.
+</div>
+
+<hr>
+
+## 4. Markdown Prose {#markdown}
+
+Between and around chunks, you write plain text with lightweight
+**markdown** formatting. Pandoc converts this to HTML or whatever output
+format you chose.
+
+### Headings
+
+```markdown
+# Level 1 heading   (one #)
+## Level 2 heading  (two ##)
+### Level 3 heading (three ###)
+```
+
+Headings also create anchor links. Adding `{#my-id}` after the heading
+text lets you link to it:
+
+```markdown
+## Results {#results}
+
+See the [Results section](#results) for details.
+```
+
+### Emphasis, lists, and links
+
+```markdown
+**bold text**
+*italic text*
+`inline code` — use for function names, variable names, file paths
+
+- unordered list item
+- another item
+  - nested item (two spaces of indent)
+
+1. ordered list item
+2. second item
+
+[link text](https://example.com)
+```
+
+### Block quotes and horizontal rules
+
+```markdown
+> A blockquote — useful for key questions or callouts.
+
+---    (three dashes = horizontal rule)
+```
+
+### Tables
+
+```markdown
+| Column A | Column B | Column C |
+|----------|----------|----------|
+| value 1  | value 2  | value 3  |
+| value 4  | value 5  | value 6  |
+```
+
+The colons in the separator row control alignment:
+
+```markdown
+| Left     | Center   | Right    |
+|:---------|:--------:|---------:|
+| text     | text     | text     |
+```
+
+<div class="callout callout-tip">
+<strong>💡 For data frames, use knitr::kable() instead</strong>
+Never type a markdown table by hand for data. Use
+<code>knitr::kable(df)</code> or <code>kableExtra</code> — it generates
+the table automatically from your data so it updates when the data changes.
+</div>
+
+### Equations
+
+R Markdown supports LaTeX math using `$` for inline and `$$` for display:
+
+```markdown
+The mean is $\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$.
+
+$$
+\text{PM}_{2.5} = \beta_0 + \beta_1 T + \varepsilon
+$$
+```
+
+Renders as:
+
+The mean is $\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$.
+
+<hr>
+
+## 5. Code Chunks {#chunks}
+
+A code chunk is a fenced block that knitr executes. The output — printed
+values, tables, plots — is inserted into the document immediately below
+the chunk.
+
+### Chunk anatomy
+
+Every chunk has the same structure:
+
+<pre><code>```{r chunk-label, option1 = value, option2 = value}
+# your R code here
+x <- 1 + 1
+x
+```
+</code></pre>
+
+- The opening fence is **exactly** `` ```{r `` — three backticks, open brace,
+  the letter `r`, a space, then the label.
+- The **label** is optional but strongly recommended. It appears in error
+  messages and the knitr progress log, making debugging far easier.
+- Labels must be **unique** across the entire document — duplicate labels
+  cause an error at knit time.
+- The closing fence is **exactly** `` ``` `` — three backticks, nothing else.
+
+### Inserting a chunk
+
+Three ways:
+
+1. **Keyboard shortcut**: `Ctrl+Alt+I` (Windows/Linux) or `Cmd+Option+I` (Mac)
+2. **Toolbar**: the green **Insert** button → R
+3. **Typing**: type the backtick fence manually
+
+### What gets printed
+
+Whatever R would print to the Console also appears in the document:
+
+```{r chunk-output-demo}
+# Expressions that print their result automatically
+42
+c(1, 2, 3)
+summary(c(2.1, 3.4, 2.8, 4.1, 3.9))
+```
+
+Assignments do **not** print unless you explicitly print the object or wrap
+in parentheses:
+
+```{r assignment-printing}
+x <- 10      # silent — nothing appears below this line
+x            # now it prints
+(y <- 20)    # wrapping assignment in () also prints
+```
+
+### Plots are output too
+
+Any plot created inside a chunk is captured and embedded in the document:
+
+```{r demo-plot, fig.cap="Particulate matter decreases with distance from the highway."}
+distance_m  <- c(10, 25, 50, 100, 200, 400)
+pm25_ug_m3  <- c(38, 29, 21, 15,  11,   8)
+
+plot(distance_m, pm25_ug_m3,
+     xlab = "Distance from highway (m)",
+     ylab = expression(PM[2.5] ~ (µg/m^3)),
+     pch  = 19, col = "#4a7c5e",
+     main = "PM2.5 vs Distance from Source")
+lines(distance_m, pm25_ug_m3, col = "#4a7c5e", lwd = 1.5)
+```
+
+<hr>
+
+## 6. Chunk Options {#chunk-options}
+
+Chunk options control what knitr does with each chunk: whether to show
+the code, whether to run it, how large to make the figure. They go inside
+the `{r label, ...}` header, separated by commas.
+
+### The essential options
+
+<div class="opt-grid">
+<div class="opt-card">
+  <div class="oc-name">echo</div>
+  <div class="oc-vals">TRUE / FALSE</div>
+  <div class="oc-desc">Show the source code in the output? <code>FALSE</code> hides code but still runs it and shows output.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">eval</div>
+  <div class="oc-vals">TRUE / FALSE</div>
+  <div class="oc-desc">Run the chunk? <code>FALSE</code> shows code as a formatted block but does not execute it.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">include</div>
+  <div class="oc-vals">TRUE / FALSE</div>
+  <div class="oc-desc">Include anything in the output? <code>FALSE</code> runs the chunk silently — code and output both hidden. Use for setup chunks.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">message</div>
+  <div class="oc-vals">TRUE / FALSE</div>
+  <div class="oc-desc">Show <code>message()</code> output? Set <code>FALSE</code> to suppress library loading messages.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">warning</div>
+  <div class="oc-vals">TRUE / FALSE</div>
+  <div class="oc-desc">Show warnings? Set <code>FALSE</code> to suppress, but check warnings interactively first — never hide problems you haven't understood.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">error</div>
+  <div class="oc-vals">TRUE / FALSE</div>
+  <div class="oc-desc">Default <code>FALSE</code> means an error <em>stops the knit</em>. Set <code>TRUE</code> to show the error in the output and continue knitting — useful in teaching documents.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">fig.width</div>
+  <div class="oc-vals">number (inches)</div>
+  <div class="oc-desc">Width of the output figure in inches. Default 7. Combine with <code>fig.height</code> to control aspect ratio.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">fig.height</div>
+  <div class="oc-vals">number (inches)</div>
+  <div class="oc-desc">Height of the output figure in inches. Default 5.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">fig.cap</div>
+  <div class="oc-vals">character string</div>
+  <div class="oc-desc">Figure caption. Appears below the plot. Supports inline R for dynamic captions.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">out.width</div>
+  <div class="oc-vals">"100%", "70%", "400px"</div>
+  <div class="oc-desc">Width of the figure in the HTML output. Use <code>"100%"</code> to fill the column, or a percentage to shrink it.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">cache</div>
+  <div class="oc-vals">TRUE / FALSE</div>
+  <div class="oc-desc">Save chunk results and skip re-running if code hasn't changed. Useful for slow model fits. Use with care — can cause stale results.</div>
+</div>
+<div class="opt-card">
+  <div class="oc-name">results</div>
+  <div class="oc-vals">'markup', 'hide', 'asis', 'hold'</div>
+  <div class="oc-desc"><code>'hide'</code> suppresses printed output. <code>'asis'</code> passes raw HTML/LaTeX through (for kable). <code>'hold'</code> collects all output and prints at the end of the chunk.</div>
+</div>
+</div>
+
+### Common combinations
+
+Rather than listing chunk headers in a code block (which knitr would try to
+parse), here is a reference table of the most useful combinations:
+
+| Goal | Options to set |
+|---|---|
+| Show code and output (default) | nothing — this is the default |
+| Show output only, hide code | `echo = FALSE` |
+| Show code only, don't run | `eval = FALSE` |
+| Run silently, show nothing | `include = FALSE` |
+| Show plot only, hide code and messages | `echo = FALSE, message = FALSE` |
+| Show error in output without stopping knit | `error = TRUE` |
+| Show figure with caption at a specific size | `fig.cap = "...", fig.width = 6, fig.height = 4` |
+
+Each option goes inside the chunk header after the label, separated by commas:
+
+```{r combo-example, eval=FALSE}
+# Example: a results table — output only, no code shown
+# ```{r results-table, echo=FALSE}
+
+# Example: install instructions — show code but never run
+# ```{r install-packages, eval=FALSE}
+
+# Example: setup — run silently, nothing in output
+# ```{r setup, include=FALSE}
+```
+
+### Seeing options in action
+
+The next three chunks are identical code but with different options — compare
+what appears in the rendered output:
+
+```{r show-both, echo=TRUE}
+# echo=TRUE (default) — you see this code AND the output below
+sqrt(144)
+```
+
+```{r hide-code, echo=FALSE}
+# echo=FALSE — output appears but code is hidden in the rendered document
+sqrt(169)
+```
+
+```{r no-output, results='hide'}
+# results='hide' — code appears, output is suppressed
+sqrt(196)
+```
+
+### `fig.show` — controlling multi-plot chunks
+
+When a chunk produces more than one plot, `fig.show` controls whether they
+share a figure environment or each get their own:
+
+<pre><code>```{r two-plots, fig.show='hold', fig.cap="Both plots side by side."}
+# hold — both plots collected and placed together in one figure
+hist(rnorm(200))
+hist(rexp(200))
+```
+
+```{r two-plots-separate, fig.show='asis', fig.cap=c("First plot.", "Second plot.")}
+# asis (default) — each plot placed immediately where it is produced
+hist(rnorm(200))
+hist(rexp(200))
+```
+</code></pre>
+
+Note the `fig.cap` as a **character vector** — when `fig.show = 'asis'`
+produces multiple figures from one chunk, supply a caption per plot:
+
+```{r figcap-vector-demo, fig.show='hold', fig.width=3.5, fig.height=3,
+    fig.cap=c("PM2.5 — roughly normal.", "PM10 — right-skewed.")}
+set.seed(1)
+hist(rnorm(300, mean = 12, sd = 4),
+     main = "PM2.5", xlab = "µg/m³", col = "#4a7c5e", border = NA)
+hist(rexp(300, rate = 0.08),
+     main = "PM10",  xlab = "µg/m³", col = "#c8832a", border = NA)
+```
+
+### `ref.label` — reusing a chunk without repeating code
+
+`ref.label` runs a previous chunk again without copying its code. This is
+useful when you want to show code in one place and output in another, or
+produce the same plot at two different sizes:
+
+<pre><code>```{r my-plot, echo=TRUE, fig.show='hide'}
+# Define and show the code here — suppress the figure with fig.show='hide'
+plot(1:10, (1:10)^2, pch = 19, col = "#4a7c5e",
+     xlab = "x", ylab = expression(x^2))
+```
+
+Some prose explaining the plot...
+
+```{r my-plot-rendered, ref.label='my-plot', echo=FALSE, fig.cap="The actual figure."}
+# Re-runs the my-plot chunk; echo=FALSE hides the code this time
+```
+</code></pre>
+
+### `results = 'asis'` — passing raw HTML to the output
+
+The default `results = 'markup'` wraps printed output in a code block.
+`results = 'asis'` passes the output directly into the document as raw
+HTML or markdown — required any time you generate tables or headings
+programmatically:
+
+```{r results-asis-demo, results='asis'}
+# knitr::kable() generates an HTML table — needs results='asis' to render
+# Without it, you'd see raw HTML tags as plain text
+knitr::kable(
+  data.frame(
+    Site    = c("Kern", "Mojave", "Coast"),
+    PM2.5   = c(12.1, 8.4, 18.0),
+    n       = c(5L, 4L, 6L)
+  ),
+  caption = "Summary table generated inside a chunk."
+)
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ kable() inside a for loop requires results='asis'</strong>
+If you loop over groups and call <code>knitr::kable()</code> inside the loop,
+you <em>must</em> set <code>results='asis'</code> on that chunk or the tables
+will appear as raw HTML text. The same applies to any function that emits
+raw HTML — <code>kableExtra</code>, <code>gt</code>, <code>DT::datatable()</code>.
+</div>
+
+<hr>
+
+## 7. Inline R Code {#inline}
+
+Inline R lets you embed a computed value directly in a sentence, so the
+number updates automatically every time you knit. The syntax is a single
+backtick, the letter `r`, a space, an R expression, and a closing backtick:
+
+<pre><code>The mean PM2.5 was &#96;r round(mean(pm25_week), 1)&#96; µg/m³ across the study period.
+</code></pre>
+
+Anything that evaluates to a single printable value works: arithmetic,
+function calls, object lookups, `format()` calls for formatting.
+
+```{r inline-setup, echo=FALSE}
+pm25_week  <- c(8.2, 11.4, 9.7, 42.3, 10.1, 9.3, 8.8)
+n_sites    <- 7
+start_date <- as.Date("2024-03-04")
+end_date   <- as.Date("2024-03-10")
+```
+
+The source text below contains inline R — look at the rendered output:
+
+**Source:**
+```markdown
+We monitored PM2.5 at `r n_sites` sites between
+`r format(start_date, "%B %d")` and `r format(end_date, "%B %d, %Y")`.
+The weekly mean was `r round(mean(pm25_week), 1)` µg/m³
+(median: `r median(pm25_week)` µg/m³;
+max: `r max(pm25_week)` µg/m³ on Thursday).
+```
+
+**Renders as:**
+
+We monitored PM2.5 at `r n_sites` sites between
+`r format(start_date, "%B %d")` and `r format(end_date, "%B %d, %Y")`.
+The weekly mean was `r round(mean(pm25_week), 1)` µg/m³
+(median: `r median(pm25_week)` µg/m³;
+max: `r max(pm25_week)` µg/m³ on Thursday).
+
+<div class="callout callout-concept">
+<strong>🔗 Why inline R matters for reproducibility</strong>
+If you type a number directly into prose — "the mean was 14.3 µg/m³" — and
+later discover a data error and rerun the analysis, the number in the prose
+stays wrong while your table updates. Inline R ensures the prose number is
+always derived from the same computation as everything else.
+</div>
+
+### Formatting numbers for prose
+
+```{r format-examples}
+x <- 12345.6789
+
+# Too many decimals for prose
+x
+
+# Rounded
+round(x, 2)
+
+# Formatted with thousands separator
+format(x, big.mark = ",", nsmall = 2)
+
+# Scientific notation suppressed
+format(1.23e-5, scientific = FALSE, digits = 4)
+
+# Percentage
+paste0(round(0.734 * 100, 1), "%")
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ Keep inline R expressions short</strong>
+Inline R is great for <code>round(mean(x), 1)</code>. It is not meant for
+multi-step calculations. Compute your value in a chunk first, store it in
+a named object, then reference that object inline. Debugging a broken
+inline expression is much harder than debugging a broken chunk.
+</div>
+
+<hr>
+
+## 8. The Setup Chunk {#setup-chunk}
+
+Every Rmd should begin with a setup chunk immediately after the YAML header.
+It does three things: sets global chunk options, loads all packages, and
+optionally loads data.
+
+<pre><code>```{r setup, include=FALSE}
+# 1. Global chunk options — apply to every chunk unless overridden locally
+knitr::opts_chunk$set(
+  echo    = TRUE,     # show code by default
+  warning = FALSE,    # suppress warnings globally
+  message = FALSE,    # suppress package-load messages
+  fig.width  = 7,     # default figure width (inches)
+  fig.height = 4      # default figure height (inches)
+)
+
+# 2. Load all packages here — never scatter library() calls through the doc
+library(tidyverse)
+library(lubridate)
+library(knitr)
+library(kableExtra)
+
+# 3. Optionally load data here so it is available to all later chunks
+# df &lt;- read_csv("data/field_data.csv")
+```
+</code></pre>
+
+The label `setup` is special — knitr always runs this chunk first,
+regardless of where it appears in the file. The option `include=FALSE`
+means none of this appears in the output: no code, no messages, no output.
+
+### Why load all packages at the top?
+
+If `library(ggplot2)` is inside chunk 7 and the document fails during knit
+at chunk 5, you may spend time wondering why ggplot2 "isn't loaded" — when
+the real error is earlier and ggplot2 never got a chance to load. A single
+setup chunk makes the dependency list visible and ensures it runs first.
+
+### Global vs local options
+
+A local option on a single chunk **overrides** the global default from
+`opts_chunk$set()`. Use this to make a specific chunk behave differently
+without changing all chunks:
+
+```{r override-demo, echo=FALSE, fig.width=4, fig.height=4}
+# This chunk overrides the global echo=TRUE and fig.width/height
+# echo=FALSE because this is a small illustrative plot, not teaching code
+pie(c(Combustion = 52, Dust = 21, Secondary = 18, Other = 9),
+    col = c("#1e3a2f","#4a7c5e","#c8832a","#8aad96"),
+    main = "Typical PM2.5 Source Contribution")
+```
+
+<hr>
+
+## 9. Images {#images}
+
+There are two ways to embed an image: the plain markdown syntax for simple
+cases, and `knitr::include_graphics()` for anything that needs chunk options
+(sizing, captions, cross-references).
+
+### Markdown syntax
+
+```markdown
+![Alt text describing the image](path/to/image.png)
+
+![Caption shown below the image](figures/site_map.png){width=70%}
+```
+
+The path is relative to the Rmd file's location. `{width=70%}` is a
+pandoc attribute that scales the image in HTML output. This approach is
+fine for decorative images but gives you no chunk-level control.
+
+### `knitr::include_graphics()` — the preferred approach
+
+<pre><code>```{r site-map, echo=FALSE, fig.cap="Sensor deployment locations, Spring 2024.",
+    out.width="80%", fig.align="center"}
+knitr::include_graphics("figures/site_map.png")
+```
+</code></pre>
+
+Use `out.width` (not `fig.width`) for images loaded from disk — `fig.width`
+controls the size of *generated* R plots; `out.width` controls the display
+size of any figure in the output HTML.
+
+### Finding and specifying the path
+
+The path is always **relative to the Rmd file**. If your project looks like:
+
+```
+project/
+  reports/
+    my_analysis.Rmd      ← Rmd lives here
+  figures/
+    site_map.png
+  data/
+    field_data.csv
+```
+
+Then the correct path inside the Rmd is `"../figures/site_map.png"` — one
+level up (`..`), then into `figures/`. The same logic applies to data files.
+
+```{r image-path-example, eval=FALSE}
+# Rmd is in reports/; figure is in figures/ at the project root
+knitr::include_graphics("../figures/site_map.png")
+
+# If figures/ is a subfolder of the same folder as the Rmd:
+knitr::include_graphics("figures/site_map.png")
+```
+
+### Supported formats
+
+`knitr::include_graphics()` accepts `.png`, `.jpg`/`.jpeg`, `.gif`, and
+`.svg` for HTML output. For PDF output, use `.png` or `.pdf` — `.gif` and
+`.svg` are not supported by LaTeX.
+
+<div class="callout callout-tip">
+<strong>💡 Screenshots and field photos</strong>
+For screenshots (e.g. of RStudio, an instrument interface, a map): save as
+`.png` (not `.jpg` — JPEG compression blurs text). Aim for 150–200 dpi at
+the intended display size. For field photos where file size matters,
+<code>.jpg</code> is fine.
+</div>
+
+<hr>
+
+## 10. Citations and Bibliography {#citations}
+
+R Markdown uses **pandoc-citeproc** to manage citations. You provide a
+`.bib` file (BibTeX format) and reference entries inline with `@key`
+syntax. Pandoc assembles the bibliography automatically at the end of
+the document.
+
+### Step 1 — Create a `.bib` file
+
+A `.bib` file is a plain-text file containing reference entries. Each
+entry has a type (`@article`, `@book`, etc.), a cite key you invent, and
+fields:
+
+```bibtex
+@article{smith2022pm25,
+  author  = {Smith, Jane and Jones, Robert},
+  title   = {Particulate Matter Trends in Southern California},
+  journal = {Environmental Science \& Technology},
+  year    = {2022},
+  volume  = {56},
+  number  = {4},
+  pages   = {2341--2350},
+  doi     = {10.1021/acs.est.1c07890}
+}
+
+@book{wickham2023r4ds,
+  author    = {Wickham, Hadley and Cetinkaya-Rundel, Mine and Grolemund, Garrett},
+  title     = {R for Data Science},
+  edition   = {2},
+  year      = {2023},
+  publisher = {O'Reilly Media},
+  url       = {https://r4ds.hadley.nz}
+}
+
+@manual{r-base,
+  title        = {R: A Language and Environment for Statistical Computing},
+  author       = {{R Core Team}},
+  organization = {R Foundation for Statistical Computing},
+  address      = {Vienna, Austria},
+  year         = {2024},
+  url          = {https://www.R-project.org/}
+}
+```
+
+Save this as `references.bib` in the same folder as your Rmd (or a
+`bib/` subfolder — adjust the path in YAML accordingly).
+
+<div class="callout callout-tip">
+<strong>💡 Getting BibTeX entries without typing them</strong>
+Most journal websites have a "Cite" or "Export citation" button — choose
+BibTeX format. Google Scholar has a quotation-mark icon → BibTeX.
+Zotero and Mendeley both export <code>.bib</code> files directly. The only
+thing you need to edit is the cite key (the first field after the opening
+brace) — make it memorable: <code>smith2022pm25</code>, not <code>smith2022a</code>.
+</div>
+
+### Step 2 — Add `bibliography:` to the YAML header
+
+<pre><code>---
+title: "Air Quality Analysis"
+author: "Marc Los Huertos"
+output: html_document
+bibliography: references.bib
+csl: apa.csl               # optional — citation style (APA, MLA, etc.)
+link-citations: true       # make in-text citations clickable links
+<hr>
+</code></pre>
+
+Without `csl:`, pandoc uses its built-in Chicago author-date style.
+Download `.csl` files for other styles from the
+[Zotero Style Repository](https://www.zotero.org/styles).
+
+### Step 3 — Cite in your prose
+
+```markdown
+Particulate matter exposure is linked to cardiovascular disease [@smith2022pm25].
+
+Smith and Jones [-@smith2022pm25] found that PM2.5 declined 40% over two decades.
+
+For an introduction to R, see @wickham2023r4ds [p. 42].
+
+Multiple citations: [@smith2022pm25; @r-base].
+```
+
+| Syntax | Renders as |
+|---|---|
+| `[@key]` | (Smith and Jones 2022) |
+| `[-@key]` | (2022) — suppress author name |
+| `@key` | Smith and Jones (2022) — narrative citation |
+| `[@key, p. 42]` | (Smith and Jones 2022, p. 42) |
+| `[@key1; @key2]` | (Smith 2022; Jones 2021) |
+
+### Step 4 — The bibliography appears automatically
+
+Pandoc places the formatted reference list at the **end of the document**
+by default. To control placement — for example, before a footer — insert
+a heading with the `{#refs}` div exactly where you want it:
+
+```markdown
+## References
+
+::: {#refs}
+:::
+
+<hr>
+*Compiled on `r Sys.Date()`.*
+```
+
+### Citing R packages
+
+It is good practice to cite the R packages you use. `knitr::write_bib()`
+generates BibTeX entries for any installed packages automatically:
+
+```{r write-bib, eval=FALSE}
+# Run once to generate/update the bib file for the packages you use
+knitr::write_bib(
+  c("base", "rmarkdown", "knitr", "tidyverse", "lubridate", "ggplot2"),
+  file = "references.bib"
+)
+```
+
+Then cite as normal: `[@R-ggplot2]`, `[@R-tidyverse]`. The `R-` prefix is
+the key format `write_bib()` produces.
+
+<div class="callout callout-concept">
+<strong>📚 nocite — bibliography entry with no in-text citation</strong>
+To list a source in the bibliography without citing it in the prose — a
+"Further reading" entry — add a <code>nocite</code> field to the YAML header:
+
+<pre>nocite: |
+  @wickham2023r4ds, @r-base</pre>
+
+These appear in the reference list even though no <code>@key</code> appears
+in the body text.
+</div>
+
+<hr>
+
+## 11. Rendering the Document {#rendering}
+
+### The Knit button
+
+The simplest way to render is the **Knit** button in the RStudio toolbar
+(the yarn-and-needle icon). It calls `rmarkdown::render()` on the current
+file, runs all chunks in a **fresh R session**, and opens the output in the
+Viewer pane.
+
+### From the Console
+
+```{r render-console, eval=FALSE}
+# Render to the default output format specified in YAML
+rmarkdown::render("reports/my_analysis.Rmd")
+
+# Render to a specific format regardless of YAML
+rmarkdown::render("reports/my_analysis.Rmd",
+                  output_format = "pdf_document")
+
+# Render and save to a specific path
+rmarkdown::render("reports/my_analysis.Rmd",
+                  output_file  = "outputs/my_analysis.html")
+```
+
+### What "fresh R session" means — and why it matters
+
+When you click Knit, RStudio starts a **new, empty R session** to run your
+document. It does not use the objects already in your Environment pane.
+This is the most common source of "it works in the Console but fails to
+knit" confusion:
+
+<div class="callout callout-warn">
+<strong>⚠️ Your Environment is not your document's environment</strong>
+If you ran <code>df &lt;- read_csv(...)</code> in the Console and forgot to
+put it in a chunk, <code>df</code> exists in your environment but not in
+the knit session. The document will error with <code>object 'df' not found</code>.
+The fix: every object the document needs must be created by a chunk <em>inside
+the document</em>.
+</div>
+
+### Rendering order
+
+knitr executes chunks **strictly top to bottom**. An object created in
+chunk 5 is not available in chunk 3, even if you created it in the Console
+first. If you get `object not found`, check whether the object is created
+*before* it is used.
+
+```{r chunk-order-demo}
+# This chunk creates the object
+site_data <- tibble::tibble(
+  site    = c("Kern", "Mojave", "Coast"),
+  pm25    = c(12.1, 8.4, 18.0)
+)
+```
+
+```{r chunk-uses-object}
+# This chunk uses it — works because it comes AFTER the chunk that creates it
+site_data
+```
+
+### Render vs Source vs Run All
+
+| Action | R session | Chunks run | Use for |
+|---|---|---|---|
+| **Knit** | Fresh, empty | All, top to bottom | Final output, submission |
+| **Run All** (Ctrl+Alt+R) | Current session | All, top to bottom | Development — your objects are available |
+| **Run chunk** (Ctrl+Shift+Enter) | Current session | Just this chunk | Iterative development |
+| **Source** on a `.R` file | Current session | — | Running a plain R script |
+
+<div class="callout callout-tip">
+<strong>💡 Development workflow</strong>
+While building a document, use <strong>Run chunk</strong> to iterate quickly
+(you have access to your environment). Before submitting or sharing, always
+do a full <strong>Knit</strong> from scratch to confirm the document is truly
+self-contained.
+</div>
+
+### Knit errors — reading the error output
+
+When a knit fails, RStudio shows the error in the R Markdown tab. The
+format is always:
+
+```
+Quitting from R02_RMarkdown_knitr.Rmd:45-52 [chunk-label]
+Error in ... : error message here
+```
+
+The numbers `45-52` are the **line numbers** where the failing chunk
+starts and ends. Go to that line in your Rmd to find the problem. The
+`[chunk-label]` confirms which chunk it was — another reason to always
+label your chunks.
+
+<hr>
+
+## 12. Troubleshooting Common Problems {#troubleshooting}
+
+### Checklist for "it runs but won't knit"
+
+```{r troubleshoot-checklist, eval=FALSE}
+# 1. Is every object the document needs created INSIDE a chunk?
+#    (Not just in your Console environment)
+
+# 2. Are all packages loaded with library() inside a chunk?
+#    (library() calls in the Console do nothing for the knit session)
+
+# 3. Is every file path correct relative to the Rmd's location?
+#    (The knit session's working directory is the folder the Rmd lives in)
+getwd()   # run in Console to see where your Rmd's working directory is
+
+# 4. Are all chunk labels unique?
+#    (Duplicate labels cause an immediate error before any code runs)
+
+# 5. Does the chunk header use commas between options, not semicolons?
+#    CORRECT:  ```{r my-chunk, echo=FALSE, fig.width=6}
+#    WRONG:    ```{r my-chunk; echo=FALSE; fig.width=6}
+```
+
+### Working directory in the knit session
+
+The knit session's working directory is the **folder the Rmd lives in** —
+not your RStudio project root, and not wherever you last called `setwd()`.
+This means all relative file paths in `read_csv()`, `source()`, etc. should
+be relative to the Rmd file, not to the project root.
+
+```{r wd-demo, eval=FALSE}
+# If your Rmd is at:  project/reports/my_analysis.Rmd
+# And your data is at: project/data/field_data.csv
+# Then the correct relative path in the Rmd is:
+df <- read_csv("../data/field_data.csv")   # one level up, then into data/
+
+# NOT:
+df <- read_csv("data/field_data.csv")      # wrong — that looks for
+                                           # project/reports/data/ which doesn't exist
+```
+
+### YAML parse errors
+
+```
+Error in yaml::yaml.load(string, ...) :
+  Scanner error: ...
+```
+
+This means the YAML header is malformed. Common causes:
+
+- **Tabs instead of spaces** — YAML requires spaces only
+- **Missing colon** after a key name
+- **Special characters** in the title not wrapped in quotes: `title: My: Report` fails; `title: "My: Report"` works
+- **Mismatched quotes** — if your title contains a single quote (apostrophe), use double quotes around it
+- **Wrong indentation** — nested fields must be exactly 2 spaces deeper than their parent
+
+### Chunk delimiter errors
+
+```
+Error: attempt to use zero-length variable name
+```
+or
+```
+Unterminated chunk
+```
+
+These usually mean a chunk fence is wrong:
+
+```markdown
+CORRECT opening:  ```{r my-label}
+WRONG — missing r: ```{my-label}
+WRONG — extra space: ``` {r my-label}
+
+CORRECT closing:  ```
+WRONG — has text:  ``` r
+WRONG — two ticks: ``
+```
+
+### Package not available
+
+```
+Error in library(ggplot2) : there is no package called 'ggplot2'
+```
+
+The knit session installs nothing automatically. Install missing packages
+in the Console with `install.packages("ggplot2")`, then knit again.
+Never put `install.packages()` in a chunk that will be evaluated during
+knit — it re-installs the package every time.
+
+<hr>
+
+<div class="key-box">
+<h4>🔑 RMarkdown and knitr — key takeaways</h4>
+<ul>
+<li><strong>Three parts, one file.</strong> YAML header (metadata and format), prose (markdown), and code chunks (R). They interleave freely; the YAML block must come first.</li>
+<li><strong>Knit runs a fresh session.</strong> Every object and package must be created inside the document. Objects in your Environment pane do not exist during knit.</li>
+<li><strong>Chunks run top to bottom.</strong> An object created in chunk 7 cannot be used in chunk 3. Read errors as line numbers and chunk labels.</li>
+<li><strong>The setup chunk is special.</strong> Label it <code>setup</code>, use <code>include=FALSE</code>, load all packages and set global options here. knitr always runs it first.</li>
+<li><strong>Local options override global ones.</strong> Set sensible defaults in <code>opts_chunk$set()</code> and override per-chunk only when needed.</li>
+<li><strong><code>fig.show='hold'</code> collects plots; <code>'asis'</code> places each immediately.</strong> Use a character vector for <code>fig.cap</code> when one chunk produces multiple figures. Use <code>ref.label=</code> to reuse a chunk without repeating code.</li>
+<li><strong><code>results='asis'</code> is required for programmatic tables.</strong> Any function that emits raw HTML — <code>knitr::kable()</code>, <code>kableExtra</code>, <code>gt</code> — needs this option or its output appears as raw text.</li>
+<li><strong>Inline R keeps prose in sync.</strong> Write <code>`r round(mean(x), 1)`</code> in prose instead of typing a number. The value updates automatically when data changes.</li>
+<li><strong>Use <code>knitr::include_graphics()</code> for images.</strong> It respects chunk options (<code>out.width</code>, <code>fig.cap</code>, <code>fig.align</code>). Paths are relative to the Rmd file, not the project root.</li>
+<li><strong>Citations need a <code>.bib</code> file and a YAML <code>bibliography:</code> field.</strong> Cite with <code>[@key]</code> in prose; use <code>knitr::write_bib()</code> to generate entries for R packages automatically.</li>
+<li><strong>YAML is whitespace-sensitive.</strong> Two spaces for indentation, no tabs, colons after every key. Quote any value that contains special characters.</li>
+<li><strong>Working directory = Rmd folder.</strong> All relative paths in <code>read_csv()</code>, <code>knitr::include_graphics()</code>, and <code>bibliography:</code> are relative to the Rmd file's location.</li>
+</ul>
+</div>
+
+<hr>
+
+### What's next?
+
+- **[Data Import](03_Data_Import.html)** — reading CSV, Excel, and field-data files into R
+- **[Data Wrangling](04_Data_Wrangling.html)** — cleaning and reshaping with `dplyr` and `tidyr`
+- **[Visualization](05_Visualization.html)** — `ggplot2` for publication-quality figures
+
+```{r session-info, echo=FALSE}
+# sessionInfo()
+```
+
+<footer class="page-footer">
+EA030 Core R Skills &mdash; Module 02
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>

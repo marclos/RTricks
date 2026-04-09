@@ -1,0 +1,45 @@
+\documentclass{article}
+
+\begin{document}
+
+
+<<echo=FALSE>>=
+library(waterData)
+library(xtable)
+@
+
+
+<<results='asis', echo=FALSE>>=
+my.sites <- c("05054000","05082500","05061000","05050000","05058700", "05267000", "06342500", "06478000", "06414000")
+my.siteInfo <- siteInfo(my.sites)
+xtable(my.siteInfo[order(my.siteInfo$staid),], cap="Information for select U.S. Geological Survey streamgage sites, sorted in downstream order.")
+@
+
+<<>>=
+library(maps)
+library(mapdata)
+par(las=1,tck=0.02,mar=c(0,0,0,0))
+map('state', region=c('california', 'nevada', 'oregon', 'baja'))
+map('rivers',add=TRUE,col=4)
+# label centered over gage site, jitter added to differentiate sites close
+# together
+mindif<-0
+maxiterations<-30
+iteration<-1
+while (mindif<0.085) {
+y.offset<-as.numeric(my.siteInfo$lat)+runif(length(my.siteInfo$lat), 0.12,0.45)
+mindif <- min(diff(unique(sort.int(round(as.numeric(y.offset),digits=3)))))
+iteration<-iteration + 1
+if ( iteration >= maxiterations ) {
+mindif<-0.09
+message("No ideal jitter found. Some labels may conflict")
+}
+}
+points(my.siteInfo$lng, my.siteInfo$lat, pch=19, col="green")
+text(xy.coords(my.siteInfo$lng,y.offset),my.siteInfo$staid,cex=0.55)
+#box()
+map.axes()
+@
+
+
+\end{document}

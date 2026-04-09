@@ -1,0 +1,42 @@
+variable;parameter;units;description;value
+SHB;e1max20;h-1;maximal rate of DOM1 hydrolysis;0.75
+LHB;e1max20;h-1;maximal rate of DOM1 hydrolysis;0.75
+SHB;e2max20;h-1;maximal rate of DOM2 hydrolysis;0.25
+LHB;e2max20;h-1;maximal rate of DOM2 hydrolysis;0.25
+SHB;kh1;mgC/l;1/2 saturation constant for DOM1 hydrolysis;0.25
+LHB;kh1;mgC/l;1/2 saturation constant for DOM1 hydrolysis;0.25
+SHB;kh2;mgC/l;1/2 saturation constant for DOM2 hydrolysis;2.5
+LHB;kh2;mgC/l;1/2 saturation constant for DOM2 hydrolysis;2.5
+SHB;bmax20;h-1;maximal S uptake rate;0.16
+LHB;bmax20;h-1;maximal S uptake rate;0.6
+SHB;ks;mgC/l;1/2 saturation constant;0.1
+LHB;ks;mgC/l;1/2 saturation constant;0.1
+SHB;y;sd;growth yield;0.5
+LHB;y;sd;growth yield;0.5
+SHB;kd20;h-1;mortality rate;0.02
+LHB;kd20;h-1;mortality rate;0.05
+FFC;kd20;h-1;mortality rate;0.045
+AFC;kd20;h-1;mortality rate;0.0225
+SHB;vs;m/h;sinking rate;0
+LHB;vs;m/h;sinking rate;0.02
+FFC;vs;m/h;sinking rate;0
+AFC;vs;m/h;sinking rate;0.02
+SHB;topt;°C;optimal temperature;20
+LHB;topt;°C;optimal temperature;22
+FFC;topt;°C;optimal temperature;25
+AFC;topt;°C;optimal temperature;25
+SHB;dti;°C;range of temperature;17
+LHB;dti;°C;range of temperature;12
+FFC;dti;°C;range of temperature;20
+AFC;dti;°C;range of temperature;20
+;epsd1;sd;DOM1 fraction in lysis products;0.3
+;epsd2;sd;DOM2 fraction in lysis products;0.1
+;epsd3;sd;DOM3 fraction in lysis products;0.1
+;epsp1;sd;POM1 fraction in lysis products;0.3
+;epsp2;sd;POM2 fraction in lysis products;0.1
+;epsp3;sd;POM3 fraction in lysis products;0.1
+;k1b20;h-1;POM1 degradation rate constant;0.0025
+;k2b;h-1;POM2 degradation rate constant;0.00025
+;denit_topt;°C;optimal temperature;40
+;denit_dti;°C;range of temperature;35
+;denit_pot;mgN/m3/h;soil potential denitrification;1.2

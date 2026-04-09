@@ -1,0 +1,131 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(waterData)}
+\hlkwd{library}\hlstd{(xtable)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{kframe}
+\begin{alltt}
+\hlstd{my.sites} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"05054000"}\hlstd{,}\hlstr{"05082500"}\hlstd{,}\hlstr{"05061000"}\hlstd{,}\hlstr{"05050000"}\hlstd{,}\hlstr{"05058700"}\hlstd{,} \hlstr{"05267000"}\hlstd{,} \hlstr{"06342500"}\hlstd{,} \hlstr{"06478000"}\hlstd{,} \hlstr{"06414000"}\hlstd{)}
+\hlstd{my.siteInfo} \hlkwb{<-} \hlkwd{siteInfo}\hlstd{(my.sites)}
+\hlkwd{xtable}\hlstd{(my.siteInfo[}\hlkwd{order}\hlstd{(my.siteInfo}\hlopt{$}\hlstd{staid),],} \hlkwc{cap}\hlstd{=}\hlstr{"Information for select U.S. Geological Survey streamgage sites, sorted in downstream order."}\hlstd{)}
+\end{alltt}
+\end{kframe}% latex table generated in R 4.2.2 by xtable 1.8-4 package
+% Tue Feb 13 10:57:54 2024
+\begin{table}[ht]
+\centering
+\begin{tabular}{rllrr}
+  \hline
+ & staid & staname & lat & lng \\ 
+  \hline
+4 & 05050000 & BOIS DE SIOUX RIVER NEAR WHITE ROCK, SD & 45.86 & -96.57 \\ 
+  1 & 05054000 & RED RIVER OF THE NORTH AT FARGO, ND & 46.86 & -96.78 \\ 
+  5 & 05058700 & SHEYENNE RIVER AT LISBON, ND & 46.45 & -97.68 \\ 
+  3 & 05061000 & BUFFALO RIVER NEAR HAWLEY, MN & 46.85 & -96.33 \\ 
+  2 & 05082500 & RED RIVER OF THE NORTH AT GRAND FORKS, ND & 47.93 & -97.03 \\ 
+  6 & 05267000 & MISSISSIPPI RIVER NEAR ROYALTON, MN & 45.83 & -94.36 \\ 
+  7 & 06342500 & MISSOURI RIVER AT BISMARCK, ND & 46.81 & -100.82 \\ 
+  9 & 06414000 & RAPID CR AT RAPID CITY,SD & 44.09 & -103.24 \\ 
+  8 & 06478000 & JAMES RIVER NEAR MITCHELL,SD & 43.66 & -97.92 \\ 
+   \hline
+\end{tabular}
+\caption{Information for select U.S. Geological Survey streamgage sites, sorted in downstream order.} 
+\end{table}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(maps)}
+\hlkwd{library}\hlstd{(mapdata)}
+\hlkwd{par}\hlstd{(}\hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{tck}\hlstd{=}\hlnum{0.02}\hlstd{,}\hlkwc{mar}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{,}\hlnum{0}\hlstd{))}
+\hlkwd{map}\hlstd{(}\hlstr{'state'}\hlstd{,} \hlkwc{region}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{'california'}\hlstd{,} \hlstr{'nevada'}\hlstd{,} \hlstr{'oregon'}\hlstd{,} \hlstr{'baja'}\hlstd{))}
+\hlkwd{map}\hlstd{(}\hlstr{'rivers'}\hlstd{,}\hlkwc{add}\hlstd{=}\hlnum{TRUE}\hlstd{,}\hlkwc{col}\hlstd{=}\hlnum{4}\hlstd{)}
+\hlcom{# label centered over gage site, jitter added to differentiate sites close}
+\hlcom{# together}
+\hlstd{mindif}\hlkwb{<-}\hlnum{0}
+\hlstd{maxiterations}\hlkwb{<-}\hlnum{30}
+\hlstd{iteration}\hlkwb{<-}\hlnum{1}
+\hlkwa{while} \hlstd{(mindif}\hlopt{<}\hlnum{0.085}\hlstd{) \{}
+\hlstd{y.offset}\hlkwb{<-}\hlkwd{as.numeric}\hlstd{(my.siteInfo}\hlopt{$}\hlstd{lat)}\hlopt{+}\hlkwd{runif}\hlstd{(}\hlkwd{length}\hlstd{(my.siteInfo}\hlopt{$}\hlstd{lat),} \hlnum{0.12}\hlstd{,}\hlnum{0.45}\hlstd{)}
+\hlstd{mindif} \hlkwb{<-} \hlkwd{min}\hlstd{(}\hlkwd{diff}\hlstd{(}\hlkwd{unique}\hlstd{(}\hlkwd{sort.int}\hlstd{(}\hlkwd{round}\hlstd{(}\hlkwd{as.numeric}\hlstd{(y.offset),}\hlkwc{digits}\hlstd{=}\hlnum{3}\hlstd{)))))}
+\hlstd{iteration}\hlkwb{<-}\hlstd{iteration} \hlopt{+} \hlnum{1}
+\hlkwa{if} \hlstd{( iteration} \hlopt{>=} \hlstd{maxiterations ) \{}
+\hlstd{mindif}\hlkwb{<-}\hlnum{0.09}
+\hlkwd{message}\hlstd{(}\hlstr{"No ideal jitter found. Some labels may conflict"}\hlstd{)}
+\hlstd{\}}
+\hlstd{\}}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# No ideal jitter found. Some labels may conflict}}\begin{alltt}
+\hlkwd{points}\hlstd{(my.siteInfo}\hlopt{$}\hlstd{lng, my.siteInfo}\hlopt{$}\hlstd{lat,} \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"green"}\hlstd{)}
+\hlkwd{text}\hlstd{(}\hlkwd{xy.coords}\hlstd{(my.siteInfo}\hlopt{$}\hlstd{lng,y.offset),my.siteInfo}\hlopt{$}\hlstd{staid,}\hlkwc{cex}\hlstd{=}\hlnum{0.55}\hlstd{)}
+\hlkwd{box}\hlstd{()}
+\hlkwd{map.axes}\hlstd{()}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-3-1} 
+\end{knitrout}
+
+
+\end{document}

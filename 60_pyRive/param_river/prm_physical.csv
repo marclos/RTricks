@@ -1,4 +1,0 @@
-variable;parameter;units;description;value
-;veli0;mgmes/l;Velikanov constant;20
-;veli1;(mgmes/l)/(m/s)^3;Velikanov constant;50
-;manning;sd;Manning coefficient;0.045

@@ -1,0 +1,14 @@
+variable;parameter;units;description;value
+;compactionMax;h-1;maximal compaction;0.0005
+;sedThreshold;g/m²;sediment stock threshold;750
+SPM;initBent;g/m²;initial content;750
+POM1;initBent;gC/gsed;initial content;0.00005
+POM2;initBent;gC/gsed;initial content;0.0002
+POM3;initBent;gC/gsed;initial content;0.0015
+BSI;initBent;gSi/gsed;initial content;0.0014
+PIP;initBent;gP/gsed;initial content;0.000093
+AFC;initBent;knb/gsed;initial content;0.3
+SPM;vs;m/h;sinking rate;0.5
+POM1;vs;m/h;sinking rate;0.1
+POM2;vs;m/h;sinking rate;0.1
+POM3;vs;m/h;sinking rate;0.1
