@@ -209,8 +209,8 @@ content: 'Core Skills \2002'; font-family: 'Source Code Pro', monospace; font-si
 letter-spacing: .12em; text-transform: uppercase; color: var(--fern); background: var(--mist);
 padding: 2px 7px; border-radius: 2px; margin-right: 10px; vertical-align: middle;
 }
-#ea030-projects .section-header h2::before {
-content: 'EA030 Projects \2002'; font-family: 'Source Code Pro', monospace; font-size: .62rem; font-weight: 600;
+#ea030-activities .section-header h2::before {
+content: 'EA030 Activities \2002'; font-family: 'Source Code Pro', monospace; font-size: .62rem; font-weight: 600;
 letter-spacing: .12em; text-transform: uppercase; color: var(--amber); background: #fdf0e0;
 padding: 2px 7px; border-radius: 2px; margin-right: 10px; vertical-align: middle;
 }
@@ -225,9 +225,9 @@ transition: transform .2s, box-shadow .2s, border-color .2s; position: relative;
 .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--sage); transition: background .2s; }
 .card:hover { transform: translateY(-3px); box-shadow: var(--card-hover); border-color: var(--sage); }
 .card:hover::before { background: var(--fern); }
-#ea030-projects .card::before { background: var(--amber); }
-#ea030-projects .card:hover::before { background: var(--rust); }
-#ea030-projects .card:hover { border-color: var(--amber-lt); }
+#ea030-activities .card::before { background: var(--amber); }
+#ea030-activities .card:hover::before { background: var(--rust); }
+#ea030-activities .card:hover { border-color: var(--amber-lt); }
 
 .card.coming-soon { opacity: .48; cursor: default; pointer-events: none; filter: grayscale(.35); }
 .card-icon { font-size: 1.35rem; margin-bottom: 10px; display: block; line-height: 1; }
@@ -238,7 +238,7 @@ display: inline-block; margin-top: 13px;
 font-family: 'Source Code Pro', monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase;
 padding: 2px 7px; border-radius: 2px; background: var(--mist); color: var(--fern); font-weight: 600; align-self: flex-start;
 }
-#ea030-projects .card-tag { background: #fdf0e0; color: var(--amber); }
+#ea030-activities .card-tag { background: #fdf0e0; color: var(--amber); }
 .card.coming-soon .card-tag { background: var(--parchment); color: var(--dust); }
 
 .quick-ref {
@@ -291,7 +291,7 @@ R<span>Tricks</span> — Statistical Computing Resources
 <p><a href="#getting-started">Getting Started</a>
 <a href="#basic-stats">Basic Stats</a>
 <a href="#advanced-stats">Advanced Stats</a> <span class="nav-divider">│</span> <a href="#core-r">Core R Skills</a>
-<a href="#ea030-projects">Field &amp; Lab Projects</a>
+<a href="#ea030-activities">Field &amp; Lab Activities</a>
 <a href="project_index.html">Project Index</a> <span class="nav-divider">│</span> <a href="#resources">Resources</a></p>
 </div>
 </nav>
@@ -574,15 +574,16 @@ Lock package versions and share reproducible environments across
 machines.
 </p>
 <span class="card-tag">coming soon</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🔄</span>
+<a class="card" href="RGuides/R06_Functional_Programming"> <span class="card-icon">🔄</span>
 <div class="card-title">
 Functional Programming
 </div>
 <p class="card-desc">
-purrr::map() and friends to replace loops, write cleaner code, and
-automate repetitive tasks.
+for loops, the base-R apply family (lapply, sapply, vapply, mapply), and
+purrr::map() compared side-by-side. Replace repetitive loops with
+cleaner, type-safe pipelines.
 </p>
-<span class="card-tag">coming soon</span> </a>
+<span class="card-tag">purrr</span> </a>
 <a class="card coming-soon" href="#"> <span class="card-icon">📋</span>
 <div class="card-title">
 Tables &amp; Reporting
@@ -594,10 +595,10 @@ in RMarkdown.
 <p><span class="card-tag">coming soon</span> </a></p>
 </div>
 </div>
-<div id="ea030-projects">
+<div id="ea030-activities">
 <div class="section-header">
 <h2>
-EA030 Field &amp; Lab Projects
+EA030 Field &amp; Lab Activities
 </h2>
 <p>
 Course-specific modules tied to EA030 assignments, field campaigns, and
@@ -605,9 +606,9 @@ shared datasets.
 </p>
 </div>
 <div class="card-grid">
-<a class="card" href="project_index.html"> <span class="card-icon">🗂️</span>
+<a class="card" href="activities_index.html"> <span class="card-icon">🗂️</span>
 <div class="card-title">
-Project Index
+Activities Index
 </div>
 <p class="card-desc">
 Overview of all EA030 projects this semester — Regional Climate Trends,
@@ -615,7 +616,7 @@ pHake Lake, Compost Maturity, Inland Empire Air Quality, and Surface
 Water Quality.
 </p>
 <span class="card-tag">index</span> </a>
-<a class="card" href="Analyzing_EPA_PM25.html"> <span class="card-icon">💨</span>
+<a class="card" href="Unit_Air/Analyzing_EPA_PM25.html"> <span class="card-icon">💨</span>
 <div class="card-title">
 Analyzing EPA PM2.5 Data
 </div>
@@ -625,6 +626,14 @@ Download EPA AQS data, clean monitoring records, visualize long-term
 trends, compute monthly means with 95% CIs by decade, and evaluate
 exceedances of the 24-hr NAAQS (35 µg/m³). Includes environmental
 justice discussion. Helper functions in 06_EPA_PM25/.
+</p>
+<span class="card-tag">air quality</span> </a>
+<a class="card" href="Activities/A08_Raspberry_Pi_Tutorial.html"> <span class="card-icon">💨</span>
+<div class="card-title">
+Raspberry Pi Air Quaulity Analysis
+</div>
+<p class="card-desc">
+.
 </p>
 <span class="card-tag">air quality</span> </a>
 <a class="card coming-soon" href="#"> <span class="card-icon">🌱</span>
@@ -654,7 +663,7 @@ Species richness, rarefaction curves, and community composition with
 vegan.
 </p>
 <span class="card-tag">coming soon</span> </a>
-<a class="card" href="Unit_Biodiversity/P15_Camera_Trap.html"> <span class="card-icon">📷</span>
+<a class="card" href="Activities/A08_Camera_Trap.html"> <span class="card-icon">📷</span>
 <div class="card-title">
 Camera Traps
 </div>

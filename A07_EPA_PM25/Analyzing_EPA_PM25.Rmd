@@ -1,0 +1,1306 @@
+---
+title: "Analyzing EPA PM2.5 Data"
+author: "Marc Los Huertos"
+date: "Spring 2026 · v7 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+knit: (function(input, ...) rmarkdown::render(input, output_dir = "../docs/Unit_Air"))
+output:
+  tufte::tufte_html:
+    toc: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+library(tufte)
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  tidy    = FALSE,
+  fig.width  = 7,
+  fig.height = 4
+)
+```
+
+<style>
+.callout {
+  border-left: 5px solid;
+  padding: 0.55em 1em 0.55em 1em;
+  margin: 1em 0;
+  border-radius: 3px;
+  font-size: 0.92em;
+  line-height: 1.5;
+}
+.callout > strong:first-child { display: block; margin-bottom: 0.25em; }
+.callout-check  { border-color: #1565c0; background: #f0f4ff; }
+.callout-warn   { border-color: #e65100; background: #fff8f4; }
+.callout-error  { border-color: #b71c1c; background: #fff5f5; }
+.callout-tip    { border-color: #2e7d32; background: #f1f8f1; }
+.callout-where  { border-color: #4a148c; background: #f9f0ff; }
+.badge {
+  display: inline-block; color: white; padding: 1px 7px;
+  border-radius: 10px; font-size: 0.78em; font-weight: bold;
+  margin-right: 3px; vertical-align: middle;
+}
+.badge-console { background: #4a148c; }
+.badge-term    { background: #004d40; }
+</style>
+
+## Part I: Thirty Years of Regulatory Monitoring
+
+> **Summary.** This document walks through a thirty-year analysis of daily fine
+> particulate matter (PM2.5) concentrations for a single US county, using publicly
+> available EPA monitoring data. You will download the data, clean it, visualize
+> long-term trends, and compute monthly summary statistics with 95% confidence
+> intervals. By the end, you will be able to say whether air quality in your county
+> has improved over the past three decades, which seasons and stations are worst,
+> and whether concentrations have regularly exceeded federal health standards.
+
+---
+
+# How to Use This Document
+
+This page is a **reference and guide, not a template.** Read through it carefully
+before writing a single line of code. Your job is to understand what each section
+does, then build your own `.Rmd` file from scratch that reproduces the same
+analyses for your chosen county.
+
+`r newthought("Code scaffolds appear throughout.")` Where you see a chunk with `___`
+blanks, those are arguments you must supply yourself. The output you are aiming for
+appears just above the scaffold in each section. Use `?function_name` in the R console
+to look up what arguments are available.
+
+<div class="callout callout-check">
+<strong>📋 Scaffold quick-reference</strong>
+
+| Symbol | Meaning |
+|---|---|
+| `___` | Fill in a value yourself |
+| `"___"` | Fill in a quoted string |
+| `c("___", "___")` | Fill in one or more quoted strings |
+| `data = ___` | Replace `___` with your dataframe abbreviation (e.g. `SB`) |
+
+When stuck, look at the example output just **above** each scaffold chunk — that shows exactly what the completed code should produce.
+</div>
+
+<div class="callout callout-where">
+<strong>🖥️ Where do I type? The Console vs. the Terminal</strong>
+RStudio has two places where you can type commands, and mixing them up is the most
+common first-week mistake.
+
+**<span class="badge badge-console">CONSOLE</span>** runs **R** code.
+It lives in the lower-left panel. When it is ready for input you see a blue `>` prompt.
+This is where you run `install.packages()`, test code interactively, and look up
+`?help` pages. **For this assignment, the Console is the only tab you need.**
+
+**<span class="badge badge-term">TERMINAL</span>** runs **bash** (Linux shell) commands
+and is used for things like creating folders from the command line.
+For this assignment you will **not** need the Terminal — the Files pane handles
+folder creation with a button instead (see the next section).
+</div>
+
+---
+
+# Introduction
+
+## What Is PM2.5 and Why Does It Matter?
+
+`r newthought("Fine particulate matter, or PM2.5,")` refers to airborne particles
+smaller than 2.5 micrometers in diameter — roughly 1/30th the width of a human
+hair. The "2.5" is the upper size limit in micrometers (µm); one micrometer is
+one millionth of a meter. Because these particles are so small, they stay suspended
+in the air for days, can travel hundreds of kilometers on the wind, and --- most
+importantly --- bypass the body's normal defenses. When inhaled, they penetrate
+deep into the lungs and can cross into the bloodstream.
+
+Long-term exposure is linked to respiratory disease, cardiovascular disease, and
+premature death. Short-term spikes --- a smoke-filled day from a nearby wildfire,
+for example --- can trigger asthma attacks and hospital admissions within hours.
+PM2.5 is not uniformly distributed: concentrations are highest near major roads,
+industrial facilities, and agricultural burning, which means that communities
+living in those places bear a disproportionate health burden.
+
+## Where Does PM2.5 Come From?
+
+Sources fall into two broad categories. **Primary PM2.5** is emitted directly as
+particles: diesel exhaust, wood smoke, dust from unpaved roads, and agricultural
+operations. **Secondary PM2.5** forms in the atmosphere when gases --- sulfur
+dioxide from power plants, nitrogen oxides from vehicles --- react chemically and
+condense into particles.
+
+Concentrations are also shaped by meteorology. Temperature inversions trap
+pollution near the surface on still winter mornings; onshore sea breezes and
+afternoon convection can flush coastal basins; precipitation scavenges particles
+from the air. These processes produce strong seasonal cycles that vary by region.
+
+## What This Analysis Does
+
+Because PM2.5 patterns depend so heavily on local geography and emission sources,
+each student in this class analyzes a different county so we can compare results
+across regions. Using thirty years of EPA monitoring data, you will:
+
+- **Describe** the monitoring network in your county and the stations that have
+  long enough records to support analysis.
+- **Visualize** the full daily record to identify long-term trends, seasonal
+  patterns, and episodic spikes.
+- **Quantify** monthly averages and their uncertainty using 95% confidence intervals.
+- **Evaluate** how often concentrations exceeded the federal health standards, and
+  whether air quality has improved over the past three decades.
+
+## Regulatory Standards
+
+`r newthought("The EPA sets two National Ambient Air Quality Standards (NAAQS) for PM2.5.")`
+Understanding both is essential for interpreting your results.
+
+The **24-hour standard** is 35 ug/m3. No more than one exceedance per year is permitted
+on a three-year rolling average. It protects against acute exposure --- a single smoky
+day from a nearby wildfire.
+
+The **annual standard** is 12 ug/m3. The three-year mean of annual averages must stay
+below this value. It protects against chronic exposure: living near a freeway for years.
+
+All time-series plots in this document carry a reference line at 35 ug/m3 because our
+data are daily values.
+
+<div class="callout callout-tip">
+<strong>🔑 Key takeaways — standards to keep in mind</strong>
+
+- **35 µg/m³** is the 24-hour limit. A single day above this value is a health event.
+- **12 µg/m³** is the annual limit. Chronic exposure above this level is a long-term risk.
+- All time-series plots in this document show the 24-hour line as a red dashed reference.
+- Your job is to describe how often your county exceeds these thresholds and whether
+  the trend is improving.
+</div>
+
+## What Your Submission Should Include
+
+For your own document, include:
+
+- Thirty years of daily PM2.5 data downloaded and loaded for your chosen county,
+  with a brief description of how many stations were retained and why any were removed.
+- A summary statistics table (median, mean, SD, 95% CI by month) for at least one
+  station, with a sentence interpreting the seasonal pattern.
+- A scatter plot of all daily values with the 24-hour NAAQS annotated, and a monthly
+  mean +/- 95% CI plot for your focus station.
+- A discussion of 2--4 paragraphs addressing regional meteorology, emissions sources,
+  exceedances, and environmental justice.
+
+---
+
+# Before You Begin
+
+## Project Directory Setup
+
+`r newthought("You are working on a shared RStudio Server.")` Each student has their
+own home directory (`/home/yourusername/`). Keep your work there --- do not write
+files to shared system directories.
+
+**Create your project folders using the Files pane** (lower-right panel in RStudio):
+
+1. In the **Files** pane, make sure you are in your home directory — click the
+   house icon (🏠) if you are not sure.
+2. Click **New Folder**, type `EPA_PM25`, and click OK.
+3. Double-click into `EPA_PM25` to open it.
+4. Click **New Folder** again, type `data`, and click OK.
+
+<div class="callout callout-check">
+<strong>✅ What you should see</strong>
+You should now be inside `~/EPA_PM25/` and see an empty `data/` folder listed.
+If you do not see the Files pane at all, go to **View → Panes → Show All Panes**.
+</div>
+
+Then:
+
+1. Create a new `.Rmd` file: **File → New File → R Markdown**, give it any title,
+   and click OK.
+2. Immediately save it: **File → Save As**, navigate into the `EPA_PM25` folder,
+   and name it `Analyzing_EPA_PM25_YourLastName.Rmd`.
+3. At the top of your `.Rmd`, add this line so knitr always runs in the right place:
+
+```{r setwd-example, eval=FALSE}
+knitr::opts_knit$set(root.dir = "~/EPA_PM25")
+```
+
+Your folder structure before the first knit:
+
+```
+~/EPA_PM25/
+  Analyzing_EPA_PM25_YourLastName.Rmd
+  data/              <- empty; the download loop will populate it
+```
+
+`r margin_note("The Files pane New Folder button does the same thing as the bash command mkdir. No Terminal needed.")`
+
+## Course Functions
+
+This assignment uses R functions written for this course that handle
+downloading and cleaning the EPA data, so you can focus on the analysis.
+They are maintained in the course GitHub repository.
+
+**Browse the code:** [https://github.com/marclos/RTricks/tree/master/06_EPA_PM25](https://github.com/marclos/RTricks/tree/master/06_EPA_PM25)
+
+```{r copy-functions, include=FALSE}
+file.copy("EPA_PM25_functions.R", "../docs/Unit_Air/EPA_PM25_functions.R", overwrite = TRUE)
+```
+
+You do not need to download or copy anything. Your Rmd loads them
+automatically with this line (already in the setup section below):
+
+```r
+source("https://raw.githubusercontent.com/marclos/RTricks/master/06_EPA_PM25/EPA_PM25_functions.R")
+```
+
+If you are curious how the functions work, click the link above, open
+`EPA_PM25_functions.R`, and read the comments. You are not expected to
+modify them.
+
+## Install Required Packages
+
+On the server, packages install to your personal library (`~/R/`). Run this **once**
+in the RStudio Console --- not inside your `.Rmd` --- before knitting for the first
+time:
+
+<div class="callout callout-where">
+<strong><span class="badge badge-console">CONSOLE</span> Paste into the Console (lower-left panel) and press Enter:</strong>
+
+```r
+install.packages(c("tufte", "dplyr", "lubridate", "xtable"))
+```
+
+This may take 1–3 minutes. You will see a lot of text scroll by — that is normal.
+</div>
+
+<div class="callout callout-check">
+<strong>✅ What you should see</strong>
+When each package finishes you will see a line like <code>* DONE (tufte)</code>.
+The blue <code>&gt;</code> prompt returns when all four are installed.
+If asked <em>"Would you like to use a personal library?"</em> — answer <strong>Yes</strong>.
+</div>
+
+<div class="callout callout-warn">
+<strong>⏱️ Time check — setup should take about 10–15 minutes total</strong>
+If you have been working on creating the folder, the Rmd file, and installing
+packages for more than 15 minutes and something is not working, stop and ask
+for help. Contact Marc or an EA30 mentor before getting too frustrated — setup
+problems are almost always quick to fix with a second pair of eyes.
+</div>
+
+`r margin_note("Never put install.packages() inside a chunk that will knit. It re-installs on every knit, is slow, and can cause errors if the package is already loaded. Install once in the Console, load with library() in your Rmd.")`
+
+## Find Your FIPS Codes
+
+EPA data files are indexed by state and county FIPS codes --- standardized numeric
+identifiers used across all federal datasets. You need a **2-digit state code** and a
+**3-digit county code**, both zero-padded (California = `"06"`, not `"6"`).
+
+1. Go to: **https://www.census.gov/library/reference/code-lists/ansi.html#cou**
+2. Click your state to open a CSV lookup table.
+3. Find your county in `COUNTYNAME`; note the value in `COUNTYFP`.
+4. The state code (`STATEFP`) is in the first column.
+
+| State | FIPS | County | FIPS |
+|---|---|---|---|
+| California | 06 | San Bernardino | 071 |
+| California | 06 | Los Angeles | 037 |
+| Texas | 48 | Harris | 201 |
+| New York | 36 | Kings (Brooklyn) | 047 |
+| Washington | 53 | King | 033 |
+
+---
+
+# Data Overview
+
+Before any analysis, you need to understand what the EPA data contain and how
+the download pipeline works. The next two sections handle the technical setup;
+the analysis begins in Section 7.
+
+## Load Libraries
+
+`r newthought("Always load packages at the very top")` of your script so dependencies
+are explicit and any missing-package errors appear before your analysis starts.
+Also set the working directory in your setup chunk so knitr resolves file paths
+correctly on the server:
+
+<div class="callout callout-tip">
+<strong>🔑 Functions used in this document — quick reference</strong>
+
+| Function | Package | What it does |
+|---|---|---|
+| `library()` | base | Load an installed package |
+| `source()` | base | Run an external R script |
+| `str()` / `head()` | base | Inspect a dataframe's structure / first rows |
+| `format()` / `as.integer()` | base | Convert dates to strings / to integers |
+| `factor()` | base | Create an ordered categorical variable |
+| `floor()` / `ceiling()` | base | Round down / up to the nearest integer |
+| `subset()` | base | Keep rows matching a condition |
+| `aggregate()` | base | Apply a function to grouped data |
+| `unique()` | base | Return one row per distinct combination |
+| `table()` | base | Count occurrences of each value |
+| `mutate()` | dplyr | Add or transform columns |
+| `group_by()` + `summarise()` | dplyr | Split → apply → combine |
+| `filter()` | dplyr | Keep rows matching a condition (same as `subset()`) |
+| `month()` | lubridate | Extract the month number from a date |
+| `print(xtable(...))` | xtable | Render a dataframe as a formatted HTML table |
+
+Use `?function_name` in the Console for full documentation on any function.
+</div>
+
+```{r load-libraries-rootdir, eval=FALSE}
+# ── Add this line at the top of YOUR .Rmd setup chunk ──────────────────────
+# It tells knitr where to look for files (e.g. data/) when knitting on the server.
+# Adjust the path if your folder has a different name.
+knitr::opts_knit$set(root.dir = "~/EPA_PM25")
+```
+
+```{r load-libraries}
+library(dplyr)       # group_by(), summarise(), mutate(), filter()
+library(lubridate)   # ymd(), month() -- date parsing and extraction
+```
+
+<div class="callout callout-check">
+<strong>✅ What you should see</strong>
+No red error text. Some grey "Attaching package" or "Conflicts" messages are normal
+and can be ignored. If you see <code>there is no package called 'dplyr'</code>, go
+back to the Install Required Packages section and run the install command in the
+Console.
+</div>
+
+`r margin_note("root.dir tells knitr where to look for files when knitting. Without it, paths like 'data/myfile.rds' may not resolve on the server even if they work interactively in the Console.")`
+
+---
+
+# Configure Your Location
+
+`r newthought("These three lines are the only ones you must change")` to adapt the
+analysis to your county. Everything downstream reads from these variables, so editing
+them here updates plot titles, table captions, and file paths throughout.
+
+<div class="callout callout-warn">
+<strong>⚠️ You must change these values — do not use San Bernardino</strong>
+The values below are filled in with San Bernardino as a working example.
+**You must replace them with your own assigned county** before running anything.
+Using the example county will download San Bernardino data, not yours, and your
+analysis will be wrong. Change all three lines: `county`, `state_fips`, and
+`county_fips`. See Section 3.4 for how to look up your FIPS codes.
+</div>
+
+```{r student-config}
+county      <- "San Bernardino"   # appears in plot titles
+state_fips  <- "06"               # 2-digit string; quotes preserve the leading zero
+county_fips <- "071"              # 3-digit string
+```
+
+`r margin_note("<- is the assignment operator: it stores the value on the right under the name on the left. county <- 'San Bernardino' creates an R object called county. Anywhere R sees county in later code, it substitutes that text — so changing it here updates plot titles, file paths, and captions throughout the whole document automatically.")`
+
+<div class="callout callout-warn">
+<strong>⚠️ Do not rename these three variables</strong>
+The course helper functions and later code chunks refer to `county`, `state_fips`,
+and `county_fips` by those exact names. If you rename them (e.g. to `my_county`),
+the functions will not find them and your download will fail with a cryptic error.
+**Change the values inside the quotes — not the variable names themselves.**
+</div>
+
+You also need to choose a **short abbreviation** for your county — 2 or 3 letters.
+You will use this as the name of your dataframe throughout your document.
+This document uses `SB` for San Bernardino. Some examples:
+
+| County | Abbreviation |
+|---|---|
+| San Bernardino | `SB` |
+| Los Angeles | `LA` |
+| Harris (Houston) | `HH` |
+| King (Seattle) | `KG` |
+| Kings (Brooklyn) | `BK` |
+
+Pick yours now and use it consistently. Every time you see `SB` in this document,
+substitute your own abbreviation in your `.Rmd`.
+
+<div class="callout callout-warn">
+<strong>⚠️ Keep the quotes around FIPS codes</strong>
+R stores numbers and text differently. <code>"06"</code> is stored as the two-character
+string "06" — the leading zero is preserved. Without quotes, R reads <code>06</code>
+as the number 6, which will not match the EPA file names and your download will fail
+silently or return no data.
+</div>
+
+---
+
+## Load EPA Data
+
+The EPA Air Quality System (AQS) is the federal database of air pollution
+measurements from thousands of monitoring stations across the United States.
+Stations report daily average concentrations; the data are freely available as
+annual CSV files at a stable public URL — no account or API key required.
+
+The variable we analyze is **PM2.5 FRM/FEM mass** (EPA pollutant code 88101),
+measured in **micrograms per cubic meter (µg/m³)**. Each annual file covers the
+entire country; the helper function filters it to your county using the FIPS codes
+you configured above and caches the result locally so you only download once.
+
+`r newthought("A helper function handles the download and caching.")` It is defined
+below in a hidden chunk --- you do not need to read or modify it. On the **first knit**
+it downloads thirty years of data (allow 20--30 minutes on first knit). On every subsequent knit it
+finds the cached file and loads it in seconds.
+
+The helper functions live in the course repository on GitHub. The chunk below sources
+them directly --- no download or installation needed. If the server has no outbound
+internet access, ask your instructor for the local path.
+
+`r margin_note("source() runs an R script as if you had typed it into the console. Sourcing from a raw GitHub URL means you always get the current version without copying any code into your Rmd.")`
+
+```{r load-functions, message=FALSE}
+source("https://raw.githubusercontent.com/marclos/RTricks/master/06_EPA_PM25/EPA_PM25_functions.R")
+```
+
+`get_epa_pm25()` handles downloading and caching; internally it calls
+`prepare_epa_pm25()` to select and rename columns. Call just one line:
+
+```{r load-data, message=TRUE}
+end_year   <- as.integer(format(Sys.Date(), "%Y")) - 1
+start_year <- end_year - 29   # 30 years
+
+# I name my dataframe SB for San Bernardino.
+# In your document, replace SB with your chosen abbreviation everywhere.
+SB <- get_epa_pm25(
+  state_fips  = state_fips,
+  county_fips = county_fips,
+  start_year  = start_year,
+  end_year    = end_year
+)
+```
+
+`r margin_note("Breaking down end_year <- as.integer(format(Sys.Date(), '%Y')) - 1: Sys.Date() returns today's date. format(..., '%Y') extracts the four-digit year as a character string (e.g. '2026'). as.integer() converts '2026' to the number 2026 so arithmetic works. Subtracting 1 gives last year — because the current year's EPA files are not yet available. This updates automatically each time you knit, so the 30-year window always ends at last year.")`
+
+<div class="callout callout-check">
+<strong>✅ What you should see</strong>
+On subsequent knits (cached): <code>Loading cached data: data/06071_PM25_daily.rds</code>
+— done in a few seconds.
+
+On the **first knit**: one line per year as each annual file downloads and is filtered.
+This takes **20–30 minutes** — start it and step away. Do not close the browser.
+</div>
+
+<div class="callout callout-error">
+<strong>🔴 Common errors and fixes</strong>
+
+- **`object 'get_epa_pm25' not found`** — the `source()` chunk above did not run.
+  Check your internet connection, then run the source chunk manually in the Console.
+- **`cannot open URL`** — the server cannot reach GitHub. Ask your instructor for a
+  local path to `EPA_PM25_functions.R` and replace the URL in the source() call.
+- **`cannot create directory 'data'`** — your `data/` subfolder does not exist. Go
+  to the Files pane, navigate into `EPA_PM25`, click **New Folder**, and create `data`.
+- **Download stalls partway through** — run the chunk again. The function skips years
+  already saved and picks up where it left off.
+</div>
+
+<div class="callout callout-warn">
+<strong>⏱️ Time check — the first download takes 20–30 minutes</strong>
+This is normal and expected. Start the download, then use the time to read ahead
+through the rest of this document so you know what is coming. If the download is
+still running after 45 minutes, or if you see repeated error messages, contact
+Marc or an EA30 mentor.
+</div>
+
+---
+
+# Methods
+
+`r newthought("This section covers data cleaning")` — the decisions made before
+any analysis begins. Good cleaning is not glamorous, but it is where most errors
+are introduced or prevented. Document every decision you make here in your own
+write-up: which stations you removed, why, and what effect that had on sample size.
+
+## Inspect the Data
+
+`r newthought("Always look at a new dataframe before doing anything with it.")` The
+function returns five columns. Confirm that `Date` is class `Date` (not character)
+and that `PM2.5.AQI.Value` is numeric. If either looks wrong, plots and statistics
+will silently produce incorrect results.
+
+`r margin_note("I always run str() and head() on any new dataset before touching it. It takes 10 seconds and has saved me hours of debugging. Skipping this step is one of the most common reasons students get stuck later on.")`
+
+```{r inspect-structure}
+str(SB)
+```
+
+<div class="callout callout-check">
+<strong>✅ What to verify</strong>
+
+- **`Date`** must show class `Date` (e.g. `Date, format: "1999-01-03"`).
+  If it shows `chr`, dates will not plot on a time axis correctly.
+- **`PM2.5.AQI.Value`** and **`PM2.5.Conc`** must show `int` or `num`.
+  If they show `chr`, all numeric summaries will fail.
+
+If either type looks wrong, stop and ask your instructor before going further —
+a type problem here will cause silent errors downstream.
+</div>
+
+A quick look at the first few rows confirms the column names and values are sensible:
+
+```{r inspect-head}
+head(SB)
+```
+
+## Assign Decade Blocks
+
+With 30 years of data we can ask whether air quality has changed over time. We split
+the record into three 10-year blocks and store the label as a factor so plots order
+the decades correctly.
+
+```{r decade-assign}
+# Extract the 4-digit year, round down to the decade start, build a label
+SB$Year   <- as.integer(format(SB$Date, "%Y"))
+SB$Decade <- factor(
+  paste0(floor(SB$Year / 10) * 10, "s"),   # e.g. 2010 -> "2010s"
+  levels = sort(unique(paste0(floor(SB$Year / 10) * 10, "s")))
+)
+
+table(SB$Decade)   # confirm three roughly equal groups
+```
+
+`r margin_note("The $ operator extracts a column from a dataframe: SB$Year is the Year column of SB. SB$Year <- ... creates that column if it does not exist, or overwrites it if it does. Think of it as 'SB's Year column'.")`
+
+<div class="callout callout-tip">
+<strong>ℹ️ How the decade math works</strong>
+`floor(2013 / 10) * 10` → `floor(201.3) * 10` → `201 × 10` → `2010`.
+`paste0(2010, "s")` → `"2010s"`.
+Every year from 2010–2019 gets the label `"2010s"`.
+
+**Why `factor()` matters:** Without it, R treats the decade labels as plain text and
+may sort them alphabetically or in first-seen order in plots (e.g. "2020s" before
+"2000s"). Wrapping the labels in `factor()` with an explicit `levels =` argument
+tells R the correct chronological order so plot legends and axis ticks always run
+oldest → newest.
+</div>
+
+## Remove QA Collocated Monitors
+
+Some monitoring sites are quality-assurance collocations --- duplicate instruments
+installed next to a primary monitor to audit its performance. Including them
+double-counts measurements from those locations. They are identified by site numbers
+in the 9000-range (fourth segment starting with `9`).
+
+`r margin_note("Run unique(SB$Site.ID) to see all site IDs in your county before deciding which to remove. Your QA site IDs will differ from San Bernardino's. Mentors tell me this step catches a lot of students off guard — your county may have zero, one, or several QA sites, and you need to look before assuming.")`
+
+```{r remove-qa-stations}
+SB <- subset(SB, !(Site.ID %in% c("06-071-9010", "06-071-9002")))
+```
+
+`r margin_note("%in% checks membership: x %in% c('a','b') returns TRUE wherever x equals 'a' or 'b'. The ! in front flips TRUE to FALSE and vice versa, so !(Site.ID %in% ...) means 'keep rows where Site.ID is NOT in this list'.")`
+
+<div class="callout callout-tip">
+<strong>ℹ️ <code>subset()</code> vs <code>dplyr::filter()</code></strong>
+Both do the same thing: keep rows where a condition is TRUE.
+`subset(SB, condition)` is base R — no packages needed.
+`filter(SB, condition)` is the dplyr equivalent — identical result.
+You will see both in the wild; either works here. This document uses `subset()`
+so it runs even if dplyr is not loaded.
+</div>
+
+## Remove Low-Sampling Stations
+
+A station with very few observations over thirty years cannot support reliable monthly
+averages. We count observations per station, print the table so you can see the full
+picture, then filter.
+
+```{r count-per-station}
+# aggregate() applies a function (length = count) to one column grouped by another
+SB.N           <- aggregate(PM2.5.AQI.Value ~ Site.ID, data = SB, FUN = length)
+names(SB.N)[2] <- "N"
+print(SB.N)
+```
+
+`r margin_note("aggregate(response ~ group, data, FUN) applies FUN to response for each value of group. The ~ (tilde) means 'grouped by' — same syntax as boxplot() and lm(). FUN = length counts rows; FUN = mean would compute means instead. names(SB.N)[2] <- 'N' renames the second column from its default name to 'N' for clarity.")`
+
+```{r filter-low-n}
+# Keep only stations that contributed at least 100 daily observations
+keep_ids <- SB.N$Site.ID[SB.N$N >= 100]
+SB       <- subset(SB, Site.ID %in% keep_ids)
+```
+
+<div class="callout callout-check">
+<strong>✅ Checkpoint</strong>
+Run <code>nrow(SB)</code> to confirm rows remain, and <code>unique(SB$Site.ID)</code>
+to see which stations survived. In your Rmd, write one sentence explaining how many
+stations you retained and why any were removed.
+</div>
+
+<div class="callout callout-warn">
+<strong>⏱️ Time check — you should reach this point within about 45 minutes of starting</strong>
+(Not counting the 20–30 minute download wait.) If it has taken longer and you feel
+stuck, reach out to Marc or an EA30 mentor. It is much faster to get help early
+than to spin on a problem for an hour.
+</div>
+
+<div class="callout callout-tip">
+<strong>🔑 Key takeaways — data cleaning</strong>
+
+- Always check data types with `str()` before doing anything else.
+- QA collocated monitors (site IDs with a `9` in the fourth segment) must be removed
+  to avoid double-counting.
+- Stations with fewer than ~100 observations cannot support reliable monthly averages.
+- Every removal decision should be documented and justified in your write-up.
+</div>
+
+`r newthought("Now that the data are clean,")` we move to exploration. The goal of
+the next section is not yet to draw conclusions — it is to understand the shape of
+the data before computing any statistics.
+
+---
+
+# Analysis
+
+## Exploratory Graphics
+
+`r newthought("Never skip exploratory visualization.")` Plotting the raw data before
+computing statistics helps you spot outliers, record gaps, and unusual station behavior
+that summary numbers alone would hide.
+
+`r margin_note("I recommend making the exploratory plots before writing a single line of the discussion. You will almost always see something in the raw data — a spike, a gap, a station that behaves differently — that changes what you want to say.")`
+
+## Station Name Lookup Table
+
+Before plotting we create a small table mapping each `Site.ID` to its human-readable
+`Site.Name`. A station ID alone is not informative in a figure legend.
+
+```{r station-lookup}
+# unique() on two columns returns one row per distinct combination
+SB.unique <- unique(SB[c("Site.ID", "Site.Name")])
+SB.unique
+```
+
+`r margin_note("SB[c('Site.ID', 'Site.Name')] selects just those two columns from SB. The square brackets [ ] subset a dataframe: df[rows, columns]. Leaving rows blank (before the comma) means keep all rows; c('col1','col2') selects specific columns by name. unique() then drops any duplicate rows, leaving one row per station.")`
+
+---
+
+## Box Plot by Station
+
+A box plot shows the full distribution --- median, interquartile range, and outliers ---
+for every station simultaneously. The horizontal reference line at 35 ug/m3 makes it
+easy to see which stations routinely approach or exceed the 24-hour standard.
+
+Here is the output your code should produce:
+
+```{r boxplot-output, echo=FALSE, fig.cap="Distribution of daily PM2.5 AQI by monitoring station. Box = IQR; line = median; points = outliers. Red dashed line = 24-hr NAAQS (35 ug/m3)."}
+par(las = 2, mar = c(8, 4, 3, 1))
+boxplot(PM2.5.AQI.Value ~ Site.ID, data = SB,
+        main = paste("PM2.5 by Station --", county),
+        ylab = "PM2.5 AQI (ug/m3)", xlab = "",
+        ylim = c(0, 200), col = "lightblue")
+abline(h = 35, col = "red", lty = 2, lwd = 1.5)
+legend("topright", legend = "24-hr NAAQS (35 ug/m3)",
+       col = "red", lty = 2, bty = "n")
+```
+
+**What this chart shows.** Each box represents one monitoring station's full
+thirty-year record of daily PM2.5 values. The thick horizontal line inside each
+box is the median — half of all daily readings fell below this value, half above.
+The box itself spans the middle 50% of readings (the interquartile range, or IQR).
+Points above the whiskers are outliers: unusually high days, often driven by
+wildfires or pollution events.
+
+**What to look for in your data.** Are some stations consistently higher than
+others? Do any stations have their median near or above the red dashed line?
+Wide boxes indicate high day-to-day variability; tall outlier stacks suggest
+occasional severe episodes. These differences between stations often reflect
+proximity to roads, industrial zones, or the geography of valley air basins.
+
+`r margin_note("Key arguments: las= rotates axis labels (0=parallel, 1=horizontal, 2=perpendicular, 3=vertical). mar= sets margin widths in lines: c(bottom, left, top, right). See ?par.")`
+
+Scaffold to adapt for your own document.
+
+<div class="callout callout-tip">
+<strong>ℹ️ A few things worth knowing before filling in the blanks</strong>
+Text arguments like titles and axis labels need quotes: <code>main = "My Title"</code>.
+Numeric arguments like line type and width do not: <code>lty = 2</code>.
+Legal values for <code>lty</code>: 1 = solid, 2 = dashed, 3 = dotted.
+For color names, run <code>colors()</code> in the Console to see the full list.
+</div>
+
+```{r boxplot-scaffold, eval=FALSE}
+# par() sets margins and label orientation before the plot is drawn.
+# Skipping it often causes station labels to be clipped — mentors see this a lot.
+par(las = ___, mar = c(___, ___, ___, ___))
+
+boxplot(PM2.5.AQI.Value ~ Site.ID, data = ___,   # your dataframe abbreviation, e.g. SB
+        main = paste("PM2.5 by Station --", county),
+        ylab = ___,
+        xlab = ___,
+        ylim = c(0, ___),
+        col  = ___)
+
+abline(h = ___, col = ___, lty = ___, lwd = ___)
+
+legend(___, legend = ___, col = ___, lty = ___, bty = "n")
+```
+
+---
+
+## Rank Stations by Median PM2.5
+
+Before choosing a focus station for the monthly analysis, rank all stations by their
+median PM2.5. This identifies both the cleanest and most-polluted monitoring locations
+in your county.
+
+```{r station-rankings}
+SB.median <- aggregate(PM2.5.AQI.Value ~ Site.ID, data = SB, FUN = median)
+SB.median <- merge(SB.median, SB.unique, by = "Site.ID")
+SB.median <- SB.median[order(SB.median$PM2.5.AQI.Value), ]
+print(SB.median)
+```
+
+---
+
+## Time-Series: All Stations
+
+Plotting every daily value over thirty years reveals long-term trends, year-to-year
+variability, and episodic spikes (often wildfire smoke). The fourth argument of
+`rgb()` sets transparency (0 = invisible, 1 = solid); using 0.25 prevents
+overplotting when thousands of points stack on top of each other.
+
+Here is the output your code should produce:
+
+```{r scatter-all-output, echo=FALSE, fig.cap="Daily PM2.5 AQI for all retained stations over 30 years. Semi-transparent points reveal density. Red dashed line = 24-hr NAAQS (35 ug/m3)."}
+par(las = 1)
+plot(PM2.5.AQI.Value ~ Date, data = SB,
+     xlab = "Date", ylab = "PM2.5 AQI (ug/m3)",
+     main = paste("PM2.5 --", county, "(All Stations)"),
+     pch = 20, cex = 0.4,
+     col = rgb(0, 0, 0, 0.25))
+abline(h = 35, col = "red", lty = 2)
+```
+
+**What this chart shows.** Every daily measurement from every retained station,
+plotted over thirty years. Semi-transparent points prevent the high-density periods
+from becoming a solid black blob — where points are darker, many readings stack on
+top of each other. The red dashed line marks the 24-hour NAAQS at 35 µg/m³.
+
+**What to look for.** A downward drift in the cloud of points over time indicates
+improving air quality — a real trend seen in many US counties since the Clean Air Act
+was strengthened in the 1990s and 2000s. Vertical spikes above the reference line
+are exceedance events; if they cluster in late summer, wildfire smoke is a likely
+cause. Gaps in the record reveal when stations were offline.
+
+`r margin_note("rgb(red, green, blue, alpha) creates a color with transparency. All values range 0--1. rgb(0,0,0,0.25) is 25% opaque black. See ?rgb.")`
+
+<div class="callout callout-tip">
+<strong>ℹ️ The formula <code>y ~ x</code></strong>
+R uses <code>~</code> (tilde) to mean "as a function of" — the same syntax as
+<code>boxplot()</code> and later <code>lm()</code>.
+So <code>PM2.5.AQI.Value ~ Date</code> puts Date on x and PM2.5 on y.
+</div>
+
+Scaffold:
+
+```{r scatter-all-scaffold, eval=FALSE}
+par(las = 1)
+
+plot(___ ~ ___, data = ___,   # y ~ x; replace ___ with your dataframe abbreviation
+     xlab = ___,
+     ylab = ___,
+     main = paste("PM2.5 --", county, "(All Stations)"),
+     pch  = ___,
+     cex  = ___,
+     col  = rgb(0, 0, 0, ___))
+
+abline(h = ___, col = ___, lty = ___)
+```
+
+---
+
+## Time-Series by Station
+
+`r newthought("Separating stations into panels")` reveals whether all sites share the
+same seasonal pattern or whether some behave differently --- a clue to localized sources
+or topographic effects. `par(mfrow = c(nrows, ncols))` arranges plots in a grid;
+always reset it with `par(mfrow = c(1, 1))` when done.
+
+This section uses a `for` loop --- one of the most powerful ideas in programming.
+Instead of writing seven nearly-identical `plot()` calls by hand, the loop runs the
+same block of code once for each station, swapping in a different site each time.
+If you had 50 stations, the code would be exactly the same length. That is the
+point: loops let the computer do the repetitive work so you don't have to.
+
+That said, I strongly recommend writing and running the code for a **single station
+first** before wrapping it in a loop. Pick one `Site.ID`, subset the data manually,
+and get a plot you are happy with. Once that works, it is straightforward to drop the
+same logic inside the loop. Debugging a broken loop is much harder than debugging a
+single plot.
+
+Here is the output your code should produce:
+
+```{r scatter-by-site-output, echo=FALSE, fig.cap="Daily PM2.5 per station. Each panel is one site. Compare the magnitude and timing of peaks across locations. I used par(mfrow=c(3,3)) for San Bernardino — adjust the grid to match your number of stations."}
+site_ids <- unique(SB$Site.ID)
+n_sites  <- length(site_ids)
+ncols    <- min(3, n_sites)
+nrows    <- ceiling(n_sites / ncols)
+colors   <- rainbow(n_sites)
+
+par(las = 1, mfrow = c(nrows, ncols), mar = c(3, 4, 3, 1))
+
+for (i in seq_along(site_ids)) {
+  sub        <- subset(SB, Site.ID == site_ids[i])
+  site_label <- SB.unique$Site.Name[SB.unique$Site.ID == site_ids[i]]
+  plot(PM2.5.AQI.Value ~ Date, data = sub,
+       xlab = "", ylab = "PM2.5 (ug/m3)", main = site_label,
+       pch = 20, cex = 0.5, col = colors[i], ylim = c(0, 200))
+  abline(h = 35, col = "red", lty = 2)
+}
+par(mfrow = c(1, 1))
+```
+
+**What this chart shows.** The same time-series as above, but split into one panel
+per station. This makes it possible to see whether all stations rise and fall together
+(county-wide events like regional smoke) or whether some stations behave differently
+from the rest (local sources, topographic effects, or data gaps at specific monitors).
+
+**What to look for.** Do peaks in one station align with peaks in others? Is one
+station consistently higher across all decades? Does any station have a long gap
+where no data were collected? These observations should inform which station you
+choose as your focus site in the next section.
+
+<div class="callout callout-tip">
+<strong>🔑 Key takeaways — exploratory graphics</strong>
+
+- Box plots reveal the distribution and spread at each station; use them to spot
+  stations that are consistently high or have extreme outliers.
+- The all-stations time-series shows the big picture: is the county getting cleaner?
+  Are there episodic spikes? When did the record begin and end?
+- The per-station panels reveal whether patterns are county-wide or localized —
+  critical context for the environmental justice discussion.
+</div>
+
+`r newthought("With the data explored,")` we now move to quantitative summaries.
+The goal shifts from seeing the shape of the data to measuring it precisely, with
+uncertainty estimates that let us compare months and decades rigorously.
+
+`r margin_note("ceiling(n_sites / ncols) rounds up so you always have enough rows even when n_sites is not divisible by ncols. Try it: ceiling(5/3) = 2, giving a 2x3 grid with one empty panel. The par() call used here is: las = 1 (horizontal axis labels), mfrow = c(nrows, ncols) (grid of panels), mar = c(3, 4, 3, 1) (margins: bottom=3, left=4, top=3, right=1 lines). For San Bernardino I used par(mfrow=c(3,3)) — adjust the grid to match your number of stations.")`
+
+Scaffold --- note that a `for` loop iterates over a vector; inside the loop, `i`
+takes each value in turn:
+
+```{r scatter-by-site-scaffold, eval=FALSE}
+site_ids <- unique(___$Site.ID)   # replace ___ with your dataframe abbreviation
+n_sites  <- length(site_ids)
+ncols    <- min(3, n_sites)
+nrows    <- ceiling(n_sites / ncols)
+colors   <- rainbow(n_sites)
+
+par(las = 1, mfrow = c(nrows, ncols), mar = c(3, 4, 3, 1))
+
+for (i in seq_along(site_ids)) {
+  sub        <- subset(___, Site.ID == ___)
+  # ^ second ___: the loop counter i moves through site_ids one at a time.
+  #   On the first iteration i=1, on the second i=2, etc.
+  #   So to get the current station's ID, index site_ids with i: site_ids[i]
+
+  site_label <- ___.unique$Site.Name[___.unique$Site.ID == ___]
+  # ^ last ___: same answer — site_ids[i]. You are asking:
+  #   "find the row in ___.unique where Site.ID matches this iteration's station,
+  #   and return its Site.Name." The answer to both blanks in this loop is the same thing.
+
+  plot(___ ~ ___, data = sub,
+       main = ___,
+       xlab = "",
+       ylab = "PM2.5 AQI (ug/m3)",
+       pch  = 20,
+       cex  = 0.5,
+       ylim = c(0, ___),
+       col  = colors[i])
+
+  abline(h = ___, col = ___, lty = ___)
+}
+
+par(mfrow = c(1, 1))
+```
+
+`r margin_note("What I used for San Bernardino: subset(SB, Site.ID == site_ids[i]); SB.unique$Site.Name[SB.unique$Site.ID == site_ids[i]]; plot(PM2.5.AQI.Value ~ Date, ...); main = site_label; ylim = c(0, 200); abline(h = 35, col = 'red', lty = 2).")`
+
+---
+
+# Findings
+
+## Monthly Summary Statistics
+
+`r newthought("Aggregating by month across all years")` reveals the seasonal cycle.
+`dplyr`'s `group_by()` + `summarise()` pipeline computes grouped statistics in one
+readable block. `.groups = "drop"` removes the grouping structure after summarising
+so the result is a plain dataframe.
+
+`r margin_note("Mentors tell me this is often a stumbling point. The pipe chain looks intimidating at first, but I find it helps to run just the first line (through the first %>%) in the Console and look at the result, then add one line at a time. You can highlight any partial chunk and press Ctrl+Enter to run just that piece.")`
+
+```{r monthly-stats}
+# I use SB here — replace with your abbreviation in your own document
+Monthly <- SB %>%
+  mutate(Month = month(Date)) %>%         # integer month 1-12
+  group_by(Decade, Month, Site.ID) %>%    # grouped by decade so we can compare blocks
+  summarise(
+    median  = median(PM2.5.AQI.Value, na.rm = TRUE),
+    mean    = mean(PM2.5.AQI.Value,   na.rm = TRUE),
+    sd      = sd(PM2.5.AQI.Value,     na.rm = TRUE),
+    N       = n(),
+    .groups = "drop"
+  )
+
+head(Monthly)
+```
+
+<div class="callout callout-tip">
+<strong>ℹ️ Reading the pipe <code>%>%</code></strong>
+<code>x %>% f(y)</code> means "take x, then apply function f with argument y."
+It chains steps in top-to-bottom reading order instead of nesting functions.
+Read each <code>%>%</code> out loud as "and then."
+So the chunk above reads: "start with SB, <em>and then</em> add a Month column,
+<em>and then</em> group by Decade/Month/Site, <em>and then</em> summarise each group."
+</div>
+
+## Where Does 1.96 Come From?
+
+`r newthought("The multiplier 1.96 is the critical value")` of the standard normal
+distribution that cuts off 2.5% in each tail, leaving 95% in the middle. The plot
+below shows this geometrically: the shaded regions are the rejection regions for a
+two-tailed test at α = 0.05.
+
+```{r z-density-output, echo=FALSE, fig.cap="Standard normal density curve. Red shading = rejection regions at α = 0.05 (2.5% per tail). The vertical dashed lines fall at ±1.96, the critical values that define the boundary. In R: qnorm(0.975) = 1.96."}
+z_seq   <- seq(-4, 4, length.out = 500)
+d_seq   <- dnorm(z_seq)
+z_crit  <- qnorm(0.975)
+tail_z  <- seq(-4, -z_crit, length.out = 200)
+tail_zR <- seq(z_crit,  4,  length.out = 200)
+
+par(las = 1, mar = c(4, 4, 3, 1))
+plot(z_seq, d_seq, type = "l", lwd = 2,
+     xlab = "z", ylab = "Density",
+     main = "Standard Normal: Critical Values for 95% CI",
+     xlim = c(-4, 4), ylim = c(0, 0.42), xaxt = "n")
+
+polygon(c(tail_z, rev(tail_z)),
+        c(dnorm(tail_z), rep(0, length(tail_z))),
+        col = rgb(0.8, 0.1, 0.1, 0.3), border = NA)
+polygon(c(tail_zR, rev(tail_zR)),
+        c(dnorm(tail_zR), rep(0, length(tail_zR))),
+        col = rgb(0.8, 0.1, 0.1, 0.3), border = NA)
+
+abline(v = c(-z_crit, z_crit), col = "red", lty = 2, lwd = 1.5)
+axis(1, at = -3:3, labels = -3:3, col.axis = "grey40")
+axis(1, at = c(-z_crit, z_crit),
+     labels = c("-1.96", "1.96"),
+     col.axis = "red", font = 2, tick = TRUE)
+
+text(0,  0.21, "95%",  cex = 1.1, col = "grey30")
+text(-3.2, 0.06, "2.5%", cex = 0.85, col = "red")
+text( 3.2, 0.06, "2.5%", cex = 0.85, col = "red")
+
+legend("topright",
+       legend = c("alpha = 0.05  (z = 1.96)",
+                  sprintf("qnorm(0.975) = %.4f", z_crit)),
+       col = c("red", NA), lty = c(2, NA),
+       bty = "n", cex = 0.85)
+```
+
+`r margin_note("Try qnorm(0.995) in the console --- that gives 2.576, the critical value for a 99% CI (alpha = 0.01). A tighter interval requires a larger multiplier and therefore wider error bars.")`
+
+## Confidence Interval Formula
+
+The sample mean $\bar{x}$ estimates the true long-run monthly average, but carries
+uncertainty. The 95% confidence interval quantifies it:
+
+$$CI_{95} = \bar{x} \pm 1.96 \times \frac{s}{\sqrt{N}}$$
+
+If we repeated this sampling process many times, 95% of the resulting intervals would
+contain the true mean. Narrow CI = many observations have pinned the mean down precisely.
+
+```{r ci-calculation}
+# qnorm(0.975) = 1.96 -- the z critical value shown in the plot above
+Monthly$UCL95 <- Monthly$mean + qnorm(0.975) * Monthly$sd / sqrt(Monthly$N)
+Monthly$LCL95 <- Monthly$mean - qnorm(0.975) * Monthly$sd / sqrt(Monthly$N)
+```
+
+## Choose a Focus Station
+
+For the table and CI plot we work with one station. The median-ranked station is a
+representative middle case --- not the best or worst.
+
+```{r focus-site}
+# ceiling() ensures we always land on a valid row index
+focus_site <- SB.median$Site.ID[ceiling(nrow(SB.median) / 2)]
+focus_site
+```
+
+<div class="callout callout-check">
+<strong>✅ Checkpoint</strong>
+The chunk should print a single Site.ID string like <code>"06-071-0306"</code>.
+If it prints <code>character(0)</code> or an NA, <code>SB.median</code> is empty —
+check that the QA removal and low-N filter steps ran without error.
+
+You may also choose a different station. Look at your ranked table from Section 8.3
+and pick whichever site is most relevant to the community you are writing about.
+Just replace <code>focus_site</code> with a quoted Site.ID string.
+</div>
+
+---
+
+## Summary Table
+
+`xtable` converts a dataframe to formatted HTML or LaTeX. The `digits` vector
+controls decimal places column by column: position 1 is the (unused) row name;
+positions 2 onward correspond to each data column left to right.
+
+Here is the table your code should produce:
+
+```{r monthly-table-output, results='asis', echo=FALSE}
+library(xtable)
+tbl       <- Monthly[Monthly$Site.ID == focus_site, ]
+tbl$Month <- month.abb[tbl$Month]
+tbl       <- tbl[, c("Month", "N", "median", "mean", "sd", "LCL95", "UCL95")]
+print(xtable(tbl,
+             caption = paste("Monthly PM2.5 AQI summary -- station", focus_site),
+             digits  = c(0, 0, 0, 1, 1, 1, 1, 1)),
+      include.rownames = FALSE, type = "html", caption.placement = "top")
+```
+
+`r margin_note("month.abb is a built-in R character vector: c('Jan','Feb',...,'Dec'). Indexing it with an integer month number returns the abbreviation: month.abb[3] = 'Mar'.")`
+
+<div class="callout callout-tip">
+<strong>ℹ️ The <code>digits=</code> argument</strong>
+`digits` is a vector of integers, one per column plus one for row names.
+Use `0` for counts and labels, `1` or `2` for concentrations.
+Mentors tell me this argument trips people up more than anything else in `xtable`.
+</div>
+
+Scaffold:
+
+```{r monthly-table-scaffold, eval=FALSE}
+library(xtable)
+
+tbl       <- Monthly[Monthly$Site.ID == focus_site, ]
+tbl$Month <- month.abb[tbl$Month]   # converts 1-12 to Jan-Dec
+tbl       <- tbl[, c("Month", "N", "median", "mean", "sd", "LCL95", "UCL95")]
+
+print(
+  xtable(tbl,
+         caption = ___,                              # quoted caption text
+         digits  = c(0, 0, ___, ___, ___, ___, ___)),# one value per column; 0 = no decimals
+  include.rownames  = FALSE,
+  type              = "html",
+  caption.placement = "top"
+)
+```
+
+---
+
+## Monthly Mean +/- 95% CI by Decade
+
+`r newthought("With 30 years of data we can ask: has PM2.5 changed over time?")` We
+plot three lines --- one per decade --- on the same axes. Lines that shift downward
+over time indicate improving air quality; lines that converge or diverge reveal whether
+seasonal patterns have changed. Error bars are 95% CIs on the monthly mean, so
+non-overlapping bars between decades indicate a statistically meaningful difference.
+
+Here is the output your code should produce:
+
+```{r ci-decade-output, echo=FALSE, fig.height=5, fig.cap="Monthly mean PM2.5 AQI +/- 95% CI for the focus station, split by decade. Each line is one 10-year block. Non-overlapping error bars between decades indicate a statistically meaningful shift in that month's typical concentration. Red dashed line = 24-hr NAAQS (35 ug/m3)."}
+focus    <- Monthly[Monthly$Site.ID == focus_site, ]
+decades  <- levels(focus$Decade)
+n_dec    <- length(decades)
+pal      <- colorRampPalette(c("#08306b", "#6baed6", "#c6dbef"))(n_dec)
+ylim_top <- max(focus$UCL95, 35, na.rm = TRUE) * 1.15
+
+par(las = 1, mar = c(4, 4.5, 3.5, 1))
+plot(NULL,
+     xlim = c(0.5, 12.5), ylim = c(0, ylim_top),
+     xaxt = "n", xlab = "Month", ylab = "Mean PM2.5 AQI (ug/m3)",
+     main = paste("Monthly PM2.5 by Decade --", focus_site))
+
+axis(1, at = 1:12, labels = month.abb)
+abline(h = 35, col = "red", lty = 2, lwd = 1.2)
+
+offsets <- seq(-0.15, 0.15, length.out = n_dec)
+
+for (i in seq_along(decades)) {
+  d  <- focus[focus$Decade == decades[i], ]
+  d  <- d[order(d$Month), ]
+  mx <- d$Month + offsets[i]
+  lines(mx, d$mean, col = pal[i], lwd = 1.8)
+  points(mx, d$mean, col = pal[i], pch = 16, cex = 0.9)
+  arrows(mx, d$LCL95, mx, d$UCL95,
+         angle = 90, code = 3, length = 0.04,
+         col = pal[i], lwd = 1.2)
+}
+
+legend("topright",
+       legend = c(decades, "24-hr NAAQS (35)"),
+       col    = c(pal, "red"),
+       lty    = c(rep(1, n_dec), 2),
+       pch    = c(rep(16, n_dec), NA),
+       lwd    = 1.5, bty = "n", cex = 0.85)
+```
+
+**What this chart shows.** Each line represents one decade's monthly average
+PM2.5 concentration at the focus station, with error bars showing the 95%
+confidence interval around each mean. Darker lines are older decades; lighter
+lines are more recent.
+
+**What to look for.** Lines shifting downward from dark to light indicate
+improving air quality over time — a statistically meaningful improvement if the
+error bars do not overlap between decades. The shape of each line reveals the
+seasonal cycle: which months are typically worst and which are cleanest, and
+whether that pattern has changed across decades. A seasonal peak in late summer
+often signals wildfire smoke; a winter peak often reflects temperature inversions
+trapping vehicle emissions near the surface.
+
+<div class="callout callout-tip">
+<strong>🔑 Key takeaways — monthly statistics</strong>
+
+- The CI plot is the quantitative heart of this analysis: it shows both the
+  seasonal pattern and whether that pattern has changed over thirty years.
+- Non-overlapping error bars between decades = statistically meaningful difference.
+- Overlapping bars = the difference may be real but is not well-supported by the data.
+- A declining trend across decades reflects the effects of Clean Air Act regulations
+  and fleet turnover — use this in your discussion.
+</div>
+
+`r margin_note("colorRampPalette() creates a function that interpolates between two or more colors and returns a palette of any length. Here it grades from dark navy (oldest) to pale blue (newest), so time runs light-to-dark left-to-right in the legend.")`
+
+Scaffold:
+
+<div class="callout callout-tip">
+<strong>ℹ️ Build this plot in three stages — run each one before adding the next</strong>
+
+This is the most complex chunk in the document. Write and run it in three separate
+passes in your Console rather than filling in all the blanks at once.
+
+**Stage 1 — empty axes only.** Fill in just the `par()` and `plot(NULL, ...)` lines
+plus the `axis()` and `abline()` lines. Run those lines by highlighting them and
+pressing <kbd>Ctrl+Enter</kbd> (Windows/Linux) or <kbd>Cmd+Enter</kbd> (Mac).
+You should see a blank plot with month labels on the x-axis and the red dashed line
+at 35. If the axes look wrong, fix them now — before any data is drawn.
+
+**Stage 2 — add the loop for one decade.** Change `seq_along(decades)` to just `1`
+so the loop runs once: `for (i in 1) { ... }`. Run it. You should see one colored
+line with error bars. Check that the points land on the right months and the bars
+point the right direction.
+
+**Stage 3 — restore the full loop.** Change `1` back to `seq_along(decades)` and run
+again. All decades should now appear with the legend.
+
+Why this works: if something is broken, you know exactly which stage introduced the
+problem. A single misplaced parenthesis in a 30-line chunk produces an error message
+that points to the wrong line — catching it in a 6-line Stage 1 is much faster.
+</div>
+
+```{r ci-decade-scaffold, eval=FALSE}
+focus   <- Monthly[Monthly$Site.ID == focus_site, ]
+decades <- levels(focus$Decade)
+n_dec   <- length(decades)
+
+pal      <- colorRampPalette(c(___, ___, ___))(n_dec)
+ylim_top <- max(focus$UCL95, 35, na.rm = TRUE) * 1.15
+
+par(las = ___, mar = c(___, ___, ___, ___))
+plot(NULL,
+     xlim = c(0.5, 12.5), ylim = c(0, ylim_top),
+     xaxt = "n",
+     xlab = ___, ylab = ___, main = ___)
+
+axis(1, at = 1:12, labels = month.abb)
+abline(h = ___, col = ___, lty = ___, lwd = ___)
+
+offsets <- seq(-0.15, 0.15, length.out = n_dec)
+
+for (i in seq_along(decades)) {
+  d  <- focus[focus$Decade == decades[i], ]
+  d  <- d[order(d$Month), ]
+  mx <- d$Month + offsets[i]
+
+  lines(mx, d$___, col = pal[i], lwd = ___)
+  points(mx, d$___, col = pal[i], pch = ___)
+
+  arrows(mx, d$LCL95, mx, d$UCL95,
+         angle = 90, code = 3, length = ___, col = pal[i], lwd = ___)
+}
+
+legend(___, legend = c(decades, ___),
+       col = c(pal, ___), lty = ___, pch = ___, bty = "n")
+```
+
+<div class="callout callout-warn">
+<strong>⏱️ Time check — the analysis sections should take 1–2 hours after your data loads</strong>
+If you have been working through the graphics and statistics sections for more than
+2 hours and are not yet producing plots, something has likely gone sideways earlier
+in the pipeline (often the data types from Section 7, or a wrong FIPS code).
+Contact Marc or an EA30 mentor — catching a root cause early saves a lot of time.
+</div>
+
+---
+
+# Discussion
+
+`r newthought("The quantitative results are only half the story.")` The discussion
+is where you connect the patterns you observed in your plots to the real-world
+processes that produced them. What sources explain the seasonal cycle? What policy
+or regulatory changes explain the long-term trend? Who lives near the most polluted
+stations, and what does that mean for health equity?
+
+Write 2--4 paragraphs in your own words. Do not structure this as a list --- write
+flowing prose that connects ideas across the themes below. You are synthesizing your
+quantitative results with what you know about the region, not summarizing what the
+figures look like.
+
+**Regional meteorology and source characterization.** Describe the physical geography
+and emission sources shaping PM2.5 at your location. What industries, traffic corridors,
+or land uses are present? What meteorological patterns --- inversions, sea breezes,
+katabatic flows --- control how pollutants accumulate or disperse?
+
+**Seasonal patterns.** What does your monthly CI plot show? Which months are highest
+and lowest, and why? If wildfire smoke affects your region, connect episodic spikes in
+the time-series to the broader trend of lengthening fire seasons.
+
+**Exceedance context.** How often did concentrations exceed 35 ug/m3? Which stations
+or periods were worst? What does this imply for residents living near those stations?
+
+**Environmental justice.** Who lives near the stations you analyzed? Are there
+disparities in proximity to pollution sources, access to green space, or health-care
+infrastructure that amplify exposure risk for certain communities?
+
+---
+
+# Conclusion
+
+`r newthought("Your conclusion should do three things.")` First, briefly restate
+what you found — not a list of every number, but the one or two most important
+patterns. Did PM2.5 decline significantly over thirty years? Was there a clear
+seasonal cycle? Did any stations consistently exceed the federal standard?
+
+Second, say what those findings mean in practical terms. Improving concentrations
+are evidence that regulation works; persistent exceedances are evidence that more
+work remains. A seasonal spike in August in a western county connects your data to
+the broader story of worsening wildfires.
+
+Third, acknowledge limitations. Your analysis rests on fixed monitoring stations,
+which may not capture exposure in areas without monitors. Daily averages smooth out
+hour-by-hour variation. The AQI index combines multiple pollutants in ways that can
+obscure the specific contribution of PM2.5.
+
+A strong conclusion leaves the reader with a clear answer to the central question:
+*Is the air in your county safe, getting safer, and getting safer for everyone?*
+
+---
+
+`r newthought("sessionInfo() records the exact computational environment")` used to
+produce this document: the R version, operating system, and the version number of
+every package that was loaded. It appears at the bottom of every well-documented R
+analysis for one practical reason --- reproducibility.
+
+If your output looks different from a classmate's, or your code throws an error that
+works fine on another machine, the first diagnostic question is always: are you running
+the same versions? This output answers that without anyone having to ask.
+
+You do not need to interpret or discuss it. Just include it at the end of your
+document and let it run.
+
+```{r session-info}
+sessionInfo()
+```
+
+<!-- # References -->
+<!-- Bibliography disabled for this term. Re-enable skeleton.bib in YAML next year. -->

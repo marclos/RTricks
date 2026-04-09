@@ -1,0 +1,30 @@
+---
+title: "Week 1 Deliverable"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import CSV to R
+
+
+```{r cars}
+phakelake.csv = "/home/mwl04747/RTricks/02_pHake_Lake/pHake_Lake/pHakeLake.csv"
+temp <- read.csv(phakelake.csv)
+temp
+names(temp)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r, echo=TRUE}
+plot(Temperature ~ Depth, data = temp)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

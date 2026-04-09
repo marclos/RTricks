@@ -1,0 +1,209 @@
+---
+title: "Water Quality -- Total Coliform, E. coli and NTM Analysis Guide"
+runningheader: "Water Quality Analysis Guide" # only for pdf output
+subtitle: "RTricks: #1" # only for html output
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_html: default
+bibliography: skeleton.bib
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(tufte)
+# invalidate cache when the tufte version changes
+knitr::opts_chunk$set(cache.extra = packageVersion('tufte'))
+options(htmltools.dir.version = FALSE)
+```
+
+# Introduction
+
+*Escherichia coli* (*E. coli*) is a bacterium commonly found in the intestines of humans and warm-blooded animals. While most strains of *E. coli* are harmless and part of the normal gut microbiota, certain pathogenic strains can cause severe health problems when present in water sources.
+
+Nontuberculous Mycobacteria (NTM) are a diverse group of mycobacterial species that are commonly found in natural and engineered water systems. Unlike *Mycobacterium tuberculosis*, NTM are not known to cause tuberculosis. However, they are increasingly recognized as opportunistic pathogens, particularly among vulnerable populations.
+
+# Environmental Sources of *E. coli* in Water
+
+## Agricultural Runoff
+
+- **Livestock Waste**: Manure from cattle, pigs, and poultry can wash into nearby water bodies during rainfall or irrigation.
+- **Crop Fertilization**: The use of manure or improperly treated biosolids as fertilizer can introduce *E. coli* into surface and groundwater.
+
+## Human Waste
+
+- **Sewage Discharges**: Leaks or overflows from sewage systems, especially during heavy rainfall, can release untreated or partially treated human waste into water bodies.
+- **Septic Systems**: Improperly maintained or failing septic systems can leach *E. coli* into groundwater supplies.
+
+## Wildlife Contributions
+
+- **Wild Animal Excreta**: Birds, deer, and other wildlife can contribute to *E. coli* contamination in natural water sources.
+- **Urban Runoff**: Stormwater drains may collect fecal matter from urban wildlife, such as raccoons and rodents, leading to contamination.
+
+## Surface Water Dynamics
+
+- **Flooding Events**: Heavy rains and floods can wash *E. coli* from contaminated soils and fecal deposits into rivers, lakes, and reservoirs.
+- **Sediment Resuspension**: *E. coli* can survive in sediments and be resuspended into the water column during disturbances.
+
+# Health Implications of *E. coli* in Water
+
+## Gastrointestinal Illnesses
+
+- Pathogenic strains like *E. coli* O157:H7 produce Shiga toxins, which can cause:
+  - Severe diarrhea (often bloody)
+  - Abdominal cramps
+  - Vomiting
+  - Fever
+
+## Hemolytic Uremic Syndrome (HUS)
+
+- In severe cases, *E. coli* infections can lead to HUS, a life-threatening condition characterized by:
+  - Kidney failure
+  - Low platelet count
+  - Hemolytic anemia
+
+## Vulnerable Populations
+
+- Children, the elderly, and individuals with compromised immune systems are at higher risk of severe outcomes.
+
+# E coli Analysis Guide
+
+## Sampling and Analysis
+
+See SOP 23 for detailed instructions on water sampling and analysis for *E. coli*. Key steps include:
+
+1. **Sample Collection**: Use sterile containers to collect water samples from designated sites.
+2. **Sample Preservation**: Keep samples cold (4°C) during transport to the lab to prevent bacterial growth.
+3. **Analysis Methods**: Perform membrane filtration or IDEXX Quanti-Tray tests to quantify *E. coli* levels.
+
+## Statistical Analysis
+
+We will use an ANOVA for this analysis. Basically, this tests to see if locations are the same. If the p-value is less than 0.05, then they are not the same. What is an ANOVA? It stands for Analysis of Variance. It is a way to test if the means of different groups are the same.
+
+In R it is relatively easy to specfic using the aov() function, where aov stands for Analysis of Variance. The arguments to the aov() function are a formula that describes the model and the data frame that contains the data, as aov(response ~ factor, data=dataframe). The response is the dependent (NTM) variable, and the factor is the independent variable (Site_ID or Location).
+
+Preparing the cleaning the data take the most time!
+
+## Data Analysis Process
+
+Steps to Create an Rmd/PDF
+
+1. Create a new R Markdown document in R Studio.
+2. Add a title, author, and date which will be written into the YAML header; seletect the output format as PDF.
+3. Save the file in a new folder called `Water_Quality_Ecoli_NTM`.
+4. Knit to make sure it works.
+5. Get rid of all the template text (but don't lose the set up r chunk), we'll need that.
+5. Write an introduction to the topic of *E. coli* in water.
+
+
+Steps to Download & Clean Up Google Sheet Data 
+
+1. Before downloading, I suggest you make sure the site names are consistent; i.e. same spelling and capitalization uses. Make sure the controls have have the word control as "Control". See marc's fake data set as a template, and check the Export Data table for the consistent.
+2. Download the data from the Google Sheet as a csv file Using the Data Export table (marc's cleaned version)
+3. Upload into R studio into your `Water_Quality_Ecoli_NTM` folder'.
+
+Steps to Use R  code for E. Coli MPN (See marc's R script below...)
+
+1. Read Data
+2. Check data and Recalculate Diluted Value
+3. Run ANOVA
+
+```{r}
+# Read Data (use file.choose() to get the path!)
+MPN_data.csv = "/home/mwl04747/RTricks/06_Ecoli_NTM/Marc's fake data form demo.csv"
+MPN_data <- read.csv(MPN_data.csv)
+
+# Remove Controls
+MPN_data <- MPN_data[!grepl("Control", MPN_data$Site_ID),]
+
+# Check data and Recalculate Diluted Value
+MPN_data$TC_MPN = MPN_data$TotalColiform
+MPN_data$EC_MPN = MPN_data$Ecoli
+
+# Make sure the character string ="Diluted, 1:10" matches for each row that was diluted.
+MPN_data$TC_MPN[MPN_data$Dilution=="Diluted, 1:10"] <- 
+  MPN_data$TotalColiform[MPN_data$Dilution=="Diluted, 1:10"] *10
+MPN_data$EC_MPN[MPN_data$Dilution=="Diluted, 1:10"] <- 
+  MPN_data$Ecoli[MPN_data$Dilution=="Diluted, 1:10"] *10
+
+
+# Run ANOVA
+aov_result <- aov(TC_MPN ~ Site_ID, data = MPN_data) 
+# Notice that I did this ONLY for total coliform, you need to do it for Ecoli as well.
+
+summary(aov_result)
+
+```
+
+4. Interpret the results of the ANOVA test.
+
+If the Pr(>F) value is less than 0.05, then the locations are not the same with respect to the MPN.
+
+5. Write a conclusion based on the results of the analysis.
+
+
+
+# Health Impacts of NTM
+
+## Respiratory Infections
+
+NTM infections often target the respiratory system and can lead to conditions such as:
+
+- **Pulmonary NTM Disease**: Symptoms include chronic cough, fatigue, weight loss, and shortness of breath. This condition is especially common in individuals with pre-existing lung diseases, such as:
+  - Chronic obstructive pulmonary disease (COPD)
+  - Cystic fibrosis
+  - Bronchiectasis
+
+## Skin and Soft Tissue Infections
+
+- NTM can also cause localized skin infections, often resulting from contaminated water exposure during procedures like tattooing or surgical interventions.
+
+## Risk Populations
+
+- Individuals with weakened immune systems, such as those undergoing chemotherapy, organ transplant recipients, or people with HIV/AIDS, are more susceptible to NTM infections.
+
+# Sources of NTM in Water
+
+NTM are ubiquitous in various water environments due to their ability to resist disinfection processes. Common sources include:
+
+- **Tap Water**: Household water supplies can harbor NTM in biofilms within plumbing systems.
+- **Hot Tubs and Pools**: Warm water environments provide ideal conditions for NTM growth, especially if maintenance is inadequate.
+- **Healthcare Settings**: Hospital water systems and medical equipment, such as bronchoscopes, can become reservoirs for NTM, posing risks to patients.
+- **Natural Water Bodies**: Lakes, rivers, and groundwater are natural habitats for NTM, particularly in areas with high organic content.
+
+# Mechanisms of Survival in Water Systems
+
+NTM exhibit several adaptations that enhance their survival, including:
+
+- **Biofilm Formation**: NTM thrive in biofilms, which protect them from chlorine and other disinfectants.
+- **Hydrophobic Cell Walls**: Their lipid-rich cell walls increase resistance to desiccation and chemical agents.
+- **Thermotolerance**: Many NTM species can survive and proliferate in temperatures up to 50°C.
+
+# Public Health Recommendations
+
+To mitigate the risk of NTM exposure, the following measures are recommended:
+
+1. Regular maintenance and cleaning of plumbing systems, hot tubs, and medical devices.
+2. Use of effective filtration systems in household and healthcare settings.
+3. Adhering to water disinfection guidelines to reduce biofilm formation.
+
+# Monitoring and Prevention Strategies
+
+1. **Water Testing**: Regular monitoring of water for fecal coliforms and *E. coli* levels is essential to ensure safety.
+2. **Improved Sanitation**: Proper treatment of wastewater and maintenance of septic systems can minimize human contributions to contamination.
+3. **Agricultural Best Practices**:
+   - Implementing buffer zones to prevent runoff into waterways.
+   - Proper manure management and composting techniques.
+4. **Public Awareness**: Educating communities on the risks of consuming untreated water and the importance of hygiene near water sources.
+
+# Conclusion
+
+The presence of *E. coli* in water is a critical indicator of fecal contamination and poses significant health risks, particularly from pathogenic strains. Understanding its environmental sources and implementing targeted prevention measures are key to protecting water quality and public health.
+
+Nontuberculous Mycobacteria pose significant health risks, particularly to immunocompromised individuals and those with pre-existing respiratory conditions. Awareness of their sources in water systems and implementing preventive measures are critical for public health.

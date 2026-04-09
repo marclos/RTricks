@@ -1,0 +1,1164 @@
+---
+title: "Urban Air Quality Monitoring with Low-Cost Sensors"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/Activities/A08_Raspberry_Pi_Tutorial.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = TRUE,
+  warning   = FALSE,
+  message   = FALSE,
+  fig.width = 9,
+  fig.height = 5
+)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f; --moss: #2d5a3d; --fern: #4a7c5e; --sage: #8aad96;
+  --mist:      #d4e6da; --cream: #f7f3ed; --parchment: #ede8df;
+  --ink:       #1a1a18; --charcoal: #3a3a38; --dust: #7a7a72;
+  --amber:     #c8832a; --amber-lt: #e8a84a; --white: #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink);
+  font-size: 17px; line-height: 1.75;
+  padding-left: clamp(14px, 4vw, 48px); padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header { margin-left: calc(-1 * clamp(14px, 4vw, 48px)); margin-right: calc(-1 * clamp(14px, 4vw, 48px)); }
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header {
+  background-image: repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 0 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after { content: ''; position: absolute; right: -40px; top: -40px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%); pointer-events: none; }
+.page-header .module-tag { display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45); padding: 3px 10px; border-radius: 2px; margin-bottom: 12px; }
+.page-header h1 { font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px; }
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link { display: inline-block; margin-top: 16px; font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em; color: var(--amber-lt); text-decoration: none; border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px; transition: background .2s; }
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px; padding-bottom: 20px; border-bottom: 1px solid var(--parchment); }
+.section-nav a { font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--fern); text-decoration: none; border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px; background: var(--white); transition: background .2s, color .2s; }
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h1 { font-family: 'Libre Baskerville', serif; font-size: 1.65rem; font-weight: 700; color: var(--forest); margin-top: 60px; margin-bottom: 6px; padding-bottom: 8px; border-bottom: 2px solid var(--parchment); }
+h2 { font-family: 'Libre Baskerville', serif; font-size: 1.3rem; font-weight: 700; color: var(--moss); margin-top: 40px; margin-bottom: 4px; padding-bottom: 6px; border-bottom: 1px solid var(--parchment); }
+h3 { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; font-weight: 700; color: var(--fern); margin-top: 24px; margin-bottom: 4px; }
+h4 { font-family: 'Source Code Pro', monospace; font-size: .9rem; font-weight: 600; color: var(--charcoal); margin-top: 20px; margin-bottom: 4px; letter-spacing: .04em; text-transform: uppercase; }
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+blockquote { border-left: 4px solid var(--sage); margin: 1.2em 0; padding: .5em 1em; background: var(--white); border-radius: 0 5px 5px 0; font-size: .94em; color: var(--charcoal); }
+
+code { font-family: 'Source Code Pro', monospace; font-size: .84em; background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px; }
+pre { background: var(--ink); color: #e8e6df; border-radius: 5px; padding: 14px 18px; font-size: .83rem; line-height: 1.55; overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0; }
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout { border-left: 5px solid; padding: .65em 1.1em; margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6; }
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+
+table { font-size: .88rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th { background: var(--forest); color: #fff; font-family: 'Source Code Pro', monospace; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; padding: 7px 11px; text-align: left; }
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 6px 11px; border-bottom: 1px solid var(--parchment); }
+
+.key-box { background: var(--forest); color: #fff; border-radius: 6px; padding: 20px 24px; margin: 2em 0; font-size: .9rem; }
+.key-box h4 { font-family: 'Libre Baskerville', serif; color: var(--sage); font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0; }
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+.page-footer { background: var(--ink); color: rgba(255,255,255,.42); text-align: center; padding: 24px 4vw; margin: 60px calc(-1 * clamp(14px, 4vw, 48px)) 0; font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em; }
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Field &amp; Lab Projects &mdash; P09</div>
+<h1>Urban Air Quality: <span>Low-Cost Sensor Networks</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College &nbsp;&bull;&nbsp; Spring 2026</p>
+<a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
+</div>
+
+<div class="section-nav">
+<a href="#background">Background</a>
+<a href="#setup">Setup</a>
+<a href="#clock">Clock Correction</a>
+<a href="#loading">Data Loading</a>
+<a href="#descriptive">Descriptive Stats</a>
+<a href="#visualization">Visualization</a>
+<a href="#inference">Inference</a>
+<a href="#advanced">Advanced</a>
+<a href="#conclusions">Conclusions</a>
+</div>
+
+---
+
+# 1 · Background and Research Goals {#background}
+
+## 1.1 What Are We Measuring?
+
+Particulate matter (PM) is a mixture of solid particles and liquid droplets suspended
+in air. Regulatory agencies classify particles by their aerodynamic diameter:
+
+| Fraction | Diameter      | Health relevance |
+|----------|---------------|-----------------|
+| **PM1**  | ≤ 1 µm        | Penetrates deepest into lung tissue; linked to cardiovascular effects |
+| **PM2.5**| ≤ 2.5 µm      | EPA primary NAAQS standard; major focus of air quality policy |
+| **PM10** | ≤ 10 µm       | Larger particles; irritate upper airways |
+
+The EPA Air Quality Index (AQI) categories for PM2.5 (24-h average) are:
+
+| Category              | PM2.5 (µg/m³) |
+|-----------------------|--------------|
+| Good                  | 0 – 12.0     |
+| Moderate              | 12.1 – 35.4  |
+| Unhealthy for Sensitive Groups (USG) | 35.5 – 55.4 |
+| Unhealthy             | 55.5 – 150.4 |
+
+## 1.2 Sensor Network
+
+Students deployed **Raspberry Pi Zero** units equipped with Enviro+ boards
+(PMS5003 optical particle sensor + BME280 meteorological sensor + MICS6814 gas sensor)
+at multiple campus locations. Each unit logs:
+
+- `pm1_ug_m3`, `pm25_ug_m3`, `pm10_ug_m3` — particulate concentrations (µg/m³)
+- `temperature_C`, `humidity_pct`, `pressure_hPa` — meteorological variables
+- `light_lux` — ambient light
+- `oxidised_kO`, `reduced_kO`, `nh3_kO` — gas-phase proxies (oxidising gases,
+  reducing gases, ammonia)
+
+## 1.3 Research Questions
+
+<div class="callout callout-concept">
+**Primary questions:**
+
+1. Do PM2.5 and PM1.0 concentrations differ significantly across campus locations?
+2. Is there a consistent diurnal (time-of-day) pattern in PM concentrations?
+3. Which co-measured variables (temperature, humidity, gas sensors) best predict PM2.5?
+</div>
+
+## 1.4 Hypotheses
+
+<div class="callout callout-tip">
+**H1 (Spatial):** Sensors near higher-traffic areas or denser vegetation will show
+elevated PM2.5 relative to open-courtyard sensors, due to proximity to combustion
+sources or local resuspension.
+
+**H2 (Diurnal):** PM2.5 will peak during morning and evening hours, consistent with
+traffic-related emissions patterns and reduced atmospheric mixing during stable
+boundary-layer conditions.
+
+**H3 (Meteorological):** PM2.5 will be positively correlated with humidity
+(hygroscopic growth of particles) and negatively correlated with pressure
+(higher pressure → stronger inversions → accumulation) and temperature
+(higher temperature → stronger convective mixing → dilution).
+</div>
+
+---
+
+# 2 · Setup {#setup}
+
+## 2.1 Packages
+
+Run the install block **once in the RStudio Console** — not inside the Rmd.
+
+<div class="callout callout-warn">
+<strong>⚠️ Install once in the Console, never inside a knitting chunk</strong>
+The block below only installs missing packages. Run it interactively once; the
+<code>eval=FALSE</code> tag prevents it re-running on every knit.
+</div>
+
+```{r install-packages, eval=FALSE}
+pkgs <- c("tidyverse", "lubridate", "patchwork", "scales",
+          "slider",    "ggridges",  "moments",
+          "broom",     "broom.mixed", "knitr", "kableExtra",
+          "lme4",      "lmerTest",  "nlme")
+to_install <- pkgs[!pkgs %in% rownames(installed.packages())]
+if (length(to_install)) install.packages(to_install, quiet = TRUE)
+```
+
+```{r packages}
+library(tidyverse); library(lubridate); library(patchwork); library(scales)
+library(slider);    library(ggridges);  library(moments)
+library(broom);     library(knitr);     library(kableExtra)
+
+theme_set(theme_minimal(base_size = 13))
+
+# Color palette — scales automatically to however many sensors are present
+sensor_pal <- c(
+  "#0072B2", "#D55E00", "#009E73", "#CC79A7",
+  "#E69F00", "#56B4E9", "#F0E442", "#999999",
+  "#882255", "#44AA99"
+)
+
+# pal is built after df exists; placeholder here, rebuilt in Section 6
+pal <- sensor_pal   # overwritten once df is loaded
+```
+
+---
+
+# 3 · The Clock-Correction Problem {#clock}
+
+<div class="callout callout-warn">
+**Why does this matter?**  Raspberry Pi Zeros have **no real-time clock (RTC) battery**.
+Every time a unit loses power it resets its internal clock to an arbitrary default epoch.
+If we analyzed the raw timestamps, each sensor's time series would be offset from real
+time by a different amount — making cross-sensor comparisons meaningless.
+</div>
+
+## 3.1 Correction Strategy
+
+At deployment, each team member recorded:
+
+1. The **actual wall-clock time** (PST) when they powered the unit on.
+2. The **time displayed on the Pi's LCD** at that same moment.
+
+The offset is simply:
+
+$$\text{offset} = t_{\text{real}} - t_{\text{Pi}}$$
+
+This constant is then **added to every raw timestamp** in that sensor's CSV.
+
+## 3.2 Calibration Table
+
+```{r calibration}
+# sensor_calibration.R must live in the same directory as this Rmd.
+# It creates the `calibration` tibble with one row per sensor (two for PiZ15).
+source("sensor_calibration.R")
+
+clock_offsets <- calibration |>
+  filter(reboot == 1) |>
+  select(sensor, offset_sec)
+
+calibration |>
+  filter(reboot == 1) |>
+  select(sensor, team_member, location, offset_label, notes) |>
+  kable(caption = "Deployment metadata and clock offsets (reboot 1 only)") |>
+  kable_styling(full_width = FALSE) |>
+  column_spec(3, width = "22em") |>
+  row_spec(which(is.na(calibration$offset_label[calibration$reboot == 1])),
+           color = "#aaa")
+```
+
+<div class="callout callout-concept">
+**Note on PiZ2W1:** The sheet entry reads "2/9 4:47 PM". Because the raw data
+begins 2026-02-27 *and* every other Pi clock was behind real time (never ahead),
+this is interpreted as **3/9** (March 9). Verify with the student if needed.
+</div>
+
+---
+
+# 4 · Data Loading and Cleaning {#loading}
+
+## 4.1 Reading the CSVs
+
+We auto-discover every `*_ea30_sp26_v05.csv` file in `data_dir` so no manual
+list is needed — and no trailing-comma errors.
+
+```{r load-data}
+# ── Set to the folder containing your CSV files ──────────────────────────────
+data_dir <- "/home/mwl04747/RTricks/A08_Raspberry_Pi_Analysis/Data_S2026"
+
+# ── Helper: read one CSV and apply the clock correction ──────────────────────
+read_sensor <- function(path, sensor_id, offsets_tbl) {
+
+  offset_s <- offsets_tbl |>
+    filter(sensor == sensor_id) |>
+    pull(offset_sec)
+
+  if (length(offset_s) == 0 || is.na(offset_s)) {
+    warning(sprintf("No clock offset for %s — timestamps uncorrected.", sensor_id))
+    offset_s <- 0
+  }
+
+  read_csv(path, show_col_types = FALSE) |>
+    mutate(
+      sensor      = sensor_id,
+      datetime_pi = ymd_hms(timestamp, tz = "America/Los_Angeles"),
+      datetime    = datetime_pi + seconds(offset_s),      # ← corrected
+      date        = as_date(datetime),
+      hour        = hour(datetime),
+      wday        = wday(datetime, label = TRUE, abbr = TRUE),
+      tod         = cut(hour,
+                        breaks = c(-1, 5, 11, 17, 20, 23),
+                        labels = c("Night (0–5)", "Morning (6–11)",
+                                   "Afternoon (12–17)", "Evening (18–20)",
+                                   "Night (21–23)"))
+    ) |>
+    select(-timestamp, -datetime_pi)
+}
+
+# ── Auto-discover CSVs ────────────────────────────────────────────────────────
+csv_paths  <- list.files(data_dir, pattern = "_ea30_sp26_v05\\.csv$",
+                         full.names = TRUE)
+sensor_ids <- sub("_ea30_sp26_v05\\.csv$", "", basename(csv_paths))
+
+if (length(csv_paths) == 0)
+  stop("No *_ea30_sp26_v05.csv files found. Set data_dir correctly.")
+
+files <- setNames(as.list(csv_paths), sensor_ids)
+message(sprintf("Discovered %d file(s): %s",
+                length(files), paste(sensor_ids, collapse = ", ")))
+
+raw <- imap_dfr(files, ~ read_sensor(.x, .y, clock_offsets))
+
+glimpse(raw)
+```
+
+## 4.2 Quality Control
+
+We apply three QC filters:
+
+1. **Timestamp present** — rows with no parseable datetime are removed.
+2. **PM2.5 present** — rows with `NA` in the target variable are removed.
+3. **Minimum observations** — sensors with fewer than 10 valid PM2.5 readings
+   are excluded from analysis (e.g. a unit that only logged one row).
+
+```{r qc}
+# Sensors with enough data
+valid_sensors <- raw |>
+  filter(!is.na(pm25_ug_m3)) |>
+  count(sensor) |>
+  filter(n >= 10) |>
+  pull(sensor)
+
+dropped <- setdiff(sensor_ids, valid_sensors)
+if (length(dropped) > 0)
+  message("Dropped (< 10 obs): ", paste(dropped, collapse = ", "))
+
+df <- raw |>
+  filter(sensor %in% valid_sensors,
+         !is.na(pm25_ug_m3),
+         !is.na(datetime))
+
+# Attach location label for plot facets / legends
+df <- df |>
+  left_join(
+    calibration |>
+      filter(reboot == 1) |>
+      select(sensor, location),
+    by = "sensor"
+  ) |>
+  mutate(
+    sensor   = factor(sensor),
+    # Short label: just the location, truncated
+    loc_label = str_trunc(coalesce(location, sensor), 35)
+  )
+```
+
+Final dataset: **`r nrow(df)` rows** across **`r n_distinct(df$sensor)` sensor(s)**.
+
+```{r build-pal}
+# Build named color palette from the sensors actually present in df
+n_sensors <- n_distinct(df$sensor)
+pal        <- setNames(sensor_pal[seq_len(n_sensors)], levels(df$sensor))
+```
+
+## 4.3 Coverage Summary
+
+```{r coverage-table}
+df |>
+  group_by(sensor, loc_label) |>
+  summarise(
+    n_obs      = n(),
+    start      = min(date),
+    end        = max(date),
+    days_span  = as.integer(end - start) + 1L,
+    pct_missing_pm25 = mean(is.na(pm25_ug_m3)) * 100,
+    .groups = "drop"
+  ) |>
+  kable(digits = 1,
+        caption = "Data coverage per sensor after QC",
+        col.names = c("Sensor","Location","N obs","Start","End",
+                      "Days spanned","% PM2.5 missing")) |>
+  kable_styling(full_width = FALSE)
+```
+
+---
+
+# 5 · Descriptive Statistics {#descriptive}
+
+## 5.1 Summary Table
+
+```{r desc-stats}
+desc <- df |>
+  group_by(sensor) |>
+  summarise(
+    N        = n(),
+    Mean     = mean(pm25_ug_m3),
+    SD       = sd(pm25_ug_m3),
+    Median   = median(pm25_ug_m3),
+    IQR      = IQR(pm25_ug_m3),
+    Skewness = moments::skewness(pm25_ug_m3),
+    P5       = quantile(pm25_ug_m3, .05),
+    P95      = quantile(pm25_ug_m3, .95),
+    Max      = max(pm25_ug_m3),
+    `% Good (≤12)`       = mean(pm25_ug_m3 <= 12)  * 100,
+    `% Moderate (12–35)` = mean(pm25_ug_m3 > 12 & pm25_ug_m3 <= 35.4) * 100,
+    `% USG (>35)`        = mean(pm25_ug_m3 > 35.4) * 100,
+    .groups = "drop"
+  )
+
+kable(desc, digits = 2,
+      caption = "PM2.5 descriptive statistics (µg/m³) with EPA AQI breakdown") |>
+  kable_styling(full_width = TRUE) |>
+  add_header_above(c(" " = 10, "EPA AQI Category (%)" = 3))
+```
+
+<div class="callout callout-concept">
+**Reading the table:** High skewness (> 1) indicates a right-skewed distribution —
+a small number of high-concentration events pull the mean above the median.
+This is typical for PM data and motivates the use of non-parametric tests later.
+</div>
+
+## 5.2 PM1.0 vs PM2.5 — Are They Telling the Same Story?
+
+```{r pm1-vs-pm25}
+df |>
+  select(sensor, pm1_ug_m3, pm25_ug_m3) |>
+  pivot_longer(-sensor, names_to = "fraction", values_to = "conc") |>
+  mutate(fraction = recode(fraction,
+                           pm1_ug_m3  = "PM1.0",
+                           pm25_ug_m3 = "PM2.5")) |>
+  group_by(sensor, fraction) |>
+  summarise(Mean = mean(conc), Median = median(conc),
+            SD = sd(conc), .groups = "drop") |>
+  pivot_wider(names_from = fraction,
+              values_from = c(Mean, Median, SD)) |>
+  mutate(`PM1/PM2.5 ratio (mean)` = `Mean_PM1.0` / `Mean_PM2.5`) |>
+  kable(digits = 2,
+        caption = "PM1.0 vs PM2.5 summary — a ratio near 1 means nearly all fine
+                   particles are in the sub-1µm range (combustion dominated)") |>
+  kable_styling(full_width = FALSE)
+```
+
+---
+
+# 6 · Visualization {#visualization}
+
+## 6.1 Time Series with Rolling Mean
+
+```{r timeseries, eval=FALSE, echo=TRUE}
+# Disabled: requires ggplot2 >= 3.4 with matching scales/vctrs on R 4.2.2
+# Upgrade R to 4.4.x to re-enable this chunk
+```
+
+## 6.2 PM1.0 and PM2.5 Together
+
+```{r pm-fractions, eval=FALSE, echo=TRUE}
+# Disabled: same ggplot2/R 4.2.2 version conflict as timeseries chunk
+```
+
+## 6.3 Distributions
+
+```{r distributions, fig.height=5}
+p_dens <- df |>
+  ggplot(aes(x = pm25_ug_m3, fill = sensor, color = sensor)) +
+  geom_density(alpha = 0.30, linewidth = 0.7) +
+  geom_vline(xintercept = c(12, 35.4),
+             linetype = "dashed",
+             color    = c("forestgreen", "darkorange"),
+             linewidth = 0.7) +
+  scale_fill_manual(values  = pal) +
+  scale_color_manual(values = pal) +
+  labs(title = "PM2.5 Density", x = "PM2.5 (µg/m³)",
+       y = "Density", fill = "Sensor", color = "Sensor") +
+  theme(legend.position = "top")
+
+p_box <- df |>
+  ggplot(aes(x = sensor, y = pm25_ug_m3, fill = sensor)) +
+  geom_boxplot(outlier.alpha = 0.25, outlier.size = 0.8, width = 0.5) +
+  geom_jitter(width = 0.12, alpha = 0.04, size = 0.5) +
+  stat_summary(fun = mean, geom = "point",
+               shape = 23, fill = "white", size = 2.5) +
+  scale_fill_manual(values = pal) +
+  labs(title    = "PM2.5 by Sensor",
+       subtitle = "◇ = mean; box = IQR",
+       x = "Sensor", y = "PM2.5 (µg/m³)") +
+  theme(legend.position = "none")
+
+p_dens + p_box
+```
+
+<div class="callout callout-concept">
+**Right skew is normal for PM data.** Most readings are low, but episodic events
+produce a long right tail. The mean will always exceed the median. Use median and IQR
+for central tendency, and non-parametric tests for inference.
+</div>
+
+## 6.4 Diurnal Pattern (Time-of-Day)
+
+```{r diurnal, fig.height=4.5}
+df |>
+  group_by(sensor, hour) |>
+  summarise(
+    mean_pm25 = mean(pm25_ug_m3),
+    se_pm25   = sd(pm25_ug_m3) / sqrt(n()),
+    mean_pm1  = mean(pm1_ug_m3),
+    se_pm1    = sd(pm1_ug_m3)  / sqrt(n()),
+    .groups   = "drop"
+  ) |>
+  pivot_longer(c(mean_pm25, mean_pm1),
+               names_to = "fraction", values_to = "mean") |>
+  mutate(
+    se       = if_else(fraction == "mean_pm25", se_pm25, se_pm1),
+    fraction = recode(fraction, mean_pm25 = "PM2.5", mean_pm1 = "PM1.0")
+  ) |>
+  ggplot(aes(x = hour, y = mean, color = sensor, linetype = fraction)) +
+  geom_ribbon(aes(ymin = mean - se, ymax = mean + se,
+                  fill = sensor, group = interaction(sensor, fraction)),
+              alpha = 0.10, color = NA) +
+  geom_line(linewidth = 0.9) +
+  facet_wrap(~ fraction) +
+  scale_color_manual(values = pal) +
+  scale_fill_manual(values  = pal) +
+  scale_x_continuous(breaks = seq(0, 23, 3),
+                     labels = sprintf("%02d:00", seq(0, 23, 3))) +
+  labs(title    = "Diurnal Profile of PM1.0 and PM2.5",
+       subtitle = "Mean ± 1 SE by hour of day",
+       x = "Hour of Day", y = "Concentration (µg/m³)",
+       color = "Sensor", fill = "Sensor", linetype = NULL) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+```
+
+> **What to look for:** Morning peaks (~7–9 AM) or evening peaks (~5–8 PM) would
+> support H2. A midday dip is consistent with stronger atmospheric mixing (higher
+> planetary boundary layer) diluting surface-level emissions.
+
+## 6.5 Date × Hour Heatmap
+
+```{r heatmap, eval=FALSE, echo=TRUE}
+# Disabled: scale_y_date affected by same ggplot2/R 4.2.2 version conflict
+```
+
+## 6.6 Correlation Matrix
+
+These heatmaps show pairwise Pearson correlations between PM2.5 and all co-measured
+variables. They help identify which predictors to include in the regression model.
+
+```{r corr-matrix, fig.height=8, results='asis'}
+cor_vars <- c("pm25_ug_m3", "pm1_ug_m3", "pm10_ug_m3",
+              "temperature_C", "humidity_pct", "pressure_hPa",
+              "light_lux", "oxidised_kO", "reduced_kO", "nh3_kO")
+
+for (s in levels(df$sensor)) {
+  cat(sprintf("\n\n#### Sensor: %s\n\n", s))
+
+  cor_mat <- df |>
+    filter(sensor == s) |>
+    select(all_of(cor_vars)) |>
+    drop_na() |>
+    cor(method = "pearson")
+
+  p <- cor_mat |>
+    as.data.frame() |>
+    rownames_to_column("var1") |>
+    pivot_longer(-var1, names_to = "var2", values_to = "r") |>
+    mutate(
+      var1  = factor(var1, levels = cor_vars),
+      var2  = factor(var2, levels = rev(cor_vars)),
+      label = sprintf("%.2f", r)
+    ) |>
+    ggplot(aes(x = var1, y = var2, fill = r)) +
+    geom_tile(color = "white", linewidth = 0.5) +
+    geom_text(aes(label = label), size = 3, color = "black") +
+    scale_fill_gradient2(
+      low  = "#D55E00", mid = "white", high = "#0072B2",
+      midpoint = 0, limits = c(-1, 1), name = "r"
+    ) +
+    labs(title = paste("Correlation Matrix —", s), x = NULL, y = NULL) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+          axis.text.y = element_text(size = 9),
+          plot.title  = element_text(size = 11))
+
+  print(p)
+}
+```
+
+---
+
+# 7 · Basic Statistical Analysis {#inference}
+
+## 7.1 Are the Data Normally Distributed?
+
+```{r normality}
+set.seed(42)
+norm_res <- df |>
+  group_by(sensor) |>
+  summarise(
+    n       = n(),
+    W_pm25  = shapiro.test(sample(pm25_ug_m3, min(n(), 5000)))$statistic,
+    p_pm25  = shapiro.test(sample(pm25_ug_m3, min(n(), 5000)))$p.value,
+    W_pm1   = shapiro.test(sample(pm1_ug_m3,  min(n(), 5000)))$statistic,
+    p_pm1   = shapiro.test(sample(pm1_ug_m3,  min(n(), 5000)))$p.value,
+    .groups = "drop"
+  ) |>
+  mutate(
+    normal_pm25 = if_else(p_pm25 > 0.05, "Yes", "No"),
+    normal_pm1  = if_else(p_pm1  > 0.05, "Yes", "No")
+  )
+
+kable(norm_res, digits = 4,
+      caption = "Shapiro-Wilk normality test (sampled to ≤ 5000 obs)") |>
+  kable_styling(full_width = FALSE)
+```
+
+<div class="callout callout-concept">
+**Interpretation:** A p-value < 0.05 rejects the null hypothesis of normality.
+PM data are almost always non-normal (right-skewed, discrete integer values at low
+concentrations). This means we should use **non-parametric tests** for inference,
+not t-tests or ANOVA.
+</div>
+
+## 7.2 Do Sensors Differ? — Wilcoxon Rank-Sum Test
+
+The Wilcoxon rank-sum test (Mann-Whitney U) is the non-parametric equivalent of
+the two-sample t-test. It tests whether the distributions of two groups have
+the same location (median), without assuming normality.
+
+**Hypotheses:** H₀: PM2.5 at sensor A = PM2.5 at sensor B (same distribution);
+H₁: they differ.
+
+```{r wilcoxon}
+sensors_v <- levels(df$sensor)
+combs     <- combn(sensors_v, 2, simplify = FALSE)
+
+wilcox_res <- map_dfr(combs, function(pair) {
+  x  <- df |> filter(sensor == pair[1]) |> pull(pm25_ug_m3)
+  y  <- df |> filter(sensor == pair[2]) |> pull(pm25_ug_m3)
+  wt <- wilcox.test(x, y, conf.int = TRUE, exact = FALSE)
+  n1 <- length(x); n2 <- length(y)
+  r  <- 1 - 2 * wt$statistic / (n1 * n2)   # rank-biserial effect size
+  tibble(
+    Comparison      = paste(pair[1], "vs", pair[2]),
+    W               = wt$statistic,
+    p_value         = wt$p.value,
+    Location_shift  = wt$estimate,
+    CI_lower        = wt$conf.int[1],
+    CI_upper        = wt$conf.int[2],
+    Effect_r        = r,
+    Significant     = if_else(p_value < 0.05, "✓", "—")
+  )
+})
+
+wilcox_res |>
+  mutate(Significant = cell_spec(
+    Significant, bold = TRUE,
+    color = if_else(Significant == "✓", "forestgreen", "grey60")
+  )) |>
+  kable(digits = 4, escape = FALSE,
+        caption = "Pairwise Wilcoxon tests for PM2.5; effect size r = rank-biserial correlation") |>
+  kable_styling(full_width = FALSE)
+```
+
+<div class="callout callout-concept">
+**Effect size (rank-biserial r):** |r| < 0.1 = negligible; 0.1–0.3 = small;
+0.3–0.5 = medium; > 0.5 = large. A statistically significant result with a
+negligible effect size is not practically meaningful.
+</div>
+
+## 7.3 Does PM2.5 Vary by Time of Day? — Kruskal-Wallis Test
+
+```{r kruskal}
+kw_res <- df |>
+  group_by(sensor) |>
+  summarise(
+    chi_sq  = kruskal.test(pm25_ug_m3 ~ tod)$statistic,
+    df_kw   = kruskal.test(pm25_ug_m3 ~ tod)$parameter,
+    p_value = kruskal.test(pm25_ug_m3 ~ tod)$p.value,
+    .groups = "drop"
+  ) |>
+  mutate(significant = if_else(p_value < 0.05, "✓", "—"),
+         # Epsilon-squared effect size for KW
+         eta_sq = (chi_sq - df_kw + 1) / (n_distinct(df$sensor) - df_kw))
+
+kable(kw_res, digits = 4,
+      caption = "Kruskal-Wallis test: does PM2.5 differ across time-of-day groups?") |>
+  kable_styling(full_width = FALSE)
+```
+
+```{r tod-boxplot, fig.height=4.5}
+df |>
+  ggplot(aes(x = tod, y = pm25_ug_m3, fill = tod)) +
+  geom_boxplot(outlier.alpha = 0.15, outlier.size = 0.6, width = 0.6) +
+  stat_summary(fun = mean, geom = "point",
+               shape = 23, fill = "white", size = 2) +
+  facet_wrap(~ sensor, nrow = 1) +
+  scale_fill_brewer(palette = "RdYlGn", direction = -1) +
+  labs(title    = "PM2.5 by Time of Day",
+       subtitle = "Kruskal-Wallis test p-values shown above",
+       x = NULL, y = "PM2.5 (µg/m³)") +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 35, hjust = 1))
+```
+
+---
+
+# 8 · Advanced Analysis {#advanced}
+
+## 8.1 What Predicts PM2.5? — Multiple Linear Regression
+
+Even though PM2.5 is not normally distributed, OLS regression can still be used
+to identify *predictors*, because the assumptions concern the **residuals**, not the
+raw response. We will check residuals below.
+
+**Model:**  
+$$\text{PM}_{2.5} = \beta_0 + \beta_1 T + \beta_2 \text{RH} + \beta_3 P + \beta_4 \text{light} + \beta_5 \text{ox} + \beta_6 \text{red} + \beta_7 \text{NH}_3 + \varepsilon$$
+
+```{r regression}
+lm_list <- df |>
+  group_by(sensor) |>
+  group_map(function(d, key) {
+    mod <- lm(pm25_ug_m3 ~ temperature_C + humidity_pct + pressure_hPa +
+                light_lux + oxidised_kO + reduced_kO + nh3_kO,
+              data = d)
+    list(sensor = key$sensor, model = mod,
+         tidy   = tidy(mod)   |> mutate(sensor = key$sensor, .before=1),
+         glance = glance(mod) |> mutate(sensor = key$sensor, .before=1))
+  })
+
+# Coefficient table
+map_dfr(lm_list, "tidy") |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***",
+                         p.value < 0.01  ~ "**",
+                         p.value < 0.05  ~ "*",
+                         TRUE            ~ "")) |>
+  kable(digits = 4,
+        caption = "OLS regression coefficients (*** p<.001, ** p<.01, * p<.05)") |>
+  kable_styling(full_width = TRUE)
+```
+
+```{r r-squared}
+map_dfr(lm_list, "glance") |>
+  select(sensor, r.squared, adj.r.squared,
+         statistic, p.value, nobs) |>
+  kable(digits = 4, caption = "Model fit statistics") |>
+  kable_styling(full_width = FALSE)
+```
+
+<div class="callout callout-concept">
+**Interpreting R²:** An R² of 0.35 means the seven predictors together explain 35%
+of the variance in PM2.5. The remaining 65% is unexplained — likely due to
+unmeasured factors (wind speed, source proximity, indoor infiltration).
+</div>
+
+## 8.2 Residual Diagnostics
+
+Check the four key OLS assumptions visually:
+
+```{r residuals, fig.height=6, results='asis'}
+for (item in lm_list) {
+  cat(sprintf("\n\n#### Sensor: %s\n\n", item$sensor))
+  par(mfrow = c(2, 2), mar = c(4, 4, 3, 1))
+  plot(item$model, main = item$sensor)
+  par(mfrow = c(1, 1))
+}
+```
+
+<div class="callout callout-warn">
+**What to look for:**
+
+- **Residuals vs Fitted** — should show no pattern (random scatter). A funnel shape
+  means heteroscedasticity; a curve means a non-linear relationship.
+- **Q-Q Plot** — points should follow the diagonal. Heavy tails suggest non-normality
+  of residuals (log-transforming PM2.5 often helps).
+- **Scale-Location** — similar to plot 1 but easier to see variance changes.
+- **Cook's Distance** — points > 0.5 are influential and worth investigating.
+
+If assumptions are badly violated, consider: (a) log-transform the response,
+(b) use a Gamma GLM (natural for positive continuous data), or (c) a robust
+regression.
+</div>
+
+## 8.3 Log-Transformed Response
+
+PM concentrations are strictly positive and right-skewed — a natural candidate for
+log-transformation, which often improves residual normality.
+
+```{r log-regression}
+lm_log_list <- df |>
+  filter(pm25_ug_m3 > 0) |>    # log(0) = -Inf
+  group_by(sensor) |>
+  group_map(function(d, key) {
+    mod <- lm(log(pm25_ug_m3) ~ temperature_C + humidity_pct + pressure_hPa +
+                light_lux + oxidised_kO + reduced_kO + nh3_kO,
+              data = d)
+    list(sensor = key$sensor, model = mod,
+         glance = glance(mod) |> mutate(sensor = key$sensor, .before=1))
+  })
+
+map_dfr(lm_log_list, "glance") |>
+  select(sensor, r.squared, adj.r.squared, nobs) |>
+  kable(digits = 4, caption = "Log-model R² per sensor") |>
+  kable_styling(full_width = FALSE)
+```
+
+## 8.4 Temporal Autocorrelation — ACF / PACF
+
+Air quality measurements taken minutes apart are correlated — a high reading now
+predicts a high reading in 5 minutes. This **autocorrelation** violates the
+independence assumption of OLS and inflates false-positive rates in standard tests.
+The ACF (autocorrelation function) and PACF (partial ACF) quantify this.
+
+```{r acf-pacf, fig.height=3.5, results='asis'}
+for (s in levels(df$sensor)) {
+  cat(sprintf("\n\n#### Sensor: %s\n\n", s))
+  pm_vec <- df |> filter(sensor == s) |>
+    arrange(datetime) |> pull(pm25_ug_m3)
+  par(mfrow = c(1, 2))
+  acf(pm_vec,  lag.max = 48,
+      main = paste("ACF — PM2.5 |", s),
+      col  = "#0072B2", lwd = 1.5)
+  pacf(pm_vec, lag.max = 48,
+       main = paste("PACF — PM2.5 |", s),
+       col  = "#D55E00", lwd = 1.5)
+  par(mfrow = c(1, 1))
+}
+```
+
+<div class="callout callout-concept">
+**Reading the ACF/PACF:**
+
+- **ACF** shows total correlation at each lag. A slowly decaying ACF indicates
+  strong persistence (common in PM data).
+- **PACF** shows *direct* correlation at each lag, controlling for shorter lags.
+  If the PACF cuts off sharply after lag *p*, that suggests an AR(*p*) process
+  would be an appropriate time-series model.
+- Significant bars at lags 12 and 24 would suggest diurnal periodicity (if
+  sampling is hourly) or 1-hour / 2-hour cycles (if sampling is every 5 min).
+</div>
+
+## 8.5 Mixed Effects Models
+
+### Why Mixed Effects?
+
+OLS regression in Section 8.1 fitted each sensor independently, ignoring two
+structural problems:
+
+- **Pseudoreplication:** Each sensor contributes thousands of readings from a
+  single physical location. Treating all rows as independent inflates the
+  effective sample size and produces overconfident p-values.
+- **Temporal autocorrelation:** Readings minutes apart are not independent
+  (confirmed by the ACF plots in 8.4). OLS standard errors assume independence
+  and are therefore too small.
+
+Mixed effects models address both by treating **sensor as a random effect**
+(pooling information across sensors while acknowledging each is a distinct unit)
+and optionally adding a **correlation structure** on the residuals.
+
+```{r lme4-install, eval=FALSE}
+# Run once in the Console if not yet installed
+install.packages(c("lme4", "nlme", "lmerTest"))
+```
+
+```{r lme4-packages}
+library(lme4)
+library(lmerTest)   # adds p-values to lmer() via Satterthwaite df
+library(nlme)       # needed for AR(1) correlation structure
+```
+
+### Model 1 — Random Intercept (sensor as random effect)
+
+Each sensor gets its own baseline PM2.5 level; predictors are fixed effects
+shared across all sensors.
+
+$$\text{PM}_{2.5,it} = (\beta_0 + u_i) + \beta_1 T_{it} + \ldots + \beta_7 \text{NH}_{3,it} + \varepsilon_{it}, \quad u_i \sim \mathcal{N}(0, \sigma^2_u)$$
+
+```{r lmer-random-intercept}
+m_ri <- lmer(
+  pm25_ug_m3 ~ temperature_C + humidity_pct + pressure_hPa +
+               light_lux + oxidised_kO + reduced_kO + nh3_kO +
+               (1 | sensor),
+  data   = df,
+  REML   = TRUE
+)
+
+summary(m_ri)
+```
+
+```{r lmer-ri-table}
+broom.mixed::tidy(m_ri, effects = "fixed", conf.int = TRUE) |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***",
+                         p.value < 0.01  ~ "**",
+                         p.value < 0.05  ~ "*",
+                         TRUE            ~ "")) |>
+  kable(digits = 4, format = "html",
+        caption = "Random-intercept model: fixed effects (sensor as random intercept)") |>
+  kable_styling(full_width = FALSE)
+```
+
+```{r lmer-ri-icc}
+# Intraclass correlation: proportion of variance due to between-sensor differences
+vc   <- as.data.frame(VarCorr(m_ri))
+icc  <- vc$vcov[vc$grp == "sensor"] /
+        sum(vc$vcov)
+cat(sprintf("ICC = %.3f — %.1f%% of PM2.5 variance is between-sensor\n",
+            icc, icc * 100))
+```
+
+<div class="callout callout-concept">
+**Interpreting the ICC:** An ICC of 0.30 means 30% of the total variance in
+PM2.5 is attributable to systematic differences between sensor locations, and
+70% is within-sensor variation over time. A high ICC confirms that pseudoreplication
+was a real concern — treating sensors as independent would have badly overstated
+precision.
+</div>
+
+### Model 2 — Random Intercept + Random Slope
+
+Allow each sensor to have its own humidity response (the predictor most often
+significant in Section 8.1):
+
+```{r lmer-random-slope}
+m_rs <- lmer(
+  pm25_ug_m3 ~ temperature_C + humidity_pct + pressure_hPa +
+               light_lux + oxidised_kO + reduced_kO + nh3_kO +
+               (1 + humidity_pct | sensor),
+  data    = df,
+  REML    = TRUE,
+  control = lmerControl(optimizer = "bobyqa")
+)
+
+summary(m_rs)
+```
+
+```{r lmer-model-comparison}
+# Compare random-intercept vs random-slope via likelihood ratio test
+# (refit with ML for comparison)
+m_ri_ml <- update(m_ri, REML = FALSE)
+m_rs_ml <- update(m_rs, REML = FALSE)
+
+anova(m_ri_ml, m_rs_ml) |>
+  as.data.frame() |>
+  kable(digits = 4, format = "html",
+        caption = "LRT: random intercept vs random intercept + slope") |>
+  kable_styling(full_width = FALSE)
+```
+
+<div class="callout callout-concept">
+**Model selection:** If the LRT p-value is < 0.05, the random slope improves fit
+significantly — meaning sensors genuinely differ in their humidity–PM2.5
+relationship, not just in their baseline levels.
+</div>
+
+### Model 3 — nlme with AR(1) Residuals
+
+`lme4` cannot model residual autocorrelation directly. We switch to `nlme::lme()`
+which supports a continuous-time AR(1) correlation structure on the residuals,
+appropriate for unevenly-spaced time series.
+
+```{r nlme-ar1}
+# nlme requires data sorted by group and time
+df_nlme <- df |>
+  arrange(sensor, datetime) |>
+  mutate(time_num = as.numeric(datetime))   # seconds since epoch
+
+m_ar1 <- lme(
+  pm25_ug_m3 ~ temperature_C + humidity_pct + pressure_hPa +
+               light_lux + oxidised_kO + reduced_kO + nh3_kO,
+  random     = ~ 1 | sensor,
+  correlation = corCAR1(form = ~ time_num | sensor),  # continuous AR(1)
+  data       = df_nlme,
+  method     = "ML"
+)
+
+summary(m_ar1)
+```
+
+```{r nlme-ar1-phi}
+# Extract the estimated AR(1) parameter (phi)
+phi <- coef(m_ar1$modelStruct$corStruct, unconstrained = FALSE)
+cat(sprintf("Estimated AR(1) phi = %.3f\n", phi))
+cat("(phi near 1 = strong persistence; near 0 = little autocorrelation)\n")
+```
+
+```{r nlme-ar1-table}
+intervals(m_ar1, which = "fixed")$fixed |>
+  as.data.frame() |>
+  rownames_to_column("term") |>
+  kable(digits = 4, format = "html",
+        caption = "AR(1) mixed model: fixed effects with 95% CI") |>
+  kable_styling(full_width = FALSE)
+```
+
+### Model Comparison Summary
+
+```{r model-comparison-summary}
+# AIC comparison across all three models
+# (refit m_ri and m_rs with ML to compare fairly with m_ar1)
+tibble(
+  Model       = c("OLS (per sensor, no RE)",
+                  "Random intercept (lmer)",
+                  "Random intercept + slope (lmer)",
+                  "Random intercept + AR(1) (nlme)"),
+  AIC         = c(
+    mean(map_dbl(lm_list, ~ AIC(.x$model))),   # mean per-sensor OLS AIC
+    AIC(m_ri_ml),
+    AIC(m_rs_ml),
+    AIC(m_ar1)
+  ),
+  Notes = c(
+    "Ignores pseudoreplication and autocorrelation",
+    "Accounts for between-sensor variance",
+    "Also allows sensor-specific humidity slope",
+    "Accounts for temporal autocorrelation"
+  )
+) |>
+  kable(digits = 1, format = "html", caption = "AIC comparison across model families") |>
+  kable_styling(full_width = FALSE)
+```
+
+<div class="callout callout-warn">
+**Caution on inference:** Even the AR(1) model assumes a single phi across all
+sensors and all time lags. For publication-quality analysis you would also want
+to: (a) check residual ACF after fitting AR(1) to confirm it absorbed the
+autocorrelation, (b) consider a random slope for the AR(1) parameter, and
+(c) evaluate whether a log-transformed response improves residual normality.
+</div>
+
+```{r lmer-residual-acf, fig.height=3.5, results='asis'}
+# Check whether the random-intercept model reduced autocorrelation
+# relative to OLS (compare ACF of OLS residuals vs lmer residuals)
+ols_resid  <- resid(lm_list[[1]]$model)
+lmer_resid <- resid(m_ri)[ df$sensor == levels(df$sensor)[1] ]
+
+par(mfrow = c(1, 2))
+acf(ols_resid,  lag.max = 48, main = "ACF: OLS residuals (sensor 1)",
+    col = "#D55E00", lwd = 1.5)
+acf(lmer_resid, lag.max = 48, main = "ACF: lmer residuals (sensor 1)",
+    col = "#0072B2", lwd = 1.5)
+par(mfrow = c(1, 1))
+```
+
+<div class="callout callout-concept">
+**What to look for:** If the lmer ACF is meaningfully smaller than the OLS ACF at
+short lags, the random effect absorbed some temporal structure. If both ACFs are
+similarly high, the AR(1) model in nlme is the appropriate next step.
+</div>
+
+## 8.6 Strongest Relationships: PM2.5 vs Top Predictors
+
+Using the regression results, we plot the two strongest predictors (by |t-statistic|)
+for each sensor.
+
+```{r top-predictors, fig.height=4, results='asis'}
+top_preds <- map_dfr(lm_list, "tidy") |>
+  filter(term != "(Intercept)") |>
+  group_by(sensor) |>
+  slice_max(abs(statistic), n = 2) |>
+  ungroup()
+
+# One figure per sensor — two side-by-side scatter plots
+for (s in levels(df$sensor)) {
+  cat(sprintf("\n\n#### Sensor: %s\n\n", s))
+
+  d_top <- top_preds |> filter(sensor == s)
+  preds <- d_top$term
+
+  plots <- map(preds, function(pred) {
+    df |>
+      filter(sensor == s) |>
+      ggplot(aes(x = .data[[pred]], y = pm25_ug_m3)) +
+      geom_point(alpha = 0.08, size = 0.8, color = pal[[s]]) +
+      geom_smooth(method = "lm", color = "black",
+                  linewidth = 0.8, se = TRUE) +
+      labs(title    = pred,
+           subtitle = sprintf("t = %.2f, p = %.4f",
+                              d_top$statistic[d_top$term == pred],
+                              d_top$p.value[d_top$term == pred]),
+           x = pred, y = "PM2.5 (µg/m³)") +
+      theme(plot.title    = element_text(size = 11),
+            plot.subtitle = element_text(size = 9, color = "grey40"))
+  })
+
+  print(wrap_plots(plots, ncol = 2))
+}
+```
+
+---
+
+# 9 · Summary and Conclusions {#conclusions}
+
+```{r summary-table}
+# Combine key statistics into one final summary
+df |>
+  group_by(sensor) |>
+  summarise(
+    Location      = first(loc_label),
+    `N obs`       = n(),
+    `Median PM2.5`= median(pm25_ug_m3),
+    `Mean PM2.5`  = mean(pm25_ug_m3),
+    `Median PM1`  = median(pm1_ug_m3),
+    `% EPA Good`  = mean(pm25_ug_m3 <= 12) * 100,
+    .groups = "drop"
+  ) |>
+  left_join(
+    map_dfr(lm_list, "glance") |> select(sensor, adj.r.squared),
+    by = "sensor"
+  ) |>
+  rename(`Regression adj-R²` = adj.r.squared) |>
+  kable(digits = 2, caption = "Final cross-sensor summary") |>
+  kable_styling(full_width = TRUE)
+```
+
+<div class="callout callout-tip">
+**Return to hypotheses:**
+
+- **H1 (Spatial):** Were there significant differences between sensors?
+  Check the Wilcoxon results in Section 7.2.
+- **H2 (Diurnal):** Did PM2.5 vary significantly by time of day?
+  Check the Kruskal-Wallis results in Section 7.3 and the diurnal plot in 6.4.
+- **H3 (Meteorological):** Which variables were the strongest predictors?
+  Check the top-predictor plots in Section 8.6 and coefficients in 8.1.
+</div>
+
+---
+
+<footer class="page-footer">
+EA030 Field &amp; Lab Projects — P09
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>
+
+# 10 · Session Info {#session}
+
+```{r session-info}
+sessionInfo()
+```

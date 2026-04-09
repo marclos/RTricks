@@ -1,0 +1,324 @@
+---
+title: "USGS Stream Discharge Report"
+author: "Marc Los Huertos"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    fig_caption: true
+    highlight: tango
+geometry: margin=1in
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+# Global chunk options applied to every code chunk in this document.
+# echo=TRUE   : show code in the PDF
+# message/warning=FALSE : suppress package startup noise
+# fig settings: consistent figure sizing throughout
+knitr::opts_chunk$set(
+  echo       = TRUE,
+  message    = FALSE,
+  warning    = FALSE,
+  fig.width  = 7,
+  fig.height = 4,
+  fig.align  = "center",
+  out.width  = "100%"
+)
+```
+
+---
+
+# Overview
+
+This document provides a fully reproducible workflow for downloading,
+cleaning, summarising, and visualising **daily mean stream discharge**
+from the USGS National Water Information System (NWIS).
+
+All data are fetched directly from the USGS API using the
+`dataRetrieval` package --- no manual downloads are needed. An
+alternative path using a pre-downloaded CSV (e.g. from
+<https://waterdata.usgs.gov/nwis>) is also provided.
+
+> **To reuse for a different site:** change only `site_no`, `start_dt`,
+> and `end_dt` in **Section 3 – Settings**, then click
+> **Knit → Knit to PDF** (or press `Ctrl+Shift+K`) in RStudio.
+
+---
+
+# Required Packages
+
+The four packages below cover all data access, manipulation, and
+plotting needs. `dataRetrieval` is the official USGS R package and
+handles authentication and API formatting automatically. Uncomment the
+`install.packages` line the first time you run this document.
+
+```{r packages}
+# install.packages(c("dataRetrieval", "tidyverse", "lubridate",
+#                    "scales", "knitr"))
+
+library(dataRetrieval)  # USGS NWIS data retrieval
+library(tidyverse)      # data wrangling (dplyr, tidyr) + ggplot2
+library(lubridate)      # date/time parsing and arithmetic
+library(scales)         # comma/log axis formatting in ggplot2
+library(knitr)          # kable() for formatted tables
+```
+
+---
+
+# Settings
+
+Centralising all user-defined parameters in one chunk makes the
+document easy to adapt. Change these four values and re-knit to
+generate a complete report for any USGS gauging station.
+
+| Variable    | Meaning                                        |
+|-------------|------------------------------------------------|
+| `site_no`   | 8-digit USGS site number                       |
+| `param_cd`  | Parameter code (`00060` = discharge in cfs)    |
+| `stat_cd`   | Statistic code (`00003` = daily mean)          |
+| `start/end` | Period of record (YYYY-MM-DD)                  |
+
+```{r settings}
+site_no  <- "01646500"   # Potomac River at Little Falls, MD
+param_cd <- "00060"      # 00060 = discharge (cfs); 00065 = gage height (ft)
+stat_cd  <- "00003"      # 00003 = daily mean
+start_dt <- "2022-01-01"
+end_dt   <- "2023-12-31"
+```
+
+---
+
+# Data Acquisition
+
+## Option A: Download Directly in R *(recommended)*
+
+`readNWISdv()` queries the NWIS daily-values service and returns a
+tidy data frame. `renameNWISColumns()` converts the cryptic
+auto-generated column name (e.g. `X_00060_00003`) to the human-readable
+`Flow`. `readNWISsite()` fetches station metadata (name, coordinates,
+drainage area) used for axis labels later.
+
+```{r download}
+raw <- readNWISdv(
+  siteNumbers = site_no,
+  parameterCd = param_cd,
+  startDate   = start_dt,
+  endDate     = end_dt
+)
+
+raw  <- renameNWISColumns(raw)   # -> adds column "Flow"
+meta <- readNWISsite(site_no)    # station metadata
+
+glimpse(raw)
+```
+
+## Option B: Load a Pre-Downloaded CSV
+
+If you exported a CSV from <https://waterdata.usgs.gov/nwis>, use this
+block instead. The expected column headers from an NWIS download are:
+
+```
+x, y, id, time_series_id, monitoring_location_id, parameter_code,
+statistic_id, time, value, unit_of_measure, approval_status,
+qualifier, last_modified
+```
+
+The block is set to `eval=FALSE` so it does not run by default.
+To activate it: set `eval=TRUE` here and set `eval=FALSE` on the
+Option A chunk above.
+
+```{r load_csv, eval=FALSE}
+# raw_csv <- read_csv("your_file.csv") %>%
+#   mutate(time = ymd_hms(time)) %>%
+#   filter(parameter_code == "00060") %>%   # discharge only
+#   rename(Date = time, Flow = value) %>%
+#   filter(approval_status == "A")          # Approved records only
+#
+# raw <- raw_csv %>% select(Date, Flow)
+```
+
+---
+
+# Data Cleaning
+
+This chunk selects only the columns needed downstream (`Date`, `Flow`),
+removes any `NA` discharge values (caused by equipment malfunctions or
+data gaps), and derives three helper columns used in the plots:
+
+- `year`  — calendar year for annual grouping  
+- `month` — abbreviated month label (factor, ordered Jan–Dec)  
+- `doy`   — day of year (1–366), useful for seasonal analysis  
+
+Two character labels (`site_name`, `units_lab`) are also created here
+so they propagate consistently to every plot title and axis.
+
+```{r clean}
+df <- raw %>%
+  select(Date, Flow) %>%
+  filter(!is.na(Flow)) %>%
+  mutate(
+    year  = year(Date),
+    month = month(Date, label = TRUE),
+    doy   = yday(Date)
+  )
+
+site_name <- meta$station_nm
+units_lab  <- "Discharge (cfs)"
+
+cat("Records loaded :", nrow(df), "\n")
+cat("Date range     :", as.character(min(df$Date)),
+    "to", as.character(max(df$Date)), "\n")
+cat("Site           :", site_name, "\n")
+```
+
+---
+
+# Summary Statistics
+
+Annual summary statistics are computed with `dplyr::summarise()` and
+formatted as a publication-ready table with `knitr::kable()`. The
+`booktabs = TRUE` option uses clean horizontal rules instead of the
+default grid lines, which is standard in academic papers and reports.
+
+```{r summary_table}
+stats <- df %>%
+  group_by(year) %>%
+  summarise(
+    N      = n(),
+    Mean   = round(mean(Flow),   1),
+    Median = round(median(Flow), 1),
+    SD     = round(sd(Flow),     1),
+    Min    = round(min(Flow),    1),
+    Max    = round(max(Flow),    1),
+    .groups = "drop"
+  )
+
+kable(
+  stats,
+  booktabs  = TRUE,
+  caption   = paste("Annual discharge summary \u2014", site_name),
+  col.names = c("Year", "N", "Mean", "Median", "SD", "Min", "Max"),
+  format.args = list(big.mark = ",")
+)
+```
+
+---
+
+# Plots
+
+## Daily Time Series
+
+A linear y-axis time series is the most intuitive first look at the
+record. The `date_breaks` and `date_labels` arguments in
+`scale_x_date()` control the x-axis tick spacing and format.
+`scales::comma` prevents R from using scientific notation on the y-axis
+for large discharge values.
+
+```{r plot_ts, fig.cap="Daily mean discharge over the full period of record."}
+ggplot(df, aes(x = Date, y = Flow)) +
+  geom_line(color = "steelblue", linewidth = 0.5) +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "3 months") +
+  scale_y_continuous(labels = comma) +
+  labs(
+    title    = paste("Daily Mean Discharge \u2014", site_name),
+    subtitle = paste("USGS site", site_no),
+    x        = NULL,
+    y        = units_lab
+  ) +
+  theme_bw(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Log-Scale Time Series
+
+Discharge records are highly right-skewed: a few flood peaks can be
+orders of magnitude larger than typical low flows. A log~10~ y-axis
+compresses the peaks and expands the low-flow period, making both
+visible simultaneously. `annotation_logticks()` adds the small tick
+marks characteristic of log axes.
+
+```{r plot_log, fig.cap="Daily mean discharge on a log-10 y-axis."}
+ggplot(df, aes(x = Date, y = Flow)) +
+  geom_line(color = "steelblue", linewidth = 0.5) +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "3 months") +
+  scale_y_log10(labels = comma) +
+  annotation_logticks(sides = "l") +
+  labs(
+    title    = paste("Daily Mean Discharge (log scale) \u2014", site_name),
+    subtitle = paste("USGS site", site_no),
+    x        = NULL,
+    y        = paste0("log\u2081\u2080 ", units_lab)
+  ) +
+  theme_bw(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Monthly Box Plots
+
+Box plots grouped by calendar month reveal the seasonal pattern of
+discharge. Pooling all years together shows the typical low-flow and
+high-flow seasons regardless of year-to-year variability. The log y-axis
+is retained here because discharge distributions within months are also
+skewed. `scale_fill_brewer(palette = "Paired")` assigns a distinct but
+harmonious colour to each month.
+
+```{r plot_box, fig.cap="Distribution of daily discharge by calendar month (all years combined)."}
+ggplot(df, aes(x = month, y = Flow, fill = month)) +
+  geom_boxplot(outlier.size  = 0.8,
+               outlier.alpha = 0.4,
+               show.legend   = FALSE) +
+  scale_y_log10(labels = comma) +
+  scale_fill_brewer(palette = "Paired") +
+  annotation_logticks(sides = "l") +
+  labs(
+    title = paste("Monthly Discharge Distribution \u2014", site_name),
+    x     = NULL,
+    y     = paste0("log\u2081\u2080 ", units_lab)
+  ) +
+  theme_bw(base_size = 11)
+```
+
+## Flow Duration Curve
+
+The **flow duration curve (FDC)** is a fundamental tool in hydrology.
+It shows the percentage of time that streamflow equalled or exceeded a
+given value over the period of record. The x-axis represents exceedance
+probability (100 % = always exceeded; 0 % = never exceeded).
+Low-gradient FDCs indicate flashy, rainfall-driven streams; steep FDCs
+suggest groundwater-sustained baseflow regimes.
+
+```{r plot_fdc, fig.cap="Flow duration curve for the full period of record."}
+fdc <- df %>%
+  arrange(desc(Flow)) %>%
+  mutate(exceed_pct = 100 * row_number() / n())
+
+ggplot(fdc, aes(x = exceed_pct, y = Flow)) +
+  geom_line(color = "steelblue", linewidth = 0.7) +
+  scale_y_log10(labels = comma) +
+  scale_x_continuous(
+    breaks = seq(0, 100, 10),
+    labels = paste0(seq(0, 100, 10), "%")
+  ) +
+  annotation_logticks(sides = "l") +
+  labs(
+    title = paste("Flow Duration Curve \u2014", site_name),
+    x     = "Percent of time flow equalled or exceeded",
+    y     = paste0("log\u2081\u2080 ", units_lab)
+  ) +
+  theme_bw(base_size = 11)
+```
+
+---
+
+# Session Info
+
+Recording session info at the end of every report ensures
+reproducibility: anyone re-running this document can see exactly which
+package versions were used to generate the results.
+
+```{r session}
+sessionInfo()
+```

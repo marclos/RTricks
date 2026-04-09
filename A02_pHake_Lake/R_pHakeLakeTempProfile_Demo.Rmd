@@ -1,0 +1,163 @@
+---
+title: "Visualizing pHake Lake Temperature Profiles"
+author: "Marc Los Huertos"
+date: "2025-01-18 (ver. 1.2)"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+## Activity Goals
+
+We will use R to visualize our data from pHake Lake and learn something about some
+of the plants and animals that might inhabit the region.
+
+I created this guide as a tutorial use as a model for R. It's not designed 
+as an introduction to R -- please see the ``Introduction to R" handout for that!
+
+# Procedures
+
+## Downloading and Uploading Data
+
+1. Download the data from Google Sheets as a csv file (Note where on your computer the file is saved!)
+2. Start Rstudio Server (rstudio.pomona.edu)
+3. Create New Folder called ``pHake_Lake"
+4. Upload data into the pHake_Lake folder
+
+## Create Rmd and PDF
+
+1. Create an R Markdown file and give it a title and select pdf for the output.
+2. Save the file as R_pHakeLakeTempProfile.Rmd
+3. Check to see if the pdf is created. If not, check steps above.
+4. Look how R code and R results are interwoven with text. YES, pretty neat. 
+5. Read the pdf to learn how the R code is used. 
+
+## Import into R
+
+1. Use file.choose() in the *console* to select the file and path of the csv.
+
+```{r, eval=FALSE}
+file.choose() # we use this to determine the path and filename
+```
+
+2. Using your path, change the code in the Rmd to define the path to your csv (See example below -- Note: your path will differ!) In effect you are specifying 'path' to the YOURDATA.csv object.
+
+3. Put the code in the Rmd file--i suggest you put at the end in a new r block.
+
+```{r importCSV, echo=TRUE}
+temp.csv <- "/home/mwl04747/RTricks/02_pHake_Lake/Fall 2025 Temperature Profile Data Entry - Aug 2025.csv" # change this to your path...
+#temp.csv <- "/home/mwl04747/RTricks/02_pHake_Lake/G0.csv" # change this to your path...
+temp = read.csv(temp.csv) # This creates a data frame in R called temp
+temp # prints out dataframe
+```
+4. Run the modified code (example, but different than yours) to import into R. You can 
+run the R chunk with the green arrow. I suggest you also "knit" to make sure nothing 
+else is wrong. 
+5. Remove the text and R blocks from the template.
+
+
+
+## Check the Data have been imported correctly and Document Code Functions
+
+1. Run each line below to see if the data were read correctly!
+
+```{r checkData, echo=TRUE, results='hide'}
+ls() # list the object in the environment
+names(temp) # list the column names
+str(temp) # list the structure of the data frame
+head(temp) # list the first 6 rows of the data frame
+# sort by depth
+temp = temp[order(temp$Depth),] # sort the data frame by depth
+
+```
+2. If the code works, add a comment line for each function to explain what it does. Comments begin with a #.
+3. While you can hide code and and comments to make the pdf prettier, we won't do that 
+yet, so I can see your work!  
+
+## Plot the Data
+
+1. Create a basic plot;
+
+```{r plotData, echo=TRUE}
+plot(Temperature~Depth, data=temp) # plot where temperature is a function of depth
+```
+
+Read: Y is a function of x. 
+
+2. Put Depth on y-axis and Temperature on x-axis:
+
+```{r changeaxes}
+plot(Depth~Temperature, data=temp)
+```
+
+3. Change the order of the depth, so the surface (0) is at the top of the y-axis:
+
+```{r ReversePlot}
+#plot(-Depth~Temperature, data=temp)
+```
+
+4. Let's rotate axis and make into a line graph:
+```{r rotateaxis}
+#plot(-Depth~Temperature, data=temp, las=1, ty="l")
+```
+5. Add title, adjust y-axis limits:
+```{r Addtitle}
+plot(Depth~Temperature, data=temp, las=1, ty="b", ylim=c(6,0), 
+     main="pHake Lake Temperature Profile (Aug 26, 2025)")
+```
+
+5. Define units with axes labels:
+```{r Addlabels}
+plot(Depth~Temperature, data=temp, las=1, ty="b", ylim=c(6,0), ylab="Depth (M)", 
+xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Aug 26, 2025)")
+```
+
+I had to copy and paste the degree symbol, there are better ways to do that, but 
+it's complicated -- so do this to keep it simple for now. 
+
+## Prepare the Rmd file for ``Weekly Milestone'' submission
+
+1. Create headings that describe the steps in the rmd file;
+2. Research the name of your group and describe it's life history as part of the 
+introduction (yes, not exactly related, but let's go with it).
+3. Be sure your plot includes the following: 
+
+ - x- and y-axes are labelled correctly (x=temp, y=depth)
+ - y-axis scale is rotated and ordered correctly
+ - axes limits are defined
+ - graphic is correctly titled (e.g. Temperature Profile (pHake Lake -- Date))
+
+
+4. Add comments that describes what the r code will be doing. I often do it 
+before the code. Feel free to use my bullets and make them into sentences. 
+If you are unsure about the code, come to mentor session or search online 
+for an explanation. 
+5. knit
+
+## Download Rmd and PDF files and Submit to Canvas:
+
+1. Click on the two files in the "Files" tab in the lower right panel of RStudio and then click on the "More" tab and select "Export".  This will zip and download the files to your computer.
+2. Submit to Canvas (first question on weekly quiz)!
+
+# Optional Ddition
+
+## Add Oxygen as a Second Graph
+
+1. Create a new R chunk below the temperature profile plot.
+2. Create a plot of Oxygen vs Depth using the same format as the temperature profile.
+```{r OxygenProfile, echo=TRUE, eval=FALSE}
+mfrow=c(2,1) # set up for two plots in one column
+plot(Depth~Temperature, data=temp, las=1, ty="b", ylim=c(6,0), ylab="Depth (M)",
+xlab="Temperature (°C)", main="pHake Lake Temperature Profile (Aug 26, 2025)")
+
+plot(Depth~Oxygen, data=temp, las=1, ty="b", ylim=c(6,0), ylab="Depth (M)",
+xlab="Oxygen (mg/L)", main="pHake Lake Oxygen Profile (Aug 26, 2025)")
+
+```
+
+
+

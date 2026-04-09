@@ -195,10 +195,10 @@ core_r <- list(
          href   = "",
          status = "coming soon"),
     list(icon = "🔄", title = "Functional Programming",
-         desc   = "purrr::map() and friends to replace loops, write cleaner code, and automate repetitive tasks.",
+         desc   = "for loops, the base-R apply family (lapply, sapply, vapply, mapply), and purrr::map() compared side-by-side. Replace repetitive loops with cleaner, type-safe pipelines.",
          tag    = "purrr",
-         href   = "",
-         status = "coming soon"),
+         href   = "RGuides/R06_Functional_Programming",
+         status = "ready"),
     list(icon = "📋", title = "Tables & Reporting",
          desc   = "Publication-quality tables with kableExtra, gt, and flextable. Inline R in RMarkdown.",
          tag    = "reporting",
@@ -207,14 +207,14 @@ core_r <- list(
   )
 )
 
-# ── EA030 FIELD & LAB PROJECTS ───────────────────────────────────────────────
+# ── EA030 FIELD & LAB ACTIVITIES ───────────────────────────────────────────────
 #   Course-specific analyses tied to actual EA030 assignments and datasets
 ea030_projects <- list(
-  section_id    = "ea030-projects",
-  section_title = "EA030 Field & Lab Projects",
+  section_id    = "ea030-activities",
+  section_title = "EA030 Field & Lab Activities",
   section_desc  = "Course-specific modules tied to EA030 assignments, field campaigns, and shared datasets.",
   cards = list(
-    list(icon = "🗂️", title = "Project Index",
+    list(icon = "🗂️", title = "cActiviist Index",
          desc   = "Overview of all EA030 projects this semester — Regional Climate Trends, pHake Lake, Compost Maturity, Inland Empire Air Quality, and Surface Water Quality.",
          tag    = "index",
          href   = "project_index.html",
@@ -222,7 +222,12 @@ ea030_projects <- list(
     list(icon = "💨", title = "Analyzing EPA PM2.5 Data",
          desc   = "Thirty years of daily fine particulate matter (PM2.5) for a US county. Download EPA AQS data, clean monitoring records, visualize long-term trends, compute monthly means with 95% CIs by decade, and evaluate exceedances of the 24-hr NAAQS (35 µg/m³). Includes environmental justice discussion. Helper functions in 06_EPA_PM25/.",
          tag    = "air quality",
-         href   = "Analyzing_EPA_PM25.html",
+         href   = "Unit_Air/Analyzing_EPA_PM25.html",
+         status = "ready"),
+    list(icon = "💨", title = "Raspberry Pi Air Quaulity Analysis",
+         desc   = ".",
+         tag    = "air quality",
+         href   = "Unit_Air/P28_Raspberry_Pi_Tutorial.html",
          status = "ready"),
     list(icon = "🌱", title = "Soil Carbon Analysis",
          desc   = "Importing and cleaning soil survey data, fitting depth profiles, and comparing land-use treatments.",

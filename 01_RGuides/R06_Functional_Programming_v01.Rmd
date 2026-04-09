@@ -1,0 +1,1009 @@
+---
+title: "Functional Programming"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/RGuides/R06_Functional_Programming.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 7,
+  fig.height = 4
+)
+library(purrr)
+library(dplyr)
+library(tibble)
+library(ggplot2)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+/* map() family diagram */
+.map-diagram {
+  display: flex; align-items: stretch; gap: 0; margin: 2em 0;
+  border-radius: 6px; overflow: hidden; box-shadow: var(--card-shadow);
+  font-family: 'Source Code Pro', monospace; font-size: .83rem;
+}
+.map-in, .map-fn, .map-out {
+  padding: 16px 20px; display: flex; flex-direction: column;
+  justify-content: center; gap: 6px;
+}
+.map-in  { background: var(--parchment); flex: 1; }
+.map-fn  { background: var(--forest);   color: #fff; flex: 0 0 auto; min-width: 120px; text-align: center; }
+.map-out { background: var(--mist);     flex: 1; }
+.map-label { font-size: .65rem; letter-spacing: .14em; text-transform: uppercase;
+             opacity: .65; margin-bottom: 2px; }
+.map-fn .map-label { color: var(--sage); opacity: 1; }
+.map-arrow { font-size: 1.4rem; color: var(--amber); align-self: center; padding: 0 8px; }
+.map-item  { padding: 2px 6px; border-radius: 3px; background: rgba(255,255,255,.55); }
+.map-fn .map-fn-name { font-size: 1rem; font-weight: 600; color: var(--amber-lt); margin: 4px 0; }
+
+/* Variant table */
+.variant-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px; margin: 1.4em 0;
+}
+.variant-card {
+  background: var(--white); border: 1px solid var(--mist);
+  border-top: 3px solid var(--fern); border-radius: 4px;
+  padding: 12px 14px; box-shadow: var(--card-shadow);
+}
+.variant-card .vc-fn {
+  font-family: 'Source Code Pro', monospace; font-size: .85rem;
+  font-weight: 600; color: var(--forest); margin-bottom: 4px;
+}
+.variant-card .vc-returns {
+  font-size: .75rem; font-family: 'Source Code Pro', monospace;
+  color: var(--dust); margin-bottom: 6px;
+}
+.variant-card .vc-desc { font-size: .82rem; color: var(--charcoal); line-height: 1.45; }
+
+/* ── Approach comparison table ───────────────────────────────────────────── */
+.cmp-table { width: 100%; border-collapse: collapse; margin: 1.6em 0;
+             font-size: .85rem; box-shadow: var(--card-shadow); border-radius: 6px;
+             overflow: hidden; }
+.cmp-table thead tr { background: var(--forest); }
+.cmp-table thead th { color: #fff; font-family: 'Source Code Pro', monospace;
+  font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+  padding: 10px 14px; text-align: left; border: none; }
+.cmp-table thead th:first-child { min-width: 110px; }
+.cmp-table tbody tr:nth-child(even) { background: #f4f9f6; }
+.cmp-table tbody tr:nth-child(odd)  { background: var(--white); }
+.cmp-table tbody tr:hover           { background: var(--mist); }
+.cmp-table td { padding: 9px 14px; border-bottom: 1px solid var(--parchment);
+                vertical-align: top; line-height: 1.45; }
+.cmp-table td:first-child { font-family: 'Source Code Pro', monospace;
+  font-weight: 600; color: var(--forest); white-space: nowrap; }
+.cmp-table .pro  { color: #2e7d32; }
+.cmp-table .con  { color: #c62828; }
+.cmp-table .tag-base  { display: inline-block; background: var(--parchment);
+  color: var(--charcoal); font-family: 'Source Code Pro', monospace;
+  font-size: .65rem; padding: 1px 7px; border-radius: 10px; letter-spacing: .04em; }
+.cmp-table .tag-purrr { display: inline-block; background: var(--mist);
+  color: var(--forest); font-family: 'Source Code Pro', monospace;
+  font-size: .65rem; padding: 1px 7px; border-radius: 10px; letter-spacing: .04em; }
+
+.step-badge {
+  display: inline-block; background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 3px; margin-right: 8px; vertical-align: middle;
+}
+
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; R Tricks &mdash; Module 06</div>
+<h1>Functional <span>Programming</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<a class="back-link" href="../index.html">&#8592; Back to R Tricks</a>
+</div>
+
+<div class="section-nav">
+<a href="#comparison">Approach Comparison</a>
+<a href="#for-loops">for Loops</a>
+<a href="#apply-family">apply() Family</a>
+<a href="#why-map">Why purrr?</a>
+<a href="#map-family">map() Family</a>
+<a href="#anonymous-fn">Anonymous Functions</a>
+<a href="#map2-pmap">map2() &amp; pmap()</a>
+<a href="#walk">walk()</a>
+<a href="#real-world">Real-World Examples</a>
+<a href="#list-cols">List Columns</a>
+</div>
+
+> **What this module covers.** R gives you three distinct tools for repeating
+> an operation: **`for` loops**, the **base-R `apply` family**, and
+> **`purrr::map()` and friends**. This module shows all three, explains when
+> each shines, and provides a side-by-side reference table so you can choose
+> confidently. By the end you will be able to replace most loops with a single,
+> readable pipeline — and know the handful of cases where a loop is still the
+> right tool.
+
+---
+
+## 1. Three Approaches at a Glance {#comparison}
+
+Before diving in, here is the full comparison. Return to this table whenever
+you need to pick the right tool.
+
+<table class="cmp-table">
+<thead>
+<tr>
+  <th>Approach</th>
+  <th>Origin</th>
+  <th>Returns</th>
+  <th>✔ Pros</th>
+  <th>✘ Cons</th>
+  <th>Best for…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>for loop</td>
+  <td><span class="tag-base">base R</span></td>
+  <td>nothing (side effect)</td>
+  <td class="pro">Universal; readable step-by-step logic; easy to debug with <code>print()</code>; handles early-exit (<code>break</code>) and skipping (<code>next</code>); no extra packages.</td>
+  <td class="con">Verbose boilerplate (pre-allocate, index, accumulate); output container must be managed manually; easy to accidentally grow a vector inside the loop (slow).</td>
+  <td>Sequential steps where each iteration depends on the previous result; simulations with carry-forward state; teaching iteration concepts.</td>
+</tr>
+<tr>
+  <td>while / repeat</td>
+  <td><span class="tag-base">base R</span></td>
+  <td>nothing (side effect)</td>
+  <td class="pro">Only option when the number of iterations is unknown in advance; handles convergence loops cleanly.</td>
+  <td class="con">Risk of infinite loops; even more boilerplate than <code>for</code>; rarely needed in data analysis.</td>
+  <td>Iterative numerical algorithms (Newton–Raphson, EM); scraping until a condition is met.</td>
+</tr>
+<tr>
+  <td>apply()</td>
+  <td><span class="tag-base">base R</span></td>
+  <td>matrix or list</td>
+  <td class="pro">No packages; fast on matrices; MARGIN= argument is elegant for rows vs columns.</td>
+  <td class="con">Only works on matrices/arrays; output type is inconsistent (sometimes simplifies, sometimes does not); confusing when function returns varying-length results.</td>
+  <td>Row-wise or column-wise summaries on a numeric matrix.</td>
+</tr>
+<tr>
+  <td>lapply()</td>
+  <td><span class="tag-base">base R</span></td>
+  <td>always a list</td>
+  <td class="pro">No packages; predictable list output; works on any list or vector; simple mental model.</td>
+  <td class="con">Always a list — must call <code>unlist()</code> or <code>do.call(rbind, …)</code> to flatten; no typed variants; anonymous function syntax is wordier.</td>
+  <td>Quick one-off tasks in base R scripts; environments without tidyverse.</td>
+</tr>
+<tr>
+  <td>sapply()</td>
+  <td><span class="tag-base">base R</span></td>
+  <td>vector, matrix, or list</td>
+  <td class="pro">Convenient when the result is a simple scalar per element — no <code>unlist()</code> needed.</td>
+  <td class="con">Silently returns a list when simplification fails — a major source of hard-to-find bugs; not type-safe; avoid in production code or functions.</td>
+  <td>Interactive console exploration only. Prefer <code>vapply()</code> in scripts.</td>
+</tr>
+<tr>
+  <td>vapply()</td>
+  <td><span class="tag-base">base R</span></td>
+  <td>typed vector</td>
+  <td class="pro">Type-safe version of <code>sapply()</code>; errors loudly if result does not match declared type; no packages.</td>
+  <td class="con">Verbose — must declare FUN.VALUE template; less readable than purrr typed variants.</td>
+  <td>Base R scripts where you want the safety of purrr without the dependency.</td>
+</tr>
+<tr>
+  <td>mapply()</td>
+  <td><span class="tag-base">base R</span></td>
+  <td>vector or list</td>
+  <td class="pro">Iterates over multiple arguments in parallel; no packages.</td>
+  <td class="con">Argument order is <em>function-first</em>, which feels backwards; same silent-simplification problem as <code>sapply()</code>; superseded by <code>map2()</code>/<code>pmap()</code>.</td>
+  <td>Base R scripts needing parallel iteration; legacy code.</td>
+</tr>
+<tr>
+  <td>tapply()</td>
+  <td><span class="tag-base">base R</span></td>
+  <td>array</td>
+  <td class="pro">Computes a summary statistic by group from a vector + factor in one call.</td>
+  <td class="con">Narrow use case; output is an array, not a data frame; superseded by <code>dplyr::summarise()</code>.</td>
+  <td>Quick group summaries when you have a response vector and a grouping factor.</td>
+</tr>
+<tr>
+  <td>purrr::map()</td>
+  <td><span class="tag-purrr">purrr</span></td>
+  <td>list</td>
+  <td class="pro">Consistent interface; typed variants (<code>map_dbl</code>, <code>map_chr</code>, …) enforce output type; terse <code>~</code> shorthand; composes naturally in pipes; <code>map2()</code>/<code>pmap()</code> for parallel inputs; excellent error messages.</td>
+  <td class="con">Requires tidyverse/purrr; <code>~</code>/<code>.x</code> syntax has a short learning curve; slight overhead vs bare <code>lapply()</code> (negligible in practice).</td>
+  <td>Almost all iteration in modern tidyverse workflows; list columns; multi-input mapping.</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout callout-tip">
+<strong>💡 Quick decision rule</strong>
+Does the next iteration depend on the previous result?
+→ <strong>for loop</strong>.
+Are you in a pure base-R environment?
+→ <strong><code>vapply()</code></strong> (safe) or <strong><code>lapply()</code></strong> (simple).
+Otherwise?
+→ <strong><code>purrr::map()</code></strong> and friends.
+</div>
+
+---
+
+## 2. `for` Loops — The Foundation {#for-loops}
+
+A `for` loop is the most transparent way to express iteration: you see exactly
+what happens at each step. Understanding it well also makes the motivation for
+`map()` concrete.
+
+### Basic syntax
+
+```{r for-basic, echo=TRUE}
+sites <- list(
+  kern   = c(12.1, 14.3, 11.8, 15.6, 13.2),
+  mojave = c(8.4,   7.9,  9.1,  8.6),
+  coast  = c(18.0, 19.4, 17.5, 20.1, 18.8, 19.0)
+)
+
+# Pre-allocate output — never grow a vector inside a loop
+site_means <- vector("double", length(sites))
+names(site_means) <- names(sites)
+
+for (i in seq_along(sites)) {
+  site_means[i] <- mean(sites[[i]])
+}
+site_means
+```
+
+The three-part boilerplate — **pre-allocate**, **index**, **assign** — is
+required every single time. That is the price for full visibility.
+
+### Iterating over names instead of indices
+
+```{r for-names, echo=TRUE}
+# Often cleaner to iterate over names directly
+for (nm in names(sites)) {
+  cat(nm, "→ n =", length(sites[[nm]]),
+      "  mean =", round(mean(sites[[nm]]), 2), "\n")
+}
+```
+
+### `next` and `break` — flow control inside loops
+
+```{r for-flow, echo=TRUE}
+# Skip sites with fewer than 5 observations; stop at first site with mean > 17
+for (nm in names(sites)) {
+  if (length(sites[[nm]]) < 5) { cat("Skipping", nm, "(too few obs)\n"); next }
+  if (mean(sites[[nm]]) > 17)  { cat("Found high-mean site:", nm, "\n");  break }
+  cat(nm, "passed filter, mean =", round(mean(sites[[nm]]), 2), "\n")
+}
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ The cardinal sin: growing a vector inside a loop</strong>
+<code>results &lt;- c(results, new_value)</code> inside a loop copies the entire
+vector on every iteration — O(n²) memory and time. Always pre-allocate with
+<code>vector("double", n)</code> and fill by index.
+</div>
+
+### When a `for` loop is genuinely the right choice
+
+A loop is preferable to `map()` when **each iteration depends on the result of
+the previous one** — `map()` has no mechanism for carry-forward state:
+
+```{r for-stateful, echo=TRUE}
+# Simulate a random walk — each step depends on the last
+set.seed(42)
+n_steps  <- 200
+position <- numeric(n_steps)
+position[1] <- 0
+
+for (i in 2:n_steps) {
+  position[i] <- position[i - 1] + rnorm(1, mean = 0, sd = 1)
+}
+
+plot(position, type = "l", col = "#4a7c5e", lwd = 1.5,
+     xlab = "Step", ylab = "Position",
+     main = "Random walk — carry-forward state requires a loop",
+     frame.plot = FALSE)
+abline(h = 0, col = "#c8832a", lty = 2)
+```
+
+### `while` and `repeat`
+
+Use `while` when the stopping criterion is a condition, not a count:
+
+```{r while-example, echo=TRUE}
+# Newton–Raphson: find square root of 50 by iteration
+x   <- 25          # initial guess
+tol <- 1e-10
+iter <- 0
+
+while (abs(x^2 - 50) > tol) {
+  x    <- x - (x^2 - 50) / (2 * x)   # Newton step
+  iter <- iter + 1
+}
+cat(sprintf("sqrt(50) ≈ %.10f  (converged in %d iterations)\n", x, iter))
+sqrt(50)           # confirm with built-in
+```
+
+---
+
+## 3. The Base-R `apply` Family {#apply-family}
+
+Before purrr, R users relied on a family of `apply` functions. You will
+encounter them in legacy code and Stack Overflow answers, so it is worth
+understanding each one.
+
+### `apply()` — rows and columns of a matrix
+
+```{r apply-matrix, echo=TRUE}
+# apply() is for matrices; MARGIN = 1 → rows, MARGIN = 2 → columns
+m <- matrix(c(3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8), nrow = 4)
+m
+
+apply(m, MARGIN = 1, FUN = mean)   # row means
+apply(m, MARGIN = 2, FUN = sum)    # column sums
+```
+
+`apply()` does **not** work well on data frames with mixed types — use
+`purrr::map_dbl()` or `dplyr::summarise()` instead.
+
+### `lapply()` — list in, list out (always)
+
+```{r lapply-example, echo=TRUE}
+# lapply() always returns a list of the same length
+lapply(sites, mean)
+
+# To get a plain vector you must unlist() or use sapply()
+unlist(lapply(sites, mean))
+```
+
+### `sapply()` — convenient but treacherous
+
+```{r sapply-example, echo=TRUE}
+# Works fine when every result is a scalar
+sapply(sites, mean)
+
+# ⚠ Silent failure: returns a list when simplification is impossible
+# (e.g. results have different lengths — hard to catch downstream)
+sapply(sites, range)   # 2-row matrix this time — not always obvious
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ Never use <code>sapply()</code> inside a function you plan to reuse</strong>
+Its return type depends on the data it sees at runtime. Use
+<code>vapply()</code> (base R) or <code>map_dbl()</code>/<code>map_chr()</code>
+(purrr) to declare what you expect and get an error if the data disagrees.
+</div>
+
+### `vapply()` — the safe alternative to `sapply()`
+
+```{r vapply-example, echo=TRUE}
+# Declare the expected return type via FUN.VALUE
+vapply(sites, mean, FUN.VALUE = numeric(1))
+
+# vapply() errors if the result does not match — safety at zero extra cost
+# vapply(sites, range, FUN.VALUE = numeric(1))  # ← would error: length 2 ≠ 1
+```
+
+### `mapply()` — multiple inputs in parallel
+
+```{r mapply-example, echo=TRUE}
+# mapply() is like map2() / pmap() but function-first, data-second
+site_means_vec <- c(kern = 12, mojave = 8, coast = 18)
+site_sds_vec   <- c(kern =  2, mojave = 1, coast =  3)
+
+set.seed(42)
+mapply(function(mu, s) round(mean(rnorm(30, mu, s)), 2),
+       mu = site_means_vec,
+       s  = site_sds_vec)
+```
+
+Compare to the purrr equivalent (function-last, which reads better in pipes):
+
+```{r mapply-vs-map2, echo=TRUE}
+set.seed(42)
+map2_dbl(site_means_vec, site_sds_vec,
+         ~ round(mean(rnorm(30, .x, .y)), 2))
+```
+
+### `tapply()` — grouped summaries from a vector
+
+```{r tapply-example, echo=TRUE}
+# tapply(values, groups, FUN) — quick group summaries
+ndvi_vals <- c(0.45, 0.48, 0.50, 0.62, 0.65, 0.70, 0.30, 0.28, 0.32)
+watershed <- c("W1","W1","W1","W2","W2","W2","W3","W3","W3")
+
+tapply(ndvi_vals, watershed, mean)
+
+# Modern equivalent using dplyr:
+data.frame(ndvi = ndvi_vals, ws = watershed) |>
+  dplyr::summarise(mean_ndvi = mean(ndvi), .by = ws)
+```
+
+### Side-by-side: the same task five ways
+
+```{r five-ways, echo=TRUE}
+# Task: compute the coefficient of variation (CV) for each site
+cv <- function(x) sd(x) / mean(x) * 100
+
+# 1. for loop
+cv_loop <- vector("double", length(sites)); names(cv_loop) <- names(sites)
+for (nm in names(sites)) cv_loop[nm] <- cv(sites[[nm]])
+
+# 2. lapply + unlist
+cv_lapply <- unlist(lapply(sites, cv))
+
+# 3. sapply  (convenient, but not type-safe)
+cv_sapply <- sapply(sites, cv)
+
+# 4. vapply  (type-safe base R)
+cv_vapply <- vapply(sites, cv, numeric(1))
+
+# 5. purrr::map_dbl  (type-safe, tidyverse-friendly)
+cv_purrr  <- map_dbl(sites, cv)
+
+# All identical?
+stopifnot(all.equal(cv_loop, cv_lapply),
+          all.equal(cv_loop, cv_sapply),
+          all.equal(cv_loop, cv_vapply),
+          all.equal(cv_loop, cv_purrr))
+cat("All five approaches produce identical results.\n")
+```
+
+---
+
+## 4. Why Replace Loops with `map()`? {#why-map}
+
+A `for` loop in R is perfectly valid. But it forces you to manage three things
+at once: the **index**, the **output container**, and the **logic**. `map()`
+collapses all three into one expression focused on the logic alone.
+
+Consider computing the mean of each numeric column in a data frame:
+
+```{r loop-vs-map, echo=TRUE}
+# ----- the for-loop way -----
+df <- data.frame(a = rnorm(50, 10, 2),
+                 b = rnorm(50, 20, 4),
+                 c = rnorm(50,  5, 1))
+
+results_loop <- vector("list", ncol(df))        # pre-allocate
+for (i in seq_along(df)) {
+  results_loop[[i]] <- mean(df[[i]])
+}
+results_loop
+
+# ----- the purrr way -----
+map(df, mean)
+```
+
+The `map()` version removes the bookkeeping entirely. The intent — *apply `mean`
+to every column* — is immediately readable.
+
+<div class="callout callout-concept">
+<strong>🔄 The core contract of map()</strong>
+<code>map(.x, .f)</code> takes every element of <code>.x</code> and feeds it
+to <code>.f</code>, collecting the results in a <strong>list</strong>.
+The input is a list or vector; the output is always a list of the same length.
+</div>
+
+The mental model is a conveyor belt: items flow in one end, the function
+processes each one, results flow out the other end — all in parallel, none
+skipped, none out of order.
+
+<div class="map-diagram">
+<div class="map-in">
+  <div class="map-label">Input (.x)</div>
+  <div class="map-item">col_a</div>
+  <div class="map-item">col_b</div>
+  <div class="map-item">col_c</div>
+</div>
+<div class="map-arrow">→</div>
+<div class="map-fn">
+  <div class="map-label">Function (.f)</div>
+  <div class="map-fn-name">mean()</div>
+</div>
+<div class="map-arrow">→</div>
+<div class="map-out">
+  <div class="map-label">Output (list)</div>
+  <div class="map-item">10.1</div>
+  <div class="map-item">19.8</div>
+  <div class="map-item">5.04</div>
+</div>
+</div>
+
+---
+
+## 5. The `map()` Family — Choosing Your Output Type {#map-family}
+
+`map()` always returns a **list**. When you know what type the results should be,
+use a typed variant to get a flat vector instead of a list:
+
+<div class="variant-grid">
+<div class="variant-card">
+  <div class="vc-fn">map()</div>
+  <div class="vc-returns">→ list</div>
+  <div class="vc-desc">Most flexible; elements can be any type or length.</div>
+</div>
+<div class="variant-card">
+  <div class="vc-fn">map_dbl()</div>
+  <div class="vc-returns">→ double vector</div>
+  <div class="vc-desc">Use when .f returns a single number. Errors loudly if not.</div>
+</div>
+<div class="variant-card">
+  <div class="vc-fn">map_int()</div>
+  <div class="vc-returns">→ integer vector</div>
+  <div class="vc-desc">Use for counts, indices, nrow() results.</div>
+</div>
+<div class="variant-card">
+  <div class="vc-fn">map_chr()</div>
+  <div class="vc-returns">→ character vector</div>
+  <div class="vc-desc">Use when .f returns a string (e.g., names, labels).</div>
+</div>
+<div class="variant-card">
+  <div class="vc-fn">map_lgl()</div>
+  <div class="vc-returns">→ logical vector</div>
+  <div class="vc-desc">Use for TRUE/FALSE checks across elements.</div>
+</div>
+<div class="variant-card">
+  <div class="vc-fn">map_dfr()</div>
+  <div class="vc-returns">→ data frame (row-bind)</div>
+  <div class="vc-desc">Use when .f returns a data frame and you want rows stacked.</div>
+</div>
+</div>
+
+```{r map-variants, echo=TRUE}
+sites <- list(
+  kern  = c(12.1, 14.3, 11.8, 15.6, 13.2),
+  mojave = c(8.4,  7.9,  9.1,  8.6),
+  coast = c(18.0, 19.4, 17.5, 20.1, 18.8, 19.0)
+)
+
+# map()     → list of numeric vectors (raw output)
+map(sites, summary)
+
+# map_dbl() → named double vector — mean per site
+map_dbl(sites, mean)
+
+# map_int() → sample sizes
+map_int(sites, length)
+
+# map_lgl() → which sites have mean > 15?
+map_lgl(sites, ~ mean(.x) > 15)
+```
+
+<div class="callout callout-tip">
+<strong>💡 Type safety is a feature, not a restriction</strong>
+If you use <code>map_dbl()</code> and the function accidentally returns a
+character string, <code>purrr</code> errors immediately — at the source of
+the problem. A plain list would silently carry the wrong type for many lines
+before breaking somewhere unexpected.
+</div>
+
+---
+
+## 6. Anonymous Functions — Writing `.f` Inline {#anonymous-fn}
+
+You don't have to write a named function to use `map()`. The tidyverse
+shorthand `~ expr` creates an anonymous function where `.x` refers to the
+current element:
+
+```{r anon-fn, echo=TRUE}
+# Three equivalent ways to compute CV (sd/mean * 100) per site:
+
+# 1. Named function (verbose but reusable)
+coef_var <- function(x) sd(x) / mean(x) * 100
+map_dbl(sites, coef_var)
+
+# 2. purrr formula shorthand  ~  (most common in pipelines)
+map_dbl(sites, ~ sd(.x) / mean(.x) * 100)
+
+# 3. Base R anonymous function (R ≥ 4.1)
+map_dbl(sites, \(x) sd(x) / mean(x) * 100)
+```
+
+The `~` shorthand is idiomatic purrr and reads well in pipes. The `\(x)`
+syntax is portable to any function that takes a function argument, not just
+purrr.
+
+### Passing extra arguments
+
+When your function needs more than just the current element, pass extra
+arguments after `.f`:
+
+```{r extra-args, echo=TRUE}
+# Trim 10% from each tail when computing mean
+map_dbl(sites, mean, trim = 0.1)
+
+# Or equivalently with the formula shorthand
+map_dbl(sites, ~ mean(.x, trim = 0.1))
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ Watch out: passing extra args to the wrong function</strong>
+Extra arguments go to <code>.f</code>, not to <code>map()</code> itself.
+If your anonymous function calls multiple functions internally, use the
+<code>~</code> form and be explicit about which gets which argument.
+</div>
+
+---
+
+## 7. `map2()` and `pmap()` — Iterating Over Multiple Inputs {#map2-pmap}
+
+`map()` iterates over one thing at a time. `map2()` iterates over **two
+things in parallel**, and `pmap()` handles **any number of inputs** as a
+named list.
+
+```{r map2-pmap, echo=TRUE}
+# Simulate data for multiple sites with different means AND sd's
+site_means <- c(kern = 12, mojave = 8, coast = 18)
+site_sds   <- c(kern =  2, mojave = 1, coast =  3)
+
+# map2(): iterate over means and sds simultaneously
+set.seed(42)
+simulated <- map2(site_means, site_sds,
+                  ~ rnorm(n = 30, mean = .x, sd = .y))
+map_dbl(simulated, mean)   # check recovered means
+
+# pmap(): same idea, but inputs come as a named list (or data frame)
+params <- list(
+  n    = c(20,  30,  40),
+  mean = c(10,  50, 100),
+  sd   = c( 2,   5,  10)
+)
+set.seed(7)
+pmap(params, rnorm) |> map_dbl(mean)
+```
+
+`pmap()` is especially powerful when your parameters live in a data frame —
+each row becomes one call to the function:
+
+```{r pmap-df, echo=TRUE}
+model_specs <- tibble::tribble(
+  ~species,      ~intercept, ~slope,
+  "oak",              2.1,    0.84,
+  "chaparral",        1.4,    1.12,
+  "riparian",         3.5,    0.61
+)
+
+# predict biomass at a fixed precipitation value (450 mm)
+precip <- 450
+model_specs |>
+  dplyr::mutate(
+    biomass_kg = pmap_dbl(
+      list(a = intercept, b = slope),
+      ~ ..1 + ..2 * log(precip)
+    )
+  )
+```
+
+---
+
+## 8. `walk()` — When You Only Care About Side Effects {#walk}
+
+`map()` always returns a value. Sometimes you want to *do* something — save a
+file, print a plot, write a message — without collecting any return value.
+That is `walk()`.
+
+```{r walk-example, echo=TRUE}
+# Create a small report for each site (printing here; in practice, write CSVs)
+walk2(names(sites), sites, function(nm, vals) {
+  cat(sprintf("Site: %-10s  n = %d  mean = %.2f  sd = %.2f\n",
+              nm, length(vals), mean(vals), sd(vals)))
+})
+```
+
+The `walk()` family mirrors `map()` exactly — `walk2()`, `pwalk()` — but
+returns `.x` invisibly, making it pipeline-friendly:
+
+```{r walk-pipeline, echo=TRUE, eval=FALSE}
+# A pipeline that processes data AND saves outputs — walk() at the end
+sites |>
+  map(~ tibble::tibble(value = .x, z = scale(.x)[,1])) |>
+  walk2(names(sites), ~ readr::write_csv(.x, paste0(.y, "_processed.csv")))
+```
+
+---
+
+## 9. Real-World Examples {#real-world}
+
+### Fitting a model to each site
+
+A common ecological workflow: split data by group, fit a model to each group,
+extract coefficients.
+
+```{r per-site-model, echo=TRUE}
+# Simulate a rainfall–NDVI dataset across 4 watersheds
+set.seed(123)
+n_sites <- 4
+obs_df <- purrr::map_dfr(seq_len(n_sites), function(s) {
+  n   <- 25
+  ppt <- runif(n, 200, 600)
+  tibble::tibble(
+    site  = paste0("WS", s),
+    ppt   = ppt,
+    ndvi  = 0.3 + s * 0.05 + 0.0008 * ppt + rnorm(n, 0, 0.04)
+  )
+})
+
+# Split → fit → extract slope, all in one pipeline
+slopes <- obs_df |>
+  split(~site) |>
+  map(~ lm(ndvi ~ ppt, data = .x)) |>
+  map_dfr(~ broom::tidy(.x)[2, c("term", "estimate", "p.value")],
+          .id = "site")
+slopes
+```
+
+### Reading many files at once
+
+```{r read-files, echo=TRUE, eval=FALSE}
+# Suppose you have data/site_A.csv, data/site_B.csv, ...
+csv_files <- list.files("data", pattern = "\\.csv$", full.names = TRUE)
+
+all_data <- csv_files |>
+  set_names(~ tools::file_path_sans_ext(basename(.x))) |>
+  map_dfr(readr::read_csv, .id = "site")
+```
+
+The `set_names()` step labels each element with its filename *before* mapping,
+so `.id = "site"` in `map_dfr()` can populate a `site` column automatically.
+No loop, no `rbind()` accumulation pattern.
+
+### Applying the same plot to many groups
+
+```{r purrr-plots, echo=TRUE, fig.height=3, fig.width=7}
+site_plots <- obs_df |>
+  split(~site) |>
+  imap(function(df, nm) {
+    ggplot(df, aes(ppt, ndvi)) +
+      geom_point(color = "#4a7c5e", alpha = .7, size = 2) +
+      geom_smooth(method = "lm", se = FALSE, color = "#c8832a", linewidth = .8) +
+      labs(title = nm, x = "Precipitation (mm)", y = "NDVI") +
+      theme_minimal(base_size = 11) +
+      theme(plot.title = element_text(family = "serif", face = "bold",
+                                      color = "#1e3a2f"))
+  })
+
+# Print just the first two
+patchwork::wrap_plots(site_plots[1:2], ncol = 2)
+```
+
+`imap()` is a shortcut for `map2(.x, names(.x), .f)` — it hands you both
+the element **and** its name, which is useful any time you need the label
+inside the function.
+
+---
+
+## 10. List Columns — `purrr` Meets the Tidyverse {#list-cols}
+
+`map()` returns lists. A data frame column can *be* a list. Combining these
+two facts gives you **list columns** — a powerful pattern for keeping model
+objects, plots, or data frames associated with their metadata in a single tidy
+tibble.
+
+```{r list-cols, echo=TRUE}
+library(tidyr)
+
+nested <- obs_df |>
+  nest(data = -site) |>
+  mutate(
+    model   = map(data, ~ lm(ndvi ~ ppt, data = .x)),
+    r2      = map_dbl(model, ~ summary(.x)$r.squared),
+    coefs   = map(model, broom::tidy)
+  )
+
+nested |> select(site, r2)
+
+# Unnest to recover a flat table of coefficients
+nested |>
+  unnest(coefs) |>
+  filter(term == "ppt") |>
+  select(site, estimate, std.error, p.value)
+```
+
+<div class="callout callout-concept">
+<strong>🧩 Why list columns matter</strong>
+Without list columns, per-group model objects have to live in separate named
+lists outside the data frame, divorced from their metadata. List columns keep
+everything together: the raw data, the model, its diagnostics, and its
+predictions all in one row per group. <code>unnest()</code> and
+<code>map_*()</code> let you extract exactly what you need downstream.
+</div>
+
+---
+
+<div class="key-box">
+<h4>🔑 Iteration in R — key takeaways</h4>
+<ul>
+<li><strong>Use a <code>for</code> loop when each step depends on the last.</strong> Random walks, iterative algorithms, simulations with carry-forward state — these cannot be expressed with <code>map()</code>. Pre-allocate with <code>vector("double", n)</code>; never grow a vector inside a loop.</li>
+<li><strong>Avoid <code>sapply()</code> in scripts and functions.</strong> It silently changes its return type depending on the data. Use <code>vapply()</code> (base R) or a typed <code>map_*()</code> variant (purrr) so mismatches surface as errors, not silent wrong answers.</li>
+<li><strong><code>lapply()</code> is honest: list in, list out, always.</strong> It is perfectly fine for base-R workflows. <code>purrr::map()</code> is essentially <code>lapply()</code> with a consistent interface, typed variants, and better error messages.</li>
+<li><strong><code>map(.x, .f)</code> is the core purrr pattern.</strong> Feed a list or vector into a function, get a list back. Choose a typed variant — <code>map_dbl()</code>, <code>map_chr()</code>, <code>map_dfr()</code> — when you know the output type.</li>
+<li><strong>The <code>~</code> shorthand is idiomatic purrr.</strong> Write <code>~ expr</code> and use <code>.x</code> for the current element. Use <code>\(x) expr</code> (R ≥ 4.1) when you need portability outside purrr.</li>
+<li><strong><code>map2()</code> and <code>pmap()</code> supersede <code>mapply()</code>.</strong> They put data first (pipeline-friendly) and return consistently typed results when you use the typed variants.</li>
+<li><strong>Use <code>walk()</code> for side effects.</strong> Saving files, printing output, writing messages — anything where the return value is irrelevant.</li>
+<li><strong>List columns are the purrr payoff.</strong> <code>nest()</code> + <code>mutate(map(...))</code> keeps models, plots, and summaries tethered to their group metadata in a single tidy tibble.</li>
+</ul>
+</div>
+
+---
+
+### What's next?
+
+- **[String Manipulation](07_Strings.html)** — `stringr` and regex for cleaning messy text data
+- **[Data Wrangling](03_Data_Wrangling.html)** — `dplyr` and `tidyr` for reshaping data frames
+- **[Visualization](02_Visualization.html)** — `ggplot2` for publication-quality graphics
+
+```{r session-info, echo=FALSE}
+# sessionInfo()
+```
+
+<footer class="page-footer">
+EA030 R Tricks &mdash; Module 06
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>
