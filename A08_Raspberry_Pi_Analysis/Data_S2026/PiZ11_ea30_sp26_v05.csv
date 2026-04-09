@@ -1,3 +1,0 @@
-timestamp,temperature_C,pressure_hPa,humidity_pct,light_lux,oxidised_kO,reduced_kO,nh3_kO,pm1_ug_m3,pm25_ug_m3,pm10_ug_m3
-2026-02-27 14:57:43,9.32,707.11,74.60,260.37,22.17,2.67,0.67,2.00,2.00,2.00
-2026-02-27 15:02:17,15.78,707.11,74.60,152.57,116.37,7.70,2.91,1.00,1.00,1.00
