@@ -27,10 +27,11 @@ vignettes/*.pdf
 00_Draft_Template/
 01_index/
 01_Stats/
+01_RGuides
 14_Time_Series
 19_Survival_Analysis/
-24_Regional_Climate_Trends/
-28_Raspberry_Pi_Analysis/
+A04_Regional_Climate_Trends/
+A08_Raspberry_Pi_Analysis/
 DRAFT/
 OLD/
 
