@@ -1,0 +1,258 @@
+---
+title: "Multiple Regression & Generalized Linear Models (GLMs)"
+author: "EA30 / marc"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    theme: readable
+---
+
+# Welcome
+
+This tutorial introduces **multiple regression** and **generalized linear models (GLMs)** in R. These tools allow you to model relationships between a response variable and **multiple predictors**, test **interactions**, compare models using **AIC**, and analyze **count** and **binary** data.
+
+By the end of this tutorial, you will be able to:
+
+- Fit multiple linear regression models
+- Interpret coefficients with multiple predictors
+- Specify and interpret interaction terms
+- Compare models using AIC
+- Fit GLMs for **count** (Poisson) and **binary** (logistic) data
+
+---
+
+# Setup
+
+```{r setup, message=FALSE}
+# Load required packages
+library(tidyverse)
+```
+
+---
+
+# Part 1: Multiple Linear Regression
+
+## Example Data
+
+We will use the built-in `mtcars` dataset.
+
+```{r}
+data(mtcars)
+head(mtcars)
+```
+
+Suppose we want to predict **fuel efficiency (`mpg`)** using:
+
+- Car weight (`wt`)
+- Horsepower (`hp`)
+
+---
+
+## Fitting a Multiple Regression Model
+
+```{r}
+model1 <- lm(mpg ~ wt + hp, data = mtcars)
+summary(model1)
+```
+
+### Interpretation
+
+- Each coefficient represents the effect of a predictor **holding the others constant**
+- The intercept is the predicted `mpg` when all predictors are zero (often not meaningful)
+
+---
+
+## Visualizing Partial Relationships
+
+```{r}
+# Added-variable (partial regression) plot
+library(car)
+avPlots(model1)
+```
+
+---
+
+# Part 2: Interaction Terms
+
+Sometimes the effect of one predictor depends on another.
+
+Example: Does the effect of **weight** on `mpg` depend on **horsepower**?
+
+```{r}
+model2 <- lm(mpg ~ wt * hp, data = mtcars)
+summary(model2)
+```
+
+### Reading an Interaction
+
+- `wt:hp` represents how the slope of `wt` changes with `hp`
+- Interaction models should usually include the main effects
+
+---
+
+## Plotting an Interaction
+
+```{r}
+mtcars %>%
+  mutate(hp_group = if_else(hp > median(hp), "High HP", "Low HP")) %>%
+  ggplot(aes(wt, mpg, color = hp_group)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+---
+
+# Part 3: Model Selection with AIC
+
+AIC (Akaike Information Criterion) balances **model fit** and **complexity**.
+
+Lower AIC is better.
+
+```{r}
+model_simple <- lm(mpg ~ wt, data = mtcars)
+model_full   <- lm(mpg ~ wt + hp + cyl, data = mtcars)
+
+AIC(model_simple, model_full, model1, model2)
+```
+
+### Rules of Thumb
+
+- ΔAIC < 2 → models are similarly supported
+- Prefer simpler models when AICs are close
+
+---
+
+# Part 4: Generalized Linear Models (GLMs)
+
+Linear regression assumes:
+
+- Normally distributed errors
+- Constant variance
+
+GLMs allow different **distributions** and **link functions**.
+
+---
+
+## GLM for Count Data (Poisson Regression)
+
+### Example
+
+Suppose we count events (e.g., number of species).
+
+```{r}
+# Simulated count data
+set.seed(42)
+df_count <- tibble(
+  x = runif(50, 0, 10),
+  count = rpois(50, lambda = exp(1 + 0.3 * x))
+)
+```
+
+```{r}
+poisson_model <- glm(count ~ x, family = poisson, data = df_count)
+summary(poisson_model)
+```
+
+### Interpretation
+
+- Coefficients are on the **log scale**
+- `exp(coef)` gives multiplicative effects
+
+```{r}
+exp(coef(poisson_model))
+```
+
+---
+
+## Checking Fit
+
+```{r}
+# Plot observed vs predicted
+df_count$predicted <- predict(poisson_model, type = "response")
+
+ggplot(df_count, aes(x, count)) +
+  geom_point() +
+  geom_line(aes(y = predicted), color = "blue")
+```
+
+---
+
+# Part 5: GLM for Binary Data (Logistic Regression)
+
+### Example
+
+Binary outcomes (yes/no, presence/absence).
+
+```{r}
+# Simulated binary data
+set.seed(123)
+df_binary <- tibble(
+  x = rnorm(100),
+  y = rbinom(100, 1, plogis(-0.5 + 1.2 * x))
+)
+```
+
+```{r}
+logit_model <- glm(y ~ x, family = binomial, data = df_binary)
+summary(logit_model)
+```
+
+### Interpretation
+
+- Coefficients are in **log-odds**
+- `exp(coef)` gives **odds ratios**
+
+```{r}
+exp(coef(logit_model))
+```
+
+---
+
+## Predicted Probabilities
+
+```{r}
+df_binary$prob <- predict(logit_model, type = "response")
+
+ggplot(df_binary, aes(x, prob)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "loess")
+```
+
+---
+
+# Model Comparison for GLMs
+
+AIC works for GLMs as well:
+
+```{r}
+logit_null <- glm(y ~ 1, family = binomial, data = df_binary)
+AIC(logit_null, logit_model)
+```
+
+---
+
+# Key Takeaways ✅
+
+- Multiple regression allows **multiple predictors**
+- Interaction terms change how predictors work together
+- AIC helps compare non-nested models
+- GLMs extend regression to **non-normal data**
+- Interpretation depends on the **link function**
+
+---
+
+# Common Mistakes
+
+- ❌ Ignoring interactions when theoretically important
+- ❌ Using linear regression for count or binary data
+- ❌ Interpreting GLM coefficients on the raw scale
+- ❌ Overfitting complex models with little data
+
+---
+
+# Congratulations 🎉
+
+You now have the tools to fit and interpret **multiple regression models** and **GLMs**—a major step toward real-world data analysis in environmental and social sciences.
