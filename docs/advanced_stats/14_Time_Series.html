@@ -447,6 +447,30 @@ padding: 24px 4vw; margin: 60px -4vw 0;
 font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em; }
 .page-footer a { color: var(--sage); text-decoration: none; }
 .page-footer .divider { margin: 0 8px; opacity: .3; }
+
+.btn-pdf {
+display: inline-flex; align-items: center; gap: 6px;
+font-family: 'Source Code Pro', monospace; font-size: .72rem;
+font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+background: var(--amber); color: #fff; border: none;
+padding: 6px 16px; border-radius: 4px; cursor: pointer;
+margin-top: 16px; transition: background .2s;
+}
+.btn-pdf:hover { background: var(--amber-lt); }
+@media print {
+.section-nav, .back-link, .btn-pdf, .page-footer { display: none !important; }
+.page-header { margin: 0 !important; }
+body { padding: 0 !important; font-size: 13px !important; }
+pre { border-left: 2px solid #ccc !important;
+background: #f5f5f5 !important; color: #000 !important; }
+.callout { border-left: 3px solid #999 !important;
+background: #fafafa !important; }
+.key-box { background: #1e3a2f !important;
+-webkit-print-color-adjust: exact;
+print-color-adjust: exact; }
+h2 { page-break-before: auto; }
+pre, .callout, table { page-break-inside: avoid; }
+}
 </style>
 <div class="page-header">
 <div class="module-tag">
@@ -458,7 +482,9 @@ Time Series <span>Analysis in R</span>
 <p class="sub">
 <strong>Prof. Marc Los Huertos</strong>  •  Pomona College
 </p>
-<p><a class="back-link" href="../index.html">← Back to R Tricks</a></p>
+<p><a class="back-link" href="../index.html">← Back to R Tricks</a>
+<button class="btn-pdf" onclick="window.print()">⬇ Save as
+PDF</button></p>
 </div>
 <div class="section-nav">
 <p><a href="#concepts">Concepts</a> <a href="#setup">Setup</a>
