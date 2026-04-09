@@ -1,0 +1,553 @@
+---
+title: "EA030 — RTricks"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile), "../docs/index.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+<!-- ============================================================ -->
+<!--  EDIT YOUR CONTENT HERE                                      -->
+<!--                                                              -->
+<!--  Each card is a list() with these fields:                    -->
+<!--    icon   : emoji or symbol                                  -->
+<!--    title  : card heading                                     -->
+<!--    desc   : one- or two-sentence description                 -->
+<!--    tag    : small label shown at bottom of card              -->
+<!--    href   : URL or relative path to the module               -->
+<!--             Leave as "" until the page exists                -->
+<!--    status : "ready" (default) | "coming soon"                -->
+<!--             Set to "coming soon" to grey the card out        -->
+<!--                                                              -->
+<!--  To add a card : add a list() entry to any section           -->
+<!--  To add a section : copy a section block, give it a new id,  -->
+<!--                     and add it to all_sections               -->
+<!--  To reorder sections : change the order in all_sections      -->
+<!-- ============================================================ -->
+
+```{r content, include=FALSE}
+
+# ── GETTING STARTED ──────────────────────────────────────────────────────────
+getting_started <- list(
+  section_id    = "getting-started",
+  section_title = "Getting Started",
+  section_desc  = "Setup, orientation, and reproducible workflow fundamentals.",
+  cards = list(
+    list(icon = "💻", title = "R & RStudio Setup",
+         desc   = "Install R and RStudio, configure your environment, and verify with a test script.",
+         tag    = "setup",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "📁", title = "Project Structure",
+         desc   = "Organize scripts, data, and outputs using RStudio Projects and a consistent folder hierarchy.",
+         tag    = "workflow",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🧶", title = "RMarkdown & knitr",
+         desc   = "Weave prose, code, and output into reproducible reports. YAML headers, chunk options, rendering.",
+         tag    = "rmarkdown",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🗃️", title = "Data Import",
+         desc   = "Reading CSV, Excel, and field-data files. Handling encoding issues and common pitfalls.",
+         tag    = "import",
+         href   = "",
+         status = "coming soon")
+  )
+)
+
+# ── BASIC STATISTICS ─────────────────────────────────────────────────────────
+basic_stats <- list(
+  section_id    = "basic-stats",
+  section_title = "Basic Statistics",
+  section_desc  = "Descriptive summaries, inference, and foundational visualization.",
+  cards = list(
+    list(icon = "📊", title = "Descriptive Statistics",
+         desc   = "Measures of center and spread, frequency tables, base-R and dplyr summaries.",
+         tag    = "descriptive",
+         href   = "basic_statistics/01_Descriptive_Statistics.html",
+         status = "1st Draft"),
+    list(icon = "📈", title = "Data Visualization",
+         desc   = "Core ggplot2 grammar: geoms, aesthetics, facets, themes, and export-ready figures.",
+         tag    = "ggplot2",
+         href   = "basic_statistics/02_Visualization.html",
+         status = "1st Draft"),
+    list(icon = "🔬", title = "Four Statistical Frameworks",
+         desc   = "Every statistical test you will encounter in environmental science fits into one of four frameworks determined by a single question: what type of variable is your outcome (dependent), and what type of variable is your predictor (independent)?",
+         tag    = "inference",
+         href   = "basic_statistics/03_Four_Frameworks.html",
+         status = "1st Draft"),
+    list(icon = "🔬", title = "Signal over Noise",
+         desc   = "Every classical statistical test — t-test, ANOVA, regression — is a formalisation of the same underlying question: is the pattern I see in my data larger than what I would expect from chance variation alone?",
+         tag    = "inference",
+         href   = "basic_statistics/04_Signal_Over_Noise.html",
+         status = "1st Draft"),
+    list(icon = "🔬", title = "Hypothesis Testing",
+         desc   = "t-tests, Wilcoxon tests, proportions tests. Effect sizes, p-values, common misconceptions.",
+         tag    = "inference",
+         href   = "basic_statistics/05_Hypothesis_Testing.html",
+         status = "1st Draft"),
+    list(icon = "📉", title = "Simple Linear Regression",
+         desc   = "Fitting, diagnosing, and interpreting OLS models with lm(). Residual plots and leverage.",
+         tag    = "regression",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🎲", title = "ANOVA & Group Comparisons",
+         desc   = "One-way and two-way ANOVA, post-hoc tests, and visualising group differences.",
+         tag    = "anova",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "📐", title = "Correlation Analysis",
+         desc   = "Pearson and Spearman correlation, scatterplot matrices, and interpreting correlation structure.",
+         tag    = "correlation",
+         href   = "",
+         status = "coming soon")
+  )
+)
+
+# ── ADVANCED STATISTICS ──────────────────────────────────────────────────────
+advanced_stats <- list(
+  section_id    = "advanced-stats",
+  section_title = "Advanced Statistics",
+  section_desc  = "Multivariate methods, hierarchical models, and specialist tools for environmental data.",
+  cards = list(
+    list(icon = "🌿", title = "Multiple Regression & GLMs",
+         desc   = "Multiple predictors, interactions, model selection (AIC), and GLMs for count and binary data.",
+         tag    = "glm",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🏔️", title = "Mixed-Effects Models",
+         desc   = "Random intercepts and slopes with lme4. Nested and crossed random effects for field designs.",
+         tag    = "lme4",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🗺️", title = "Spatial Analysis",
+         desc   = "Importing shapefiles, CRS transformations, spatial joins, and choropleth maps with sf.",
+         tag    = "sf / terra",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🕸️", title = "Multivariate Ordination",
+         desc   = "PCA, NMDS, and RDA for community and environmental gradient data using vegan.",
+         tag    = "vegan",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "⏱️", title = "Time-Series Analysis",
+         desc   = "Decomposition, autocorrelation, ARIMA, and sensor-data workflows with lubridate and tsibble.",
+         tag    = "time-series",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🔁", title = "Bootstrapping & Permutation",
+         desc   = "Resampling-based inference, confidence intervals, and randomisation tests.",
+         tag    = "resampling",
+         href   = "",
+         status = "coming soon")
+  )
+)
+
+# ── CORE R SKILLS ────────────────────────────────────────────────────────────
+#   Generic, transferable R techniques — useful in any project or course
+core_r <- list(
+  section_id    = "core-r",
+  section_title = "Core R Skills",
+  section_desc  = "General-purpose, transferable R techniques applicable beyond EA030.",
+  cards = list(
+    list(icon = "🔧", title = "Tidyverse Data Wrangling",
+         desc   = "dplyr verbs, tidyr pivoting, and pipe-based workflows for cleaning field and lab data.",
+         tag    = "tidyverse",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🐙", title = "Git & GitHub for R",
+         desc   = "Version-control basics, committing from RStudio, branching, and submitting via pull request.",
+         tag    = "git",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "📦", title = "Package Management with renv",
+         desc   = "Lock package versions and share reproducible environments across machines.",
+         tag    = "renv",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🔄", title = "Functional Programming",
+         desc   = "purrr::map() and friends to replace loops, write cleaner code, and automate repetitive tasks.",
+         tag    = "purrr",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "📋", title = "Tables & Reporting",
+         desc   = "Publication-quality tables with kableExtra, gt, and flextable. Inline R in RMarkdown.",
+         tag    = "reporting",
+         href   = "",
+         status = "coming soon")
+  )
+)
+
+# ── EA030 FIELD & LAB PROJECTS ───────────────────────────────────────────────
+#   Course-specific analyses tied to actual EA030 assignments and datasets
+ea030_projects <- list(
+  section_id    = "ea030-projects",
+  section_title = "EA030 Field & Lab Projects",
+  section_desc  = "Course-specific modules tied to EA030 assignments, field campaigns, and shared datasets.",
+  cards = list(
+    list(icon = "🗂️", title = "Project Index",
+         desc   = "Overview of all EA030 projects this semester — Regional Climate Trends, pHake Lake, Compost Maturity, Inland Empire Air Quality, and Surface Water Quality.",
+         tag    = "index",
+         href   = "project_index.html",
+         status = "ready"),
+    list(icon = "💨", title = "Analyzing EPA PM2.5 Data",
+         desc   = "Thirty years of daily fine particulate matter (PM2.5) for a US county. Download EPA AQS data, clean monitoring records, visualise long-term trends, compute monthly means with 95% CIs by decade, and evaluate exceedances of the 24-hr NAAQS (35 µg/m³). Includes environmental justice discussion. Helper functions in 06_EPA_PM25/.",
+         tag    = "air quality",
+         href   = "Analyzing_EPA_PM25.html",
+         status = "ready"),
+    list(icon = "🌱", title = "Soil Carbon Analysis",
+         desc   = "Importing and cleaning soil survey data, fitting depth profiles, and comparing land-use treatments.",
+         tag    = "project",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "💧", title = "Water Quality Monitoring",
+         desc   = "Time-series of field sensor data, detecting exceedances, and visualising spatial variation.",
+         tag    = "project",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🦋", title = "Biodiversity Surveys",
+         desc   = "Species richness, rarefaction curves, and community composition with vegan.",
+         tag    = "project",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "📷", title = "Camera Traps",
+         desc   = "Camera traps record who was present, when, and what they were doing without a researcher present. This tutorial walks the complete analytical pipeline — from raw Excel export through cleaning, independent-event definition, descriptive ethograms, and four quantitative methods: chi-square/Fisher tests of diel behavior shifts, kernel-density activity overlap, rarefaction-corrected diversity, and single-season occupancy modeling.",
+         tag    = "project",
+         href   = "Unit_Biodiversity/P15_Camera_Trap.html",
+         status = "1st Draft"),
+    list(icon = "🌡️", title = "Climate Data & Trends",
+         desc   = "Downloading NOAA/EPA data, trend detection, and visualising temperature and precipitation records.",
+         tag    = "project",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "🌦️", title = "Regional Climate Trends",
+         desc   = "Analysing long-term temperature and precipitation patterns across Southern California using PRISM and NOAA station data. Trend detection with Mann-Kendall tests and visualisation of seasonal shifts.",
+         tag    = "climate",
+         href   = "",
+         status = "ready"),
+    list(icon = "🏙️", title = "Urban Heat Island",
+         desc   = "Raster data from Landsat, land-cover classification, and surface temperature analysis.",
+         tag    = "project",
+         href   = "",
+         status = "coming soon"),
+    list(icon = "📍", title = "GPS & Field Data Integration",
+         desc   = "Joining GPS tracks with field observations, plotting on basemaps, and exporting for reports.",
+         tag    = "project",
+         href   = "",
+         status = "coming soon")
+  )
+)
+
+# ── EXTERNAL RESOURCES ───────────────────────────────────────────────────────
+resources <- list(
+  section_id    = "resources",
+  section_title = "Additional Resources",
+  section_desc  = "External references and community tools curated for EA030.",
+  cards = list(
+    list(icon = "📖", title = "R for Data Science (2e)",
+         desc   = "Hadley Wickham & Mine Cetinkaya-Rundel. The canonical tidyverse reference, freely online.",
+         tag    = "external",
+         href   = "https://r4ds.hadley.nz/",
+         status = "ready"),
+    list(icon = "🔍", title = "Quick-R Reference",
+         desc   = "Dense, searchable reference for base-R syntax — useful as a cheat-sheet during lab sessions.",
+         tag    = "external",
+         href   = "https://www.statmethods.net/",
+         status = "ready"),
+    list(icon = "🎨", title = "ggplot2 Reference",
+         desc   = "Full function reference for every geom, stat, scale, and theme component in ggplot2.",
+         tag    = "external",
+         href   = "https://ggplot2.tidyverse.org/reference/",
+         status = "ready"),
+    list(icon = "📋", title = "Posit Cheatsheets",
+         desc   = "Official one-page PDF cheatsheets for ggplot2, dplyr, tidyr, RMarkdown, and more.",
+         tag    = "external",
+         href   = "https://posit.co/resources/cheatsheets/",
+         status = "ready")
+  )
+)
+
+# ── PAGE ORDER ───────────────────────────────────────────────────────────────
+# Rearrange this list to reorder sections on the page
+all_sections <- list(
+  getting_started,
+  basic_stats,
+  advanced_stats,
+  core_r,
+  ea030_projects,
+  resources
+)
+```
+
+<!-- ============================================================ -->
+<!--  RENDERING ENGINE — no need to edit below this line          -->
+<!-- ============================================================ -->
+
+```{r render-functions, include=FALSE}
+library(htmltools)
+
+make_card <- function(card) {
+  # Explicit status field drives coming-soon — not href emptiness
+  is_coming_soon <- !is.null(card$status) && card$status == "coming soon"
+
+  card_class <- if (is_coming_soon) "card coming-soon" else "card"
+  href_val   <- if (!is.null(card$href) && nchar(card$href) > 0) card$href else "#"
+  tag_label  <- if (is_coming_soon) "coming soon" else card$tag
+
+  as.character(tags$a(
+    class  = card_class,
+    href   = href_val,
+    tags$span(class = "card-icon",  HTML(card$icon)),
+    tags$div(class  = "card-title", card$title),
+    tags$p(class    = "card-desc",  card$desc),
+    tags$span(class = "card-tag",   tag_label)
+  ))
+}
+
+make_section <- function(section) {
+  cards_html <- paste(sapply(section$cards, make_card), collapse = "\n")
+  paste0(
+    '<div id="', section$section_id, '">\n',
+    '<div class="section-header">',
+    '<h2>', section$section_title, '</h2>',
+    '<p>',  section$section_desc,  '</p>',
+    '</div>\n',
+    '<div class="card-grid">\n', cards_html, '\n</div>\n',
+    '</div>\n'
+  )
+}
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --rust:      #8b3a2a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 12px rgba(30,58,47,.10), 0 1px 3px rgba(30,58,47,.07);
+  --card-hover:  0 8px 28px rgba(30,58,47,.16), 0 2px 8px rgba(30,58,47,.10);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); font-size: 16px; line-height: 1.7; }
+
+.main-container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+h1.title, h4.author, h4.date { display: none; }
+
+/* Header */
+.site-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 56px 6vw 48px; position: relative; overflow: hidden; border-bottom: 4px solid var(--amber);
+}
+.site-header::after {
+  content: ''; position: absolute; right: -60px; top: -60px; width: 340px; height: 340px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%); pointer-events: none;
+}
+.header-inner { max-width: 1100px; margin: 0 auto; }
+.course-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .72rem; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--amber-lt);
+  border: 1px solid rgba(200,131,42,.45); padding: 3px 10px; border-radius: 2px; margin-bottom: 18px;
+}
+.site-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(2rem,4vw,3rem); font-weight: 700;
+  line-height: 1.18; color: #fff; letter-spacing: -.01em; margin-bottom: 10px;
+}
+.site-header h1 span { color: var(--sage); }
+.header-sub { font-size: .97rem; font-weight: 300; color: rgba(255,255,255,.72); }
+.header-sub strong { font-weight: 700; color: rgba(255,255,255,.92); }
+.header-meta { margin-top: 22px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.meta-pill { font-family: 'Source Code Pro', monospace; font-size: .75rem; color: var(--sage); letter-spacing: .06em; }
+.meta-pill::before { content: '\25B8 '; opacity: .6; }
+
+/* Nav */
+.site-nav { background: var(--ink); padding: 0 6vw; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--amber); }
+.nav-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; flex-wrap: wrap; }
+.site-nav a {
+  display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .72rem;
+  font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,.6);
+  text-decoration: none; padding: 12px 14px; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s;
+}
+.site-nav a:hover { color: var(--amber-lt); border-bottom-color: var(--amber); }
+.nav-divider { font-family: 'Source Code Pro', monospace; font-size: .6rem; color: rgba(255,255,255,.2); padding: 12px 4px; align-self: center; }
+
+/* Page body */
+.page-body { max-width: 1100px; margin: 0 auto; padding: 52px 6vw 80px; }
+
+/* Section headers */
+.section-header { margin-top: 52px; margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid var(--parchment); }
+#getting-started .section-header { margin-top: 0; }
+.section-header h2 { font-family: 'Libre Baskerville', serif; font-size: 1.5rem; font-weight: 700; color: var(--forest); letter-spacing: -.01em; }
+.section-header p { font-size: .93rem; color: var(--dust); margin-top: 4px; }
+
+/* Section type badges */
+#core-r .section-header h2::before {
+  content: 'Core Skills \2002'; font-family: 'Source Code Pro', monospace; font-size: .62rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--fern); background: var(--mist);
+  padding: 2px 7px; border-radius: 2px; margin-right: 10px; vertical-align: middle;
+}
+#ea030-projects .section-header h2::before {
+  content: 'EA030 Projects \2002'; font-family: 'Source Code Pro', monospace; font-size: .62rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--amber); background: #fdf0e0;
+  padding: 2px 7px; border-radius: 2px; margin-right: 10px; vertical-align: middle;
+}
+
+/* Cards */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 20px; margin-bottom: 12px; }
+.card {
+  background: var(--white); border: 1px solid var(--mist); border-radius: 6px;
+  padding: 24px 22px 20px; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; box-shadow: var(--card-shadow);
+  transition: transform .2s, box-shadow .2s, border-color .2s; position: relative; overflow: hidden;
+}
+.card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--sage); transition: background .2s; }
+.card:hover { transform: translateY(-3px); box-shadow: var(--card-hover); border-color: var(--sage); }
+.card:hover::before { background: var(--fern); }
+#ea030-projects .card::before { background: var(--amber); }
+#ea030-projects .card:hover::before { background: var(--rust); }
+#ea030-projects .card:hover { border-color: var(--amber-lt); }
+
+/* Coming soon — opt-in only */
+.card.coming-soon { opacity: .48; cursor: default; pointer-events: none; filter: grayscale(.35); }
+
+.card-icon  { font-size: 1.35rem; margin-bottom: 10px; display: block; line-height: 1; }
+.card-title { font-family: 'Libre Baskerville', serif; font-size: 1rem; font-weight: 700; color: var(--forest); margin-bottom: 5px; }
+.card-desc  { font-size: .85rem; color: var(--dust); line-height: 1.55; flex-grow: 1; }
+.card-tag {
+  display: inline-block; margin-top: 13px;
+  font-family: 'Source Code Pro', monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 2px; background: var(--mist); color: var(--fern); font-weight: 600; align-self: flex-start;
+}
+#ea030-projects .card-tag         { background: #fdf0e0; color: var(--amber); }
+.card.coming-soon .card-tag       { background: var(--parchment); color: var(--dust); }
+
+/* Quick ref */
+.quick-ref {
+  background: var(--forest); color: #fff; border-radius: 6px; padding: 28px 32px; margin: 48px 0;
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px;
+}
+.quick-ref h3 { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; color: var(--sage); margin-bottom: 5px; }
+.quick-ref p  { font-size: .87rem; color: rgba(255,255,255,.68); }
+.quick-ref code { font-family: 'Source Code Pro', monospace; font-size: .8rem; background: rgba(255,255,255,.1); color: var(--amber-lt); padding: 1px 5px; border-radius: 3px; }
+.ref-links { display: flex; flex-direction: column; gap: 7px; }
+.ref-link {
+  font-family: 'Source Code Pro', monospace; font-size: .73rem; letter-spacing: .05em;
+  color: var(--amber-lt); text-decoration: none; border: 1px solid rgba(200,131,42,.4);
+  padding: 6px 13px; border-radius: 3px; transition: background .2s; white-space: nowrap; text-align: center;
+}
+.ref-link:hover { background: rgba(200,131,42,.15); }
+
+/* Intro */
+.intro-blurb {
+  background: var(--white); border-left: 4px solid var(--fern); border-radius: 0 6px 6px 0;
+  padding: 20px 24px; margin-bottom: 0; font-size: .93rem; color: var(--charcoal); box-shadow: var(--card-shadow);
+}
+.intro-blurb strong { color: var(--forest); }
+
+/* Footer */
+.site-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center; padding: 28px 6vw;
+  font-size: .78rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.site-footer a { color: var(--sage); text-decoration: none; }
+.site-footer a:hover { color: var(--amber-lt); }
+.site-footer .divider { margin: 0 9px; opacity: .3; }
+```
+
+<header class="site-header">
+<div class="header-inner">
+<div class="course-tag">EA030 &mdash; Environmental Analysis</div>
+<h1>R<span>Tricks</span> &mdash; Statistical Computing Resources</h1>
+<p class="header-sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<div class="header-meta">
+<span class="meta-pill">Pomona College</span>
+<span class="meta-pill">Environmental Analysis</span>
+<span class="meta-pill">R / RMarkdown / knitr</span>
+</div>
+</div>
+</header>
+
+<nav class="site-nav">
+<div class="nav-inner">
+<a href="#getting-started">Getting Started</a>
+<a href="#basic-stats">Basic Stats</a>
+<a href="#advanced-stats">Advanced Stats</a>
+<span class="nav-divider">&#9474;</span>
+<a href="#core-r">Core R Skills</a>
+<a href="#ea030-projects">Field &amp; Lab Projects</a>
+<a href="project_index.html">Project Index</a>
+<span class="nav-divider">&#9474;</span>
+<a href="#resources">Resources</a>
+</div>
+</nav>
+
+<div class="page-body">
+
+<div class="intro-blurb">
+Welcome to the <strong>RTricks</strong> resource hub for <strong>EA030</strong>.
+Tutorials, worked examples, and reference materials for R in environmental data analysis &mdash;
+from loading your first dataset through mixed-effects models and spatial analysis.
+Each card links to a self-contained module. Cards marked <em>coming soon</em> are in progress.
+</div>
+
+```{r render-sections, results='asis'}
+for (s in all_sections) {
+  cat(make_section(s), "\n")
+}
+```
+
+<div class="quick-ref">
+<div>
+<h3>Quick Reference</h3>
+<p>Repository at <code>github.com/marclos/RTricks</code>. Each module contains an <code>index.Rmd</code>, a <code>data/</code> folder, and rendered HTML. Clone or browse via the links.</p>
+</div>
+<div class="ref-links">
+<a class="ref-link" href="https://github.com/marclos/RTricks">&#8599; GitHub Repo</a>
+<a class="ref-link" href="https://www.pomona.edu/academics/departments/environmental-analysis">&#8599; EA @ Pomona</a>
+<a class="ref-link" href="https://rmarkdown.rstudio.com/docs/">&#8599; RMarkdown Docs</a>
+</div>
+</div>
+
+</div>
+
+```{r footer, results='asis'}
+cat(paste0(
+'<footer class="site-footer">
+  EA030 RTricks
+  <span class="divider">|</span> Prof. Marc Los Huertos
+  <span class="divider">|</span> Pomona College
+  <span class="divider">|</span> Last updated: ', format(Sys.Date(), "%B %Y"), '
+  <span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>'
+))
+```

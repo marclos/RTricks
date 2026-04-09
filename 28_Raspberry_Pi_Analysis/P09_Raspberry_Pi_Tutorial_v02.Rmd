@@ -303,7 +303,7 @@ then the <code>eval=FALSE</code> tag keeps it from re-running on every knit.
 
 ```{r install-packages, eval=FALSE}
 pkgs <- c("tidyverse", "lubridate", "patchwork", "scales",
-          "slider",    "ggridges",  "GGally",   "moments",
+          "zoo",       "ggridges",  "GGally",   "moments",
           "broom",     "knitr",     "kableExtra")
 to_install <- pkgs[!pkgs %in% rownames(installed.packages())]
 if (length(to_install)) install.packages(to_install, quiet = TRUE)
@@ -311,7 +311,7 @@ if (length(to_install)) install.packages(to_install, quiet = TRUE)
 
 ```{r packages}
 library(tidyverse); library(lubridate); library(patchwork); library(scales)
-library(slider);    library(ggridges);  library(GGally);    library(moments)
+library(zoo);       library(ggridges);  library(GGally);    library(moments)
 library(broom);     library(knitr);     library(kableExtra)
 
 theme_set(theme_minimal(base_size = 13))
@@ -400,11 +400,18 @@ read_sensor <- function(path, sensor_id, offsets_tbl) {
     offset_s <- 0
   }
 
-  read_csv(path, show_col_types = FALSE) |>
+  # Force timestamp to character so readr auto-parsing cannot interfere,
+  # then rebuild datetime via plain numeric arithmetic (avoids Period/vctrs issues)
+  read_csv(path, col_types = cols(timestamp = col_character()),
+           show_col_types = FALSE) |>
     mutate(
       sensor      = sensor_id,
-      datetime_pi = ymd_hms(timestamp, tz = "America/Los_Angeles"),
-      datetime    = datetime_pi + seconds(offset_s),      # ← corrected
+      datetime_pi = ymd_hms(timestamp, tz = "America/Los_Angeles", quiet = TRUE),
+      datetime    = as.POSIXct(
+                      as.numeric(datetime_pi) + as.numeric(offset_s),
+                      tz     = "America/Los_Angeles",
+                      origin = "1970-01-01"
+                    ),
       date        = as_date(datetime),
       hour        = hour(datetime),
       wday        = wday(datetime, label = TRUE, abbr = TRUE),
@@ -429,10 +436,22 @@ files <- setNames(as.list(csv_paths), sensor_ids)
 message(sprintf("Discovered %d file(s): %s",
                 length(files), paste(sensor_ids, collapse = ", ")))
 
-raw <- imap_dfr(files, ~ read_sensor(.x, .y, clock_offsets))
+raw <- imap_dfr(files, ~ read_sensor(.x, .y, clock_offsets)) |>
+  mutate(datetime = as.POSIXct(datetime, tz = "America/Los_Angeles",
+                               origin = "1970-01-01"))
 
 glimpse(raw)
 ```
+
+<div class="callout callout-warn">
+<strong>⚠️ Check datetime class before continuing</strong>
+The line <code>glimpse(raw)</code> above should show <code>datetime &lt;dttm&gt;</code> — not
+<code>&lt;chr&gt;</code> or <code>&lt;dbl&gt;</code>. If it shows the wrong type, your
+<code>timestamp</code> column format may not match <code>ymd_hms()</code>. Run
+<code>class(raw$datetime)</code> and <code>head(raw$timestamp)</code> in the Console
+to diagnose. A format like <code>"02/27/2026 14:23:45"</code> needs
+<code>mdy_hms()</code> instead.
+</div>
 
 ## 4.2 Quality Control
 
@@ -469,10 +488,20 @@ df <- df |>
     by = "sensor"
   ) |>
   mutate(
-    sensor   = factor(sensor),
-    # Short label: just the location, truncated
-    loc_label = str_trunc(coalesce(location, sensor), 35)
+    sensor      = factor(sensor),
+    loc_label   = str_trunc(coalesce(location, as.character(sensor)), 35),
+    # Re-assert types after join — left_join can silently coerce POSIXct to dbl
+    datetime    = as.POSIXct(datetime, tz = "America/Los_Angeles", origin = "1970-01-01"),
+    pm25_ug_m3  = as.numeric(pm25_ug_m3),
+    pm1_ug_m3   = as.numeric(pm1_ug_m3),
+    pm10_ug_m3  = as.numeric(pm10_ug_m3)
   )
+
+# Hard stop if datetime still isn't POSIXct — prevents cryptic ggplot errors downstream
+stopifnot(
+  "datetime must be POSIXct — check glimpse(raw) output above" =
+    inherits(df$datetime, "POSIXct")
+)
 ```
 
 Final dataset: **`r nrow(df)` rows** across **`r n_distinct(df$sensor)` sensor(s)**.
@@ -568,12 +597,13 @@ mean** (~55 minutes at 5-min sampling) reveals the underlying trend.
 n_sensors <- n_distinct(df$sensor)
 pal       <- setNames(sensor_pal[seq_len(n_sensors)], levels(df$sensor))
 
+# zoo::rollmean: 11-point centred moving average; fill = NA keeps vector length
 df |>
   arrange(sensor, datetime) |>
   group_by(sensor) |>
-  mutate(pm25_roll = slide_dbl(pm25_ug_m3, mean,
-                               .before = 5, .after = 5,
-                               .complete = FALSE)) |>
+  mutate(pm25_roll = as.numeric(
+           zoo::rollmean(pm25_ug_m3, k = 11, fill = NA, align = "center")
+         )) |>
   ungroup() |>
   ggplot(aes(x = datetime, color = sensor)) +
   geom_line(aes(y = pm25_ug_m3), alpha = 0.18, linewidth = 0.3) +
@@ -582,15 +612,15 @@ df |>
              color = "forestgreen", linewidth = 0.6) +
   geom_hline(yintercept = 35.4, linetype = "dashed",
              color = "darkorange",  linewidth = 0.6) +
-  annotate("text", x = min(df$datetime), y = 13.2,
+  annotate("text", x = min(df$datetime, na.rm = TRUE), y = 13.2,
            label = "EPA Good/Moderate (12 µg/m³)",
            hjust = 0, size = 3.2, color = "forestgreen") +
-  annotate("text", x = min(df$datetime), y = 36.6,
+  annotate("text", x = min(df$datetime, na.rm = TRUE), y = 36.6,
            label = "EPA Moderate/USG (35.4 µg/m³)",
            hjust = 0, size = 3.2, color = "darkorange") +
   scale_color_manual(values = pal) +
   scale_x_datetime(date_breaks = "3 days", date_labels = "%b %d") +
-  labs(title   = "PM2.5 Time Series — All Sensors",
+  labs(title    = "PM2.5 Time Series — All Sensors",
        subtitle = "Faint lines = raw 5-min readings; bold = 11-pt centred rolling mean",
        x = NULL, y = "PM2.5 (µg/m³)", color = "Sensor") +
   theme(legend.position = "top",
@@ -614,8 +644,9 @@ df |>
                            pm25_ug_m3 = "PM2.5")) |>
   arrange(sensor, fraction, datetime) |>
   group_by(sensor, fraction) |>
-  mutate(conc_roll = slide_dbl(conc, mean, .before=5, .after=5,
-                               .complete=FALSE)) |>
+  mutate(conc_roll = as.numeric(
+           zoo::rollmean(conc, k = 11, fill = NA, align = "center")
+         )) |>
   ungroup() |>
   ggplot(aes(x = datetime, y = conc_roll,
              color = fraction, linetype = fraction)) +
