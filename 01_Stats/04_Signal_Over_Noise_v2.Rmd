@@ -216,7 +216,7 @@ tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
 <div class="module-tag">EA030 &mdash; Basic Statistics &mdash; Module 04</div>
 <h1>Signal <span>Over Noise</span></h1>
 <p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
-<a class="back-link" href="index.html">&#8592; Back to Basic Statistics</a>
+<a class="back-link" href="../index.html">&#8592; Back to Basic Statistics</a>
 </div>
 
 <div class="section-nav">
