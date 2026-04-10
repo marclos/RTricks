@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Marc Los Huertos" />
+
+
+<title>Git &amp; GitHub for R</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Git &amp; GitHub for R</h1>
+<h4 class="author">Marc Los Huertos</h4>
+<h4 class="date">EA030 · Compiled 2026-04-09</h4>
+
+
+
+<div class="page-header">
+<div class="module-tag">
+EA030 — RGuides — Module 08
+</div>
+<h1>
+Git &amp; GitHub <span>for R</span>
+</h1>
+<p class="sub">
+<strong>Prof. Marc Los Huertos</strong>  •  Pomona College
+</p>
+<p><a class="back-link" href="../index.html">← Back to EA030
+Home</a></p>
+</div>
+<div class="section-nav">
+<p><a href="#why">Why Git?</a> <a href="#concepts">Concepts</a>
+<a href="#setup">Setup</a> <a href="#basic">Basic Workflow</a>
+<a href="#rstudio-pane">RStudio Pane</a> <a href="#history">History</a>
+<a href="#branches">Branches</a> <a href="#remotes">Remotes</a>
+<a href="#complications">Complications</a> <a href="#shared">Shared
+Repos</a> <a href="#gitignore">.gitignore</a>
+<a href="#reference">Reference</a></p>
+</div>
+<blockquote>
+<p><strong>What this module covers.</strong> Git records every change to
+a project, lets you travel back to any earlier state, and lets multiple
+people work on the same files without overwriting each other. GitHub
+hosts Git repositories and adds pull requests, issue tracking, and code
+review. This module builds from the first <code>git init</code> through
+branching, merge conflicts, and the conventions that make shared EA030
+repositories work without chaos.</p>
+</blockquote>
+<hr />
+<div id="why" class="section level2">
+<h2>Why Version Control?</h2>
+<p>Without Git, project histories look like this:</p>
+<div class="terminal">
+<p><span class="comment"># A folder without version control</span><br>
+analysis.R<br> analysis_v2.R<br> analysis_FINAL.R<br>
+analysis_FINAL_fixed.R<br> analysis_FINAL_fixed_marccomments.R<br>
+analysis_use_this_one.R</p>
+</div>
+<p>With Git, you have one file and a complete labelled history of every
+change — who made it, when, and why. You can revert to any previous
+state with one command, branch to try a new approach without touching
+the working version, and trace exactly which code produced which
+result.</p>
+<div class="callout callout-concept">
+<p><strong>📌 Git is not just for software engineers</strong></p>
+<p>Every reproducible environmental analysis benefits from version
+control. When a reviewer asks “what changed between your submitted draft
+and the revision?”, Git answers precisely. When you re-run an old
+analysis on new data, Git tells you whether the code itself changed.</p>
+</div>
+<hr />
+</div>
+<div id="concepts" class="section level2">
+<h2>Core Concepts — The Commit Path</h2>
+<p>Understanding Git means understanding <strong>four locations</strong>
+your files inhabit and the commands that move them between
+locations.</p>
+<div class="commit-path">
+<div class="cp-zone">
+<div class="cp-icon work">
+📝
+</div>
+<div class="cp-label">
+Working<br>Directory
+</div>
+<div class="cp-sub">
+Files on disk<br>that you edit
+</div>
+</div>
+<div class="cp-arrow">
+<p><span class="cmd">git add</span> <span class="arr">→</span> <span class="rev">git restore</span></p>
+</div>
+<div class="cp-zone">
+<div class="cp-icon stage">
+🗂️
+</div>
+<div class="cp-label">
+Staging<br>Area
+</div>
+<div class="cp-sub">
+Preview of<br>next commit
+</div>
+</div>
+<div class="cp-arrow">
+<p><span class="cmd">git commit</span> <span class="arr">→</span> <span class="rev">git reset HEAD~</span></p>
+</div>
+<div class="cp-zone">
+<div class="cp-icon local">
+💾
+</div>
+<div class="cp-label">
+Local<br>Repository
+</div>
+<div class="cp-sub">
+History on<br>your machine
+</div>
+</div>
+<div class="cp-arrow">
+<p><span class="cmd">git push</span> <span class="arr">→</span> <span class="rev">git pull</span></p>
+</div>
+<div class="cp-zone">
+<div class="cp-icon remote">
+☁️
+</div>
+<div class="cp-label">
+Remote<br>(GitHub)
+</div>
+<div class="cp-sub">
+Shared history<br>online
+</div>
+</div>
+</div>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Location</th>
+<th>What it contains</th>
+<th>Analogy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Working directory</strong></td>
+<td>Files you see and edit</td>
+<td>Your desk — messy, in progress</td>
+</tr>
+<tr class="even">
+<td><strong>Staging area</strong></td>
+<td>Curated preview of your next commit</td>
+<td>A tray of items ready to photograph</td>
+</tr>
+<tr class="odd">
+<td><strong>Local repository</strong></td>
+<td>Permanent record of all commits</td>
+<td>A filing cabinet in your office</td>
+</tr>
+<tr class="even">
+<td><strong>Remote (GitHub)</strong></td>
+<td>The same history, hosted online</td>
+<td>A filing cabinet in a shared office</td>
+</tr>
+</tbody>
+</table>
+<p>The staging area is the most misunderstood part of Git. It lets you
+group related changes into one logical commit even when many files have
+changed — you choose exactly what goes into each commit.</p>
+<div class="callout callout-formula">
+<p><strong>⚙️ A commit is a snapshot, not a diff</strong></p>
+<p>Git stores each commit as a complete snapshot of all tracked files —
+not just the changed lines. The diff you see with <code>git diff</code>
+is computed on demand by comparing two snapshots. Each commit has a
+unique SHA-1 hash (e.g., <code>a3f9c2d</code>) that permanently
+identifies it and can be referenced in advanced commands.</p>
+</div>
+<hr />
+<div class="step-header">
+<div class="step-num">
+1
+</div>
+<div>
+<div class="step-title">
+One-Time Setup
+</div>
+<div class="step-sub">
+Git identity · GitHub account · Personal Access Token
+</div>
+</div>
+</div>
+<div id="setup" class="section level3">
+<h3>Configure your identity</h3>
+<p>Git embeds your name and email in every commit. Set these once in the
+<strong>Terminal</strong> tab in RStudio:</p>
+<div class="terminal">
+<p><span class="prompt">$ </span>git config –global user.name “Jamie
+Smith”<br> <span class="prompt">$ </span>git config –global user.email
+“<a href="mailto:jsmith@students.pomona.edu" class="email">jsmith@students.pomona.edu</a>”<br> <span class="prompt">$
+</span>git config –global init.defaultBranch main<br> <br> <span class="comment"># Verify</span><br> <span class="prompt">$ </span>git
+config –list</p>
+</div>
+</div>
+<div id="create-a-github-account" class="section level3">
+<h3>Create a GitHub account</h3>
+<p>Go to <strong><a href="https://github.com">https://github.com</a></strong> and sign up
+with your Pomona email. Verify student status at <strong><a href="https://education.github.com">education.github.com</a></strong>
+for free private repositories.</p>
+</div>
+<div id="authenticate-with-a-personal-access-token-pat" class="section level3">
+<h3>Authenticate with a Personal Access Token (PAT)</h3>
+<p>GitHub no longer accepts passwords over HTTPS. Generate a PAT:</p>
+<ol style="list-style-type: decimal">
+<li>GitHub → <strong>Settings → Developer settings → Personal access
+tokens → Tokens (classic)</strong></li>
+<li><strong>Generate new token (classic)</strong></li>
+<li>Set expiration: 90 days (or the length of the semester)</li>
+<li>Check scopes: <strong>repo</strong>, <strong>workflow</strong>,
+<strong>user</strong></li>
+<li><strong>Generate token</strong> — copy it immediately (you cannot
+see it again)</li>
+</ol>
+<p>Store the PAT in R:</p>
+<pre class="r"><code>install.packages(&quot;gitcreds&quot;)   # if needed — already on Pomona server
+gitcreds::gitcreds_set()       # paste your PAT when prompted</code></pre>
+<p>The <code>usethis</code> package wraps common setup steps:</p>
+<pre class="r"><code>library(usethis)
+create_github_token()    # opens browser with correct scopes pre-selected
+gitcreds::gitcreds_set() # store the PAT after copying from GitHub
+git_sitrep()             # &quot;situation report&quot; — verifies everything is connected</code></pre>
+<div class="callout callout-warn">
+<p><strong>⚠️ Never commit a PAT or any secret inside a script or .Rmd
+file</strong></p>
+<p>If you commit a token — even briefly — GitHub revokes it
+automatically. Secrets belong in environment variables or credential
+stores, never in code.</p>
+</div>
+<hr />
+<div class="step-header">
+<div class="step-num">
+2
+</div>
+<div>
+<div class="step-title">
+Basic Workflow — Init, Stage, Commit, Push
+</div>
+<div class="step-sub">
+The daily loop you will run hundreds of times
+</div>
+</div>
+</div>
+</div>
+<div id="basic" class="section level3">
+<h3>Start: two routes to a Git-enabled project</h3>
+<p><strong>Route A — New project from GitHub (recommended for shared
+work)</strong></p>
+<ol style="list-style-type: decimal">
+<li>Create a repository on GitHub: <strong>github.com → New
+repository</strong></li>
+<li>Copy the HTTPS URL</li>
+<li>In RStudio: <strong>File → New Project → Version Control →
+Git</strong> → paste URL</li>
+</ol>
+<p><strong>Route B — Existing RStudio Project → GitHub</strong></p>
+<pre class="r"><code>library(usethis)
+use_git()      # initialises git, makes first commit, opens Git pane
+use_github()   # creates the GitHub repo and pushes</code></pre>
+</div>
+<div id="the-daily-commit-loop" class="section level3">
+<h3>The daily commit loop</h3>
+<div class="workflow-lane">
+<div class="wf-step">
+<div class="wf-num">
+1
+</div>
+<div class="wf-body">
+<pre><code>&lt;div class=&quot;wf-title&quot;&gt;Check status — what has changed?&lt;/div&gt;
+&lt;div class=&quot;wf-code&quot;&gt;git status&lt;/div&gt;
+&lt;div class=&quot;wf-note&quot;&gt;Red = not staged. Green = staged and ready to commit.&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="wf-step">
+<div class="wf-num">
+2
+</div>
+<div class="wf-body">
+<pre><code>&lt;div class=&quot;wf-title&quot;&gt;Review the diff — what exactly changed?&lt;/div&gt;
+&lt;div class=&quot;wf-code&quot;&gt;git diff scripts/01_clean.R&lt;/div&gt;
+&lt;div class=&quot;wf-note&quot;&gt;Lines with &lt;code&gt;+&lt;/code&gt; were added; lines with &lt;code&gt;-&lt;/code&gt; were removed.&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="wf-step">
+<div class="wf-num">
+3
+</div>
+<div class="wf-body">
+<pre><code>&lt;div class=&quot;wf-title&quot;&gt;Stage the changes you want in this commit&lt;/div&gt;
+&lt;div class=&quot;wf-code&quot;&gt;git add scripts/01_clean.R&lt;/div&gt;
+&lt;div class=&quot;wf-note&quot;&gt;Stage everything reviewed: &lt;code&gt;git add .&lt;/code&gt;&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="wf-step">
+<div class="wf-num">
+4
+</div>
+<div class="wf-body">
+<pre><code>&lt;div class=&quot;wf-title&quot;&gt;Commit with a meaningful message&lt;/div&gt;
+&lt;div class=&quot;wf-code&quot;&gt;git commit -m &quot;fix: drop QC-flagged DO records before summarising&quot;&lt;/div&gt;
+&lt;div class=&quot;wf-note&quot;&gt;A permanent record — write it for your future self.&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="wf-step">
+<div class="wf-num">
+5
+</div>
+<div class="wf-body">
+<pre><code>&lt;div class=&quot;wf-title&quot;&gt;Push to GitHub&lt;/div&gt;
+&lt;div class=&quot;wf-code&quot;&gt;git push origin main&lt;/div&gt;
+&lt;div class=&quot;wf-note&quot;&gt;Or just &lt;code&gt;git push&lt;/code&gt; once upstream is set.&lt;/div&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="writing-good-commit-messages" class="section level3">
+<h3>Writing good commit messages</h3>
+<p>Complete the sentence: <em>“If applied, this commit will…”</em></p>
+<pre class="r"><code># Bad — tells you nothing
+git commit -m &quot;changes&quot;
+git commit -m &quot;fix stuff&quot;
+
+# Good — one sentence, explains what and why
+git commit -m &quot;add DO percent-saturation using Benson and Krause equation&quot;
+git commit -m &quot;fix: filter() drops NAs before group_by to prevent silent errors&quot;
+git commit -m &quot;refactor: extract site-cleaning logic into its own function&quot;
+git commit -m &quot;docs: add README section on data sources and field protocol&quot;</code></pre>
+<div class="callout callout-tip">
+<p><strong>✅ Conventional Commits prefixes</strong></p>
+<p><code>feat:</code> new feature or analysis step  ·  <code>fix:</code>
+bug or error correction  ·  <code>docs:</code> documentation only  · 
+<code>refactor:</code> restructuring without behaviour change  · 
+<code>data:</code> new or updated data file</p>
+</div>
+<hr />
+</div>
+</div>
+<div id="rstudio-pane" class="section level2">
+<h2>The RStudio Git Pane</h2>
+<p>The <strong>Git pane</strong> (top-right, next to Environment)
+provides a graphical interface for the most common operations.</p>
+<table>
+<caption>RStudio Git pane actions and their terminal
+equivalents.</caption>
+<colgroup>
+<col width="19%" />
+<col width="48%" />
+<col width="32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Action</th>
+<th align="left">RStudio Git pane</th>
+<th align="left">Terminal equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">See changed files</td>
+<td align="left">Files listed automatically with status icons</td>
+<td align="left"><code>git status</code></td>
+</tr>
+<tr class="even">
+<td align="left">Stage a file</td>
+<td align="left">Check the box in the Staged column</td>
+<td align="left"><code>git add &lt;file&gt;</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Unstage a file</td>
+<td align="left">Uncheck the box</td>
+<td align="left"><code>git restore --staged &lt;file&gt;</code></td>
+</tr>
+<tr class="even">
+<td align="left">View diff</td>
+<td align="left">Click the file name</td>
+<td align="left"><code>git diff &lt;file&gt;</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Commit</td>
+<td align="left">Commit button → write message → Commit</td>
+<td align="left"><code>git commit -m &#39;message&#39;</code></td>
+</tr>
+<tr class="even">
+<td align="left">Push</td>
+<td align="left">Green up-arrow Push button</td>
+<td align="left"><code>git push</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Pull</td>
+<td align="left">Blue down-arrow Pull button</td>
+<td align="left"><code>git pull</code></td>
+</tr>
+<tr class="even">
+<td align="left">View history</td>
+<td align="left">Clock icon (History)</td>
+<td align="left"><code>git log --oneline</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Switch branch</td>
+<td align="left">Branch dropdown top-right of pane</td>
+<td align="left"><code>git checkout &lt;branch&gt;</code></td>
+</tr>
+<tr class="even">
+<td align="left">New branch</td>
+<td align="left">Branch dropdown → New Branch</td>
+<td align="left"><code>git checkout -b &lt;branch&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-concept">
+<p><strong>📌 Use the Terminal for anything not in the pane</strong></p>
+<p>The Git pane covers about 80% of daily operations. For branching,
+rebasing, reset, stash, and conflict resolution you need the
+<strong>Terminal</strong> tab
+(<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> or <strong>Tools →
+Terminal → New Terminal</strong>). It opens at the project root
+automatically.</p>
+</div>
+<hr />
+</div>
+<div id="history" class="section level2">
+<h2>Reading History and Diffs</h2>
+<div class="terminal">
+<p><span class="comment"># Compact one-line history</span><br> <span class="prompt">$ </span>git log –oneline<br> <span class="out">a3f9c2d
+fix: drop NAs before group_by</span><br> <span class="out">8b21e4a add
+DO percent-saturation calculation</span><br> <span class="out">f1dc39a
+initial project structure and raw data</span><br> <br> <span class="comment"># Graph showing all branches</span><br> <span class="prompt">$ </span>git log –oneline –graph –all –decorate<br> <br>
+<span class="comment"># Full detail for one commit</span><br> <span class="prompt">$ </span>git show a3f9c2d</p>
+</div>
+<div id="compare-states" class="section level3">
+<h3>Compare states</h3>
+<div class="terminal">
+<p><span class="comment"># Changes between two commits</span><br> <span class="prompt">$ </span>git diff f1dc39a a3f9c2d<br> <br> <span class="comment"># One file between HEAD and 3 commits ago</span><br>
+<span class="prompt">$ </span>git diff HEAD~3 HEAD –
+scripts/02_visualise.R<br> <br> <span class="comment"># What is staged
+but not yet committed?</span><br> <span class="prompt">$ </span>git diff
+–staged</p>
+</div>
+</div>
+<div id="recover-an-old-version-of-a-single-file" class="section level3">
+<h3>Recover an old version of a single file</h3>
+<div class="terminal">
+<p><span class="comment"># Restore a file to how it looked in commit
+f1dc39a</span><br> <span class="prompt">$ </span>git restore
+–source=f1dc39a scripts/01_clean.R<br> <span class="comment"># File is
+now restored — stage and commit to keep it</span></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="branches" class="section level2">
+<h2>Branching</h2>
+<p>A <strong>branch</strong> is a parallel line of development. Use
+branches to work on analyses without touching the working
+<code>main</code> branch. Merge back when done.</p>
+<div class="branch-diagram">
+<svg viewBox="0 0 680 140" width="640" xmlns="http://www.w3.org/2000/svg" style="font-family:&#39;Source Code Pro&#39;,monospace; overflow:visible;">
+<line x1="40" y1="50" x2="640" y2="50" stroke="#3fb950" stroke-width="2.5"></line>
+<circle cx="80" cy="50" r="9" fill="#3fb950"></circle>
+<circle cx="180" cy="50" r="9" fill="#3fb950"></circle>
+<circle cx="500" cy="50" r="9" fill="#3fb950"></circle>
+<circle cx="600" cy="50" r="9" fill="#3fb950"></circle>
+<line x1="180" y1="50" x2="260" y2="105" stroke="#79c0ff" stroke-width="2.5"></line>
+<line x1="260" y1="105" x2="400" y2="105" stroke="#79c0ff" stroke-width="2.5"></line>
+<line x1="400" y1="105" x2="500" y2="50" stroke="#79c0ff" stroke-width="2.5"></line>
+<circle cx="260" cy="105" r="9" fill="#79c0ff"></circle>
+<circle cx="350" cy="105" r="9" fill="#79c0ff"></circle>
+<circle cx="400" cy="105" r="9" fill="#79c0ff"></circle>
+<text x="80" y="35" text-anchor="middle" fill="#3fb950" font-size="11">C1</text>
+<text x="180" y="35" text-anchor="middle" fill="#3fb950" font-size="11">C2</text>
+<text x="500" y="35" text-anchor="middle" fill="#3fb950" font-size="11">merge</text>
+<text x="600" y="35" text-anchor="middle" fill="#3fb950" font-size="11">C6</text>
+<text x="260" y="126" text-anchor="middle" fill="#79c0ff" font-size="11">C3</text>
+<text x="350" y="126" text-anchor="middle" fill="#79c0ff" font-size="11">C4</text>
+<text x="400" y="126" text-anchor="middle" fill="#79c0ff" font-size="11">C5</text>
+<rect x="18" y="38" width="50" height="18" rx="3" fill="#2a3a2a" />
+<text x="43" y="51" text-anchor="middle" fill="#3fb950" font-size="11" font-weight="bold">main</text>
+<rect x="148" y="110" width="122" height="18" rx="3" fill="#1a2a3a" />
+<text x="209" y="123" text-anchor="middle" fill="#79c0ff" font-size="11" font-weight="bold">feature/new-plot</text>
+<text x="183" y="76" text-anchor="middle" fill="#8b949e" font-size="10">branch</text>
+<text x="500" y="76" text-anchor="middle" fill="#8b949e" font-size="10">merge</text>
+</svg>
+</div>
+<div class="terminal">
+<p><span class="comment"># Create and switch to a new branch</span><br>
+<span class="prompt">$ </span>git checkout -b
+feature/turbidity-analysis<br> <span class="out">Switched to a new
+branch ‘feature/turbidity-analysis’</span><br> <br> <span class="comment"># List branches — asterisk marks current</span><br>
+<span class="prompt">$ </span>git branch<br> <span class="out">*
+feature/turbidity-analysis</span><br> <span class="out"> main</span><br>
+<br> <span class="comment"># After making commits, merge back into
+main</span><br> <span class="prompt">$ </span>git checkout main<br>
+<span class="prompt">$ </span>git pull<br> <span class="prompt">$
+</span>git merge feature/turbidity-analysis<br> <br> <span class="comment"># Delete the merged branch</span><br> <span class="prompt">$ </span>git branch -d feature/turbidity-analysis</p>
+</div>
+<div id="pull-requests-on-github" class="section level3">
+<h3>Pull Requests on GitHub</h3>
+<p>For shared repositories, merge through a <strong>Pull Request
+(PR)</strong>:</p>
+<ol style="list-style-type: decimal">
+<li>Push your branch:
+<code>git push origin feature/turbidity-analysis</code></li>
+<li>GitHub → <strong>Compare &amp; pull request</strong> banner appears
+automatically</li>
+<li>Write a description: what does this branch do, what should reviewers
+check?</li>
+<li>Assign a reviewer; link issues with <code>Closes #12</code></li>
+<li>Reviewer comments inline; push new commits to respond</li>
+<li>Once approved: <strong>Merge pull request → Confirm → Delete
+branch</strong></li>
+</ol>
+<div class="callout callout-tip">
+<p><strong>✅ Branch naming conventions</strong></p>
+<p><code>feature/add-turbidity-model</code>  · 
+<code>fix/do-na-filter</code>  ·  <code>docs/update-readme</code>  · 
+<code>analysis/seasonal-comparison</code></p>
+<p>Use consistent prefixes. Never work directly on <code>main</code> in
+a shared repository.</p>
+</div>
+<hr />
+</div>
+</div>
+<div id="remotes" class="section level2">
+<h2>Remote Repositories</h2>
+<div class="cmd-grid">
+<div class="cmd-card">
+<div class="cc-cmd">
+git push
+</div>
+<div class="cc-desc">
+Upload local commits to GitHub. Fails if the remote has commits you have
+not pulled.
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git pull
+</div>
+<div class="cc-desc">
+Download remote commits AND merge into current branch. Equivalent to
+fetch + merge.
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git fetch
+</div>
+<div class="cc-desc">
+Download remote commits but do NOT merge. Inspect first with <code>git
+log origin/main</code>.
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git remote -v
+</div>
+<div class="cc-desc">
+List remote connections. <code>origin</code> is the default name for the
+GitHub remote.
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git clone &lt;url&gt;
+</div>
+<div class="cc-desc">
+Download an entire repository from GitHub. Sets <code>origin</code>
+automatically.
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git push -u origin main
+</div>
+<div class="cc-desc">
+First push: sets upstream so future <code>git push</code> needs no
+arguments.
+</div>
+</div>
+</div>
+<hr />
+</div>
+<div id="complications" class="section level2">
+<h2>Complications</h2>
+<div id="merge-conflicts-anatomy-and-resolution" class="section level3">
+<h3>Merge conflicts — anatomy and resolution</h3>
+<p>A <strong>merge conflict</strong> occurs when two branches edited the
+same lines of the same file. Git marks the conflict and asks you to
+resolve it manually.</p>
+<div class="conflict-block">
+<div class="cb-head">
+scripts/02_visualise.R — after git merge feature/seasonal
+</div>
+<pre><code><span class="ours">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD  (your current branch — main)</span>
+<span class="ours">  scale_colour_manual(values = c(&quot;#4a7c5e&quot;, &quot;#c8832a&quot;))</span>
+<span class="sep">=======</span>
+<span class="theirs">  scale_colour_brewer(palette = &quot;Dark2&quot;)</span>
+<span class="theirs">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/seasonal  (the branch being merged in)</span></code></pre>
+</div>
+<p><strong>Resolution steps:</strong></p>
+<ol style="list-style-type: decimal">
+<li>Open the conflicted file in the Source pane</li>
+<li>Find every set of conflict markers
+(<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>,
+<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>)</li>
+<li>Edit to keep what is correct — delete all three marker lines</li>
+<li>Stage the resolved file:
+<code>git add scripts/02_visualise.R</code></li>
+<li>Complete the merge: <code>git commit</code> — Git pre-fills the
+message</li>
+</ol>
+<div class="callout callout-formula">
+<p><strong>⚙️ Reading the conflict markers</strong></p>
+<p><code>&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt; HEAD</code>
+— start of your version (the branch you are merging INTO)<br>
+<code>=======</code> — divider between the two versions<br>
+<code>&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt; branch-name</code>
+— end of their version (the branch being merged in)<br><br> You can keep
+yours, keep theirs, keep both, or write something new entirely. No
+markers may remain in the file when you stage it.</p>
+</div>
+<div class="callout callout-tip">
+<p><strong>✅ Use RStudio’s three-panel merge tool</strong></p>
+<p>When a conflict is detected, the Git pane shows an orange
+<strong>U</strong> (unresolved) next to the file. Click it and choose
+<strong>Open in merge tool</strong> for a side-by-side view with Accept
+Ours / Accept Theirs buttons.</p>
+</div>
+</div>
+<div id="detached-head" class="section level3">
+<h3>Detached HEAD</h3>
+<div class="terminal">
+<p><span class="warn">You are in ‘detached HEAD’ state.</span><br> <span class="warn">HEAD is now at f1dc39a initial project structure</span></p>
+</div>
+<p>This happens when you <code>git checkout</code> a commit hash
+directly. Commits made here are orphaned and will be
+garbage-collected.</p>
+<div class="terminal">
+<p><span class="comment"># Option 1 — go back to main, discarding
+detached commits</span><br> <span class="prompt">$ </span>git checkout
+main<br> <br> <span class="comment"># Option 2 — save your work by
+creating a branch first</span><br> <span class="prompt">$ </span>git
+checkout -b rescue/my-exploration<br> <span class="prompt">$ </span>git
+checkout main<br> <span class="prompt">$ </span>git merge
+rescue/my-exploration</p>
+</div>
+</div>
+<div id="accidental-commit-to-main-not-yet-pushed" class="section level3">
+<h3>Accidental commit to main (not yet pushed)</h3>
+<div class="terminal">
+<p><span class="comment"># Save the commit on a new branch</span><br>
+<span class="prompt">$ </span>git branch feature/oops-commit<br> <br>
+<span class="comment"># Reset main back one commit, keeping changes in
+working directory</span><br> <span class="prompt">$ </span>git reset
+HEAD~1<br> <br> <span class="comment"># Continue on the feature
+branch</span><br> <span class="prompt">$ </span>git checkout
+feature/oops-commit</p>
+</div>
+<div class="callout callout-warn">
+<p><strong>⚠️ Never use git push –force on a shared branch</strong></p>
+<p><code>git push --force</code> rewrites remote history. Everyone who
+has pulled the branch will have a diverged history that is very
+difficult to reconcile. On <code>main</code> or any shared branch, use
+<code>git revert</code> instead — it adds a new undo commit without
+touching history.</p>
+</div>
+</div>
+<div id="undoing-things-choosing-the-right-command" class="section level3">
+<h3>Undoing things — choosing the right command</h3>
+<table>
+<caption>Choosing the right undo command. When in doubt, prefer
+non-destructive options.</caption>
+<colgroup>
+<col width="40%" />
+<col width="29%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Situation</th>
+<th align="left">Command</th>
+<th align="left">Safety</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Changed a file — not staged, not committed</td>
+<td align="left"><code>git restore &lt;file&gt;</code></td>
+<td align="left">Destructive — file changes lost</td>
+</tr>
+<tr class="even">
+<td align="left">Staged a file — not committed</td>
+<td align="left"><code>git restore --staged &lt;file&gt;</code></td>
+<td align="left">Safe — file stays modified, just unstaged</td>
+</tr>
+<tr class="odd">
+<td align="left">Committed locally — not pushed (discard changes)</td>
+<td align="left"><code>git reset --hard HEAD~1</code></td>
+<td align="left">Destructive — changes lost forever</td>
+</tr>
+<tr class="even">
+<td align="left">Committed locally — not pushed (keep changes in working
+dir)</td>
+<td align="left"><code>git reset HEAD~1</code></td>
+<td align="left">Safe — changes returned to working directory</td>
+</tr>
+<tr class="odd">
+<td align="left">Committed and pushed to shared branch</td>
+<td align="left"><strong>Do not rewrite.</strong> Use
+<code>git revert &lt;hash&gt;</code></td>
+<td align="left">Safe — revert adds a new undo commit</td>
+</tr>
+<tr class="even">
+<td align="left">Want to undo one commit without rewriting history</td>
+<td align="left"><code>git revert &lt;hash&gt;</code></td>
+<td align="left">Safe — new commit, history intact</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="stashing-pause-work-to-switch-context" class="section level3">
+<h3>Stashing — pause work to switch context</h3>
+<div class="terminal">
+<p><span class="comment"># Mid-analysis and need to urgently fix
+something on main</span><br> <span class="prompt">$ </span>git stash
+push -m “half-finished turbidity model”<br> <span class="out">Saved
+working directory and index state: half-finished turbidity
+model</span><br> <br> <span class="prompt">$ </span>git checkout main
+<span class="comment"># working directory is now clean</span><br> <span class="comment"># … fix the bug, commit, push …</span><br> <span class="prompt">$ </span>git checkout feature/turbidity-analysis<br>
+<span class="prompt">$ </span>git stash pop <span class="comment">#
+restore stashed work</span></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="shared" class="section level2">
+<h2>Shared Repository Best Practices</h2>
+<p>When an EA030 team shares one GitHub repository the biggest risks are
+accidental overwrites, tangled histories, and large binary files. These
+conventions prevent most problems.</p>
+<div id="recommended-branch-model" class="section level3">
+<h3>Recommended branch model</h3>
+<div class="terminal">
+<p>main <span class="comment"># stable, always runs end-to-end —
+protected</span><br> dev <span class="comment"># integration branch —
+features merge here before main</span><br>
+feature/jamie-water-quality<br> feature/alex-mapping<br>
+feature/sam-statistics<br> fix/remove-duplicate-sites</p>
+</div>
+</div>
+<div id="protect-the-main-branch-on-github" class="section level3">
+<h3>Protect the main branch on GitHub</h3>
+<p><strong>Settings → Branches → Branch protection rules → Add
+rule</strong></p>
+<ul>
+<li>Branch name pattern: <code>main</code></li>
+<li>☑ Require a pull request before merging</li>
+<li>☑ Require at least 1 approving review</li>
+<li>☑ Do not allow bypassing the above settings</li>
+</ul>
+</div>
+<div id="always-pull-before-you-push" class="section level3">
+<h3>Always pull before you push</h3>
+<div class="terminal">
+<p><span class="prompt">$ </span>git checkout main<br> <span class="prompt">$ </span>git pull<br> <span class="prompt">$ </span>git
+checkout your-feature-branch<br> <span class="prompt">$ </span>git merge
+main <span class="comment"># bring main updates into your branch before
+continuing</span></p>
+</div>
+<p>Long-lived branches that diverge for two weeks while
+<code>main</code> receives many commits produce large, painful merges.
+Keep feature branches to 1–3 days and one focused purpose.</p>
+</div>
+<div id="commit-atomically" class="section level3">
+<h3>Commit atomically</h3>
+<pre class="r"><code># Bad: two unrelated changes in one commit
+git commit -m &quot;fix NA filter and change colour palette&quot;
+
+# Good: two separate, focused commits
+git commit -m &quot;fix: drop NA rows before group_by in summarise step&quot;
+git commit -m &quot;style: switch from manual colours to scale_colour_brewer&quot;</code></pre>
+</div>
+<div id="pull-request-review-checklist" class="section level3">
+<h3>Pull request review checklist</h3>
+<table>
+<caption>Pull request review checklist for EA030 shared
+repositories.</caption>
+<colgroup>
+<col width="21%" />
+<col width="78%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Category</th>
+<th align="left">Check</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Reproducibility</td>
+<td align="left">Script runs end-to-end from a clean session without
+errors</td>
+</tr>
+<tr class="even">
+<td align="left">Reproducibility</td>
+<td align="left">All file paths are relative — no setwd(), no absolute
+paths</td>
+</tr>
+<tr class="odd">
+<td align="left">Functionality</td>
+<td align="left">Outputs match what the PR description claims</td>
+</tr>
+<tr class="even">
+<td align="left">Functionality</td>
+<td align="left">All library() calls are at the top of the script</td>
+</tr>
+<tr class="odd">
+<td align="left">Style</td>
+<td align="left">Column and object names are snake_case and
+self-documenting</td>
+</tr>
+<tr class="even">
+<td align="left">Style</td>
+<td align="left">Non-obvious lines have an explanatory comment</td>
+</tr>
+<tr class="odd">
+<td align="left">Data</td>
+<td align="left">Raw data files in data/raw/ are unmodified</td>
+</tr>
+<tr class="even">
+<td align="left">Data</td>
+<td align="left">No large binary files (.tif, .xlsx) included in the
+commit</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+</div>
+<div id="gitignore" class="section level2">
+<h2>The .gitignore File for R Projects</h2>
+<p><code>.gitignore</code> tells Git which files to never track. Place
+it in the project root.</p>
+<pre class="r"><code># .gitignore for an EA030 R project
+
+# R-specific
+.Rhistory
+.RData
+.Rproj.user/
+
+# Rendered outputs — reproducible from source
+output/figures/
+output/reports/
+*.html
+*.pdf
+
+# Large raw data files — share via server or Google Drive
+data/raw/*.csv
+data/raw/*.xlsx
+data/raw/*.tif
+data/raw/*.shp
+
+# OS clutter
+.DS_Store
+Thumbs.db
+
+# Secrets
+.Renviron
+secrets.R</code></pre>
+<p>Generate a standard R <code>.gitignore</code> in one line:</p>
+<pre class="r"><code>usethis::use_gitignore()</code></pre>
+<div class="callout callout-warn">
+<p><strong>⚠️ Already committed a file by mistake?</strong></p>
+<p>Adding a file to <code>.gitignore</code> does NOT untrack it if
+already committed. To stop tracking without deleting from disk:</p>
+<pre><code>git rm --cached data/raw/huge_file.csv
+git commit -m &quot;stop tracking large raw data file&quot;</code></pre>
+</div>
+<hr />
+</div>
+<div id="reference" class="section level2">
+<h2>Quick-Reference Card</h2>
+<div class="cmd-grid">
+<div class="cmd-card">
+<div class="cc-cmd">
+git init
+</div>
+<div class="cc-desc">
+Initialise a new repository in the current directory
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git clone &lt;url&gt;
+</div>
+<div class="cc-desc">
+Clone a remote repository locally
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git status
+</div>
+<div class="cc-desc">
+Show working directory and staging area state
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git add &lt;file&gt;
+</div>
+<div class="cc-desc">
+Stage a file; <code>git add .</code> stages everything
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git commit -m
+</div>
+<div class="cc-desc">
+Record staged changes with a message
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git push
+</div>
+<div class="cc-desc">
+Upload local commits to GitHub
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git pull
+</div>
+<div class="cc-desc">
+Fetch and merge remote commits
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git fetch
+</div>
+<div class="cc-desc">
+Download remote commits without merging
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git log –oneline
+</div>
+<div class="cc-desc">
+Compact commit history
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git diff
+</div>
+<div class="cc-desc">
+Unstaged changes; <code>–staged</code> for staged
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git checkout -b
+</div>
+<div class="cc-desc">
+Create and switch to a new branch
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git merge &lt;branch&gt;
+</div>
+<div class="cc-desc">
+Merge a branch into the current branch
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git stash
+</div>
+<div class="cc-desc">
+Shelve uncommitted changes temporarily
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git revert &lt;hash&gt;
+</div>
+<div class="cc-desc">
+Safely undo a pushed commit with a new commit
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git restore &lt;file&gt;
+</div>
+<div class="cc-desc">
+Discard working directory changes to a file
+</div>
+</div>
+<div class="cmd-card">
+<div class="cc-cmd">
+git rm –cached
+</div>
+<div class="cc-desc">
+Stop tracking a file without deleting it
+</div>
+</div>
+</div>
+<hr />
+<div class="key-box">
+<h4>
+🔑 Git &amp; GitHub — key takeaways
+</h4>
+<ul>
+<li>
+<strong>The commit path</strong> runs: working directory → staging area
+→ local repo → remote. Each transition has a forward command
+(<code>add</code>, <code>commit</code>, <code>push</code>) and a reverse
+(<code>restore</code>, <code>reset</code>, <code>pull</code>).
+</li>
+<li>
+<strong>Stage thoughtfully.</strong> Build one logical, describable
+commit even when many files have changed.
+</li>
+<li>
+<strong>Good commit messages</strong> are the documented history of your
+analysis. Write them for your future self and collaborators.
+</li>
+<li>
+<strong>Branch for everything</strong> in shared repositories. Never
+commit directly to <code>main</code>. Use pull requests for review.
+</li>
+<li>
+<strong>Merge conflicts are normal.</strong> Find the markers, decide
+what is correct, delete the markers, stage, commit.
+</li>
+<li>
+<strong>Detached HEAD is recoverable.</strong> Create a branch to save
+orphaned work, then merge back.
+</li>
+<li>
+<strong>Never force-push a shared branch.</strong> Use <code>git
+revert</code> to undo publicly — it adds a commit rather than rewriting
+history.
+</li>
+<li>
+<strong>.gitignore</strong> should exclude <code>.RData</code>,
+<code>.Rhistory</code>, rendered HTML, large data files, and secrets.
+Use <code>usethis::use_gitignore()</code> for a sensible R default.
+</li>
+</ul>
+</div>
+<hr />
+<div id="whats-next" class="section level3">
+<h3>What’s next?</h3>
+<ul>
+<li><strong><a href="C01_Tidyverse_Wrangling.html">C01 — Tidyverse Data
+Wrangling</a></strong> — the analysis code you will be versioning</li>
+<li><strong><a href="../getting_started/01_Project_Structure.html">01 —
+Project Structure</a></strong> — the folder layout that makes Git
+histories clean</li>
+<li><strong><a href="../getting_started/00_RStudio_Setup.html">00 —
+RStudio Setup</a></strong> — configuring Git in RStudio for the first
+time</li>
+</ul>
+<footer class="page-footer">
+EA030 RGuides — Module 08 <span class="divider">|</span> Prof. Marc Los
+Huertos <span class="divider">|</span> Pomona College <span class="divider">|</span> Last updated: April 2026 <span class="divider">|</span>
+<a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
