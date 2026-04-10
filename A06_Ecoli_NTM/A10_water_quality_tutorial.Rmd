@@ -1,0 +1,194 @@
+---
+title: "EA30 Skill Tutorial: Water Quality Analysis with R"
+author: "EA30 – Environmental Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(lubridate)
+library(trend)
+library(broom)
+```
+
+# Purpose (EA30 Skills Alignment)
+
+This tutorial is a **skill‑based example** designed for **EA30 (Introduction to Environmental Analysis)**. The goal is to practice **core quantitative reasoning with R** using realistic, simulated **water quality data**, following **best practices used by environmental scientists**.
+
+Students completing this tutorial will practice:
+
+- Importing and inspecting environmental data
+- Applying regulatory standards (EPA)
+- Conducting statistical tests commonly used in water analysis
+- Interpreting results in an environmental management context
+
+This is **not about memorization**, but about **using tools to answer environmental questions**.
+
+---
+
+# Water Quality Context
+
+We analyze three common water sources:
+
+- **Groundwater** (wells)
+- **Surface water** (streams/rivers)
+- **Drinking water** (treated supply)
+
+Key indicators:
+
+- **Nitrate (NO3⁻)** – nutrient pollution
+- **Lead (Pb)** – toxic metal
+- **E. coli** – microbial contamination
+
+---
+
+# Regulatory Benchmarks (EPA)
+
+```{r epa}
+epa <- tibble(
+  parameter = c("Nitrate", "Lead", "E_coli"),
+  standard = c(10, 15, 1),
+  units = c("mg/L", "µg/L", "MPN / 100 mL"),
+  rule = c("MCL", "Action Level", "Presence/Absence")
+)
+epa
+```
+
+These benchmarks allow us to translate chemistry data into **risk and compliance questions**.
+
+---
+
+# Simulated EA30 Water Quality Dataset
+
+The following data are **simulated but realistic**, reflecting seasonal variability and differences among water types.
+
+```{r simulate-data}
+set.seed(30)
+
+n_months <- 10 * 12
+
+data <- tibble(
+  date = seq.Date(ymd("2015-01-01"), by = "month", length.out = n_months),
+  month = month(date),
+  type = rep(c("Groundwater", "Surface Water", "Drinking Water"), each = n_months),
+  nitrate = c(
+    rlnorm(n_months, log(7), 0.4),   # groundwater
+    rlnorm(n_months, log(5), 0.5),   # surface water
+    rlnorm(n_months, log(3), 0.3)    # drinking water
+  ),
+  lead = c(
+    rlnorm(n_months, log(10), 0.7),
+    rlnorm(n_months, log(6), 0.6),
+    rlnorm(n_months, log(4), 0.5)
+  ),
+  ecoli = c(
+    rpois(n_months, 0.2),
+    rpois(n_months, 1.5),
+    rpois(n_months, 0.05)
+  )
+)
+
+head(data)
+```
+
+---
+
+# Skill 1: Identify Exceedances
+
+```{r exceedance}
+data <- data %>%
+  mutate(
+    nitrate_exc = nitrate > 10,
+    lead_exc = lead > 15,
+    ecoli_exc = ecoli >= 1
+  )
+
+exceed_summary <- data %>%
+  group_by(type) %>%
+  summarise(across(ends_with("_exc"), mean))
+
+exceed_summary
+```
+
+**Skill focus:** translating raw measurements into environmental meaning.
+
+---
+
+# Skill 2: Seasonal Kendall Trend Test (Best Practice)
+
+The **Seasonal Kendall test** is widely used for long‑term environmental time series.
+
+```{r sk}
+sk_nitrate <- data %>%
+  group_by(type) %>%
+  do(tidy(seaken(.$nitrate, .$date)))
+
+sk_nitrate
+```
+
+**Interpretation skill:** Is water quality improving, degrading, or stable?
+
+---
+
+# Skill 3: ANOVA – Comparing Water Sources
+
+```{r anova}
+anova_nitrate <- aov(nitrate ~ type, data = data)
+summary(anova_nitrate)
+```
+
+**Skill focus:** detecting systematic differences among environmental systems.
+
+---
+
+# Skill 4: Toxicity & Risk (Logistic Regression)
+
+We model the **probability of regulatory exceedance** as a measure of toxicity risk.
+
+```{r logistic}
+logit_model <- glm(lead_exc ~ type + nitrate,
+                   family = binomial,
+                   data = data)
+
+tidy(logit_model, exponentiate = TRUE)
+```
+
+**Interpretation skill:** understanding predictors of environmental risk.
+
+---
+
+# Skill 5: Visualizing Data Relative to Standards
+
+```{r plot}
+ggplot(data, aes(date, nitrate, color = type)) +
+  geom_line(alpha = 0.6) +
+  geom_hline(yintercept = 10, linetype = "dashed") +
+  labs(
+    title = "Nitrate Concentrations Relative to EPA Standard",
+    y = "Nitrate (mg/L)",
+    x = "Year"
+  )
+```
+
+---
+
+# EA30 Takeaways
+
+By completing this tutorial, you practiced:
+
+✅ Using R to analyze real‑world environmental data
+✅ Applying EPA standards to interpret results
+✅ Using statistical tools common in water quality assessments
+✅ Framing results as **environmental decisions**, not just numbers
+
+These are foundational skills you will reuse throughout **environmental analysis, policy, and science courses**.
+
+---
+
+# Reflection (Optional)
+
+- Which water source showed the highest risk?
+- Which metric do you think poses the greatest human health concern?
+- How would real data complicate this analysis?
+
