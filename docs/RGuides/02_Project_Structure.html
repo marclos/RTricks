@@ -10,9 +10,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+<meta name="author" content="Marc Los Huertos" />
 
 
-<title>EA030 — RTricks</title>
+<title>Project Structure with RStudio Projects</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -54,31 +55,13 @@ ul.task-list{list-style: none;}
 
 
 
-<h1 class="title toc-ignore">EA030 — RTricks</h1>
+<h1 class="title toc-ignore">Project Structure with RStudio
+Projects</h1>
+<h4 class="author">Marc Los Huertos</h4>
+<h4 class="date">EA030 · Compiled 2026-04-09</h4>
 
 
 
-<!-- ============================================================ -->
-<!--  EDIT YOUR CONTENT HERE                                      -->
-<!--                                                              -->
-<!--  Each card is a list() with these fields:                    -->
-<!--    icon   : emoji or symbol                                  -->
-<!--    title  : card heading                                     -->
-<!--    desc   : one- or two-sentence description                 -->
-<!--    tag    : small label shown at bottom of card              -->
-<!--    href   : URL or relative path to the module               -->
-<!--             Leave as "" until the page exists                -->
-<!--    status : "ready" (default) | "coming soon"                -->
-<!--             Set to "coming soon" to grey the card out        -->
-<!--                                                              -->
-<!--  To add a card : add a list() entry to any section           -->
-<!--  To add a section : copy a section block, give it a new id,  -->
-<!--                     and add it to all_sections               -->
-<!--  To reorder sections : change the order in all_sections      -->
-<!-- ============================================================ -->
-<!-- ============================================================ -->
-<!--  RENDERING ENGINE — no need to edit below this line          -->
-<!-- ============================================================ -->
 <style type="text/css">
 @font-face {
 font-family: 'Lato';
@@ -150,689 +133,963 @@ src: url(data:font/ttf;base64,AAEAAAARAQAABAAQQkFTRVT/bgMAAAHUAAAARkdERUasYav/AA
 --dust: #7a7a72;
 --amber: #c8832a;
 --amber-lt: #e8a84a;
---rust: #8b3a2a;
 --white: #ffffff;
---card-shadow: 0 2px 12px rgba(30,58,47,.10), 0 1px 3px rgba(30,58,47,.07);
---card-hover: 0 8px 28px rgba(30,58,47,.16), 0 2px 8px rgba(30,58,47,.10);
+--card-shadow: 0 2px 10px rgba(30,58,47,.09);
+--red-soft: #fff5f5;
+--red-line: #c0392b;
+--green-soft:#f1f8f1;
+--green-line:#2e7d32;
 }
 html { scroll-behavior: smooth; }
-body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--ink); font-size: 16px; line-height: 1.7; }
-.main-container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+body {
+font-family: 'Lato', sans-serif;
+background: var(--cream);
+color: var(--ink);
+font-size: 17px;
+line-height: 1.75;
+padding-left: clamp(14px, 4vw, 48px);
+padding-right: clamp(14px, 4vw, 48px);
+padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important;
+padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header {
+margin-left: calc(-1 * clamp(14px, 4vw, 48px));
+margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
 h1.title, h4.author, h4.date { display: none; }
 
-.site-header {
+.page-header {
 background-image:
-repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+repeating-linear-gradient(120deg, transparent, transparent 60px,
+rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
 linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
-color: #fff; padding: 56px 6vw 48px; position: relative; overflow: hidden; border-bottom: 4px solid var(--amber);
+color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
 }
-.site-header::after {
-content: ''; position: absolute; right: -60px; top: -60px; width: 340px; height: 340px; border-radius: 50%;
-background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%); pointer-events: none;
+.page-header::after {
+content: ''; position: absolute; right: -40px; top: -40px;
+width: 260px; height: 260px; border-radius: 50%;
+background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+pointer-events: none;
 }
-.header-inner { max-width: 1100px; margin: 0 auto; }
-.course-tag {
-display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .72rem; font-weight: 600;
-letter-spacing: .18em; text-transform: uppercase; color: var(--amber-lt);
-border: 1px solid rgba(200,131,42,.45); padding: 3px 10px; border-radius: 2px; margin-bottom: 18px;
+.page-header .module-tag {
+display: inline-block; font-family: 'Source Code Pro', monospace;
+font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
 }
-.site-header h1 {
-font-family: 'Libre Baskerville', serif; font-size: clamp(2rem,4vw,3rem); font-weight: 700;
-line-height: 1.18; color: #fff; letter-spacing: -.01em; margin-bottom: 10px;
+.page-header h1 {
+font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
 }
-.site-header h1 span { color: var(--sage); }
-.header-sub { font-size: .97rem; font-weight: 300; color: rgba(255,255,255,.72); }
-.header-sub strong { font-weight: 700; color: rgba(255,255,255,.92); }
-.header-meta { margin-top: 22px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-.meta-pill { font-family: 'Source Code Pro', monospace; font-size: .75rem; color: var(--sage); letter-spacing: .06em; }
-.meta-pill::before { content: '\25B8 '; opacity: .6; }
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+display: inline-block; margin-top: 16px;
+font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+color: var(--amber-lt); text-decoration: none;
+border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
 
-.site-nav { background: var(--ink); padding: 0 6vw; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--amber); }
-.nav-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; flex-wrap: wrap; }
-.site-nav a {
-display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .72rem;
-font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,.6);
-text-decoration: none; padding: 12px 14px; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s;
+.section-nav {
+display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
 }
-.site-nav a:hover { color: var(--amber-lt); border-bottom-color: var(--amber); }
-.nav-divider { font-family: 'Source Code Pro', monospace; font-size: .6rem; color: rgba(255,255,255,.2); padding: 12px 4px; align-self: center; }
+.section-nav a {
+font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+letter-spacing: .08em; text-transform: uppercase;
+color: var(--fern); text-decoration: none;
+border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
 
-.page-body { max-width: 1100px; margin: 0 auto; padding: 52px clamp(14px, 4vw, 60px) 80px; }
-
-.section-header { margin-top: 52px; margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid var(--parchment); }
-#getting-started .section-header { margin-top: 0; }
-.section-header h2 { font-family: 'Libre Baskerville', serif; font-size: 1.5rem; font-weight: 700; color: var(--forest); letter-spacing: -.01em; }
-.section-header p { font-size: .93rem; color: var(--dust); margin-top: 4px; }
-
-#core-r .section-header h2::before {
-content: 'Core Skills \2002'; font-family: 'Source Code Pro', monospace; font-size: .62rem; font-weight: 600;
-letter-spacing: .12em; text-transform: uppercase; color: var(--fern); background: var(--mist);
-padding: 2px 7px; border-radius: 2px; margin-right: 10px; vertical-align: middle;
+h2 {
+font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
 }
-#ea030-activities .section-header h2::before {
-content: 'EA030 Activities \2002'; font-family: 'Source Code Pro', monospace; font-size: .62rem; font-weight: 600;
-letter-spacing: .12em; text-transform: uppercase; color: var(--amber); background: #fdf0e0;
-padding: 2px 7px; border-radius: 2px; margin-right: 10px; vertical-align: middle;
+h3 {
+font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+h4 {
+font-family: 'Lato', sans-serif; font-size: 1rem; font-weight: 700;
+color: var(--charcoal); margin-top: 20px; margin-bottom: 4px;
 }
 
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 20px; margin-bottom: 12px; }
-.card {
-background: var(--white); border: 1px solid var(--mist); border-radius: 6px;
-padding: 24px 22px 20px; text-decoration: none; color: inherit;
-display: flex; flex-direction: column; box-shadow: var(--card-shadow);
-transition: transform .2s, box-shadow .2s, border-color .2s; position: relative; overflow: hidden;
-}
-.card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--sage); transition: background .2s; }
-.card:hover { transform: translateY(-3px); box-shadow: var(--card-hover); border-color: var(--sage); }
-.card:hover::before { background: var(--fern); }
-#ea030-activities .card::before { background: var(--amber); }
-#ea030-activities .card:hover::before { background: var(--rust); }
-#ea030-activities .card:hover { border-color: var(--amber-lt); }
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+ol, ul { padding-left: 1.5em; margin-bottom: 1em; }
+li { margin-bottom: .3em; }
 
-.card.coming-soon { opacity: .48; cursor: default; pointer-events: none; filter: grayscale(.35); }
-.card-icon { font-size: 1.35rem; margin-bottom: 10px; display: block; line-height: 1; }
-.card-title { font-family: 'Libre Baskerville', serif; font-size: 1rem; font-weight: 700; color: var(--forest); margin-bottom: 5px; }
-.card-desc { font-size: .85rem; color: var(--dust); line-height: 1.55; flex-grow: 1; }
-.card-tag {
-display: inline-block; margin-top: 13px;
-font-family: 'Source Code Pro', monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase;
-padding: 2px 7px; border-radius: 2px; background: var(--mist); color: var(--fern); font-weight: 600; align-self: flex-start;
+code {
+font-family: 'Source Code Pro', monospace; font-size: .84em;
+background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
 }
-#ea030-activities .card-tag { background: #fdf0e0; color: var(--amber); }
-.card.coming-soon .card-tag { background: var(--parchment); color: var(--dust); }
+pre {
+background: var(--ink); color: #e8e6df; border-radius: 5px;
+padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
 
-.quick-ref {
-background: var(--forest); color: #fff; border-radius: 6px; padding: 28px 32px; margin: 48px 0;
-display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px;
+.fs-tree {
+background: #0d1117; color: #c9d1d9; border-radius: 5px;
+padding: 16px 20px; font-family: 'Source Code Pro', monospace;
+font-size: .83rem; line-height: 1.7; overflow-x: auto;
+border-left: 4px solid var(--fern); margin: 1.2em 0;
 }
-.quick-ref h3 { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; color: var(--sage); margin-bottom: 5px; }
-.quick-ref p { font-size: .87rem; color: rgba(255,255,255,.68); }
-.quick-ref code { font-family: 'Source Code Pro', monospace; font-size: .8rem; background: rgba(255,255,255,.1); color: var(--amber-lt); padding: 1px 5px; border-radius: 3px; }
-.ref-links { display: flex; flex-direction: column; gap: 7px; }
-.ref-link {
-font-family: 'Source Code Pro', monospace; font-size: .73rem; letter-spacing: .05em;
-color: var(--amber-lt); text-decoration: none; border: 1px solid rgba(200,131,42,.4);
-padding: 6px 13px; border-radius: 3px; transition: background .2s; white-space: nowrap; text-align: center;
-}
-.ref-link:hover { background: rgba(200,131,42,.15); }
+.fs-tree .dir { color: #79c0ff; }
+.fs-tree .file { color: #c9d1d9; }
+.fs-tree .note { color: #8b949e; }
+.fs-tree .raw { color: #ffa657; }
+.fs-tree .proc { color: #7ee787; }
+.fs-tree .rproj { color: var(--amber-lt); }
 
-.intro-blurb {
-background: var(--white); border-left: 4px solid var(--fern); border-radius: 0 6px 6px 0;
-padding: 20px 24px; margin-bottom: 0; font-size: .93rem; color: var(--charcoal); box-shadow: var(--card-shadow);
+.callout {
+border-left: 5px solid; padding: .65em 1.1em;
+margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
 }
-.intro-blurb strong { color: var(--forest); }
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern); background: #f0f7f2; }
+.callout-tip { border-color: #2e7d32; background: #f1f8f1; }
+.callout-warn { border-color: #e65100; background: #fff8f4; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+font-family: 'Source Code Pro', monospace; font-size: .88em; }
 
-.site-footer {
-background: var(--ink); color: rgba(255,255,255,.42); text-align: center; padding: 28px 6vw;
-font-size: .78rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+.step-header {
+display: flex; align-items: center; gap: 14px;
+margin: 48px 0 16px; padding-bottom: 10px;
+border-bottom: 2px solid var(--parchment);
 }
-.site-footer a { color: var(--sage); text-decoration: none; }
-.site-footer a:hover { color: var(--amber-lt); }
-.site-footer .divider { margin: 0 9px; opacity: .3; }
+.step-num {
+flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+background: var(--forest); color: #fff;
+font-family: 'Libre Baskerville', serif; font-size: 1.05rem; font-weight: 700;
+display: flex; align-items: center; justify-content: center;
+}
+.step-title {
+font-family: 'Libre Baskerville', serif; font-size: 1.35rem;
+font-weight: 700; color: var(--forest);
+}
+.step-sub {
+font-size: .82rem; color: var(--dust); margin-top: 1px;
+font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+
+.do-dont {
+display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 1.4em 0;
+}
+@media (max-width: 580px) { .do-dont { grid-template-columns: 1fr; } }
+.do-box, .dont-box {
+border-radius: 6px; overflow: hidden; font-size: .88em;
+}
+.do-box { border: 2px solid var(--green-line); }
+.dont-box { border: 2px solid var(--red-line); }
+.do-box .box-header { background: var(--green-line); color: #fff; }
+.dont-box .box-header { background: var(--red-line); color: #fff; }
+.box-header {
+padding: 7px 14px; font-family: 'Source Code Pro', monospace;
+font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+}
+.box-body {
+padding: 12px 14px; font-family: 'Source Code Pro', monospace;
+line-height: 1.5;
+}
+.do-box .box-body { background: var(--green-soft); color: #1b5e20; }
+.dont-box .box-body { background: var(--red-soft); color: #7f0000; }
+
+.folder-grid {
+display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+gap: 10px; margin: 1.4em 0 2em;
+}
+.folder-card {
+background: var(--white); border: 1px solid var(--parchment);
+border-radius: 6px; padding: 14px 16px;
+box-shadow: var(--card-shadow); border-top: 3px solid var(--fern);
+}
+.folder-card .fc-path {
+font-family: 'Source Code Pro', monospace; font-size: .78rem;
+font-weight: 600; color: var(--amber); margin-bottom: 5px;
+}
+.folder-card .fc-rule {
+font-size: .83em; color: var(--charcoal); line-height: 1.45;
+}
+.folder-card .fc-example {
+font-family: 'Source Code Pro', monospace; font-size: .73rem;
+color: var(--dust); margin-top: 6px; display: block;
+}
+
+.name-grid {
+display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 1.4em 0;
+}
+@media (max-width: 580px) { .name-grid { grid-template-columns: 1fr; } }
+.name-col-head {
+font-family: 'Source Code Pro', monospace; font-size: .72rem; font-weight: 700;
+letter-spacing: .1em; text-transform: uppercase; padding: 7px 14px;
+border-radius: 4px 4px 0 0; color: #fff;
+}
+.name-col-head.good { background: var(--green-line); }
+.name-col-head.bad { background: var(--red-line); }
+.name-items {
+padding: 10px 14px; border-radius: 0 0 4px 4px;
+font-family: 'Source Code Pro', monospace; font-size: .82rem; line-height: 2;
+}
+.name-items.good { background: var(--green-soft); color: #1b5e20; border: 2px solid var(--green-line); border-top: none; }
+.name-items.bad { background: var(--red-soft); color: #7f0000; border: 2px solid var(--red-line); border-top: none; }
+
+kbd {
+display: inline-block; font-family: 'Source Code Pro', monospace; font-size: .8em;
+background: var(--white); color: var(--ink);
+border: 1px solid #bbb; border-bottom-width: 3px;
+padding: 1px 7px; border-radius: 4px; white-space: nowrap;
+box-shadow: 0 1px 0 rgba(0,0,0,.08);
+}
+
+.key-box {
+background: var(--forest); color: #fff; border-radius: 6px;
+padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+font-family: 'Libre Baskerville', serif; color: var(--sage);
+font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+background: var(--forest); color: #fff;
+font-family: 'Source Code Pro', monospace; font-size: .76rem;
+letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+.page-footer {
+background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+padding: 24px 4vw; margin: 60px -4vw 0;
+font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
 </style>
-<header class="site-header">
-<div class="header-inner">
-<div class="course-tag">
-EA030 — Environmental Analysis
+<div class="page-header">
+<div class="module-tag">
+EA030 — Getting Started — Module 01
 </div>
 <h1>
-R<span>Tricks</span> — Statistical Computing Resources
+Project Structure <span>with RStudio Projects</span>
 </h1>
-<p class="header-sub">
+<p class="sub">
 <strong>Prof. Marc Los Huertos</strong>  •  Pomona College
 </p>
-<div class="header-meta">
-<p><span class="meta-pill">Pomona College</span> <span class="meta-pill">Environmental Analysis</span> <span class="meta-pill">R / RMarkdown / knitr</span></p>
+<p><a class="back-link" href="../index.html">← Back to EA030
+Home</a></p>
+</div>
+<div class="section-nav">
+<p><a href="#why">Why It Matters</a> <a href="#create">Create a
+Project</a> <a href="#structure">Folder Structure</a>
+<a href="#paths">File Paths</a> <a href="#here">The here Package</a>
+<a href="#naming">Naming Files</a> <a href="#workflow">Workflow</a>
+<a href="#verify">Verify</a></p>
+</div>
+<blockquote>
+<p><strong>What this module covers.</strong> A reproducible analysis is
+one that anyone — including your future self — can re-run from scratch
+on a new machine and get identical results. The foundation of
+reproducibility is project structure: keeping your raw data, code, and
+outputs in predictable locations and referencing them with paths that
+work everywhere. This module builds that foundation using RStudio
+Projects and the <code>here</code> package, with examples drawn from the
+EA030 server at <code>rstudio.pomona.edu</code>.</p>
+</blockquote>
+<hr />
+<div id="why" class="section level2">
+<h2>Why Project Structure Matters</h2>
+<p>A common beginner workflow looks something like this: all files in
+one folder (or worse, the Desktop), hardcoded paths like
+<code>C:/Users/Jamie/Desktop/my_stuff/data.csv</code>, and a folder that
+has accumulated names like <code>final_final_v3_REAL.R</code>. When you
+open it six weeks later — or hand it to a collaborator — nothing
+works.</p>
+<p>A structured project solves this:</p>
+<div class="do-dont">
+<div class="dont-box">
+<div class="box-header">
+❌ Unstructured — breaks everywhere
+</div>
+<div class="box-body">
+<p>Desktop/<br>   data.csv<br>   analysis.R<br>   analysis_v2.R<br>
+  analysis_FINAL.R<br>   plot.png<br>   plot_good.png<br>
+  notes.docx</p>
+</div>
+</div>
+<div class="do-box">
+<div class="box-header">
+✅ Structured — works on any machine
+</div>
+<div class="box-body">
+<p>ea030_streams/<br>   data/raw/stream_sites.csv<br>
+  data/processed/sites_clean.csv<br>   scripts/01_clean.R<br>
+  scripts/02_analyse.Rmd<br>   output/figures/do_vs_temp.png<br>
+  ea030_streams.Rproj</p>
+</div>
+</div>
+</div>
+<p>The problems with the unstructured approach are not cosmetic — they
+cause real failures:</p>
+<ul>
+<li><strong>Hardcoded paths</strong> fail when a file moves, the project
+is shared, or you switch from your laptop to the Pomona server</li>
+<li><strong>Mixed raw and processed data</strong> means you can
+accidentally overwrite original files</li>
+<li><strong>No script numbering</strong> makes it impossible to know
+what to run first</li>
+<li><strong>No <code>.Rproj</code> file</strong> means R does not know
+where the working directory is</li>
+</ul>
+<div class="callout callout-concept">
+<p><strong>📌 The reproducibility test</strong></p>
+<p>A project passes the reproducibility test if a colleague can clone or
+download it, open the <code>.Rproj</code> file, and run every script in
+order — with zero modifications — and reproduce all your figures and
+tables. This is the standard you are aiming for in EA030.</p>
+</div>
+<hr />
+<div class="step-header">
+<div class="step-num">
+1
 </div>
-</div>
-</header>
-<nav class="site-nav">
-<div class="nav-inner">
-<p><a href="#getting-started">Getting Started</a>
-<a href="#basic-stats">Basic Stats</a>
-<a href="#advanced-stats">Advanced Stats</a> <span class="nav-divider">│</span> <a href="#core-r">Core R Skills</a>
-<a href="#ea030-activities">Field &amp; Lab Activities</a>
-<a href="project_index.html">Project Index</a> <span class="nav-divider">│</span> <a href="#resources">Resources</a></p>
-</div>
-</nav>
-<div class="page-body">
-<div class="intro-blurb">
-<p>Welcome to the <strong>RTricks</strong> resource hub for
-<strong>EA030</strong>. Tutorials, worked examples, and reference
-materials for R in environmental data analysis — from loading your first
-dataset through mixed-effects models and spatial analysis. Each card
-links to a self-contained module. Cards marked <em>coming soon</em> are
-in progress.</p>
-</div>
-<div id="getting-started">
-<div class="section-header">
-<h2>
-Getting Started
-</h2>
-<p>
-Setup, orientation, and reproducible workflow fundamentals.
-</p>
-</div>
-<div class="card-grid">
-<a class="card" href="RGuides/01_RStudio_Setup.html"> <span class="card-icon">💻</span>
-<div class="card-title">
-R &amp; RStudio Setup
-</div>
-<p class="card-desc">
-Install R and RStudio, configure your environment, and verify with a
-test script.
-</p>
-<span class="card-tag">setup</span> </a>
-<a class="card" href="RGuides/02_Project_Structure.html"> <span class="card-icon">📁</span>
-<div class="card-title">
-Project Structure
-</div>
-<p class="card-desc">
-Organize scripts, data, and outputs using RStudio Projects and a
-consistent folder hierarchy.
-</p>
-<span class="card-tag">workflow</span> </a>
-<a class="card" href="RGuides/02_RMarkdown_knitr.html"> <span class="card-icon">🧶</span>
-<div class="card-title">
-RMarkdown &amp; knitr
-</div>
-<p class="card-desc">
-Weave prose, code, and output into reproducible reports. YAML headers,
-chunk options, rendering.
-</p>
-<span class="card-tag">rmarkdown</span> </a>
-<a class="card" href="RGuides/03_Data_Import.html"> <span class="card-icon">🗃️</span>
-<div class="card-title">
-Data Import
-</div>
-<p class="card-desc">
-Reading CSV, Excel, and field-data files. Handling encoding issues and
-common pitfalls.
-</p>
-<p><span class="card-tag">import</span> </a></p>
-</div>
-</div>
-<div id="basic-stats">
-<div class="section-header">
-<h2>
-Basic Statistics
-</h2>
-<p>
-Descriptive summaries, inference, and foundational visualization.
-</p>
-</div>
-<div class="card-grid">
-<a class="card" href="basic_statistics/01_Descriptive_Statistics.html">
-<span class="card-icon">📊</span>
-<div class="card-title">
-Descriptive Statistics
-</div>
-<p class="card-desc">
-Measures of center and spread, frequency tables, base-R and dplyr
-summaries.
-</p>
-<span class="card-tag">descriptive</span> </a>
-<a class="card" href="basic_statistics/02_Visualization.html"> <span class="card-icon">📈</span>
-<div class="card-title">
-Data Visualization
-</div>
-<p class="card-desc">
-Core ggplot2 grammar: geoms, aesthetics, facets, themes, and
-export-ready figures.
-</p>
-<span class="card-tag">ggplot2</span> </a>
-<a class="card" href="basic_statistics/03_Four_Frameworks.html"> <span class="card-icon">🔬</span>
-<div class="card-title">
-Four Statistical Frameworks
-</div>
-<p class="card-desc">
-Every statistical test you will encounter in environmental science fits
-into one of four frameworks determined by a single question: what type
-of variable is your outcome (dependent), and what type of variable is
-your predictor (independent)?
-</p>
-<span class="card-tag">inference</span> </a>
-<a class="card" href="basic_statistics/04_Signal_Over_Noise.html"> <span class="card-icon">🔬</span>
-<div class="card-title">
-Signal over Noise
-</div>
-<p class="card-desc">
-Every classical statistical test — t-test, ANOVA, regression — is a
-formalization of the same underlying question: is the pattern I see in
-my data larger than what I would expect from chance variation alone?
-</p>
-<span class="card-tag">inference</span> </a>
-<a class="card" href="basic_statistics/05_Hypothesis_Testing.html">
-<span class="card-icon">🔬</span>
-<div class="card-title">
-Hypothesis Testing
-</div>
-<p class="card-desc">
-t-tests, Wilcoxon tests, proportions tests. Effect sizes, p-values,
-common misconceptions.
-</p>
-<span class="card-tag">inference</span> </a>
-<a class="card" href="basic_statistics/06_Simple_Linear_Regression.html">
-<span class="card-icon">📉</span>
-<div class="card-title">
-Simple Linear Regression
-</div>
-<p class="card-desc">
-Fitting, diagnosing, and interpreting OLS models with lm(). Residual
-plots and leverage.
-</p>
-<span class="card-tag">regression</span> </a>
-<a class="card" href="basic_statistics/07_ANOVA.html"> <span class="card-icon">🎲</span>
-<div class="card-title">
-ANOVA &amp; Group Comparisons
-</div>
-<p class="card-desc">
-One-way and two-way ANOVA, post-hoc tests, and visualizing group
-differences.
-</p>
-<span class="card-tag">anova</span> </a>
-<a class="card" href="basic_statistics/08_Tests_for_Association.html">
-<span class="card-icon">🎲</span>
-<div class="card-title">
-Tests for Association
-</div>
-<p class="card-desc">
-Chi-square, Fisher’s exact, and correlation tests. Choosing the right
-test for categorical and continuous variables, effect sizes (Cramér’s V,
-odds ratio, r), and assumption checking.
-</p>
-<span class="card-tag">association</span> </a>
-<a class="card" href="basic_statistics/09_Logistic_Regression.html">
-<span class="card-icon">📊</span>
-<div class="card-title">
-Logistic Regression
-</div>
-<p class="card-desc">
-Modeling binary outcomes — presence/absence, exceedance, survival — with
-logistic regression. Odds ratios, ROC curves, and model diagnostics.
-</p>
-<span class="card-tag">logistic</span> </a>
-<a class="card" href="basic_statistics/10_Correlation_Analysis.html">
-<span class="card-icon">📐</span>
-<div class="card-title">
-Correlation Analysis
-</div>
-<p class="card-desc">
-Pearson and Spearman correlation, scatterplot matrices, and interpreting
-correlation structure.
-</p>
-<p><span class="card-tag">correlation</span> </a></p>
-</div>
-</div>
-<div id="advanced-stats">
-<div class="section-header">
-<h2>
-Advanced Statistics
-</h2>
-<p>
-Multivariate methods, hierarchical models, and specialist tools for
-environmental data.
-</p>
-</div>
-<div class="card-grid">
-<a class="card" href="advanced_stats/11_Multiple_Regression_GLMs.html">
-<span class="card-icon">🌿</span>
-<div class="card-title">
-Multiple Regression &amp; GLMs
-</div>
-<p class="card-desc">
-Multiple predictors, interactions, model selection (AIC), and GLMs for
-count and binary data.
-</p>
-<span class="card-tag">glm</span> </a>
-<a class="card" href="basic_statistics/12_Survival_Analysis.html"> <span class="card-icon">⏱️</span>
-<div class="card-title">
-Survival Analysis
-</div>
-<p class="card-desc">
-Time-to-event analysis with Kaplan–Meier curves, log-rank tests, and Cox
-proportional hazards models. Applied to algae growth experiments and
-right-censored environmental data.
-</p>
-<span class="card-tag">survival</span> </a>
-<a class="card" href="advanced_stats/13_Mixed_Effects_Models.html">
-<span class="card-icon">🏔️</span>
-<div class="card-title">
-Mixed-Effects Models
-</div>
-<p class="card-desc">
-Random intercepts and slopes with lme4. Nested and crossed random
-effects for field designs.
-</p>
-<span class="card-tag">lme4</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🗺️</span>
-<div class="card-title">
-Spatial Analysis
-</div>
-<p class="card-desc">
-Importing shapefiles, CRS transformations, spatial joins, and choropleth
-maps with sf.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🕸️</span>
-<div class="card-title">
-Multivariate Ordination
-</div>
-<p class="card-desc">
-PCA, NMDS, and RDA for community and environmental gradient data using
-vegan.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card" href="advanced_stats/14_Time_Series.html"> <span class="card-icon">📈</span>
-<div class="card-title">
-Time-Series Analysis
-</div>
-<p class="card-desc">
-Decomposition, autocorrelation, ARIMA, and sensor-data workflows with
-lubridate and tsibble.
-</p>
-<span class="card-tag">time-series</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🔁</span>
-<div class="card-title">
-Bootstrapping &amp; Permutation
-</div>
-<p class="card-desc">
-Resampling-based inference, confidence intervals, and randomization
-tests.
-</p>
-<p><span class="card-tag">coming soon</span> </a></p>
-</div>
-</div>
-<div id="core-r">
-<div class="section-header">
-<h2>
-Core R Skills
-</h2>
-<p>
-General-purpose, transferable R techniques applicable beyond EA030.
-</p>
-</div>
-<div class="card-grid">
-<a class="card coming-soon" href="#"> <span class="card-icon">🔧</span>
-<div class="card-title">
-Introduction to R
-</div>
-<p class="card-desc">
-.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card" href="RGuides/06_Functional_Programming.html"> <span class="card-icon">🔄</span>
-<div class="card-title">
-Functional Programming
-</div>
-<p class="card-desc">
-for loops, the base-R apply family (lapply, sapply, vapply, mapply), and
-purrr::map() compared side-by-side. Replace repetitive loops with
-cleaner, type-safe pipelines.
-</p>
-<span class="card-tag">purrr</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🔧</span>
-<div class="card-title">
-Tidyverse Data Wrangling
-</div>
-<p class="card-desc">
-dplyr verbs, tidyr pivoting, and pipe-based workflows for cleaning field
-and lab data.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card" href="RGuides/05_Tables_Reporting.html"> <span class="card-icon">📋</span>
-<div class="card-title">
-Tables &amp; Reporting
-</div>
-<p class="card-desc">
-Publication-quality tables with kableExtra, gt, and flextable. Inline R
-in RMarkdown.
-</p>
-<span class="card-tag">reporting</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🐙</span>
-<div class="card-title">
-Git &amp; GitHub for R
-</div>
-<p class="card-desc">
-Version-control basics, committing from RStudio, branching, and
-submitting via pull request.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">📦</span>
-<div class="card-title">
-Package Management with renv
-</div>
-<p class="card-desc">
-Lock package versions and share reproducible environments across
-machines.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🚧</span>
-<div class="card-title">
-TBD
-</div>
-<p class="card-desc">
-TBD.
-</p>
-<p><span class="card-tag">coming soon</span> </a></p>
-</div>
-</div>
-<div id="ea030-activities">
-<div class="section-header">
-<h2>
-EA030 Field &amp; Lab Activities
-</h2>
-<p>
-Course-specific modules tied to EA030 assignments, field campaigns, and
-shared datasets.
-</p>
-</div>
-<div class="card-grid">
-<a class="card" href="activities_index.html"> <span class="card-icon">🗂️</span>
-<div class="card-title">
-Activities Index
-</div>
-<p class="card-desc">
-Overview of all EA030 projects this semester — Regional Climate Trends,
-pHake Lake, Compost Maturity, Inland Empire Air Quality, and Surface
-Water Quality.
-</p>
-<span class="card-tag">index</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">💧</span>
-<div class="card-title">
-Glassware Precision
-</div>
-<p class="card-desc">
-.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card" href="Activities/A07_Analyzing_EPA_PM25.html"> <span class="card-icon">💨</span>
-<div class="card-title">
-Analyzing EPA PM2.5 Data
-</div>
-<p class="card-desc">
-Thirty years of daily fine particulate matter (PM2.5) for a US county.
-Download EPA AQS data, clean monitoring records, visualize long-term
-trends, compute monthly means with 95% CIs by decade, and evaluate
-exceedances of the 24-hr NAAQS (35 µg/m³). Includes environmental
-justice discussion. Helper functions in 06_EPA_PM25/.
-</p>
-<span class="card-tag">air quality</span> </a>
-<a class="card" href="Activities/A08_Raspberry_Pi_Tutorial.html"> <span class="card-icon">🫁</span>
-<div class="card-title">
-Urban Air Quality: Low-Cost Sensors
-</div>
-<p class="card-desc">
-Deploy Raspberry Pi + Enviro+ sensors to monitor PM1/PM2.5/PM10 across
-campus. Covers clock-correction for RTC-less Pis, QC, diurnal patterns,
-Wilcoxon/Kruskal-Wallis tests, OLS regression, and mixed-effects models
-(lmer + nlme AR(1)) to handle pseudoreplication and temporal
-autocorrelation.
-</p>
-<span class="card-tag">air quality</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🌱</span>
-<div class="card-title">
-Soil Carbon Analysis
-</div>
-<p class="card-desc">
-Importing and cleaning soil survey data, fitting depth profiles, and
-comparing land-use treatments.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">💧</span>
-<div class="card-title">
-pHake Lake Stratification
-</div>
-<p class="card-desc">
-.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">💧</span>
-<div class="card-title">
-Water Quality Monitoring
-</div>
-<p class="card-desc">
-Time-series of field sensor data, detecting exceedances, and visualising
-spatial variation.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🦋</span>
-<div class="card-title">
-Biodiversity Surveys
-</div>
-<p class="card-desc">
-Species richness, rarefaction curves, and community composition with
-vegan.
-</p>
-<span class="card-tag">coming soon</span> </a>
-<a class="card" href="Activities/A08_Camera_Trap.html"> <span class="card-icon">📷</span>
-<div class="card-title">
-Camera Traps
-</div>
-<p class="card-desc">
-Camera traps record who was present, when, and what they were doing
-without a researcher present. This tutorial walks the complete
-analytical pipeline — from raw Excel export through cleaning,
-independent-event definition, descriptive ethograms, and four
-quantitative methods: chi-square/Fisher tests of diel behavior shifts,
-kernel-density activity overlap, rarefaction-corrected diversity, and
-single-season occupancy modeling.
-</p>
-<span class="card-tag">project</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">🌡️</span>
-<div class="card-title">
-Climate Data &amp; Trends
-</div>
-<p class="card-desc">
-Downloading NOAA/EPA data, trend detection, and visualising temperature
-and precipitation records.
-</p>
-<span class="card-tag">coming soon</span> </a> <a class="card" href="#">
-<span class="card-icon">🌦️</span>
-<div class="card-title">
-Regional Climate Trends
-</div>
-<p class="card-desc">
-Analyzing long-term temperature and precipitation patterns across
-Southern California using PRISM and NOAA station data. Trend detection
-with Mann-Kendall tests and visualization of seasonal shifts.
-</p>
-<span class="card-tag">climate</span> </a>
-<a class="card" href="Activities/A13_Urban_Canopy_Temperature_Analysis.html">
-<span class="card-icon">🏙️</span>
-<div class="card-title">
-Urban Heat Island
-</div>
-<p class="card-desc">
-Raster data from Landsat, land-cover classification, and surface
-temperature analysis.
-</p>
-<span class="card-tag">project</span> </a>
-<a class="card coming-soon" href="#"> <span class="card-icon">📍</span>
-<div class="card-title">
-GPS &amp; Field Data Integration
-</div>
-<p class="card-desc">
-Joining GPS tracks with field observations, plotting on basemaps, and
-exporting for reports.
-</p>
-<p><span class="card-tag">coming soon</span> </a></p>
-</div>
-</div>
-<div id="resources">
-<div class="section-header">
-<h2>
-Additional Resources
-</h2>
-<p>
-External references and community tools curated for EA030.
-</p>
-</div>
-<div class="card-grid">
-<a class="card" href="https://r4ds.hadley.nz/"> <span class="card-icon">📖</span>
-<div class="card-title">
-R for Data Science (2e)
-</div>
-<p class="card-desc">
-Hadley Wickham &amp; Mine Cetinkaya-Rundel. The canonical tidyverse
-reference, freely online.
-</p>
-<span class="card-tag">external</span> </a>
-<a class="card" href="https://www.statmethods.net/"> <span class="card-icon">🔍</span>
-<div class="card-title">
-Quick-R Reference
-</div>
-<p class="card-desc">
-Dense, searchable reference for base-R syntax — useful as a cheat-sheet
-during lab sessions.
-</p>
-<span class="card-tag">external</span> </a>
-<a class="card" href="https://ggplot2.tidyverse.org/reference/"> <span class="card-icon">🎨</span>
-<div class="card-title">
-ggplot2 Reference
-</div>
-<p class="card-desc">
-Full function reference for every geom, stat, scale, and theme component
-in ggplot2.
-</p>
-<span class="card-tag">external</span> </a>
-<a class="card" href="https://posit.co/resources/cheatsheets/"> <span class="card-icon">📋</span>
-<div class="card-title">
-Posit Cheatsheets
-</div>
-<p class="card-desc">
-Official one-page PDF cheatsheets for ggplot2, dplyr, tidyr, RMarkdown,
-and more.
-</p>
-<p><span class="card-tag">external</span> </a></p>
-</div>
-</div>
-<div class="quick-ref">
 <div>
-<h3>
-Quick Reference
-</h3>
-<p>
-Repository at <code>github.com/marclos/RTricks</code>. Each module
-contains an <code>index.Rmd</code>, a <code>data/</code> folder, and
-rendered HTML. Clone or browse via the links.
-</p>
+<div class="step-title">
+Create an RStudio Project
 </div>
-<div class="ref-links">
-<p><a class="ref-link" href="https://github.com/marclos/RTricks">↗
-GitHub Repo</a>
-<a class="ref-link" href="https://www.pomona.edu/academics/departments/environmental-analysis">↗
-EA @ Pomona</a>
-<a class="ref-link" href="https://rmarkdown.rstudio.com/docs/">↗
-RMarkdown Docs</a></p>
+<div class="step-sub">
+File → New Project… · works identically on server and locally
 </div>
 </div>
 </div>
-<footer class="site-footer">
-EA030 RTricks <span class="divider">|</span> Prof. Marc Los Huertos
-<span class="divider">|</span> Pomona College <span class="divider">|</span> Last updated: April 2026 <span class="divider">|</span>
+<div id="on-the-pomona-server" class="section level3">
+<h3>On the Pomona server</h3>
+<ol style="list-style-type: decimal">
+<li>Open <strong><a href="https://rstudio.pomona.edu">https://rstudio.pomona.edu</a></strong>
+and log in</li>
+<li>Go to <strong>File → New Project…</strong></li>
+<li>Choose <strong>New Directory → New Project</strong></li>
+<li>Enter a project name following the convention
+<code>coursecode_topic</code> — for example:</li>
+</ol>
+<pre><code>ea030_streams</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>For <strong>Create project as subdirectory of</strong>, leave the
+default (<code>~</code>) — this places the project in your home
+directory on the server</li>
+<li>Click <strong>Create Project</strong></li>
+</ol>
+</div>
+<div id="on-a-local-installation" class="section level3">
+<h3>On a local installation</h3>
+<p>Steps 2–6 are identical. The project folder appears wherever you
+chose in step 5.</p>
+<div class="callout callout-tip">
+<p><strong>✅ What the .Rproj file does</strong></p>
+<p>The <code>.Rproj</code> file is the anchor of your project. When you
+open it (by double-clicking in Finder/Explorer, or through <strong>File
+→ Open Project</strong> in RStudio), three things happen
+automatically:</p>
+<ol style="list-style-type: decimal">
+<li>The <strong>working directory</strong> is set to the project root
+folder</li>
+<li>The <strong>Files pane</strong> opens to the project root</li>
+<li>RStudio restores any open files from your last session</li>
+</ol>
+<p>You never need to call <code>setwd()</code> again.</p>
+</div>
+</div>
+<div id="one-project-per-analysis" class="section level3">
+<h3>One project per analysis</h3>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="20%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Scenario</th>
+<th align="left">Project name</th>
+<th align="left">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">EA030 lab on stream chemistry</td>
+<td align="left"><code>ea030_stream_chemistry</code></td>
+<td align="left">One project for each lab keeps labs independent</td>
+</tr>
+<tr class="even">
+<td align="left">EA030 lab on bird survey</td>
+<td align="left"><code>ea030_bird_survey</code></td>
+<td align="left">Never mix two labs in one project</td>
+</tr>
+<tr class="odd">
+<td align="left">Separate independent research project</td>
+<td align="left"><code>research_chaparral_birds</code></td>
+<td align="left">Entirely separate from course work</td>
+</tr>
+<tr class="even">
+<td align="left">Homework exercises</td>
+<td align="left"><code>ea030_homework</code></td>
+<td align="left">Reasonable to group all HW in one project with numbered
+subfolders</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<div class="step-header">
+<div class="step-num">
+2
+</div>
+<div>
+<div class="step-title">
+Build the Standard Folder Structure
+</div>
+<div class="step-sub">
+Create this once per project — takes under a minute
+</div>
+</div>
+</div>
+</div>
+<div id="structure" class="section level3">
+<h3>The EA030 standard structure</h3>
+<div class="fs-tree">
+<p><span class="rproj">ea030_streams.Rproj</span> <span class="note">←
+open this to enter the project</span><br> <span class="dir">data/</span><br>   <span class="dir">raw/</span> <span class="note">← original files, NEVER edited</span><br>     <span class="raw">stream_sites.csv</span><br>     <span class="raw">water_quality_2024.xlsx</span><br>   <span class="dir">processed/</span> <span class="note">← cleaned copies
+produced by scripts</span><br>     <span class="proc">sites_clean.csv</span><br> <span class="dir">scripts/</span><br>   <span class="file">01_load_clean.R</span> <span class="note">← numbered in run
+order</span><br>   <span class="file">02_visualise.R</span><br>   <span class="file">03_analysis.Rmd</span><br> <span class="dir">output/</span><br>   <span class="dir">figures/</span> <span class="note">← plots saved by scripts</span><br>   <span class="dir">tables/</span> <span class="note">← CSV summaries, knitr
+tables</span><br>   <span class="dir">reports/</span> <span class="note">← knitted HTML / PDF files</span><br> <span class="file">README.md</span> <span class="note">← one paragraph: what
+is this project?</span></p>
+</div>
+</div>
+<div id="what-goes-where" class="section level3">
+<h3>What goes where</h3>
+<div class="folder-grid">
+<div class="folder-card">
+<div class="fc-path">
+data/raw/
+</div>
+<div class="fc-rule">
+Original data files exactly as received or downloaded. <strong>Never
+modified by any script.</strong> Treat as read-only.
+</div>
+<p><span class="fc-example">stream_sites.csv, sensor_log.xlsx</span></p>
+</div>
+<div class="folder-card">
+<div class="fc-path">
+data/processed/
+</div>
+<div class="fc-rule">
+Cleaned, filtered, or joined datasets produced by a script in
+<code>scripts/</code>. Always reproducible from raw.
+</div>
+<p><span class="fc-example">sites_clean.csv,
+merged_2023_2024.csv</span></p>
+</div>
+<div class="folder-card">
+<div class="fc-path">
+scripts/
+</div>
+<div class="fc-rule">
+All <code>.R</code> and <code>.Rmd</code> files, numbered in the order
+they should be run. Each script has one clear purpose.
+</div>
+<p><span class="fc-example">01_load_clean.R, 02_eda.Rmd</span></p>
+</div>
+<div class="folder-card">
+<div class="fc-path">
+output/figures/
+</div>
+<div class="fc-rule">
+Plots saved programmatically (never copied by hand). A script should
+recreate every figure by running from scratch.
+</div>
+<p><span class="fc-example">do_vs_temp.png, site_map.pdf</span></p>
+</div>
+<div class="folder-card">
+<div class="fc-path">
+output/tables/
+</div>
+<div class="fc-rule">
+Summary statistics, model output tables exported as CSV or plain text.
+</div>
+<p><span class="fc-example">summary_stats.csv,
+model_coefs.csv</span></p>
+</div>
+<div class="folder-card">
+<div class="fc-path">
+output/reports/
+</div>
+<div class="fc-rule">
+Rendered HTML or PDF files. These are products of knitting, not sources
+— don’t edit them directly.
+</div>
+<p><span class="fc-example">03_analysis.html, lab_report.pdf</span></p>
+</div>
+</div>
+</div>
+<div id="create-the-folders" class="section level3">
+<h3>Create the folders</h3>
+<p>Run this once in the Console after creating the project. It builds
+the entire skeleton instantly:</p>
+<pre class="r"><code># Run once from the Console — creates all project folders
+dirs &lt;- c(
+  &quot;data/raw&quot;, &quot;data/processed&quot;,
+  &quot;scripts&quot;,
+  &quot;output/figures&quot;, &quot;output/tables&quot;, &quot;output/reports&quot;
+)
+invisible(lapply(dirs, dir.create, recursive = TRUE, showWarnings = FALSE))
+
+# Verify
+list.dirs(recursive = TRUE)</code></pre>
+<p>Or create them manually in the <strong>Files</strong> pane: click
+<strong>New Folder</strong>, name it, then navigate inside and repeat
+for subfolders.</p>
+<hr />
+<div class="step-header">
+<div class="step-num">
+3
+</div>
+<div>
+<div class="step-title">
+Use Relative File Paths
+</div>
+<div class="step-sub">
+Code that references files correctly — on any machine
+</div>
+</div>
+</div>
+</div>
+<div id="paths" class="section level3">
+<h3>The problem with absolute paths</h3>
+<p>An absolute path encodes the full location of a file from the root of
+the file system:</p>
+<div class="do-dont">
+<div class="dont-box">
+<div class="box-header">
+❌ Absolute path — breaks on every other machine
+</div>
+<div class="box-body">
+<p>read.csv(“/home/jsmith/ea030_streams/data/raw/stream_sites.csv”)<br><br>
+# On the server it becomes:<br>
+read.csv(“/home/mloshuertos/ea030_streams/…”)<br><br> # On a Mac:<br>
+read.csv(“/Users/jamie/Documents/…”)</p>
+</div>
+</div>
+<div class="do-box">
+<div class="box-header">
+✅ Relative path — works everywhere
+</div>
+<div class="box-body">
+<p>read.csv(“data/raw/stream_sites.csv”)<br><br> # Works because RStudio
+Projects set the<br> # working directory to the project root,<br> # so
+all paths start from there.</p>
+</div>
+</div>
+</div>
+<p>A relative path is measured from the <strong>working
+directory</strong> — and because <code>.Rproj</code> always sets the
+working directory to the project root,
+<code>&quot;data/raw/stream_sites.csv&quot;</code> resolves correctly whether you
+are on the Pomona server, your laptop, or a collaborator’s machine.</p>
+<div class="callout callout-warn">
+<p><strong>⚠️ setwd() is a red flag</strong></p>
+<p>If you find yourself writing <code>setwd(&quot;/some/long/path&quot;)</code>,
+stop. It means a file is being referenced from outside the project, or
+the project is not open. The fix is to open the project via the
+<code>.Rproj</code> file and use relative paths — never
+<code>setwd()</code>.</p>
+</div>
+<hr />
+<div class="step-header">
+<div class="step-num">
+4
+</div>
+<div>
+<div class="step-title">
+Robust Paths with the here Package
+</div>
+<div class="step-sub">
+install.packages(“here”) · one-time setup
+</div>
+</div>
+</div>
+<p>Relative paths like <code>&quot;data/raw/file.csv&quot;</code> work most of the
+time, but they depend on the working directory being set correctly.
+Inside a knitted <code>.Rmd</code>, the working directory is the folder
+containing the <code>.Rmd</code> file — not necessarily the project
+root. This causes subtle bugs when scripts are in a subfolder.</p>
+<p>The <code>here</code> package always resolves paths from the
+<strong>project root</strong>, regardless of where the script lives.
+{#here}</p>
+<pre class="r"><code>library(here)
+
+# here() returns the absolute path to the project root
+here()
+# &quot;/home/jsmith/ea030_streams&quot;
+
+# Construct paths safely
+read.csv(here(&quot;data&quot;, &quot;raw&quot;, &quot;stream_sites.csv&quot;))
+
+# Save output to a subfolder
+ggsave(here(&quot;output&quot;, &quot;figures&quot;, &quot;do_vs_temp.png&quot;),
+       width = 7, height = 4)</code></pre>
+<div class="callout callout-formula">
+<p><strong>⚙️ here() vs. relative paths — when does it
+matter?</strong></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Bare relative path</th>
+<th><code>here()</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Script in project root</td>
+<td>✅ Works</td>
+<td>✅ Works</td>
+</tr>
+<tr class="even">
+<td>Script in <code>scripts/</code> subfolder</td>
+<td>⚠️ May fail if WD not root</td>
+<td>✅ Always works</td>
+</tr>
+<tr class="odd">
+<td>Inside a knitted <code>.Rmd</code></td>
+<td>⚠️ WD = <code>.Rmd</code> location</td>
+<td>✅ Always works</td>
+</tr>
+<tr class="even">
+<td>Shared with a collaborator</td>
+<td>✅ Works if paths are short</td>
+<td>✅ Works</td>
+</tr>
+</tbody>
+</table>
+<p>Use <code>here()</code> consistently and you will never debug a path
+error again.</p>
+</div>
+</div>
+<div id="verify-here-is-working" class="section level3">
+<h3>Verify here is working</h3>
+<pre class="r"><code>library(here)
+here()   # should print the path ending in your project name</code></pre>
+<hr />
+<div class="step-header">
+<div class="step-num">
+5
+</div>
+<div>
+<div class="step-title">
+Naming Files and Scripts
+</div>
+<div class="step-sub">
+Good names make projects self-documenting
+</div>
+</div>
+</div>
+</div>
+<div id="naming" class="section level3">
+<h3>The three rules</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Machine-readable</strong> — no spaces, no special
+characters, no accented letters</li>
+<li><strong>Human-readable</strong> — a glance tells you what the file
+contains</li>
+<li><strong>Sortable</strong> — numbers and ISO dates keep files in the
+right order</li>
+</ol>
+<div class="name-grid">
+<div>
+<div class="name-col-head good">
+✅ Good names
+</div>
+<div class="name-items good">
+<p>01_load_clean.R<br> 02_exploratory_plots.Rmd<br>
+03_linear_regression.R<br> stream_sites_raw_2024-05-12.csv<br>
+do_vs_temp_fig1.png<br> README.md</p>
+</div>
+</div>
+<div>
+<div class="name-col-head bad">
+❌ Problematic names
+</div>
+<div class="name-items bad">
+<p>analysis.R<br> analysis FINAL (2).R<br> my data.csv<br>
+résultats.csv<br> Figure 1 (good one!).png<br> untitled.R</p>
+</div>
+</div>
+</div>
+</div>
+<div id="numbering-scripts" class="section level3">
+<h3>Numbering scripts</h3>
+<p>Number scripts with a two-digit prefix so they sort in run order in
+any file browser:</p>
+<pre class="r"><code># Correct — sorts as 01, 02, 03 ... 10, 11
+01_load_raw_data.R
+02_clean_and_filter.R
+03_exploratory_analysis.Rmd
+04_linear_regression.R
+05_report.Rmd
+
+# Wrong — sorts as 1, 10, 11, 2, 3 (lexicographic order)
+1_load.R
+10_final.R
+2_clean.R</code></pre>
+</div>
+<div id="dates-in-filenames" class="section level3">
+<h3>Dates in filenames</h3>
+<p>When a file is versioned by date (raw data downloads, for example),
+use <strong>ISO 8601</strong> format (<code>YYYY-MM-DD</code>) — it
+sorts chronologically:</p>
+<pre class="r"><code># Good — sorts chronologically
+stream_discharge_2024-03-15.csv
+stream_discharge_2024-04-02.csv
+stream_discharge_2024-11-01.csv
+
+# Bad — ambiguous, sorts wrong
+stream_discharge_3-15-24.csv
+stream_discharge_Nov_data.csv</code></pre>
+<hr />
+<div class="step-header">
+<div class="step-num">
+6
+</div>
+<div>
+<div class="step-title">
+A Worked Workflow
+</div>
+<div class="step-sub">
+From raw data to knitted report — the full arc
+</div>
+</div>
+</div>
+</div>
+<div id="workflow" class="section level3">
+<h3>Script 01 — load and clean</h3>
+<p>Every analysis starts the same way: load raw data, inspect it, clean
+it, save a processed copy. No output figures yet — just getting the data
+ready.</p>
+<pre class="r"><code># scripts/01_load_clean.R
+# Purpose: load raw stream data, check, clean, and save processed copy
+# Author:  your name
+# Date:    2024-05-12
+
+library(tidyverse)
+library(here)
+library(janitor)
+
+# ── 1. Load ────────────────────────────────────────────────────────
+raw &lt;- read_csv(here(&quot;data&quot;, &quot;raw&quot;, &quot;stream_sites.csv&quot;))
+
+# ── 2. Inspect ─────────────────────────────────────────────────────
+glimpse(raw)
+summary(raw)
+
+# ── 3. Clean ───────────────────────────────────────────────────────
+clean &lt;- raw %&gt;%
+  clean_names() %&gt;%                       # snake_case column names
+  filter(!is.na(dissolved_oxygen_mgl)) %&gt;% # drop rows missing DO
+  mutate(
+    date       = as.Date(date, &quot;%Y-%m-%d&quot;),
+    site_id    = factor(site_id),
+    do_mgl     = dissolved_oxygen_mgl,
+    temp_c     = water_temp_c
+  ) %&gt;%
+  select(date, site_id, do_mgl, temp_c, flow_cms, conductivity_us)
+
+# ── 4. Save processed copy ─────────────────────────────────────────
+write_csv(clean, here(&quot;data&quot;, &quot;processed&quot;, &quot;stream_clean.csv&quot;))
+cat(&quot;Saved:&quot;, nrow(clean), &quot;rows to data/processed/stream_clean.csv\n&quot;)</code></pre>
+</div>
+<div id="script-02-exploratory-visualisation" class="section level3">
+<h3>Script 02 — exploratory visualisation</h3>
+<pre class="r"><code># scripts/02_exploratory_plots.R
+# Purpose: initial visualisations of cleaned stream data
+
+library(tidyverse)
+library(here)
+
+clean &lt;- read_csv(here(&quot;data&quot;, &quot;processed&quot;, &quot;stream_clean.csv&quot;))
+
+# ── DO vs temperature ──────────────────────────────────────────────
+p_do_temp &lt;- ggplot(clean, aes(temp_c, do_mgl, colour = site_id)) +
+  geom_point(alpha = 0.55, size = 2) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE, linewidth = 0.8) +
+  scale_colour_brewer(palette = &quot;Dark2&quot;, name = &quot;Site&quot;) +
+  labs(x = &quot;Water temperature (°C)&quot;, y = &quot;Dissolved oxygen (mg/L)&quot;,
+       title = &quot;DO–Temperature Relationship by Site&quot;) +
+  theme_minimal(base_size = 13) +
+  theme(plot.title = element_text(family = &quot;serif&quot;, face = &quot;bold&quot;,
+                                  colour = &quot;#1e3a2f&quot;))
+
+# Save — never use Export button for reproducible figures
+ggsave(here(&quot;output&quot;, &quot;figures&quot;, &quot;do_vs_temp.png&quot;),
+       plot = p_do_temp, width = 7, height = 4, dpi = 150)
+
+cat(&quot;Figure saved to output/figures/do_vs_temp.png\n&quot;)</code></pre>
+<div class="callout callout-warn">
+<p><strong>⚠️ Never use the RStudio Export button for final
+figures</strong></p>
+<p>The Export button in the Plots pane lets you save a figure
+interactively — but the saved size and resolution depend on how you
+manually resize the window. Use <code>ggsave()</code> with explicit
+<code>width</code>, <code>height</code>, and <code>dpi</code> arguments
+so figures are identical every time the script runs.</p>
+</div>
+</div>
+<div id="script-03-analysis-report-rmd" class="section level3">
+<h3>Script 03 — analysis report (Rmd)</h3>
+<pre class="r"><code>---
+title: &quot;Stream Chemistry Analysis&quot;
+author: &quot;Your Name&quot;
+date: &quot;`r Sys.Date()`&quot;
+output:
+  html_document:
+    self_contained: true
+    toc: true
+---</code></pre>
+<pre><code>```{r load, include=FALSE}
+library(tidyverse)
+library(here)
+clean &lt;- read_csv(here(&quot;data&quot;, &quot;processed&quot;, &quot;stream_clean.csv&quot;))
+```
+
+```{r do-temp-plot, fig.cap=&quot;DO decreases with temperature across all sites.&quot;, echo=FALSE}
+ggplot(clean, aes(temp_c, do_mgl, colour = site_id)) +
+  geom_point(alpha = 0.55) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  theme_minimal()
+```</code></pre>
+<p>Knit with <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd>.
+The rendered HTML lands in the same folder as the <code>.Rmd</code> —
+move it to <code>output/reports/</code> manually, or set the
+<code>knit:</code> option in the YAML to write there directly (as all
+EA030 tutorials do).</p>
+<hr />
+</div>
+</div>
+<div id="verify" class="section level2">
+<h2>Verify Your Project Structure</h2>
+<p>Run this chunk to audit your project. It checks that all required
+folders exist, warns about any absolute paths in your scripts, and lists
+any raw data files.</p>
+<pre class="r"><code># Audit the current project structure
+required_dirs &lt;- c(&quot;data/raw&quot;, &quot;data/processed&quot;,
+                   &quot;scripts&quot;, &quot;output/figures&quot;,
+                   &quot;output/tables&quot;, &quot;output/reports&quot;)
+
+cat(&quot;── Folder audit ──────────────────────────────\n&quot;)</code></pre>
+<pre><code>## ── Folder audit ──────────────────────────────</code></pre>
+<pre class="r"><code>for (d in required_dirs) {
+  exists &lt;- dir.exists(d)
+  icon   &lt;- if (exists) &quot;✅&quot; else &quot;❌ MISSING&quot;
+  cat(sprintf(&quot;  %s  %s\n&quot;, icon, d))
+}</code></pre>
+<pre><code>##   ❌ MISSING  data/raw
+##   ❌ MISSING  data/processed
+##   ❌ MISSING  scripts
+##   ❌ MISSING  output/figures
+##   ❌ MISSING  output/tables
+##   ❌ MISSING  output/reports</code></pre>
+<pre class="r"><code>cat(&quot;\n── Working directory ─────────────────────────\n&quot;)</code></pre>
+<pre><code>## 
+## ── Working directory ─────────────────────────</code></pre>
+<pre class="r"><code>cat(&quot; &quot;, getwd(), &quot;\n&quot;)</code></pre>
+<pre><code>##   /home/mwl04747/RTricks/01_RGuides</code></pre>
+<pre class="r"><code>cat(&quot;\n── R scripts found in scripts/ ───────────────\n&quot;)</code></pre>
+<pre><code>## 
+## ── R scripts found in scripts/ ───────────────</code></pre>
+<pre class="r"><code>if (dir.exists(&quot;scripts&quot;)) {
+  scripts &lt;- list.files(&quot;scripts&quot;, pattern = &quot;\\.(R|Rmd)$&quot;,
+                        recursive = TRUE)
+  if (length(scripts) &gt; 0) {
+    cat(paste(&quot; •&quot;, scripts), sep = &quot;\n&quot;)
+  } else {
+    cat(&quot;  (no scripts yet)\n&quot;)
+  }
+} else {
+  cat(&quot;  scripts/ folder not found\n&quot;)
+}</code></pre>
+<pre><code>##   scripts/ folder not found</code></pre>
+<hr />
+<div class="key-box">
+<h4>
+🔑 Project structure — key rules
+</h4>
+<ul>
+<li>
+<strong>One project per analysis.</strong> Open it via the
+<code>.Rproj</code> file — never navigate files outside a project.
+</li>
+<li>
+<strong>Raw data is sacred.</strong> Nothing should write to
+<code>data/raw/</code>. Scripts read from it and write to
+<code>data/processed/</code>.
+</li>
+<li>
+<strong>Relative paths everywhere.</strong> No <code>setwd()</code>, no
+absolute paths. Use <code>here()</code> for robustness inside Rmd files
+and subfolders.
+</li>
+<li>
+<strong>Number your scripts.</strong> Prefix with <code>01_</code>,
+<code>02_</code>, … so run order is unambiguous.
+</li>
+<li>
+<strong>Save figures programmatically.</strong> Use
+<code>ggsave()</code>, not the Export button, so figures are
+reproducible.
+</li>
+<li>
+<strong>Write a README.</strong> Even one paragraph — what is the
+project, where did the data come from, who wrote it.
+</li>
+</ul>
+</div>
+<hr />
+<div id="whats-next" class="section level3">
+<h3>What’s next?</h3>
+<ul>
+<li><strong><a href="00_RStudio_Setup.html">Module 00 — R &amp; RStudio
+Setup</a></strong> — server login and local installation</li>
+<li><strong><a href="02_RMarkdown.html">Module 02 — R Markdown &amp;
+knitr</a></strong> — YAML options, chunk options, and knitting to
+HTML</li>
+<li><strong><a href="03_Data_Import.html">Module 03 — Data
+Import</a></strong> — reading CSV, Excel, and field-data files</li>
+</ul>
+<footer class="page-footer">
+EA030 Getting Started — Module 01 <span class="divider">|</span>
+Prof. Marc Los Huertos <span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: April 2026 <span class="divider">|</span>
 <a href="https://github.com/marclos/RTricks">GitHub</a>
 </footer>
+</div>
+</div>
 
 
 
