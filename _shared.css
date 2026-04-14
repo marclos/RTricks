@@ -1,0 +1,337 @@
+/* ============================================================
+   RTricks — Shared Stylesheet
+   EA030 · Environmental Analysis · Pomona College
+   Edit this file once; all modules pick it up automatically.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Design tokens ──────────────────────────────────────────────────────── */
+:root {
+  --forest:      #1e3a2f;
+  --moss:        #2d5a3d;
+  --fern:        #4a7c5e;
+  --sage:        #8aad96;
+  --mist:        #d4e6da;
+  --cream:       #f7f3ed;
+  --parchment:   #ede8df;
+  --ink:         #1a1a18;
+  --charcoal:    #3a3a38;
+  --dust:        #7a7a72;
+  --amber:       #c8832a;
+  --amber-lt:    #e8a84a;
+  --red-dark:    #7a1e1e;
+  --white:       #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+/* ── Base layout ────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+
+.main-container {
+  max-width: 940px !important;
+  margin: 0 auto !important;
+  padding: 0 clamp(10px, 2vw, 32px) 80px !important;
+}
+
+/* suppress default rmarkdown chrome */
+h1.title, h4.author, h4.date { display: none; }
+
+/* ── Page header ────────────────────────────────────────────────────────── */
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px,
+      rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff;
+  padding: 44px 4vw 36px;
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+  margin-bottom: 48px;
+  border-bottom: 4px solid var(--amber);
+  position: relative;
+  overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag, .page-header .course-tag {
+  display: inline-block;
+  font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt);
+  border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub, .page-header .header-sub {
+  font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300;
+}
+.page-header .sub strong, .page-header .header-sub strong {
+  color: rgba(255,255,255,.9); font-weight: 700;
+}
+
+/* ── Navigation elements ────────────────────────────────────────────────── */
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 44px; padding-bottom: 20px;
+  border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem;
+  font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+/* module prev/next navigation */
+.module-nav {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  margin: 56px 0 24px; padding-top: 24px;
+  border-top: 1px solid var(--parchment);
+}
+.module-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .75rem;
+  font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 8px 16px; border-radius: 4px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.module-nav a:hover { background: var(--mist); color: var(--forest); }
+.module-nav .nav-prev::before { content: '← '; }
+.module-nav .nav-next::after  { content: ' →'; }
+.module-nav .nav-index { color: var(--dust); border-color: var(--parchment); }
+
+/* ── Headings ───────────────────────────────────────────────────────────── */
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+
+/* ── Body text ──────────────────────────────────────────────────────────── */
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+
+blockquote {
+  border-left: 4px solid var(--sage); margin: 1.2em 0; padding: .5em 1em;
+  background: var(--white); border-radius: 0 5px 5px 0; font-size: .94em;
+  color: var(--charcoal);
+}
+
+/* ── Code ───────────────────────────────────────────────────────────────── */
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+/* ── Callout boxes ──────────────────────────────────────────────────────── */
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);     background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;          background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;          background: #fff8f4; }
+.callout-myth    { border-color: var(--red-dark);  background: #fdf2f2; }
+.callout-formula { border-color: var(--amber);     background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+/* ── Math display ───────────────────────────────────────────────────────── */
+.math-block {
+  background: var(--white); border: 1px solid var(--parchment);
+  border-radius: 5px; padding: 16px 20px; margin: 1.2em 0;
+  text-align: center; box-shadow: var(--card-shadow);
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); vertical-align: top; }
+
+/* ── Key takeaway box ───────────────────────────────────────────────────── */
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box strong { color: var(--amber-lt); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+/* ── Learning goals box ─────────────────────────────────────────────────── */
+.goals-box {
+  background: var(--white);
+  border: 1px solid var(--mist);
+  border-left: 5px solid var(--fern);
+  border-radius: 0 6px 6px 0;
+  padding: 18px 22px 18px 20px;
+  margin: 0 0 44px;
+  box-shadow: var(--card-shadow);
+}
+.goals-box .goals-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--fern); margin-bottom: 10px;
+}
+.goals-box ol {
+  padding-left: 1.4em; margin: 0;
+}
+.goals-box li {
+  font-size: .92rem; color: var(--charcoal); margin-bottom: 5px; line-height: 1.5;
+}
+
+/* ── Practice exercises ─────────────────────────────────────────────────── */
+.exercises {
+  border: 1px solid var(--parchment);
+  border-radius: 6px; margin: 2.5em 0; overflow: hidden;
+}
+.exercises-header {
+  background: var(--amber); color: #fff;
+  padding: 10px 18px;
+  font-family: 'Source Code Pro', monospace; font-size: .75rem;
+  font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+}
+.exercise {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--parchment);
+}
+.exercise:last-child { border-bottom: none; }
+.exercise-num {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--amber);
+  margin-bottom: 5px;
+}
+.exercise p { font-size: .93rem; color: var(--charcoal); margin-bottom: 0; }
+.exercise code { font-size: .82em; }
+
+details.solution {
+  margin-top: 10px;
+}
+details.solution summary {
+  font-family: 'Source Code Pro', monospace; font-size: .72rem;
+  font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); cursor: pointer; padding: 5px 0;
+  list-style: none;
+}
+details.solution summary::before { content: '▶  '; font-size: .65rem; }
+details.solution[open] summary::before { content: '▼  '; }
+details.solution summary::-webkit-details-marker { display: none; }
+details.solution .solution-body {
+  background: var(--cream); border-left: 3px solid var(--fern);
+  border-radius: 0 4px 4px 0; padding: 12px 16px; margin-top: 8px;
+  font-size: .88rem; color: var(--charcoal);
+}
+details.solution .solution-body pre {
+  font-size: .8rem; margin: .6em 0;
+}
+
+/* ── Hypothesis framework cards (modules 05, 08, 10) ───────────────────── */
+.hyp-row { display: flex; gap: 12px; margin: 1.6em 0; }
+.hyp-card {
+  flex: 1; padding: 14px 18px; border-radius: 6px;
+  box-shadow: var(--card-shadow); font-size: .9rem;
+}
+.hyp-card .hyp-label {
+  font-family: 'Source Code Pro', monospace; font-size: .68rem;
+  font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 5px;
+}
+.hyp-card .hyp-stmt {
+  font-family: 'Libre Baskerville', serif; font-size: 1rem; line-height: 1.4;
+}
+.hyp-null { background: var(--parchment); }
+.hyp-null .hyp-label { color: var(--dust); }
+.hyp-null .hyp-stmt  { color: var(--charcoal); }
+.hyp-alt  { background: var(--forest); color: #fff; }
+.hyp-alt  .hyp-label { color: var(--sage); }
+.hyp-alt  .hyp-stmt  { color: rgba(255,255,255,.9); }
+
+/* ── PDF / Print button ─────────────────────────────────────────────────── */
+.btn-pdf {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Source Code Pro', monospace; font-size: .72rem;
+  font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  background: var(--amber); color: #fff; border: none;
+  padding: 6px 16px; border-radius: 4px; cursor: pointer;
+  margin-top: 16px; transition: background .2s;
+}
+.btn-pdf:hover { background: var(--amber-lt); }
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw;
+  margin-top: 60px;
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer a:hover { color: var(--amber-lt); }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+
+/* ── Print styles ───────────────────────────────────────────────────────── */
+@media print {
+  .section-nav, .module-nav, .back-link, .btn-pdf, .page-footer { display: none !important; }
+  .page-header { margin: 0 !important; }
+  body { padding: 0 !important; font-size: 13px !important; }
+  pre { border-left: 2px solid #ccc !important;
+        background: #f5f5f5 !important; color: #000 !important; }
+  .callout { border-left: 3px solid #999 !important; background: #fafafa !important; }
+  .key-box { background: #1e3a2f !important;
+             -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  h2 { page-break-before: auto; }
+  pre, .callout, table, .goals-box { page-break-inside: avoid; }
+}
