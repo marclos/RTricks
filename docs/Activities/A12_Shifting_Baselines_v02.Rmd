@@ -1,0 +1,986 @@
+---
+title: "Shifting Baselines and Changepoint Analysis"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/Activities/A12_Shifting_Baselines.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 8,
+  fig.height = 4
+)
+```
+
+```{r shared-css, echo=FALSE, results='asis'}
+cat('<style>\n',
+    paste(readLines(here::here("_shared.css")), collapse = '\n'),
+    '\n</style>\n')
+```
+
+```{r module-css, echo=FALSE, results='asis'}
+module_css <- "
+/* Module-specific: A12 changepoint labels, workflow boxes */
+.cpt-label {
+  display: inline-block;
+  font-family: 'Source Code Pro', monospace; font-size: .72rem;
+  font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 3px; margin: 2px 4px 2px 0;
+  vertical-align: middle;
+}
+.cpt-mean   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+.cpt-var    { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+.cpt-online { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+.penalty-table td:first-child {
+  font-family: 'Source Code Pro', monospace; font-weight: 600; color: var(--forest);
+}
+.step-label {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--amber);
+  display: block; margin-bottom: 4px;
+}
+.workflow-box {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px; margin: 1.4em 0;
+}
+.wf-step {
+  background: var(--white); border: 1px solid var(--mist);
+  border-top: 3px solid var(--fern); border-radius: 0 0 5px 5px;
+  padding: 12px 14px; font-size: .86rem;
+}
+.wf-step strong { display: block; color: var(--forest); margin-bottom: 3px; }
+"
+cat(paste0('<style>', module_css, '</style>\n'))
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Field &amp; Lab Activities &mdash; A12</div>
+<h1>Shifting Baselines &amp; <span>Changepoint Analysis</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
+<button class="btn-pdf" onclick="window.print()">&#8659; Save as PDF</button>
+</div>
+
+<div class="section-nav">
+<a href="#baselines">Shifting Baselines</a>
+<a href="#setup">Setup</a>
+<a href="#offline">Offline Detection</a>
+<a href="#variance">Variance Shifts</a>
+<a href="#online">Online Detection</a>
+<a href="#application">Real Application</a>
+<a href="#exercises">Exercises</a>
+</div>
+
+<div class="goals-box">
+<div class="goals-label">By the end of this module you will be able to</div>
+<ol>
+<li>Explain the shifting baseline problem and why it matters for long-term environmental monitoring.</li>
+<li>Apply AMOC and PELT algorithms to detect mean shifts in historical time-series data using the <code>changepoint</code> package.</li>
+<li>Detect changes in variance (flashiness, volatility) as well as changes in mean.</li>
+<li>Describe how Bayesian Online Changepoint Detection (BOCPD) and CUSUM sequential detection work, and implement sequential analysis with the <code>strucchange</code> package.</li>
+<li>Choose the right penalty (AIC, BIC, MBIC) for a given monitoring context and justify that choice.</li>
+</ol>
+</div>
+
+> **What this module covers.** Environmental systems rarely stay put. Stream temperatures
+> creep upward over decades. Salmon populations collapse to a new, lower equilibrium.
+> Drought pushes groundwater levels down and keeps them there long after rain returns.
+> Standard statistics — t-tests, regression, even time-series decomposition — implicitly
+> assume a stable reference state. This module teaches you to *detect* the moments when
+> that reference state shifts, using two complementary approaches: offline analysis of
+> historical records and online (real-time) monitoring for new breaks.
+
+---
+
+## 1. The Shifting Baseline Problem {#baselines}
+
+### 1.1 What is a baseline?
+
+In environmental monitoring, a **baseline** is the expected background state of a system
+against which current conditions are compared. Baselines define "normal":
+
+- Is today's stream temperature warm or cool? *Compared to the baseline.*
+- Has this year's salmon return been poor? *Compared to the baseline.*
+- Is current groundwater depth declining? *Compared to the baseline.*
+
+Baselines are not fixed facts of nature — they are socially and scientifically constructed
+reference periods, and they shift.
+
+### 1.2 The problem: each generation inherits a different baseline
+
+<div class="callout callout-concept">
+<strong>📌 Shifting baseline syndrome</strong>
+Fisheries biologist Daniel Pauly coined this term in 1995 to describe how each generation
+of scientists calibrates "normal" to the ecosystem state they first encountered.
+Scientists who began work in the 1950s defined healthy cod stocks by 1950s abundance;
+those starting in the 1980s accepted the already-depleted 1980s state as normal.
+The result: the baseline quietly shifts downward with each decade, and the cumulative
+loss is invisible to any single generation.
+</div>
+
+The same phenomenon appears across environmental science:
+
+| System | Historic baseline | Current state | Apparent magnitude of change |
+|---|---|---|---|
+| North Atlantic cod | ~200M tonnes biomass (pre-1900) | < 1% of historic | Enormous if measured from true baseline |
+| CA Sierra snowpack | 1950–1999 April 1 SWE average | −30 to −60% in many basins | Severe |
+| Chesapeake Bay oxygen | Pre-industrial dissolved O₂ | Seasonal hypoxia now "normal" | Underestimated |
+| Global mean temperature | Pre-industrial 1850–1900 | +1.2°C | ~50% larger than if baseline = 1980 |
+
+### 1.3 What is a changepoint?
+
+A **changepoint** is a time index $\tau$ at which one or more statistical properties
+of a series — mean, variance, autocorrelation structure — undergo an abrupt shift.
+
+$$X_t \sim \begin{cases}
+\mathcal{N}(\mu_1, \sigma_1^2) & t \leq \tau \\
+\mathcal{N}(\mu_2, \sigma_2^2) & t > \tau
+\end{cases}$$
+
+The goal of changepoint analysis is to estimate $\tau$ (and its uncertainty) from the data.
+This is fundamentally different from trend detection (Mann-Kendall, regression slope) —
+we are looking for **discrete jumps**, not gradual slopes.
+
+<div class="callout callout-warn">
+<strong>⚠️ Changepoints ≠ trends</strong>
+A long-term upward trend and a sudden step-change can look similar in a raw time plot.
+Mann-Kendall will find both; changepoint analysis will only flag the step. Choose your
+tool based on which kind of change you expect ecologically.
+</div>
+
+### 1.4 Two detection paradigms
+
+<div class="workflow-box">
+<div class="wf-step">
+<strong>Offline (retrospective)</strong>
+All data in hand. Find the best-fitting set of changepoints over the full record. Methods: AMOC, PELT. Use for: historical analysis, report writing, model building.
+</div>
+<div class="wf-step">
+<strong>Online (sequential)</strong>
+Data arrives one point at a time. Update the probability of a new changepoint with each observation. Methods: BOCPD, CUSUM. Use for: sensor networks, early-warning systems, adaptive management.
+</div>
+</div>
+
+---
+
+## 2. Setup {#setup}
+
+We need two packages:
+
+- **`changepoint`** — mature, CRAN-stable implementation of AMOC, PELT, and CROPS for
+  offline analysis (Killick & Eckley 2014).
+- **`strucchange`** — structural change tests and sequential detection (Zeileis et al. 2002).
+  Provides CUSUM-based online monitoring, optimal breakpoints with confidence intervals,
+  and the `breakpoints()` function used in econometrics and environmental science alike.
+- **`ggplot2`** and **`dplyr`** for visualization and wrangling.
+
+```{r packages}
+if (!require(changepoint)) install.packages("changepoint", repos = "https://cloud.r-project.org")
+if (!require(strucchange))  install.packages("strucchange",  repos = "https://cloud.r-project.org")
+
+library(changepoint)
+library(strucchange)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+```{r palette, include=FALSE}
+# Shared colour palette (mirrors _shared.css tokens)
+col_forest  <- "#1e3a2f"
+col_fern    <- "#4a7c5e"
+col_sage    <- "#8aad96"
+col_amber   <- "#c8832a"
+col_amberlt <- "#e8a84a"
+col_ink     <- "#1a1a18"
+col_dust    <- "#7a7a72"
+col_mist    <- "#d4e6da"
+
+theme_rtricks <- theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 colour = col_forest, size = 12),
+    plot.subtitle = element_text(colour = col_dust, size = 9.5),
+    plot.caption  = element_text(colour = col_dust, size = 8),
+    axis.title    = element_text(colour = "#3a3a38", size = 9.5),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(colour = "#ede8df", linewidth = 0.4)
+  )
+theme_set(theme_rtricks)
+```
+
+### 2.1 Simulated California stream temperature scenario
+
+We will build a realistic synthetic dataset before moving to real data. The scenario:
+
+- **2000–2009** (n = 120 months): Cool baseline, mean July temperature ≈ 14°C
+- **2010–2016** (n = 84 months): Prolonged drought; irreversible step up to ~18°C
+- **2017–2023** (n = 84 months): Post-drought partial recovery to ~16°C, but with
+  **higher variance** — wetter winters followed by hotter summers (flashiness)
+
+This mimics the documented pattern in several Sierra Nevada foothill streams during and
+after the 2012–2017 California drought.
+
+```{r simulate-data, fig.cap="Simulated monthly stream temperature series. Three distinct phases are visible: cool pre-drought baseline, a sharp step at the drought onset, and a volatile post-drought period. Grey shading marks the drought window.", fig.alt="Line plot of 288 monthly temperature observations showing a rise from ~14°C to ~18°C around month 120, then a slight decline with increased variability from month 204 onward. Two vertical dashed lines mark the true changepoints."}
+set.seed(2024)
+
+n1 <- 120; n2 <- 84; n3 <- 84
+N  <- n1 + n2 + n3
+
+temp <- c(
+  rnorm(n1, mean = 14.0, sd = 0.8),   # pre-drought
+  rnorm(n2, mean = 18.2, sd = 0.9),   # drought
+  rnorm(n3, mean = 16.1, sd = 2.1)    # post-drought (higher SD)
+)
+
+# Monthly date sequence
+dates <- seq(as.Date("2000-01-01"), by = "month", length.out = N)
+
+stream_df <- data.frame(
+  date  = dates,
+  month = seq_along(dates),
+  temp  = temp,
+  phase = rep(c("Pre-drought", "Drought", "Post-drought"),
+               times = c(n1, n2, n3))
+)
+
+# True changepoints for reference
+true_cpts <- c(n1, n1 + n2)
+
+ggplot(stream_df, aes(x = date, y = temp)) +
+  annotate("rect",
+    xmin = dates[n1 + 1], xmax = dates[n1 + n2],
+    ymin = -Inf, ymax = Inf,
+    fill = "#fff8f4", alpha = 0.8) +
+  geom_line(colour = col_fern, linewidth = 0.45) +
+  geom_vline(xintercept = dates[true_cpts], linetype = "dashed",
+             colour = col_amber, linewidth = 0.8) +
+  annotate("text", x = dates[true_cpts[1]] + 30, y = 20.5,
+           label = "True CP 1", size = 2.8, colour = col_amber, hjust = 0) +
+  annotate("text", x = dates[true_cpts[2]] + 30, y = 20.5,
+           label = "True CP 2", size = 2.8, colour = col_amber, hjust = 0) +
+  labs(title = "Simulated Monthly Stream Temperature — Sierra Foothill Station",
+       subtitle = "Scenario: 2012–2016 California drought + post-drought volatility",
+       x = NULL, y = "Temperature (°C)",
+       caption = "Grey band = simulated drought window   |   Dashed lines = true changepoints")
+```
+
+---
+
+## 3. Offline Changepoint Detection {#offline}
+
+Offline methods work on the complete historical record. The core idea is to partition
+the series into $m+1$ segments (separated by $m$ changepoints) to maximise the
+fit of a within-segment model, penalised for complexity.
+
+$$\text{Minimise:} \quad \sum_{i=1}^{m+1} \mathcal{C}(y_{\tau_{i-1}+1:\tau_i}) + \beta f(m)$$
+
+where $\mathcal{C}$ is a cost function (negative log-likelihood for the within-segment
+model) and $\beta f(m)$ is the penalty for adding changepoints.
+
+### 3.1 AMOC — At Most One Change
+
+AMOC asks a single question: *is there exactly one changepoint, and if so, where?*
+It evaluates every possible split position and picks the one that most reduces
+the total cost. Useful as a first pass, or when you have strong prior reason to expect
+a single regime shift.
+
+```{r amoc, fig.cap="AMOC detects the single most significant mean shift in the stream temperature series. The estimated segment means are shown as horizontal dashed lines.", fig.alt="Two-panel changepoint plot showing the time series with a single detected changepoint and two horizontal mean lines at approximately 14°C and 17°C."}
+m_amoc <- cpt.mean(temp, method = "AMOC")
+
+# Extract results
+cpt_amoc    <- cpts(m_amoc)
+means_amoc  <- param.est(m_amoc)$mean
+
+cat("AMOC changepoint at index:", cpt_amoc, "\n")
+cat("   → month", cpt_amoc, "=", format(dates[cpt_amoc], "%b %Y"), "\n")
+cat("Segment means:", round(means_amoc, 2), "°C\n")
+
+plot(m_amoc,
+     main   = "AMOC: Single Mean Changepoint",
+     ylab   = "Temperature (°C)", xlab = "Month index",
+     col    = col_fern, cpt.col = col_amber,
+     cpt.width = 3, mean.col = col_forest)
+```
+
+AMOC correctly identifies the large drought-onset shift but cannot, by definition,
+find the second changepoint. This is why PELT is usually preferred for real
+environmental records with complex histories.
+
+### 3.2 PELT — Multiple Changepoints
+
+The **Pruned Exact Linear Time** algorithm (Killick et al. 2012) finds the *globally
+optimal* set of changepoints efficiently, in $O(n)$ time on average. It eliminates
+candidate split positions using a pruning rule — once a partition is provably suboptimal
+it is never revisited.
+
+The key user decision is the **penalty**. Too small a penalty → too many changepoints
+(overfitting noise); too large → important shifts are missed.
+
+```{r penalty-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    Penalty = c("AIC", "BIC", "MBIC", "Manual (numeric)"),
+    Formula = c("2k", "k·log(n)", "3k·log(n)", "user-specified"),
+    Behavior = c(
+      "Most permissive; finds more changepoints",
+      "Balanced; standard default for large n",
+      "Conservative; reduces false positives",
+      "Full control for domain-specific thresholds"
+    ),
+    `Best for` = c(
+      "Exploratory analysis; dense monitoring",
+      "Most environmental records",
+      "Sparse data or high cost of false alarms",
+      "Regulatory or management thresholds"
+    )
+  ),
+  col.names = c("Penalty", "Formula (k = no. cpts)", "Behavior", "Best for"),
+  caption   = "Penalty comparison for PELT changepoint detection."
+)
+```
+
+```{r pelt-bic, fig.cap="PELT with BIC penalty detects two mean changepoints in the stream temperature record. Vertical lines mark detected changepoints; horizontal lines show estimated segment means.", fig.alt="Time series with two detected changepoints marked by vertical lines at approximately months 120 and 204, with three horizontal mean lines at 14, 18, and 16°C."}
+m_pelt_bic <- cpt.mean(temp, method = "PELT", penalty = "BIC")
+
+cpts_bic   <- cpts(m_pelt_bic)
+means_bic  <- param.est(m_pelt_bic)$mean
+
+cat("PELT (BIC) changepoints at indices:", cpts_bic, "\n")
+cat("   →", format(dates[cpts_bic], "%b %Y"), "\n")
+cat("Segment means:", round(means_bic, 2), "°C\n")
+cat("True changepoints were at:", true_cpts, "\n")
+
+plot(m_pelt_bic,
+     main   = "PELT (BIC Penalty): Multiple Mean Changepoints",
+     ylab   = "Temperature (°C)", xlab = "Month index",
+     col    = col_fern, cpt.col = col_amber,
+     cpt.width = 3, mean.col = col_forest)
+```
+
+```{r pelt-aic, fig.cap="Comparison of PELT with AIC vs BIC penalty. AIC is more permissive and may detect additional changepoints that represent noise rather than genuine regime shifts.", fig.alt="Two time-series plots stacked vertically comparing AIC and BIC penalty detections in the same dataset."}
+m_pelt_aic <- cpt.mean(temp, method = "PELT", penalty = "AIC")
+
+par(mfrow = c(2, 1), mar = c(3, 4, 2.5, 1))
+plot(m_pelt_bic, main = "PELT — BIC penalty",
+     ylab = "°C", col = col_fern, cpt.col = col_amber, cpt.width = 2,
+     mean.col = col_forest, xlab = "")
+plot(m_pelt_aic, main = "PELT — AIC penalty",
+     ylab = "°C", col = col_fern, cpt.col = col_amber, cpt.width = 2,
+     mean.col = col_forest, xlab = "Month index")
+par(mfrow = c(1, 1))
+```
+
+<div class="callout callout-concept">
+<strong>📌 Which penalty to use in practice?</strong>
+Start with BIC. If you expect dense changepoints (e.g., weekly sensor data with frequent
+regime shifts) try AIC. If false alarms carry regulatory costs — triggering a permit
+review, declaring a fishery closure — use MBIC or a manually tuned penalty. Always
+report which penalty you used and why; it is a modelling decision, not a black box.
+</div>
+
+### 3.3 Comparing estimated changepoints to ground truth
+
+```{r accuracy-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    Method   = c("AMOC", "PELT (BIC)", "PELT (AIC)"),
+    Detected = c(
+      paste(cpts(m_amoc), collapse = ", "),
+      paste(cpts(m_pelt_bic), collapse = ", "),
+      paste(cpts(m_pelt_aic), collapse = ", ")
+    ),
+    n_cpts   = c(
+      length(cpts(m_amoc)),
+      length(cpts(m_pelt_bic)),
+      length(cpts(m_pelt_aic))
+    ),
+    True     = "120, 204",
+    Notes    = c(
+      "Finds only the dominant shift",
+      "Matches true changepoints well",
+      "May over-segment noisy post-drought phase"
+    )
+  ),
+  col.names = c("Method", "Detected indices", "No. cpts", "True cpts", "Notes"),
+  caption   = "Changepoint detection accuracy across methods. True changepoints at months 120 and 204."
+)
+```
+
+---
+
+## 4. Detecting Shifts in Variance {#variance}
+
+So far we have looked for changes in the **mean**. But the post-drought scenario
+specifically includes a variance increase — the stream became flashier (wider swings
+between wet-year highs and dry-year lows). This is ecologically important: high
+variance increases thermal stress events even if the mean temperature is tolerable.
+
+<div class="callout callout-formula">
+<strong>⚙️ Why variance shifts matter</strong>
+If mean temp = 16°C and SD = 0.9°C, temperatures rarely exceed 18°C.
+If mean temp = 16°C and SD = 2.1°C, temperatures exceed 18°C ~17% of the time —
+above the thermal tolerance limit of many cold-water fish.
+Detecting the variance shift is as ecologically important as detecting the mean shift.
+</div>
+
+### 4.1 Testing for a variance changepoint
+
+```{r cpt-var, fig.cap="PELT applied to variance detects the onset of increased volatility in the post-drought phase. Note that the mean may appear similar while the spread of values is clearly wider.", fig.alt="Time series plot with a detected variance changepoint around month 204, showing noticeably wider oscillations in the right-hand segment."}
+m_var <- cpt.var(temp, method = "PELT", penalty = "BIC")
+
+cpts_var   <- cpts(m_var)
+vars_est   <- param.est(m_var)$variance
+
+cat("Variance changepoint(s) at index:", cpts_var, "\n")
+cat("   →", format(dates[cpts_var], "%b %Y"), "\n")
+cat("Estimated variances:", round(vars_est, 3), "(SD:",
+    round(sqrt(vars_est), 2), ")\n")
+
+plot(m_var,
+     main      = "Variance Changepoint Detection (PELT)",
+     ylab      = "Temperature (°C)", xlab = "Month index",
+     col       = col_fern, cpt.col = col_amber,
+     cpt.width = 3)
+```
+
+### 4.2 Simultaneous mean and variance changepoints
+
+`cpt.meanvar()` searches for locations where *either* parameter changes — useful when
+you do not want to pre-specify which parameter is shifting.
+
+```{r cpt-meanvar, fig.cap="Joint mean-and-variance changepoint detection. Each segment has its own estimated mean and variance; shifts in either property trigger a new changepoint.", fig.alt="Time series with three detected changepoints showing segments of different means and spread widths."}
+m_mv <- cpt.meanvar(temp, method = "PELT", penalty = "BIC")
+
+cat("Mean+Variance changepoints:", cpts(m_mv), "\n")
+cat("Segment means:",     round(param.est(m_mv)$mean, 2), "\n")
+cat("Segment variances:", round(param.est(m_mv)$variance, 3), "\n")
+
+plot(m_mv,
+     main      = "Mean + Variance Changepoints (PELT)",
+     ylab      = "Temperature (°C)", xlab = "Month index",
+     col       = col_fern, cpt.col = col_amber,
+     cpt.width = 3, mean.col = col_forest)
+```
+
+---
+
+## 5. Sequential & Online Changepoint Detection {#online}
+
+The offline methods above assume the full time series is available. But environmental
+monitoring is often **sequential** — sensors stream data continuously and managers
+need to know as soon as possible when a new regime has begun.
+
+### 5.1 The conceptual basis: BOCPD and CUSUM
+
+Two families of sequential methods dominate practice:
+
+**Bayesian Online Changepoint Detection (BOCPD, Adams & MacKay 2007)**
+maintains a probability distribution over the *run length* $r_t$ — the number of steps
+since the last changepoint. At each new observation the distribution is updated via
+Bayes' rule. The probability that $r_t = 0$ is the real-time alarm probability.
+
+**CUSUM (Cumulative Sum Control Chart)**
+accumulates signed deviations from a reference mean. When the cumulative sum exceeds
+a threshold, an alarm fires. Unlike BOCPD, CUSUM is nonparametric and makes no
+distributional assumptions — it simply asks whether the data have drifted from
+the reference level.
+
+<div class="callout callout-warn">
+<strong>⚠️ The shifting baseline problem in sequential detection</strong>
+Both BOCPD and CUSUM use a <em>fixed</em> reference state. If the true baseline has
+drifted far from that reference over years (e.g., stream temperatures have risen 4°C
+since the sensor was first calibrated), sensitivity degrades because ordinary
+observations now look like outliers relative to the stale prior.<br><br>
+Fixes include: (1) recalibrating the reference after each confirmed changepoint,
+(2) using a moving window for the reference mean, or (3) applying a robust
+adaptive hazard function in BOCPD.
+</div>
+
+### 5.2 CUSUM and structural change tests with `strucchange`
+
+The `strucchange` package implements empirical fluctuation processes (EFP) —
+running statistics that accumulate evidence of structural change over time.
+The OLS-CUSUM process is the most widely used.
+
+```{r cusum-stream, fig.cap="OLS-CUSUM fluctuation process for the simulated stream temperature series. The process accumulates deviations from the full-sample OLS fit. When it breaches the red boundary lines (95% significance envelope), structural change is detected. Both changepoints are clearly visible as boundary crossings.", fig.alt="CUSUM plot with a time axis and a fluctuation process line that crosses the significance boundary twice, around months 120 and 204."}
+# Build a simple linear model framework: temp ~ 1 (intercept only)
+# The CUSUM process tests whether that intercept is stable over time
+efp_stream <- efp(temp ~ 1, type = "OLS-CUSUM")
+plot(efp_stream,
+     main = "OLS-CUSUM: Sequential Test for Mean Shift",
+     ylab = "Empirical fluctuation process",
+     col  = col_forest, lwd  = 1.2)
+```
+
+```{r sctest}
+# Formal test: is there ANY structural break?
+sc_test <- sctest(efp_stream)
+cat(sprintf("OLS-CUSUM test: statistic = %.3f, p-value = %.4f\n",
+            sc_test$statistic, sc_test$p.value))
+cat("Conclusion:", ifelse(sc_test$p.value < 0.05,
+    "Strong evidence of at least one structural break.",
+    "No significant structural break detected."), "\n")
+```
+
+### 5.3 Optimal breakpoints with confidence intervals
+
+`strucchange::breakpoints()` finds the globally optimal set of breakpoints under an
+OLS framework — conceptually similar to PELT but reporting confidence intervals on
+the *timing* of each break. This is particularly valuable for management: knowing
+whether a shift occurred in 2009, 2011, or 2013 has very different implications
+for attributing cause.
+
+```{r strucchange-bps, fig.cap="Optimal breakpoints with 95% confidence intervals from strucchange. The vertical lines show the point estimates; the shaded bands show the 95% CI on each changepoint date. Narrower bands indicate a sharper, more precisely dated transition.", fig.alt="Time series of stream temperature with two vertical dashed lines at the detected changepoints and shaded confidence interval bands around each."}
+bp_stream <- breakpoints(temp ~ 1)
+
+# How many breakpoints minimise BIC?
+summary(bp_stream)
+plot(bp_stream, main = "BIC by number of breakpoints")
+```
+
+```{r bp-ci, fig.cap="Stream temperature with detected breakpoints and 95% confidence intervals. Segment means are shown as solid horizontal lines. The confidence bands illustrate the uncertainty in when each transition occurred.", fig.alt="Line plot of temperature over 288 months with two breakpoint confidence bands shaded in amber and two horizontal segment mean lines."}
+# Select optimal number of breakpoints (BIC minimum)
+bp_opt <- breakpoints(bp_stream)      # optimal selection
+ci_bp  <- confint(bp_stream)          # CI requires breakpointsfull
+
+cat("Optimal breakpoint indices:", bp_opt$breakpoints, "\n")
+cat("   →", format(dates[bp_opt$breakpoints], "%b %Y"), "\n")
+cat("True changepoints:         ", true_cpts, "\n")
+cat("95% CI:", ci_bp$confint, "\n")
+
+# Segment means: one intercept per segment via breakfactor()
+bf        <- breakfactor(bp_opt)
+seg_means <- coef(lm(temp ~ bf - 1))
+cat("Segment means:", round(seg_means, 2), "°C\n")
+
+# Plot with ggplot
+n_bp   <- length(bp_opt$breakpoints)
+bp_idx <- c(0, bp_opt$breakpoints, N)
+mean_df <- data.frame(
+  xmin = dates[bp_idx[-length(bp_idx)] + 1],
+  xmax = dates[bp_idx[-1]],
+  mean = seg_means
+)
+# confint row = breakpoint, cols = [lower, estimate, upper]
+ci_mat <- ci_bp$confint
+ci_df  <- data.frame(
+  x   = dates[ci_mat[, 2]],
+  xlo = dates[pmax(1, ci_mat[, 1])],
+  xhi = dates[pmin(N, ci_mat[, 3])]
+)
+
+ggplot(stream_df, aes(x = date, y = temp)) +
+  geom_rect(data = ci_df,
+              aes(xmin = xlo, xmax = xhi, ymin = -Inf, ymax = Inf),
+              inherit.aes = FALSE,
+              fill = col_amber, alpha = 0.18) +
+  geom_line(colour = col_fern, linewidth = 0.45, alpha = 0.8) +
+  geom_segment(data = mean_df,
+               aes(x = xmin, xend = xmax, y = mean, yend = mean),
+               colour = col_forest, linewidth = 1.2) +
+  geom_vline(xintercept = dates[ci_mat[, 2]],
+             linetype = "dashed", colour = col_amber, linewidth = 0.8) +
+  labs(title    = "Stream Temperature: Optimal Breakpoints with 95% CIs",
+       subtitle = "Amber bands = 95% confidence interval on changepoint timing",
+       x = NULL, y = "Temperature (°C)")
+```
+
+<div class="callout callout-concept">
+<strong>📌 Why confidence intervals on timing matter</strong>
+A point estimate says "the shift occurred at month 120." A confidence interval says
+"we're 95% confident it occurred between months 115 and 125." In regulatory contexts
+(e.g., attributing a water-quality decline to a specific upstream land-use change
+permitted in month 118), the width of this interval is often the key evidence.
+</div>
+
+### 5.4 Simulating online detection with a rolling CUSUM
+
+To mimic real-time monitoring, we compute the CUSUM statistic on expanding windows —
+adding one observation at a time and checking whether the statistic exceeds the
+critical value derived from the pre-change baseline.
+
+```{r rolling-cusum, fig.cap="Rolling CUSUM statistic computed on expanding windows. The statistic accumulates evidence of a shift from the pre-drought baseline (months 1–120). The critical value (dashed red) is set at the 95th percentile of the null distribution. Exceedances flag a detected changepoint.", fig.alt="Line plot of rolling CUSUM statistic over time showing a sharp rise above the critical threshold around month 130, followed by another exceedance around month 210."}
+# Baseline: use first 120 months (pre-change)
+baseline_mean <- mean(temp[1:n1])
+baseline_sd   <- sd(temp[1:n1])
+
+# Normalised CUSUM: accumulate (x - mu_0) / sigma_0
+cusum <- cumsum((temp - baseline_mean) / baseline_sd)
+
+# Critical value: for a standard CUSUM, ~±1.96*sqrt(n) at 95%
+# Use 4.0 as a conservative threshold (standard quality-control value)
+crit <- 4.0
+
+cusum_df <- data.frame(
+  date  = dates,
+  cusum = cusum,
+  alarm = abs(cusum) > crit
+)
+
+ggplot(cusum_df, aes(x = date, y = cusum)) +
+  geom_hline(yintercept = c(-crit, crit), linetype = "dashed",
+             colour = "#c0392b", linewidth = 0.8) +
+  geom_hline(yintercept = 0, colour = col_dust, linewidth = 0.4) +
+  geom_line(colour = col_forest, linewidth = 0.5) +
+  geom_point(data = filter(cusum_df, alarm),
+             aes(x = date, y = cusum),
+             colour = col_amber, size = 1.2, alpha = 0.6) +
+  annotate("text", x = min(dates) + 30, y = crit + 1.5,
+           label = "Critical value (±4.0)", size = 2.8,
+           colour = "#c0392b") +
+  labs(title    = "Rolling CUSUM — Online Detection from Pre-Drought Baseline",
+       subtitle = "Reference = pre-drought mean; amber points = alarm threshold exceeded",
+       x = NULL, y = "Cumulative standardised sum",
+       caption  = "Note: CUSUM sensitivity degrades as the new baseline drifts from the reference mean")
+```
+
+Note the important pattern: once the drought-era mean is established, the CUSUM
+statistic continues to rise because every new observation is above the pre-drought
+reference. This illustrates the **shifting baseline problem** directly — the old
+reference is no longer relevant but the statistic keeps accumulating. Resetting the
+reference after the first confirmed changepoint is essential for detecting subsequent
+transitions.
+
+---
+## 6. Real Environmental Application {#application}
+
+### 6.1 Built-in data: Nile river flow
+
+R includes the `Nile` dataset: annual flow of the Nile at Aswan, 1871–1970.
+A famous changepoint corresponds to the construction of the Aswan Low Dam (~1898)
+and later hydrological changes. This is a canonical environmental changepoint example.
+
+```{r nile-data, fig.cap="Annual Nile river discharge at Aswan, 1871–1970 (millions of m³). A well-documented structural break occurs around 1898 following dam construction and upstream land use change.", fig.alt="Time series plot of Nile discharge showing a clear downward step around 1898, with lower and more stable flow in the second half of the record."}
+data(Nile)
+nile_df <- data.frame(
+  year      = as.numeric(time(Nile)),
+  discharge = as.numeric(Nile)
+)
+
+ggplot(nile_df, aes(x = year, y = discharge)) +
+  geom_line(colour = col_fern, linewidth = 0.6) +
+  geom_smooth(method = "loess", span = 0.3,
+              colour = col_amber, se = FALSE, linewidth = 0.9) +
+  labs(title    = "Annual Nile Discharge — Aswan, 1871–1970",
+       subtitle = "Loess smoother (orange) highlights the structural break",
+       x = "Year", y = "Discharge (10⁸ m³)",
+       caption  = "Source: R built-in Nile dataset (Cobb 1978)")
+```
+
+### 6.2 Applying the full workflow
+
+```{r nile-workflow}
+# Step 1: PELT mean changepoint
+nile_pelt <- cpt.mean(as.numeric(Nile), method = "PELT", penalty = "BIC")
+cpt_year  <- 1871 + cpts(nile_pelt) - 1  # convert index to year
+means_nile <- param.est(nile_pelt)$mean
+
+cat("Detected changepoint year:", cpt_year, "\n")
+cat("Segment means:", round(means_nile), "× 10⁸ m³\n")
+cat("Change in mean:", round(diff(means_nile)), "× 10⁸ m³",
+    sprintf("(%.0f%%)\n", 100 * diff(means_nile) / means_nile[1]))
+```
+
+```{r nile-pelt-plot, fig.cap="PELT changepoint detection on the Nile discharge record. The detected shift corresponds closely to the 1898 construction of the Aswan Low Dam and associated upstream hydrological changes.", fig.alt="Nile discharge time series with a single detected changepoint at approximately 1899, and two horizontal segment mean lines."}
+# Step 2: Visualise with ggplot (manual, for clean styling)
+cp_idx  <- cpts(nile_pelt)
+cp_yr   <- cpt_year
+
+anno_df <- data.frame(
+  xmin   = c(1871, cp_yr + 1),
+  xmax   = c(cp_yr, 1970),
+  ymean  = means_nile
+)
+
+ggplot(nile_df, aes(x = year, y = discharge)) +
+  geom_line(colour = col_fern, linewidth = 0.5, alpha = 0.8) +
+  geom_segment(data = anno_df,
+               aes(x = xmin, xend = xmax, y = ymean, yend = ymean),
+               colour = col_forest, linewidth = 1.3, linetype = "solid") +
+  geom_vline(xintercept = cp_yr, colour = col_amber,
+             linewidth = 1, linetype = "dashed") +
+  annotate("text", x = cp_yr + 1, y = 1370,
+           label = paste0("Changepoint: ", cp_yr),
+           hjust = 0, size = 3, colour = col_amber) +
+  annotate("text", x = 1873, y = means_nile[1] + 35,
+           label = paste0("Mean = ", round(means_nile[1])),
+           size = 2.9, colour = col_forest) +
+  annotate("text", x = cp_yr + 2, y = means_nile[2] + 35,
+           label = paste0("Mean = ", round(means_nile[2])),
+           size = 2.9, colour = col_forest) +
+  labs(title    = "Nile Discharge: PELT Mean Changepoint",
+       subtitle = paste0("Detected shift at ", cp_yr,
+                         " — consistent with Aswan Low Dam construction (1898)"),
+       x = "Year", y = "Discharge (10⁸ m³)")
+```
+
+```{r nile-struc, fig.cap="strucchange breakpoints with 95% confidence interval for the Nile discharge series. The detected break near 1899 is precisely dated; the narrow CI confirms the transition was sharp.", fig.alt="Nile discharge time series with a vertical dashed line at approximately 1899 and a shaded confidence interval band, plus two horizontal segment mean lines."}
+# Step 3: Breakpoints with confidence intervals
+nile_bp  <- breakpoints(as.numeric(Nile) ~ 1)
+nile_opt <- breakpoints(nile_bp)                  # optimal selection
+nile_ci  <- confint(nile_bp)                      # CI from breakpointsfull
+
+bp_yr    <- 1871 + nile_opt$breakpoints - 1
+ci_lo    <- 1871 + nile_ci$confint[1, 1] - 1
+ci_hi    <- 1871 + nile_ci$confint[1, 3] - 1
+bf_n   <- breakfactor(nile_opt)
+seg_mu <- coef(lm(as.numeric(Nile) ~ bf_n - 1))
+
+cat(sprintf("Breakpoint: %d  (95%% CI: %d – %d)\n", bp_yr, ci_lo, ci_hi))
+cat("Segment means:", round(seg_mu), "× 10⁸ m³\n")
+
+ggplot(nile_df, aes(x = year, y = discharge)) +
+  annotate("rect", xmin = ci_lo, xmax = ci_hi,
+           ymin = -Inf, ymax = Inf, fill = col_amber, alpha = 0.18) +
+  geom_line(colour = col_fern, linewidth = 0.5, alpha = 0.8) +
+  geom_segment(data = data.frame(
+                 xmin = c(1871, bp_yr + 1), xmax = c(bp_yr, 1970),
+                 mu   = seg_mu),
+               aes(x = xmin, xend = xmax, y = mu, yend = mu),
+               colour = col_forest, linewidth = 1.3) +
+  geom_vline(xintercept = bp_yr, colour = col_amber,
+             linetype = "dashed", linewidth = 1) +
+  annotate("text", x = bp_yr + 1, y = 1370,
+           label = sprintf("Break: %d\n(95%% CI: %d–%d)", bp_yr, ci_lo, ci_hi),
+           hjust = 0, size = 2.8, colour = col_amber) +
+  labs(title    = "Nile Discharge: strucchange Breakpoint + 95% CI",
+       subtitle = "Amber band = confidence interval on timing of the structural break",
+       x = "Year", y = "Discharge (10⁸ m³)")
+```
+
+### 6.3 Interpreting changepoints in context
+
+Statistical detection is only the first step. The analysis above tells us *when*
+a shift occurred and *how large* it was. Environmental interpretation requires
+connecting these findings to mechanism:
+
+```{r interpretation-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    Question = c(
+      "When did the shift occur?",
+      "How large was it?",
+      "Is it permanent?",
+      "What caused it?",
+      "What is the new baseline?"
+    ),
+    Tool = c(
+      "cpt.mean(), breakpoints() + confint() — point estimate + CI",
+      "Difference in segment means; effect size = Δμ / pooled SD",
+      "PELT + strucchange CUSUM on rolling windows",
+      "Domain knowledge, causal inference — statistics cannot answer this",
+      "Mean of the most recent confirmed segment"
+    ),
+    `Nile example` = c(
+      paste0(cp_yr, " (± ~2 years)"),
+      paste0(round(abs(diff(means_nile))), " × 10⁸ m³ (", round(100*abs(diff(means_nile))/means_nile[1]), "% reduction)"),
+      "Appears permanent over the 1871–1970 record",
+      "Aswan Low Dam (1898); upstream irrigation expansion",
+      paste0(round(means_nile[2]), " × 10⁸ m³ (post-1899 mean)")
+    )
+  ),
+  col.names = c("Question", "Statistical tool", "Nile example"),
+  caption   = "Connecting statistical output to environmental interpretation."
+)
+```
+
+<div class="callout callout-concept">
+<strong>📌 The new baseline is a management decision, not just a number</strong>
+Once a changepoint is confirmed, the pre-change period is no longer a valid reference for
+current conditions. Using pre-dam Nile flow as the "normal" baseline for contemporary
+water allocation would be as misleading as using 1950 cod abundances to set current
+fishing quotas. Changepoint analysis forces a reckoning with which period actually
+represents the current system state.
+</div>
+
+---
+
+## 7. Reporting Changepoint Analyses {#reporting}
+
+A complete changepoint analysis report should include:
+
+1. **Method and package**: `cpt.mean(..., method = "PELT", penalty = "BIC")` via `changepoint` v`r packageVersion("changepoint")`
+2. **Detected changepoints**: indices or dates, with uncertainty where available
+3. **Segment statistics**: mean and SD per segment
+4. **Penalty justification**: why you chose AIC vs BIC vs MBIC
+5. **Ecological interpretation**: what mechanism might explain the detected shift
+6. **Caveats**: minimum detectable effect size; sensitivity to penalty choice
+
+```{r session-report, echo=FALSE}
+cat("changepoint version:", as.character(packageVersion("changepoint")), "\n")
+cat("strucchange version:",  as.character(packageVersion("strucchange")), "\n")
+cat("R version:",
+    paste(R.version$major, R.version$minor, sep = "."), "\n")
+```
+
+---
+
+<div class="key-box">
+<h4>🔑 Key Takeaways</h4>
+<ul>
+<li><strong>Shifting baselines</strong> mean that the "normal" reference state changes over time — detecting these shifts is essential before any comparison to historical conditions.</li>
+<li><strong>AMOC</strong> finds the single most significant break; <strong>PELT</strong> finds the globally optimal set of multiple breaks in O(n) time.</li>
+<li><strong>Penalty choice</strong> (AIC / BIC / MBIC) controls the trade-off between sensitivity and false alarms — always report and justify it.</li>
+<li><strong>Variance shifts</strong> can be ecologically significant even when the mean is unchanged — use <code>cpt.var()</code> or <code>cpt.meanvar()</code>.</li>
+<li><strong>Sequential methods</strong> (<code>strucchange</code>) provide CUSUM monitoring and confidence intervals on changepoint <em>timing</em> — essential for regulatory attribution.</li>
+<li>Statistical detection answers <em>when</em> and <em>how much</em> — ecological interpretation of <em>why</em> requires domain knowledge.</li>
+</ul>
+</div>
+
+---
+
+<div class="exercises">
+<div class="exercises-header">✏️ Practice Exercises</div>
+
+<div class="exercise">
+<div class="exercise-num">Exercise 1 — Apply PELT to air quality data</div>
+<p>The built-in <code>airquality</code> dataset contains 153 daily ozone readings (May–September 1973).
+(a) Apply <code>cpt.mean()</code> with PELT and BIC penalty to the <code>Ozone</code> column (remove NAs first).
+(b) Report detected changepoints as calendar dates (hint: <code>airquality$Month</code> and <code>Day</code>).
+(c) Plot the result. Do the detected breaks correspond to any meteorological explanation?</p>
+<details class="solution">
+<summary>Show solution</summary>
+<div class="solution-body">
+<pre><code>library(changepoint)
+data(airquality)
+ozone_clean <- airquality[!is.na(airquality$Ozone), ]
+m <- cpt.mean(ozone_clean$Ozone, method = "PELT", penalty = "BIC")
+cpts(m)
+
+# Convert index to date
+ozone_clean$date <- as.Date(paste(1973, ozone_clean$Month, ozone_clean$Day, sep="-"))
+ozone_clean$date[cpts(m)]
+plot(m, ylab = "Ozone (ppb)", xlab = "Observation index",
+     main = "Ozone changepoints — New York 1973")</code></pre>
+<p>A changepoint typically appears around late June / early July, separating the
+cool, low-ozone spring period from the hot, high-ozone midsummer. This corresponds
+to the photochemical production peak driven by higher temperatures and longer days.</p>
+</div>
+</details>
+</div>
+
+<div class="exercise">
+<div class="exercise-num">Exercise 2 — Variance shift in PM2.5 data</div>
+<p>Simulate two years of daily PM2.5: Year 1 has mean = 10 µg/m³, SD = 2; Year 2 has
+mean = 10 µg/m³, SD = 8 (more wildfire smoke events). Use <code>set.seed(42)</code>.
+(a) Does <code>cpt.mean()</code> detect a changepoint? (b) Does <code>cpt.var()</code>?
+(c) What does this tell you about the ecological importance of monitoring variance,
+not just the mean?</p>
+<details class="solution">
+<summary>Show solution</summary>
+<div class="solution-body">
+<pre><code>set.seed(42)
+pm25 <- c(rnorm(365, 10, 2), rnorm(365, 10, 8))
+
+m_mean <- cpt.mean(pm25, method = "PELT", penalty = "BIC")
+m_var  <- cpt.var(pm25,  method = "PELT", penalty = "BIC")
+
+cat("Mean changepoints:", cpts(m_mean), "\n")
+cat("Variance changepoints:", cpts(m_var), "\n")
+par(mfrow = c(2,1))
+plot(m_mean, main = "Mean changepoints (none expected)")
+plot(m_var,  main = "Variance changepoint (expected at day 365)")</code></pre>
+<p><code>cpt.mean()</code> finds no changepoint (both years have the same mean).
+<code>cpt.var()</code> correctly identifies the onset of higher variance at day ~365.
+This matters because even with the same annual mean PM2.5, the high-variance year
+has far more days exceeding the 35 µg/m³ NAAQS threshold — health risk is driven
+by peak events, not averages.</p>
+</div>
+</details>
+</div>
+
+<div class="exercise">
+<div class="exercise-num">Exercise 3 — Penalty sensitivity analysis</div>
+<p>Using the Nile dataset, run <code>cpt.mean()</code> with PELT and penalties "AIC", "BIC",
+and "MBIC". (a) How many changepoints does each penalty detect?
+(b) Are the detected years consistent across penalties?
+(c) Which penalty would you recommend for a regulatory report to the Egyptian Ministry
+of Water, and why?</p>
+<details class="solution">
+<summary>Show solution</summary>
+<div class="solution-body">
+<pre><code>data(Nile)
+for (pen in c("AIC", "BIC", "MBIC")) {
+  m <- cpt.mean(as.numeric(Nile), method = "PELT", penalty = pen)
+  yrs <- 1871 + cpts(m) - 1
+  cat(pen, ":", length(cpts(m)), "changepoints at", yrs, "\n")
+}</code></pre>
+<p>AIC typically finds 2–3 changepoints; BIC and MBIC usually agree on one dominant
+changepoint (~1899). For a regulatory report, MBIC or BIC is appropriate — false
+alarms (claiming a shift that isn't real) could trigger costly policy responses, so
+a conservative penalty is justified. The primary changepoint at 1899 is robust across
+all penalties, lending it scientific credibility.</p>
+</div>
+</details>
+</div>
+
+<div class="exercise">
+<div class="exercise-num">Exercise 4 — Confidence intervals on changepoint timing</div>
+<p>Using the Nile dataset, run <code>breakpoints(as.numeric(Nile) ~ 1)</code>
+and extract the 95% confidence interval with <code>confint()</code>.
+(a) How wide is the CI in years? (b) Now add <code>AR(1)</code> autocorrelation
+correction: <code>breakpoints(as.numeric(Nile) ~ 1, h = 0.15)</code>. Does the
+CI change? (c) Why does autocorrelation in the data affect the precision of
+changepoint timing estimates?</p>
+<details class="solution">
+<summary>Show solution</summary>
+<div class="solution-body">
+<pre><code>library(strucchange)
+data(Nile)
+
+# Standard breakpoints
+bp  <- breakpoints(as.numeric(Nile) ~ 1)
+bpo <- breakpoints(bp)
+  ci  <- confint(bp)
+cat("Break year:", 1871 + bpo$breakpoints - 1, "
+")
+cat("95% CI:", 1871 + ci$confint[c(1,3)] - 1, "
+")
+cat("CI width:", diff(ci$confint[c(1,3)]), "years
+")
+
+# With smaller bandwidth (more sensitive to local change)
+bp2 <- breakpoints(as.numeric(Nile) ~ 1, h = 0.15)
+ci2 <- confint(bp2)
+cat("Narrower h CI:", 1871 + ci2$confint[c(1,3)] - 1, "
+")</code></pre>
+<p>A wider CI results when the transition is gradual or when the series is
+autocorrelated — adjacent observations carry redundant information, effectively
+reducing the sample size available to pin down the exact transition point.
+The dam construction at Aswan was fairly sudden, so the CI is typically narrow
+(~4–6 years), lending credibility to the 1899 attribution.</p>
+</div>
+</details>
+</div>
+</div>
+
+<div class="module-nav">
+<span></span>
+<a class="nav-index" href="../index.html">↑ Module Index</a>
+<span></span>
+</div>
+
+<footer class="page-footer">
+EA030 Field &amp; Lab Activities &mdash; A12
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>

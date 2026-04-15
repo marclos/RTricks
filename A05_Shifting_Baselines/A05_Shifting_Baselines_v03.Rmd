@@ -1,0 +1,845 @@
+---
+title: "Shifting Baselines and Changepoint Analysis"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/Activities/05_Shifting_Baselines.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  eval    = TRUE,
+  fig.width  = 8,
+  fig.height = 4
+)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important;
+  padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px,
+      rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+h4 {
+  font-family: 'Lato', sans-serif; font-size: 1rem; font-weight: 700;
+  color: var(--charcoal); margin-top: 20px; margin-bottom: 4px;
+}
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+ol, ul { padding-left: 1.5em; margin-bottom: 1em; }
+li { margin-bottom: .3em; }
+blockquote {
+  border-left: 4px solid var(--sage); margin: 1.2em 0; padding: .5em 1em;
+  background: var(--white); border-radius: 0 5px 5px 0;
+  font-size: .94em; color: var(--charcoal);
+}
+
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box strong { color: var(--amber-lt); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+.goals-box {
+  background: var(--white); border: 1px solid var(--mist);
+  border-left: 5px solid var(--fern); border-radius: 0 6px 6px 0;
+  padding: 18px 22px 18px 20px; margin: 0 0 44px;
+  box-shadow: var(--card-shadow);
+}
+.goals-box .goals-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--fern); margin-bottom: 10px;
+}
+.goals-box ol { padding-left: 1.4em; margin: 0; }
+.goals-box li { font-size: .92rem; color: var(--charcoal); margin-bottom: 5px; }
+
+.exercises {
+  border: 1px solid var(--parchment); border-radius: 6px;
+  margin: 2.5em 0; overflow: hidden;
+}
+.exercises-header {
+  background: var(--amber); color: #fff; padding: 10px 18px;
+  font-family: 'Source Code Pro', monospace; font-size: .75rem;
+  font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+}
+.exercise { padding: 16px 20px; border-bottom: 1px solid var(--parchment); }
+.exercise:last-child { border-bottom: none; }
+.exercise-num {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--amber);
+  margin-bottom: 5px;
+}
+.exercise p { font-size: .93rem; color: var(--charcoal); margin-bottom: 0; }
+details.solution { margin-top: 10px; }
+details.solution summary {
+  font-family: 'Source Code Pro', monospace; font-size: .72rem;
+  font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); cursor: pointer; padding: 5px 0; list-style: none;
+}
+details.solution summary::before { content: '▶  '; font-size: .65rem; }
+details.solution[open] summary::before { content: '▼  '; }
+details.solution summary::-webkit-details-marker { display: none; }
+details.solution .solution-body {
+  background: var(--cream); border-left: 3px solid var(--fern);
+  border-radius: 0 4px 4px 0; padding: 12px 16px; margin-top: 8px;
+  font-size: .88rem; color: var(--charcoal);
+}
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+.btn-pdf {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Source Code Pro', monospace; font-size: .72rem;
+  font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  background: var(--amber); color: #fff; border: none;
+  padding: 6px 16px; border-radius: 4px; cursor: pointer;
+  margin-top: 16px; transition: background .2s;
+}
+.btn-pdf:hover { background: var(--amber-lt); }
+
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+
+@media print {
+  .section-nav, .back-link, .btn-pdf, .page-footer { display: none !important; }
+  .page-header { margin: 0 !important; }
+  body { padding: 0 !important; font-size: 13px !important; }
+  pre { border-left: 2px solid #ccc !important;
+        background: #f5f5f5 !important; color: #000 !important; }
+  .callout { border-left: 3px solid #999 !important; background: #fafafa !important; }
+  .key-box { background: #1e3a2f !important;
+             -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Field &amp; Lab Activities &mdash; A12</div>
+<h1>Shifting Baselines &amp; <span>Changepoint Analysis</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College</p>
+<a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
+<button class="btn-pdf" onclick="window.print()">&#8659; Save as PDF</button>
+</div>
+
+<div class="section-nav">
+<a href="#background">Background</a>
+<a href="#setup">Setup</a>
+<a href="#offline">Offline Detection</a>
+<a href="#variance">Variance Shifts</a>
+<a href="#sequential">Sequential Detection</a>
+<a href="#realdata">Real Data</a>
+<a href="#exercises">Exercises</a>
+</div>
+
+<div class="goals-box">
+<div class="goals-label">By the end of this module you will be able to</div>
+<ol>
+<li>Explain the shifting baseline problem and why it matters for long-term environmental monitoring.</li>
+<li>Detect mean shifts in historical data using AMOC and PELT via the <code>changepoint</code> package.</li>
+<li>Detect changes in variance using <code>cpt.var()</code> and interpret their ecological significance.</li>
+<li>Apply sequential CUSUM monitoring and the <code>strucchange</code> package to test for structural breaks.</li>
+<li>Choose the right penalty (AIC, BIC, MBIC) for a detection task and justify that choice.</li>
+</ol>
+</div>
+
+> **What this module covers.** Environmental systems rarely stay put. Stream
+> temperatures creep upward over decades, salmon populations collapse to a new
+> lower equilibrium, droughts push groundwater down and keep it there. Standard
+> statistics assume a stable reference state. This module teaches you to detect
+> the moments when that reference permanently shifts, using both offline
+> retrospective analysis and sequential monitoring tools.
+
+---
+
+## 1. Background {#background}
+
+### 1.1 What is a baseline?
+
+A **baseline** is the expected background state of a system against which
+current conditions are compared. Baselines are not fixed facts of nature —
+they are constructed reference periods, and they shift.
+
+<div class="callout callout-concept">
+<strong>📌 Shifting baseline syndrome</strong>
+Fisheries biologist Daniel Pauly coined this term in 1995. Each generation of
+scientists calibrates "normal" to the ecosystem state they first encountered.
+Scientists starting in the 1950s defined healthy cod stocks by 1950s abundance;
+those starting in the 1980s accepted the already-depleted state as normal.
+The cumulative loss becomes invisible to any single generation.
+</div>
+
+### 1.2 What is a changepoint?
+
+A **changepoint** is a time index $\tau$ at which a statistical property
+— mean, variance, or both — undergoes an abrupt shift:
+
+$$X_t \sim \begin{cases}
+\mathcal{N}(\mu_1,\, \sigma_1^2) & t \leq \tau \\
+\mathcal{N}(\mu_2,\, \sigma_2^2) & t > \tau
+\end{cases}$$
+
+This is distinct from a gradual trend. Mann-Kendall detects trends;
+changepoint analysis detects **discrete jumps**.
+
+<div class="callout callout-warn">
+<strong>⚠️ Changepoints vs. trends</strong>
+A gradual upward trend and a sudden step change can look similar in a raw
+time plot. Choose your tool based on which kind of shift is ecologically
+plausible for your system.
+</div>
+
+---
+
+## 2. Setup {#setup}
+
+```{r packages}
+library(changepoint)   # AMOC, PELT (cpt.mean, cpt.var, cpt.meanvar)
+library(strucchange)   # CUSUM, breakpoints with confidence intervals
+library(ggplot2)
+library(dplyr)
+library(knitr)
+```
+
+```{r palette, include=FALSE}
+col_forest <- "#1e3a2f"
+col_fern   <- "#4a7c5e"
+col_amber  <- "#c8832a"
+col_dust   <- "#7a7a72"
+
+theme_set(
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 colour = col_forest, size = 12),
+    plot.subtitle = element_text(colour = col_dust, size = 9.5),
+    plot.caption  = element_text(colour = col_dust, size = 8),
+    axis.title    = element_text(colour = "#3a3a38", size = 9.5),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(colour = "#ede8df", linewidth = 0.4)
+  )
+)
+```
+
+### 2.1 Simulated stream temperature data
+
+We use a synthetic dataset mimicking Sierra Nevada foothill stream
+temperatures during and after the 2012--2017 California drought:
+
+- **Phase 1** (months 1--120): Cool pre-drought baseline, mean 14 deg C, SD 0.8
+- **Phase 2** (months 121--204): Drought, mean rises to 18.2 deg C, SD 0.9
+- **Phase 3** (months 205--288): Partial recovery to 16 deg C, but SD = 2.1 (flashier hydrology)
+
+```{r simulate}
+set.seed(2024)
+n1 <- 120; n2 <- 84; n3 <- 84
+N  <- n1 + n2 + n3
+
+temp  <- c(
+  rnorm(n1, mean = 14.0, sd = 0.8),
+  rnorm(n2, mean = 18.2, sd = 0.9),
+  rnorm(n3, mean = 16.1, sd = 2.1)
+)
+dates     <- seq(as.Date("2000-01-01"), by = "month", length.out = N)
+true_cpts <- c(n1, n1 + n2)
+stream_df <- data.frame(date = dates, temp = temp)
+```
+
+```{r raw-plot, fig.cap="Simulated monthly stream temperature. True changepoints are dashed amber lines; the shaded band marks the simulated drought window.", fig.alt="Line plot of 288 monthly temperatures showing a step up at month 120 and wider oscillations from month 204."}
+ggplot(stream_df, aes(x = date, y = temp)) +
+  annotate("rect",
+    xmin = dates[n1 + 1], xmax = dates[n1 + n2],
+    ymin = -Inf, ymax = Inf, fill = "#fff8f4", alpha = 0.9) +
+  geom_line(colour = col_fern, linewidth = 0.45) +
+  geom_vline(xintercept = dates[true_cpts],
+             linetype = "dashed", colour = col_amber, linewidth = 0.8) +
+  labs(title    = "Simulated Monthly Stream Temperature",
+       subtitle = "Dashed lines = true changepoints  |  Shaded = drought window",
+       x = NULL, y = "Temperature (deg C)")
+```
+
+---
+
+## 3. Offline Changepoint Detection {#offline}
+
+Offline methods work on the complete historical record. They find the
+set of changepoints that minimises total within-segment cost plus a
+penalty for model complexity.
+
+### 3.1 AMOC — At Most One Change
+
+AMOC evaluates every possible single split and picks the best one.
+Useful when you expect exactly one regime shift.
+
+```{r amoc, fig.cap="AMOC detects the single most significant mean shift — the large drought-onset step. It cannot detect a second changepoint by design.", fig.alt="Time series with one changepoint line and two horizontal mean lines."}
+m_amoc <- cpt.mean(temp, method = "AMOC")
+
+cat("AMOC changepoint at index:", cpts(m_amoc), "\n")
+cat("  =>", format(dates[cpts(m_amoc)], "%b %Y"), "\n")
+cat("Segment means:", round(param.est(m_amoc)$mean, 2), "deg C\n")
+
+plot(m_amoc,
+     main = "AMOC: Single Mean Changepoint",
+     ylab = "Temperature (deg C)", xlab = "Month index",
+     col  = col_fern, cpt.col = col_amber,
+     cpt.width = 3, mean.col = col_forest)
+```
+
+### 3.2 PELT — Multiple Changepoints
+
+PELT (Pruned Exact Linear Time) finds the globally optimal set of
+changepoints efficiently. The key user decision is the **penalty**:
+
+```{r penalty-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    Penalty  = c("AIC", "BIC", "MBIC"),
+    Behavior = c("Most permissive — more changepoints",
+                 "Balanced — standard default",
+                 "Conservative — fewer false positives"),
+    Use      = c("Exploratory, dense sensor data",
+                 "Most environmental records",
+                 "High cost of false alarms")
+  ),
+  caption = "Penalty options for PELT mean changepoint detection."
+)
+```
+
+```{r pelt-bic, fig.cap="PELT with BIC penalty recovers both true changepoints in the stream temperature record.", fig.alt="Time series with two changepoint lines at months 120 and 204 and three horizontal mean lines."}
+m_pelt <- cpt.mean(temp, method = "PELT", penalty = "BIC")
+
+cat("PELT (BIC) changepoints:", cpts(m_pelt), "\n")
+cat("  =>", format(dates[cpts(m_pelt)], "%b %Y"), "\n")
+cat("Segment means:", round(param.est(m_pelt)$mean, 2), "deg C\n")
+cat("True changepoints at months:", true_cpts, "\n")
+
+plot(m_pelt,
+     main = "PELT (BIC): Multiple Mean Changepoints",
+     ylab = "Temperature (deg C)", xlab = "Month index",
+     col  = col_fern, cpt.col = col_amber,
+     cpt.width = 3, mean.col = col_forest)
+```
+
+```{r pelt-compare, fig.cap="AIC vs BIC penalty comparison. AIC is more permissive and may over-segment the volatile post-drought phase.", fig.alt="Two stacked plots comparing PELT AIC and BIC results on the same data."}
+m_aic <- cpt.mean(temp, method = "PELT", penalty = "AIC")
+
+par(mfrow = c(2, 1), mar = c(3, 4, 2.5, 1))
+plot(m_pelt, main = paste("BIC:", length(cpts(m_pelt)), "changepoints"),
+     ylab = "deg C", col = col_fern, cpt.col = col_amber,
+     cpt.width = 2, mean.col = col_forest, xlab = "")
+plot(m_aic,  main = paste("AIC:", length(cpts(m_aic)),  "changepoints"),
+     ylab = "deg C", col = col_fern, cpt.col = col_amber,
+     cpt.width = 2, mean.col = col_forest, xlab = "Month index")
+par(mfrow = c(1, 1))
+```
+
+<div class="callout callout-tip">
+<strong>💡 Which penalty to use?</strong>
+Start with BIC. Use AIC for dense exploratory work. Use MBIC when false
+alarms carry regulatory costs. Always report and justify your choice.
+</div>
+
+---
+
+## 4. Variance Shifts {#variance}
+
+The post-drought phase has the same rough mean as recovery, but much
+higher variance — the stream is flashier. This matters ecologically:
+
+<div class="callout callout-formula">
+<strong>Why variance shifts matter</strong>
+Mean = 16 deg C, SD = 0.9: temperatures exceed 18 deg C less than 2% of days.
+Mean = 16 deg C, SD = 2.1: temperatures exceed 18 deg C roughly 17% of days —
+above the thermal tolerance limit of many cold-water fish.
+</div>
+
+```{r cpt-var, fig.cap="Variance changepoint detection with PELT. The detected shift near month 204 marks the onset of higher SD in the post-drought phase.", fig.alt="Time series with a variance changepoint showing wider oscillations in the right-hand segment."}
+m_var <- cpt.var(temp, method = "PELT", penalty = "BIC")
+
+cat("Variance changepoint(s):", cpts(m_var), "\n")
+cat("  =>", format(dates[cpts(m_var)], "%b %Y"), "\n")
+cat("Segment SDs:", round(sqrt(param.est(m_var)$variance), 2), "deg C\n")
+
+plot(m_var,
+     main = "Variance Changepoint Detection (PELT)",
+     ylab = "Temperature (deg C)", xlab = "Month index",
+     col  = col_fern, cpt.col = col_amber, cpt.width = 3)
+```
+
+```{r cpt-meanvar, fig.cap="Joint mean-and-variance changepoint detection. A shift in either the mean or the variance triggers a new changepoint.", fig.alt="Time series with three changepoints separating segments with different means and spreads."}
+m_mv <- cpt.meanvar(temp, method = "PELT", penalty = "BIC")
+
+cat("Mean+variance changepoints:", cpts(m_mv), "\n")
+cat("Segment means:", round(param.est(m_mv)$mean, 2), "\n")
+cat("Segment SDs:  ", round(sqrt(param.est(m_mv)$variance), 2), "\n")
+
+plot(m_mv,
+     main = "Mean and Variance Changepoints (PELT)",
+     ylab = "Temperature (deg C)", xlab = "Month index",
+     col  = col_fern, cpt.col = col_amber,
+     cpt.width = 3, mean.col = col_forest)
+```
+
+---
+
+## 5. Sequential Detection with strucchange {#sequential}
+
+Offline methods need all the data at once. The `strucchange` package
+provides two complementary tools for detecting and locating breaks:
+a sequential fluctuation test and optimal breakpoints with timing CIs.
+
+### 5.1 CUSUM fluctuation process
+
+The OLS-CUSUM process accumulates deviations from a fitted intercept
+model over time. Breaching the critical boundary signals structural change.
+
+```{r cusum, fig.cap="OLS-CUSUM fluctuation process for the stream temperature series. Both boundary crossings correspond to the true changepoints.", fig.alt="CUSUM plot with a fluctuation line that crosses the upper significance boundary twice."}
+efp_fit <- efp(temp ~ 1, type = "OLS-CUSUM")
+plot(efp_fit,
+     main = "OLS-CUSUM: Sequential Test for Mean Shift",
+     ylab = "Empirical fluctuation process",
+     col  = col_forest, lwd  = 1.2)
+```
+
+```{r sctest}
+sc <- sctest(efp_fit)
+cat(sprintf("OLS-CUSUM:  statistic = %.3f,  p-value = %.5f\n",
+            sc$statistic, sc$p.value))
+```
+
+### 5.2 Optimal breakpoints with confidence intervals
+
+`breakpoints()` finds the globally optimal breakpoints and — unlike
+`changepoint` — reports **95% confidence intervals on timing**.
+Knowing whether a shift occurred in 2009 vs 2013 often matters for
+attributing cause to a specific event or policy.
+
+```{r bps-fit}
+# Step 1: fit the full breakpointsfull object
+bp_full <- breakpoints(temp ~ 1)
+
+# Step 2: select optimal number of breakpoints (minimises BIC)
+bp_opt  <- breakpoints(bp_full)
+
+# Step 3: confidence intervals come from the breakpointsfull object
+ci      <- confint(bp_full)
+
+cat("Optimal breakpoint indices:", bp_opt$breakpoints, "\n")
+cat("  =>", format(dates[bp_opt$breakpoints], "%b %Y"), "\n")
+cat("True changepoints at months:", true_cpts, "\n")
+cat("\n95% CI on breakpoint timing (month indices):\n")
+print(ci$confint)
+```
+
+```{r bps-plot, fig.cap="Stream temperature with breakpoints and 95% confidence intervals. Amber bands mark the timing uncertainty; horizontal lines show segment means.", fig.alt="Line plot with two amber CI bands and two horizontal segment mean lines."}
+# Segment means via breakfactor
+bf        <- breakfactor(bp_opt)
+seg_means <- coef(lm(temp ~ bf - 1))
+
+ci_mat  <- ci$confint
+bp_idx  <- c(0, bp_opt$breakpoints, N)
+
+mean_df <- data.frame(
+  xmin = dates[bp_idx[-length(bp_idx)] + 1],
+  xmax = dates[bp_idx[-1]],
+  yval = seg_means
+)
+ci_df <- data.frame(
+  xlo = dates[pmax(1, ci_mat[, 1])],
+  xhi = dates[pmin(N, ci_mat[, 3])]
+)
+
+ggplot(stream_df, aes(x = date, y = temp)) +
+  geom_rect(data = ci_df,
+            aes(xmin = xlo, xmax = xhi, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE, fill = col_amber, alpha = 0.18) +
+  geom_line(colour = col_fern, linewidth = 0.45, alpha = 0.8) +
+  geom_segment(data = mean_df,
+               aes(x = xmin, xend = xmax, y = yval, yend = yval),
+               colour = col_forest, linewidth = 1.2) +
+  geom_vline(xintercept = dates[ci_mat[, 2]],
+             linetype = "dashed", colour = col_amber, linewidth = 0.8) +
+  labs(title    = "Optimal Breakpoints with 95% Confidence Intervals",
+       subtitle = "Amber bands = timing uncertainty on each changepoint",
+       x = NULL, y = "Temperature (deg C)")
+```
+
+### 5.3 The shifting baseline problem in sequential monitoring
+
+A CUSUM chart uses a fixed reference mean. Once the baseline shifts,
+every observation in the new regime accumulates as a "deviation" from
+the old reference — the statistic never resets and becomes meaningless.
+
+```{r cusum-rolling, fig.cap="Rolling CUSUM from the pre-drought reference mean. The statistic keeps rising indefinitely after the first shift because the reference is no longer valid — this is the shifting baseline problem in action.", fig.alt="Line plot of cumulative standardised sum showing a steep upward rise after month 120 that never returns to baseline."}
+ref_mean <- mean(temp[1:n1])
+ref_sd   <- sd(temp[1:n1])
+cusum_df <- data.frame(
+  date  = dates,
+  cusum = cumsum((temp - ref_mean) / ref_sd)
+)
+
+ggplot(cusum_df, aes(x = date, y = cusum)) +
+  geom_hline(yintercept = c(-4, 4), linetype = "dashed",
+             colour = "#c0392b", linewidth = 0.8) +
+  geom_hline(yintercept = 0, colour = col_dust, linewidth = 0.3) +
+  geom_line(colour = col_forest, linewidth = 0.5) +
+  geom_vline(xintercept = dates[true_cpts],
+             linetype = "dotted", colour = col_amber) +
+  annotate("text", x = min(dates) + 30, y = 4.8,
+           label = "Critical value (+/-4)", colour = "#c0392b", size = 2.8) +
+  labs(title    = "Rolling CUSUM from Pre-Drought Reference",
+       subtitle = "Statistic never resets after the first shift — the old reference is obsolete",
+       x = NULL, y = "Cumulative standardised sum")
+```
+
+<div class="callout callout-warn">
+<strong>⚠️ Operational fix</strong>
+Reset the reference mean after each confirmed changepoint. Otherwise
+your monitoring system perpetually alarms on the new normal.
+</div>
+
+---
+
+## 6. Real Environmental Data: Nile River Flow {#realdata}
+
+R's built-in `Nile` dataset records annual discharge at Aswan 1871--1970.
+A documented structural break near 1899 reflects construction of the
+Aswan Low Dam and upstream land-use change.
+
+```{r nile-pelt, fig.cap="PELT detects one dominant mean shift in the Nile record, consistent with the Aswan Low Dam (completed 1902).", fig.alt="Nile discharge time series with a single changepoint near 1899 and two horizontal mean lines."}
+data(Nile)
+nile_df <- data.frame(year = as.numeric(time(Nile)),
+                      discharge = as.numeric(Nile))
+
+nile_pelt <- cpt.mean(as.numeric(Nile), method = "PELT", penalty = "BIC")
+cp_year   <- 1871 + cpts(nile_pelt) - 1
+means_n   <- param.est(nile_pelt)$mean
+
+cat("PELT changepoint year:", cp_year, "\n")
+cat("Segment means:", round(means_n), "x 10^8 m^3\n")
+cat("Drop:", round(abs(diff(means_n))), "x 10^8 m^3",
+    sprintf("(%.0f%%)\n", 100 * abs(diff(means_n)) / means_n[1]))
+
+plot(nile_pelt,
+     main = "Nile Discharge: PELT Mean Changepoint",
+     ylab = "Discharge (10^8 m^3)", xlab = "Year index",
+     col  = col_fern, cpt.col = col_amber,
+     cpt.width = 3, mean.col = col_forest)
+```
+
+```{r nile-ci}
+# strucchange: breakpoints with 95% CI on timing
+# confint() must be called on the breakpointsfull object
+nile_bp_full <- breakpoints(as.numeric(Nile) ~ 1)
+nile_bp_opt  <- breakpoints(nile_bp_full)
+nile_ci      <- confint(nile_bp_full)
+
+bp_yr <- 1871 + nile_bp_opt$breakpoints - 1
+ci_lo <- 1871 + nile_ci$confint[1, 1] - 1
+ci_hi <- 1871 + nile_ci$confint[1, 3] - 1
+
+cat(sprintf("strucchange breakpoint: %d  (95%% CI: %d - %d)\n",
+            bp_yr, ci_lo, ci_hi))
+cat("CI width:", ci_hi - ci_lo, "years\n")
+```
+
+```{r nile-final-plot, fig.cap="Nile discharge with segment means and 95% CI band on the changepoint year. The narrow CI supports attributing the break to the Aswan Low Dam construction.", fig.alt="Nile discharge time series with amber confidence band around 1899, two horizontal mean lines, and a dashed vertical changepoint line."}
+nile_bf  <- breakfactor(nile_bp_opt)
+nile_mu  <- coef(lm(as.numeric(Nile) ~ nile_bf - 1))
+nile_idx <- c(0, nile_bp_opt$breakpoints, length(Nile))
+
+nile_mean_df <- data.frame(
+  xmin = 1871 + nile_idx[-length(nile_idx)],
+  xmax = 1871 + nile_idx[-1] - 1,
+  yval = nile_mu
+)
+
+ggplot(nile_df, aes(x = year, y = discharge)) +
+  annotate("rect", xmin = ci_lo, xmax = ci_hi,
+           ymin = -Inf, ymax = Inf, fill = col_amber, alpha = 0.2) +
+  geom_line(colour = col_fern, linewidth = 0.5, alpha = 0.8) +
+  geom_segment(data = nile_mean_df,
+               aes(x = xmin, xend = xmax, y = yval, yend = yval),
+               colour = col_forest, linewidth = 1.3) +
+  geom_vline(xintercept = bp_yr, colour = col_amber,
+             linetype = "dashed", linewidth = 1) +
+  annotate("text", x = bp_yr + 1, y = 1370,
+           label = sprintf("Break: %d\n(95%% CI: %d-%d)", bp_yr, ci_lo, ci_hi),
+           hjust = 0, size = 2.8, colour = col_amber) +
+  labs(title    = "Nile Discharge: PELT Means and strucchange 95% CI",
+       x = "Year", y = "Discharge (10^8 m^3)")
+```
+
+---
+
+<div class="key-box">
+<h4>🔑 Key Takeaways</h4>
+<ul>
+<li><strong>Shifting baselines</strong> accumulate silently — statistical detection makes them explicit and quantifiable.</li>
+<li><strong>AMOC</strong> finds one break; <strong>PELT</strong> finds the globally optimal set in O(n) time.</li>
+<li><strong>Penalty choice</strong> (AIC / BIC / MBIC) controls sensitivity vs false-alarm rate — always report it.</li>
+<li><strong>Variance shifts</strong> are ecologically important even when the mean is stable — use <code>cpt.var()</code>.</li>
+<li><strong>strucchange</strong> adds 95% CIs on changepoint timing; call <code>confint()</code> on the <code>breakpointsfull</code> object, not on the result of <code>breakpoints(breakpointsfull)</code>.</li>
+<li>Sequential CUSUM must be <strong>re-referenced</strong> after each confirmed shift or it becomes meaningless.</li>
+</ul>
+</div>
+
+---
+
+<div class="exercises">
+<div class="exercises-header">✏️ Practice Exercises</div>
+
+<div class="exercise">
+<div class="exercise-num">Exercise 1 — Ozone changepoints</div>
+<p>Load <code>airquality</code> and remove rows with missing <code>Ozone</code>.
+Apply PELT with BIC penalty. (a) How many changepoints are detected?
+(b) Convert indices to calendar dates. (c) Do the breaks correspond to
+a meteorological explanation?</p>
+<details class="solution">
+<summary>Show solution</summary>
+<div class="solution-body">
+<pre><code>data(airquality)
+ozone <- airquality[!is.na(airquality$Ozone), ]
+m <- cpt.mean(ozone$Ozone, method = "PELT", penalty = "BIC")
+cpts(m)
+ozone$date <- as.Date(paste(1973, ozone$Month, ozone$Day, sep = "-"))
+ozone$date[cpts(m)]
+plot(m, ylab = "Ozone (ppb)", main = "Ozone changepoints 1973")</code></pre>
+<p>A changepoint typically appears around late June, separating the cool
+low-ozone spring from hot high-ozone midsummer. This marks the onset
+of photochemical production driven by higher temperatures and longer days.</p>
+</div>
+</details>
+</div>
+
+<div class="exercise">
+<div class="exercise-num">Exercise 2 — Variance shift in PM2.5</div>
+<p>Simulate two years of daily PM2.5: Year 1 mean = 10, SD = 2;
+Year 2 mean = 10, SD = 8 (wildfire smoke). Use <code>set.seed(42)</code>.
+(a) Does <code>cpt.mean()</code> find a changepoint? (b) Does <code>cpt.var()</code>?
+(c) What does this imply for monitoring standards based on annual means?</p>
+<details class="solution">
+<summary>Show solution</summary>
+<div class="solution-body">
+<pre><code>set.seed(42)
+pm25 <- c(rnorm(365, 10, 2), rnorm(365, 10, 8))
+m_mean <- cpt.mean(pm25, method = "PELT", penalty = "BIC")
+m_var  <- cpt.var(pm25,  method = "PELT", penalty = "BIC")
+cat("Mean cpts:", cpts(m_mean), "\n")
+cat("Variance cpts:", cpts(m_var), "\n")</code></pre>
+<p><code>cpt.mean()</code> finds nothing. <code>cpt.var()</code> detects the
+shift near day 365. Even with the same annual mean, the high-variance year
+has far more days above the 35 ug/m3 NAAQS threshold — health risk is driven
+by peak events, not averages alone.</p>
+</div>
+</details>
+</div>
+
+<div class="exercise">
+<div class="exercise-num">Exercise 3 — Penalty sensitivity on Nile data</div>
+<p>Run PELT on the Nile dataset with "AIC", "BIC", and "MBIC" penalties.
+(a) How many changepoints does each detect? (b) Is the primary break
+year consistent? (c) Which penalty would you use in a regulatory report?</p>
+<details class="solution">
+<summary>Show solution</summary>
+<div class="solution-body">
+<pre><code>data(Nile)
+for (pen in c("AIC", "BIC", "MBIC")) {
+  m   <- cpt.mean(as.numeric(Nile), method = "PELT", penalty = pen)
+  yrs <- 1871 + cpts(m) - 1
+  cat(pen, ":", length(cpts(m)), "changepoint(s) at", yrs, "\n")
+}</code></pre>
+<p>AIC typically finds 2-3 breaks; BIC and MBIC agree on one near 1899.
+For a regulatory report, BIC or MBIC is appropriate — false alarms could
+trigger costly policy responses. The 1899 break is robust across all
+penalties, lending credibility to the attribution.</p>
+</div>
+</details>
+</div>
+
+<div class="exercise">
+<div class="exercise-num">Exercise 4 — Confidence intervals on timing</div>
+<p>Using the Nile dataset and <code>strucchange</code>, obtain a 95% CI on the
+breakpoint year. (a) How wide is the CI? (b) The Aswan Low Dam was
+completed in 1902. Does your CI include this year?
+(c) Why does CI width matter for causal attribution?</p>
+<details class="solution">
+<summary>Show solution</summary>
+<div class="solution-body">
+<pre><code>library(strucchange)
+data(Nile)
+bp  <- breakpoints(as.numeric(Nile) ~ 1)   # breakpointsfull
+bpo <- breakpoints(bp)                       # optimal selection
+ci  <- confint(bp)                           # CI from breakpointsfull
+cat("Year:", 1871 + bpo$breakpoints - 1, "\n")
+cat("95% CI:", 1871 + ci$confint[c(1, 3)] - 1, "\n")
+cat("Width:", diff(ci$confint[c(1, 3)]), "years\n")</code></pre>
+<p>The CI is typically 4-6 years and includes 1902. A narrow CI allows you to
+say "the shift occurred during the dam construction window." A CI spanning
+decades would be too wide to implicate any specific cause.</p>
+</div>
+</details>
+</div>
+
+</div>
+
+```{r session-info, echo=FALSE}
+# sessionInfo()
+```
+
+<footer class="page-footer">
+EA030 Field &amp; Lab Activities &mdash; A12
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>
