@@ -32,7 +32,7 @@ Context:
   Urban heat islands are driven by impervious surfaces. Vegetation may mitigate
 heat through shading and evapotranspiration.
 
-[DATASET 1](2026-04_Stats_Lab/dataset1_urban_heat.csv)
+[Dataset 1 Link](2026-04_Stats_Lab/dataset1_urban_heat.csv)
 
 Metadata:
   - Vegetation_Percent: Percent land area covered by vegetation
@@ -63,7 +63,7 @@ Assumptions to Consider:
 Context:
   Human activity often alters nutrient levels downstream.
   
-[DATASET 2](2026-04_Stats_Lab/dataset2_water_quality.csv)
+[Dataset 2 Link](2026-04_Stats_Lab/dataset2_water_quality.csv)
 
 Metadata:
   - Location: Sampling category (Upstream, Downstream)
@@ -94,6 +94,8 @@ Context:
   Nutrient enrichment increases algal productivity but may plateau or interact
 with other limiting factors.
 
+[Dataset 3 Link](2026-04_Stats_Lab/dataset3_algae.csv)
+
 Metadata:
   - Fertilizer_Level: Treatment category (Low, Medium, High)
 - Algal_Cover_Percent: Percent surface coverage by algae
@@ -123,6 +125,8 @@ Context:
   Rainfall contributes to streamflow, but responses vary due to watershed
 characteristics and storm intensity.
 
+[Dataset 4 Link](2026-04_Stats_Lab/dataset4_hydrology.csv)
+
 Metadata:
   - Rainfall_mm: Rainfall amount (mm)
 - Streamflow_m3s: Stream discharge (m³/s)
@@ -151,6 +155,8 @@ Common Pitfalls:
 Context:
   Habitat type affects species richness via disturbance and resource availability.
 
+[Dataset 5 Link](2026-04_Stats_Lab/dataset5_biodiversity.csv)
+
 Metadata:
   - Habitat: Habitat category (Forest, Grassland, Urban)
 - Species_Richness: Number of observed species
@@ -178,6 +184,8 @@ Assumptions to Consider:
 
 Context:
   Air quality regulations aim to reduce particulate pollution.
+  
+[Dataset 6 Link](2026-04_Stats_Lab/dataset6_air_quality.csv)
 
 Metadata:
   - Site: Monitoring site ID
@@ -205,6 +213,6 @@ Assumptions to Consider:
   
   FINAL NOTE:
   There is more than one defensible analytical path.
-Grades are based on justification, assumptions, and interpretation —
+Critical thinking = justification, assumptions, and interpretation —
 not on naming a specific test.
 
