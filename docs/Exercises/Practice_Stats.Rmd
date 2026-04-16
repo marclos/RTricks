@@ -26,7 +26,7 @@ The goal is reasoning — not naming a test.
 
 ------------------------------------------------------------
   
-## DATASET 1: Urban Heat & Vegetation
+## Group 1: Urban Heat & Vegetation
 
 Context:
   Urban heat islands are driven by impervious surfaces. Vegetation may mitigate
@@ -58,7 +58,7 @@ Assumptions to Consider:
 
 ------------------------------------------------------------
   
-  DATASET 2: Water Quality (Upstream vs Downstream)
+## Group 2: Water Quality (Upstream vs Downstream)
 
 Context:
   Human activity often alters nutrient levels downstream.
@@ -88,7 +88,7 @@ Assumptions to Consider:
 
 ------------------------------------------------------------
   
-  DATASET 3: Fertilizer and Algal Growth
+## Group 3: Fertilizer and Algal Growth
 
 Context:
   Nutrient enrichment increases algal productivity but may plateau or interact
@@ -119,7 +119,7 @@ Common Pitfalls:
 
 ------------------------------------------------------------
   
-  DATASET 4: Rainfall & Streamflow
+## Group 4: Rainfall & Streamflow
 
 Context:
   Rainfall contributes to streamflow, but responses vary due to watershed
@@ -150,7 +150,7 @@ Common Pitfalls:
 
 ------------------------------------------------------------
   
-  DATASET 5: Biodiversity Across Habitats
+## Group 5: Biodiversity Across Habitats
 
 Context:
   Habitat type affects species richness via disturbance and resource availability.
@@ -180,7 +180,7 @@ Assumptions to Consider:
 
 ------------------------------------------------------------
   
-  DATASET 6: Air Quality Before and After Policy
+## Group 6: Air Quality Before and After Policy
 
 Context:
   Air quality regulations aim to reduce particulate pollution.
