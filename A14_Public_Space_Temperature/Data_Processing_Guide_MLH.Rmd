@@ -1,0 +1,147 @@
+---
+title: "Temperature Sensor Analysis Guide"
+author: "Marc Los Huertos"
+date: '`r Sys.Date()`'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Set-Up Directories
+
+project/
+├── data_raw/          # raw sensor CSVs (many files)
+│   ├── 260191640D.csv
+│   ├── 260191641E.csv
+│   └── ...
+├── data_meta/
+│   └── locations_treatments.csv   # NOT created yet
+├── data_processed/
+└── scripts/
+    └── read_and_merge.R
+
+
+## Set-Up Sensor Metadata
+
+```{r metadata}
+
+```
+
+## Merge Data
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+# --------------------------------------------------
+# Libraries
+# --------------------------------------------------
+library(tidyverse)
+library(janitor)
+
+# --------------------------------------------------
+# Paths
+# --------------------------------------------------
+raw_data_dir  <- "data_raw"
+meta_file     <- "data_meta/locations_treatments.csv"
+
+# --------------------------------------------------
+# Function: read ONE sensor file
+# --------------------------------------------------
+read_sensor_file <- function(file_path) {
+
+  location_id <- tools::file_path_sans_ext(basename(file_path))
+
+  read_tsv(
+    file_path,
+    skip = "MM/DD/YY",
+    show_col_types = FALSE,
+    trim_ws = TRUE
+  ) |>
+    clean_names() |>
+    mutate(
+      location_id = as.character(location_id),
+      datetime = as.POSIXct(
+        paste(mm_dd_yy, hh_mm_ss),
+        format = "%m/%d/%Y %H:%M:%S",
+        tz = "UTC"
+      )
+    ) |>
+    select(
+      location_id,
+      datetime,
+      fahrenheit,
+      centigrade,
+      status
+    )
+}
+
+
+# --------------------------------------------------
+# Read ALL sensor files
+# --------------------------------------------------
+sensor_files <- list.files(
+  raw_data_dir,
+  pattern = "\\.csv$",
+  full.names = TRUE
+)
+
+sensor_data <- sensor_files |>
+  map_dfr(read_sensor_file)
+
+# --------------------------------------------------
+# Read location / treatment metadata
+# (will fail loudly if missing — intentional)
+# --------------------------------------------------
+locations <- read_csv(meta_file, show_col_types = FALSE) |>
+  clean_names()
+
+# Expected columns:
+# location_id | site | treatment (shade / sun)
+
+# --------------------------------------------------
+# Merge sensor data with metadata
+# --------------------------------------------------
+sensor_merged <- sensor_data |>
+  left_join(locations, by = "location_id")
+
+# --------------------------------------------------
+# Basic integrity checks
+# --------------------------------------------------
+# 1. Any locations missing treatment?
+missing_treatment <- sensor_merged |>
+  filter(is.na(treatment)) |>
+  distinct(location_id)
+
+if (nrow(missing_treatment) > 0) {
+  warning(
+    "The following location_ids are missing treatment assignments:\n",
+    paste(missing_treatment$location_id, collapse = ", ")
+  )
+}
+
+# --------------------------------------------------
+# Save processed data
+# --------------------------------------------------
+write_csv(
+  sensor_merged,
+  "data_processed/sensor_data_with_treatments.csv"
+)
+``
+```
+
+## Group Data
+
+```{r}
+sensor_merged |>
+  group_by(treatment) |>
+  summarise(mean_temp = mean(temperature, na.rm = TRUE))
+```
+
+## Analyze Data
+
+```{r}
+lme4::lmer(temp ~ treatment + (1 | location_id), data = sensor_merged)
+```
+
