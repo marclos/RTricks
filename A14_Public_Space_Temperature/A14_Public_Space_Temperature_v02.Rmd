@@ -276,9 +276,9 @@ Understanding *how much* shade structures, trees, or water features reduce surfa
 
 ### The study design
 
-Each team placed **paired sensors** at a single site: one sensor in a shaded location (under a tree canopy, a built shade structure, or a building overhang) and one in a nearby exposed, sun-facing location. Sensors were left in place for **at least 48 hours**, recording temperature every 5 minutes. Across the class, we have data from multiple sites, each with paired shade/sun observations.
+Each team placed **many sensors** at a single site: some sensors in a shaded location (under a tree canopy, a built shade structure, or a building overhang) and some in a nearby exposed, sun-facing location. Sensors were left in place for **at least 48 hours**, recording temperature every ~5 minutes. The research group have data from multiple sites, each with shade/sun observations.
 
-This structure — repeated measurements nested within sites — is exactly the kind of hierarchical data that requires a **mixed-effects model** rather than a simple t-test. The key issue is *pseudoreplication*: the hundreds of readings from a single sensor are not independent data points. Site conditions (neighbourhood, proximity to buildings, baseline vegetation) create correlation among readings from the same location. A mixed model handles this correctly by partitioning variance between the *site* level and the *within-site* measurement level.
+This structure — repeated measurements nested within sites — is exactly the kind of hierarchical data that requires a **mixed-effects model** rather than a simple t-test. The key issue is *pseudoreplication*: the hundreds of readings from a single sensor are not independent data points. Site conditions (neighborhood, proximity to buildings, baseline vegetation) create correlation among readings from the same location. A mixed model handles this correctly by partitioning variance between the *site* level and the *within-site* measurement level.
 
 <div class="callout callout-concept">
 <strong>📌 Fixed vs. random effects in this study</strong>
@@ -294,7 +294,8 @@ This structure — repeated measurements nested within sites — is exactly the 
 
 ### Sensor data files
 
-Each sensor produces a `.csv` file named after its hardware ID (e.g., `260191640D.csv`). The file has **no column headers** — just four comma-separated columns:
+Each sensor produces a `.csv` file named after its hardware ID (e.g., `260191640D.csv`). I found that it's best to clean the data by removing the header data then save as CSV with same name but different folder. 
+The cleaned file has **no column headers** — just four comma-separated columns:
 
 ```
 4/10/2026,16:25:13,79.3,26.3
@@ -351,6 +352,10 @@ Before writing any R code, create this directory layout inside an **RStudio Proj
 <div class="file-tree">
 my_project/<br>
 ├── <span class="hl">data_raw/</span>          ← sensor .csv files go here<br>
+│&nbsp;&nbsp;&nbsp;├── 260191640D.csv<br>
+│&nbsp;&nbsp;&nbsp;├── 260191640E.csv<br>
+│&nbsp;&nbsp;&nbsp;└── ...<br>
+├── <span class="hl">data_clean/</span>          ← sensor .csv files go here<br>
 │&nbsp;&nbsp;&nbsp;├── 260191640D.csv<br>
 │&nbsp;&nbsp;&nbsp;├── 260191640E.csv<br>
 │&nbsp;&nbsp;&nbsp;└── ...<br>
@@ -437,7 +442,7 @@ Instead of calling `read_sensor_file()` once per file, we use `purrr::map_dfr()`
 
 ```{r read-all-sensors, eval=FALSE}
 sensor_files <- list.files(
-  path    = "data_raw",
+  path    = "data_clean",
   pattern = "\\.csv$",      # only files ending in .csv
   full.names = TRUE          # return full relative paths
 )
