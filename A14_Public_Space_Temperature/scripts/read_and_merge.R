@@ -18,6 +18,10 @@
 # EXPECTED FILE STRUCTURE
 #   my_project/
 #   ├── data_raw/
+#   │   ├── 260191640D.csv       <- sensor files; with header rows
+#   │   ├── 260191640E.csv
+#   │   └── ...
+#   ├── data_clean/
 #   │   ├── 260191640D.csv       <- sensor files; no header row
 #   │   ├── 260191640E.csv
 #   │   └── ...
@@ -58,7 +62,7 @@ library(lubridate)   # friendly date/time parsing
 # 1. Paths  — adjust these if your folder names differ
 # -----------------------------------------------------------------------------
 
-raw_dir   <- "data_raw"
+clean_dir   <- "data_clean"
 meta_file <- "data_meta/locations_treatments.csv"
 out_file  <- "data_processed/sensor_data_merged.csv"
 
@@ -78,7 +82,7 @@ if (!dir.exists(dirname(out_file))) {
 # using lubridate::mdy_hms(), and we extract the sensor ID from the filename.
 #
 # Arguments:
-#   file_path  character — path to one .csv file, e.g. "data_raw/260191640D.csv"
+#   file_path  character — path to one .csv file, e.g. "data_clean/260191640D.csv"
 #
 # Returns:
 #   A tibble with columns: sensor_id, datetime, temp_F, temp_C
@@ -137,14 +141,14 @@ read_sensor_file <- function(file_path) {
 # This is equivalent to a for-loop that grows a data frame, but cleaner.
 
 sensor_files <- list.files(
-  path       = raw_dir,
+  path       = clean_dir,
   pattern    = "\\.csv$",    # only files whose name ends in .csv
   full.names = TRUE           # return paths like "data_raw/260191640D.csv"
 )
 
 if (length(sensor_files) == 0) {
   stop(
-    "No .csv files found in '", raw_dir, "/'.\n",
+    "No .csv files found in '", clean_dir, "/'.\n",
     "  -> Check that your sensor files are in the right folder and that\n",
     "     your working directory is set to the project root.\n",
     "     In RStudio: Session > Set Working Directory > To Project Directory"
