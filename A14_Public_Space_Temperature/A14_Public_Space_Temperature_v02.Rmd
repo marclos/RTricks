@@ -1,0 +1,914 @@
+---
+title: "Public Space Temperature Analysis"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/Activities/A14_Public_Space_Temperature.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 8,
+  fig.height = 4.5
+)
+library(tidyverse)
+library(lubridate)
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(knitr)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
+h1.title, h4.author, h4.date { display: none; }
+
+/* Page header */
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+/* Section nav pills */
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+/* Section headings */
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+h4 {
+  font-family: 'Lato', sans-serif; font-size: 1rem; font-weight: 700;
+  color: var(--charcoal); margin-top: 20px; margin-bottom: 4px;
+}
+
+/* Body text */
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+
+/* Links — body context */
+a { color: var(--fern); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { color: var(--forest); }
+
+/* Links and strong inside dark key-box — must override body rules */
+.key-box a       { color: var(--amber-lt) !important; text-decoration: underline; text-underline-offset: 2px; }
+.key-box a:hover { color: #fff !important; }
+.key-box strong  { color: var(--sage) !important; }
+.key-box em      { color: rgba(255,255,255,.75); font-style: italic; }
+
+/* Code */
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+/* Callout boxes */
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+.callout-task    { border-color: #1565c0;      background: #f0f4ff; }
+
+/* Key concept summary boxes */
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+/* Download button */
+.dl-btn {
+  display: inline-block; background: var(--amber); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .78rem; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 9px 20px; border-radius: 4px; text-decoration: none;
+  margin: .4em .3em .4em 0; transition: background .2s;
+}
+.dl-btn:hover { background: #a86a1e; color: #fff; }
+.dl-btn-secondary {
+  background: transparent; color: var(--fern);
+  border: 1.5px solid var(--fern);
+}
+.dl-btn-secondary:hover { background: var(--mist); color: var(--forest); }
+
+/* File-tree block */
+.file-tree {
+  font-family: 'Source Code Pro', monospace; font-size: .83rem;
+  background: #f4f1eb; border: 1px solid var(--parchment);
+  border-left: 4px solid var(--fern); border-radius: 0 5px 5px 0;
+  padding: 14px 18px; margin: 1.2em 0; line-height: 1.8;
+  color: var(--charcoal);
+}
+.file-tree .hl { color: var(--amber); font-weight: 600; }
+
+/* Tables */
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+/* Step badges */
+.step-badge {
+  display: inline-block; background: var(--amber); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  padding: 2px 9px; border-radius: 3px; margin-right: 8px; vertical-align: middle;
+}
+
+/* Footer */
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Field Activity &mdash; A14</div>
+<h1>Public Space <span>Temperature</span> Analysis</h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College &nbsp;&bull;&nbsp; Southern California Urban Heat</p>
+<a class="back-link" href="../activity_index.html">&#8592; Back to Activities</a>
+</div>
+
+<div class="section-nav">
+<a href="#background">Background</a>
+<a href="#data">Data & Files</a>
+<a href="#structure">Project Setup</a>
+<a href="#import">Import & Merge</a>
+<a href="#explore">Explore</a>
+<a href="#model">Mixed Model</a>
+<a href="#interpret">Interpret</a>
+<a href="#further">Going Further</a>
+</div>
+
+> **What this activity covers.** You deployed small iButton temperature sensors in shaded and sun-exposed locations at one or more public spaces in Southern California. Now you'll pull that raw data into R, merge it with a metadata file that records where each sensor was placed, visualize the diel (daily) temperature cycles, and use a **linear mixed-effects model** to test whether shade treatment significantly reduces air temperature — while properly accounting for the fact that sensors at the same site share environmental conditions.
+
+---
+
+## Background & Motivation {#background}
+
+### Why public spaces?
+
+Southern California cities face an intensifying **urban heat island** effect. Paved surfaces, low tree canopy, and building geometry trap solar radiation and re-radiate it as heat, raising ambient temperatures by 2–5 °C relative to surrounding rural areas. Public spaces — plazas, bus stops, schoolyards, parks — are where residents spend unshaded time, often during the hottest parts of the day.
+
+Understanding *how much* shade structures, trees, or water features reduce surface-level air temperature is actionable information: it connects directly to park design, tree planting policy, and climate adaptation planning. This activity gives you the analytical skills to answer that question with data you collected yourself.
+
+### The study design
+
+Each team placed **paired sensors** at a single site: one sensor in a shaded location (under a tree canopy, a built shade structure, or a building overhang) and one in a nearby exposed, sun-facing location. Sensors were left in place for **at least 48 hours**, recording temperature every 5 minutes. Across the class, we have data from multiple sites, each with paired shade/sun observations.
+
+This structure — repeated measurements nested within sites — is exactly the kind of hierarchical data that requires a **mixed-effects model** rather than a simple t-test. The key issue is *pseudoreplication*: the hundreds of readings from a single sensor are not independent data points. Site conditions (neighbourhood, proximity to buildings, baseline vegetation) create correlation among readings from the same location. A mixed model handles this correctly by partitioning variance between the *site* level and the *within-site* measurement level.
+
+<div class="callout callout-concept">
+<strong>📌 Fixed vs. random effects in this study</strong>
+
+**Fixed effect — Treatment (shade / sun):** This is the factor we deliberately manipulated and want to make an inference about. We chose these two levels intentionally, and our conclusion will apply to shade vs. sun in general.
+
+**Random effect — Site / Sensor ID:** Each sensor-location pair is a sample from a larger population of possible public spaces in SoCal. We want our conclusion to generalise beyond the specific sites we happened to measure.
+</div>
+
+---
+
+## Data Files {#data}
+
+### Sensor data files
+
+Each sensor produces a `.csv` file named after its hardware ID (e.g., `260191640D.csv`). The file has **no column headers** — just four comma-separated columns:
+
+```
+4/10/2026,16:25:13,79.3,26.3
+4/10/2026,16:30:13,78.0,25.6
+...
+```
+
+| Column position | Content |
+|---|---|
+| 1 | Date (`M/D/YYYY`) |
+| 2 | Time (`H:MM:SS`) |
+| 3 | Temperature (°F) |
+| 4 | Temperature (°C) |
+
+Download the class sensor files using the links below. Place all `.csv` files in `data_raw/` inside your project.
+
+<a class="dl-btn" href="https://raw.githubusercontent.com/marclos/RTricks/main/A14_Public_Space_Temperature/260191640D.csv">⬇ 260191640D.csv</a>
+<a class="dl-btn dl-btn-secondary" href="https://raw.githubusercontent.com/marclos/RTricks/main/A14_Public_Space_Temperature/260191640E.csv">⬇ 260191640E.csv</a>
+
+> **Note:** As more teams contribute data, additional sensor files will appear in the [A14 data folder on GitHub](https://github.com/marclos/RTricks/tree/main/A14_Public_Space_Temperature). Download all `.csv` files you find there into your `data_raw/` folder.
+
+### Metadata file
+
+The metadata file `locations_treatments.csv` maps each sensor ID to a site name and a treatment label. Download it and place it in `data_meta/`.
+
+<a class="dl-btn" href="https://raw.githubusercontent.com/marclos/RTricks/main/A14_Public_Space_Temperature/locations_treatments.csv">⬇ locations_treatments.csv</a>
+
+It looks like this:
+
+```{r show-meta, echo=FALSE}
+meta_example <- data.frame(
+  Sensor_id = c("260191640D", "260191640E", "260191641F", "260191641G"),
+  Site      = c("Site A",     "Site A",     "Site B",     "Site B"),
+  Treatment = c("Shade",      "Sun",        "Shade",      "Sun")
+)
+knitr::kable(meta_example,
+  caption = "Example locations_treatments.csv — two paired sensors per site.")
+```
+
+<div class="callout callout-warn">
+<strong>⚠ Before you continue</strong>
+
+Check that every sensor file you downloaded has a matching row in `locations_treatments.csv`. If your sensor ID is missing, add it now — the merge step will silently drop unmatched rows.
+</div>
+
+---
+
+## Project Setup {#structure}
+
+### Recommended folder structure
+
+Before writing any R code, create this directory layout inside an **RStudio Project**. If you haven't set up projects yet, see [R03 — Project Structure](../RGuides/R03_Project_Structure.html).
+
+<div class="file-tree">
+my_project/<br>
+├── <span class="hl">data_raw/</span>          ← sensor .csv files go here<br>
+│&nbsp;&nbsp;&nbsp;├── 260191640D.csv<br>
+│&nbsp;&nbsp;&nbsp;├── 260191640E.csv<br>
+│&nbsp;&nbsp;&nbsp;└── ...<br>
+├── <span class="hl">data_meta/</span><br>
+│&nbsp;&nbsp;&nbsp;└── locations_treatments.csv<br>
+├── <span class="hl">data_processed/</span>    ← merged output written here<br>
+├── <span class="hl">scripts/</span><br>
+│&nbsp;&nbsp;&nbsp;└── read_and_merge.R   ← downloadable script (Step 1)<br>
+└── <span class="hl">analysis.Rmd</span>       ← your write-up
+</div>
+
+### Download the helper script
+
+We provide a ready-to-run R script that handles all the file-reading and merging in one go. Download it, place it in `scripts/`, and **read through it** before running — every line is commented.
+
+<a class="dl-btn" href="https://raw.githubusercontent.com/marclos/RTricks/main/A14_Public_Space_Temperature/read_and_merge.R">⬇ read_and_merge.R</a>
+
+Run it once from the RStudio console (with your project open):
+
+```r
+source("scripts/read_and_merge.R")
+```
+
+It will write `data_processed/sensor_data_merged.csv`. The sections below walk through exactly what that script does, line by line.
+
+---
+
+## Importing and Merging the Data {#import}
+
+This is the most technically demanding part of the activity. Work through it carefully; the payoff is a clean, analysis-ready data frame.
+
+### Step 1 — Load packages
+
+```{r load-packages, eval=FALSE}
+library(tidyverse)   # readr + dplyr + ggplot2 + lubridate all at once
+library(lubridate)   # friendly date/time parsing
+```
+
+<div class="callout callout-tip">
+<strong>✅ Package tip</strong>
+
+If you get `Error: there is no package called 'lubridate'`, run `install.packages("lubridate")` once in the console, then re-run the `library()` call. You only need to install a package once per machine, but you must call `library()` every new R session.
+</div>
+
+### Step 2 — Write a function to read one sensor file
+
+The sensor files have no header row. We supply column names manually and parse the date and time into a proper `POSIXct` datetime object.
+
+```{r read-one-sensor, eval=FALSE}
+read_sensor_file <- function(file_path) {
+
+  # Extract the sensor ID from the file name (everything before ".csv")
+  sensor_id <- tools::file_path_sans_ext(basename(file_path))
+
+  read_csv(
+    file_path,
+    col_names = c("date_str", "time_str", "temp_F", "temp_C"),
+    col_types = cols(
+      date_str = col_character(),
+      time_str = col_character(),
+      temp_F   = col_double(),
+      temp_C   = col_double()
+    )
+  ) |>
+    mutate(
+      sensor_id = sensor_id,
+      # Combine date and time strings, then parse with lubridate
+      datetime  = mdy_hms(paste(date_str, time_str), tz = "America/Los_Angeles")
+    ) |>
+    select(sensor_id, datetime, temp_F, temp_C)
+}
+```
+
+Let's unpack the key lines:
+
+- **`tools::file_path_sans_ext(basename(file_path))`** — strips the directory path and the `.csv` extension, leaving just `260191640D`. This becomes the `sensor_id` column that links to the metadata.
+- **`col_names = c(...)`** — because the file has no header, we name the columns ourselves.
+- **`mdy_hms(paste(date_str, time_str))`** — `lubridate::mdy_hms()` parses strings in month/day/year hour:minute:second format. Pasting the two strings first gives it `"4/10/2026 16:25:13"`, which it handles correctly.
+- **`tz = "America/Los_Angeles"`** — always specify a timezone when working with local sensor data. Daylight saving time shifts can introduce phantom hour gaps or duplicates if you leave it as UTC.
+
+### Step 3 — Read all sensor files at once
+
+Instead of calling `read_sensor_file()` once per file, we use `purrr::map_dfr()` to apply it to every `.csv` in `data_raw/` and stack the results into a single data frame.
+
+```{r read-all-sensors, eval=FALSE}
+sensor_files <- list.files(
+  path    = "data_raw",
+  pattern = "\\.csv$",      # only files ending in .csv
+  full.names = TRUE          # return full relative paths
+)
+
+sensor_data <- map_dfr(sensor_files, read_sensor_file)
+
+glimpse(sensor_data)
+```
+
+<div class="callout callout-concept">
+<strong>📌 Why map_dfr() instead of a for-loop?</strong>
+
+`map_dfr()` applies a function to every element of a list and **row-binds** (`_dfr`) the results into one data frame. It is equivalent to:
+
+```r
+result <- data.frame()
+for (f in sensor_files) {
+  result <- rbind(result, read_sensor_file(f))
+}
+```
+
+The `map_dfr()` version is shorter, safer (it handles type coercion consistently), and fits naturally into a pipeline. You'll see this pattern repeatedly in environmental data workflows.
+</div>
+
+### Step 4 — Load the metadata and merge
+
+```{r merge-meta, eval=FALSE}
+locations <- read_csv(
+  "data_meta/locations_treatments.csv",
+  col_types = cols(
+    Sensor_id = col_character(),
+    Site      = col_character(),
+    Treatment = col_character()
+  )
+) |>
+  rename(sensor_id = Sensor_id)   # match the column name in sensor_data
+
+sensor_merged <- sensor_data |>
+  left_join(locations, by = "sensor_id")
+
+# Integrity check: are any sensors unmatched?
+missing <- sensor_merged |>
+  filter(is.na(Treatment)) |>
+  distinct(sensor_id)
+
+if (nrow(missing) > 0) {
+  warning("These sensor IDs have no metadata row: ",
+          paste(missing$sensor_id, collapse = ", "))
+}
+```
+
+A `left_join()` keeps every row in `sensor_data` and attaches the matching `Site` and `Treatment` columns from `locations`. Rows without a match get `NA` — hence the integrity check.
+
+### Step 5 — Save the merged file
+
+```{r save-merged, eval=FALSE}
+write_csv(sensor_merged, "data_processed/sensor_data_merged.csv")
+message("Saved: data_processed/sensor_data_merged.csv")
+```
+
+From this point on, your analysis script loads the processed file rather than re-reading all the raw sensor files. This keeps analysis fast and reproducible.
+
+---
+
+## Exploratory Visualization {#explore}
+
+Before fitting any model, always look at your data. The plots below use the merged data frame. For demonstration, this tutorial simulates data with the same structure as your class dataset.
+
+```{r simulate-data, echo=FALSE}
+set.seed(2026)
+n_sites <- 3
+n_sensors_per_site <- 2
+minutes_per_day <- 288   # 5-minute intervals
+n_days <- 4
+
+sites <- paste0("Site ", LETTERS[1:n_sites])
+treatments <- c("Shade", "Sun")
+
+sim_list <- lapply(sites, function(s) {
+  site_baseline <- rnorm(1, 22, 1.5)   # site-level intercept offset
+  lapply(treatments, function(trt) {
+    sensor_id_label <- paste0(s, "_", trt)
+    sensor_offset   <- rnorm(1, 0, 0.4)
+    trt_effect      <- if (trt == "Shade") -3.2 else 0
+
+    # Create datetime sequence
+    start <- as.POSIXct("2026-04-10 06:00:00", tz = "America/Los_Angeles")
+    times <- start + seq(0, by = 300, length.out = n_days * minutes_per_day)
+
+    hour_of_day <- as.numeric(format(times, "%H")) +
+                   as.numeric(format(times, "%M")) / 60
+
+    # Diel cycle: sine wave peaking around 14:00
+    diel_amp <- if (trt == "Sun") 7 else 4
+    base_temp <- site_baseline + trt_effect + sensor_offset +
+                 diel_amp * sin(pi * (hour_of_day - 6) / 12) * (hour_of_day >= 6 & hour_of_day <= 18) +
+                 rnorm(length(times), 0, 0.35)
+
+    data.frame(
+      sensor_id = sensor_id_label,
+      site      = s,
+      treatment = trt,
+      datetime  = times,
+      temp_C    = round(base_temp, 1)
+    )
+  }) |> bind_rows()
+}) |> bind_rows() |>
+  mutate(treatment = factor(treatment, levels = c("Sun", "Shade")))
+```
+
+### Time series: diel temperature cycles
+
+The most important first plot is the raw time series, coloured by treatment. You should see a characteristic **diel cycle** — rising temperatures in the morning, a mid-afternoon peak, then cooling through the evening.
+
+```{r time-series-plot, fig.cap="Simulated 4-day diel temperature records for shaded and sun-exposed sensors across three sites. Shaded sensors (green) run consistently cooler and show a dampened daily amplitude compared with sun-exposed sensors (amber).", fig.height=5}
+ggplot(sim_list, aes(x = datetime, y = temp_C,
+                     colour = treatment, group = sensor_id)) +
+  geom_line(linewidth = 0.6, alpha = 0.85) +
+  facet_wrap(~ site, ncol = 1, scales = "free_y") +
+  scale_colour_manual(
+    values = c(Sun = "#c8832a", Shade = "#2d5a3d"),
+    name   = "Treatment"
+  ) +
+  labs(
+    x = "Date / Time",
+    y = "Air temperature (°C)",
+    title = "Diel temperature cycles — public space sensors",
+    subtitle = "Each panel = one site; one line per sensor"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    strip.background = element_rect(fill = "#1e3a2f", colour = NA),
+    strip.text       = element_text(colour = "white", face = "bold", size = 10),
+    legend.position  = "top",
+    plot.title       = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    plot.subtitle    = element_text(colour = "#7a7a72", size = 10)
+  )
+```
+
+### Boxplot: treatment comparison
+
+A boxplot strips away the time dimension and summarises the temperature distribution for each treatment across all readings — a useful complement to the time series.
+
+```{r boxplot, fig.cap="Distribution of all temperature readings by treatment and site. The median, interquartile range, and outliers summarise the full 4-day record for each sensor group.", fig.height=4}
+ggplot(sim_list, aes(x = treatment, y = temp_C, fill = treatment)) +
+  geom_boxplot(notch = TRUE, outlier.size = 0.8, alpha = 0.85) +
+  facet_wrap(~ site, nrow = 1) +
+  scale_fill_manual(values = c(Sun = "#e8a84a", Shade = "#4a7c5e"),
+                    guide = "none") +
+  labs(
+    x = NULL, y = "Air temperature (°C)",
+    title    = "Temperature distributions by treatment",
+    subtitle = "Notches indicate 95% CI around the median"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    strip.background = element_rect(fill = "#1e3a2f", colour = NA),
+    strip.text       = element_text(colour = "white", face = "bold"),
+    plot.title       = element_text(family = "serif", face = "bold", colour = "#1e3a2f")
+  )
+```
+
+<div class="callout callout-task">
+<strong>🔍 Interpret before you model</strong>
+
+Before running any statistical test, write down your answers to these questions:
+
+1. Does the shade treatment appear to lower temperature? By roughly how many degrees?
+2. Does the effect appear consistent across sites, or does it vary?
+3. Do you notice any anomalous readings (sudden jumps, flat-lines) that might indicate sensor problems?
+</div>
+
+### Summary statistics
+
+Compute group means as a quick sanity check — these should roughly match what you see in the boxplots.
+
+```{r summary-stats}
+sim_list |>
+  group_by(site, treatment) |>
+  summarise(
+    n           = n(),
+    mean_temp   = round(mean(temp_C, na.rm = TRUE), 2),
+    sd_temp     = round(sd(temp_C,   na.rm = TRUE), 2),
+    min_temp    = round(min(temp_C,  na.rm = TRUE), 1),
+    max_temp    = round(max(temp_C,  na.rm = TRUE), 1),
+    .groups = "drop"
+  ) |>
+  knitr::kable(
+    col.names = c("Site", "Treatment", "n", "Mean (°C)", "SD (°C)", "Min (°C)", "Max (°C)"),
+    caption   = "Descriptive statistics for each sensor group."
+  )
+```
+
+---
+
+## The Mixed-Effects Model {#model}
+
+### Why not a simple t-test or ANOVA?
+
+You might be tempted to run `t.test(temp_C ~ treatment, data = sensor_merged)`. The problem: that test assumes every row in `sensor_merged` is an independent observation. But readings from the same sensor 5 minutes apart are *highly* correlated — they share the same physical location, the same sensor hardware, and the same ambient conditions. Treating them as independent observations would give you **thousands of pseudo-replicates** and an absurdly small p-value even if the treatment effect were negligible.
+
+The mixed-effects model solves this by explicitly modelling the **site-level variance** as a random effect. It estimates how much temperatures vary across sites (random intercepts) and how consistent the shade effect is (fixed effect), while accounting for the non-independence of within-sensor readings.
+
+### Model formulation
+
+We fit the following model using `lme4::lmer()`:
+
+$$\text{temp}_{ijk} = \underbrace{\beta_0 + \beta_1 \cdot \text{treatment}_i}_{\text{fixed effects}} + \underbrace{b_{0j}}_{\text{random intercept for site } j} + \varepsilon_{ijk}$$
+
+where:
+
+- $\beta_0$ = population-average temperature for the reference treatment (Sun)
+- $\beta_1$ = fixed effect of shade (the quantity we most care about)
+- $b_{0j} \sim \mathcal{N}(0, \sigma^2_{\text{site}})$ = site-specific deviation from the mean
+- $\varepsilon_{ijk} \sim \mathcal{N}(0, \sigma^2)$ = within-site residual
+
+In `lme4` formula notation this is: `temp_C ~ treatment + (1 | site)`
+
+<div class="callout callout-formula">
+<strong>Reading the formula: temp_C ~ treatment + (1 | site)</strong>
+
+`temp_C ~` &nbsp; — the response variable<br>
+`treatment` &nbsp; — fixed effect (what we're testing)<br>
+`(1 | site)` &nbsp; — random intercept for site: each site gets its own baseline temperature, drawn from a normal distribution
+</div>
+
+### Fitting the model
+
+```{r fit-lme}
+library(lme4)
+library(lmerTest)   # adds Satterthwaite p-values to lmer output
+
+model1 <- lmer(
+  temp_C ~ treatment + (1 | site),
+  data = sim_list,
+  REML = TRUE         # Restricted Maximum Likelihood — preferred for variance estimation
+)
+
+summary(model1)
+```
+
+### Interpreting the output
+
+The `summary()` output has two main sections:
+
+**Fixed effects** — these are the coefficients you care about most:
+
+```{r fixed-effects-table, echo=FALSE}
+fe <- as.data.frame(coef(summary(model1)))
+fe$term <- rownames(fe)
+rownames(fe) <- NULL
+fe <- fe[, c("term", "Estimate", "Std. Error", "df", "t value", "Pr(>|t|)")]
+knitr::kable(round(fe[, -1], 4),
+             row.names = FALSE,
+             col.names = c("Estimate", "SE", "df", "t", "p-value"),
+             caption   = "Fixed effects from the random-intercept model.")
+```
+
+- **`(Intercept)`** — estimated mean temperature for the *Sun* group (the reference level), averaged across all sites.
+- **`treatmentShade`** — the estimated change in temperature when moving from Sun to Shade. A negative value means shade is cooler.
+
+**Random effects** — the variance components:
+
+```{r random-effects, echo=FALSE}
+vc <- as.data.frame(VarCorr(model1))
+knitr::kable(
+  vc[, c("grp", "var1", "vcov", "sdcor")],
+  col.names = c("Group", "Term", "Variance", "Std. Dev."),
+  digits    = 4,
+  caption   = "Random-effects variance components."
+)
+```
+
+- **`site` variance** — how much baseline temperature varies across sites, independent of treatment. A large value here means the sites you chose are quite different from each other.
+- **`Residual` variance** — within-site, within-sensor noise after accounting for the fixed and random effects.
+
+<div class="callout callout-concept">
+<strong>📌 Intraclass correlation (ICC)</strong>
+
+The **ICC** tells you what fraction of the total variance is attributable to between-site differences:
+
+$$ICC = \frac{\sigma^2_{\text{site}}}{\sigma^2_{\text{site}} + \sigma^2_{\text{residual}}}$$
+
+An ICC of 0.40 would mean 40% of temperature variation is explained just by which site a sensor is at — strong justification for including site as a random effect. You can compute this in R:
+
+```r
+vc <- as.data.frame(VarCorr(model1))
+icc <- vc$vcov[1] / sum(vc$vcov)
+round(icc, 3)
+```
+</div>
+
+### Model comparison (optional but recommended)
+
+How do we know the random intercept for site is necessary? Compare the model with and without it using a likelihood ratio test:
+
+```{r model-compare}
+model_null <- lm(temp_C ~ treatment, data = sim_list)   # no random effect
+
+# AIC comparison — lower is better
+AIC(model_null, model1)
+```
+
+If `model1` has a substantially lower AIC (rule of thumb: difference > 4), the random effect improves model fit and should be retained.
+
+<div class="callout callout-tip">
+<strong>✅ When to report which model</strong>
+
+For your write-up, report the mixed-effects model (`model1`) as your primary result. The null model is useful for diagnosing whether the random structure matters, but it violates independence assumptions and should not be your final reported test.
+</div>
+
+### Residual diagnostics
+
+Always check that the model assumptions are reasonably met. The two most important plots are:
+
+```{r diagnostics, fig.height=4, fig.cap="Left: residuals vs. fitted values, checking for heteroscedasticity. Right: Q–Q plot of residuals, checking for normality. Both look reasonable for this simulated dataset."}
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 1))
+
+# Residuals vs fitted
+plot(fitted(model1), residuals(model1),
+     pch = 16, cex = 0.5, col = "#4a7c5e88",
+     xlab = "Fitted values", ylab = "Residuals",
+     main = "Residuals vs. Fitted")
+abline(h = 0, lty = 2, col = "#c8832a")
+
+# Normal Q-Q
+qqnorm(residuals(model1), pch = 16, cex = 0.5, col = "#4a7c5e88",
+       main = "Normal Q–Q")
+qqline(residuals(model1), col = "#c8832a", lty = 2)
+
+par(mfrow = c(1, 1))
+```
+
+What to look for:
+
+- **Residuals vs. Fitted:** points should scatter randomly around zero with no obvious fan-shape (which would indicate heteroscedasticity).
+- **Q–Q plot:** points should fall close to the diagonal line. Systematic curves suggest non-normality. Slight deviations at the tails are common and rarely a serious problem with large datasets.
+
+For more detail on these diagnostic plots and what to do when assumptions are violated, see [Module 11 — Multiple Regression & GLMs](../advanced_stats/11_Multiple_Regression_GLMs.html).
+
+---
+
+## Interpreting and Reporting Results {#interpret}
+
+### Effect size and confidence intervals
+
+The model coefficient gives you the point estimate for the shade effect, but you should also report uncertainty. Use `confint()`:
+
+```{r confint}
+confint(model1, method = "Wald")   # Wald CIs are fast; use "profile" for publication
+```
+
+Report the shade effect as: "Shaded locations were on average **X.X °C** cooler than sun-exposed locations (95% CI: [lower, upper]; *p* = ..., linear mixed-effects model with random intercept for site)."
+
+### Visualizing the model output
+
+A clean way to communicate the fixed effect is to plot the raw data with the model-estimated group means overlaid:
+
+```{r model-vis, fig.cap="Group means (±95% CI) from the mixed-effects model, overlaid on individual sensor readings (jittered). The model-estimated effect of shade is shown by the vertical gap between the two means.", fig.height=4.5}
+# Extract fixed-effect predictions with confidence intervals
+library(broom.mixed)
+
+fe_ci <- broom.mixed::tidy(model1, effects = "fixed", conf.int = TRUE)
+
+# Reference level is Sun; add Shade prediction manually
+intercept <- fe_ci$estimate[fe_ci$term == "(Intercept)"]
+shade_est <- fe_ci$estimate[fe_ci$term == "treatmentShade"]
+shade_ci_lo <- fe_ci$conf.low[fe_ci$term == "treatmentShade"]
+shade_ci_hi <- fe_ci$conf.high[fe_ci$term == "treatmentShade"]
+
+pred_df <- data.frame(
+  treatment = c("Sun", "Shade"),
+  mean_est  = c(intercept, intercept + shade_est),
+  ci_lo     = c(fe_ci$conf.low[1],  intercept + shade_ci_lo),
+  ci_hi     = c(fe_ci$conf.high[1], intercept + shade_ci_hi)
+) |> mutate(treatment = factor(treatment, levels = c("Sun", "Shade")))
+
+ggplot() +
+  geom_jitter(
+    data  = sim_list,
+    aes(x = treatment, y = temp_C, colour = treatment),
+    width = 0.15, alpha = 0.08, size = 0.6
+  ) +
+  geom_errorbar(
+    data = pred_df,
+    aes(x = treatment, ymin = ci_lo, ymax = ci_hi),
+    width = 0.12, linewidth = 1.1, colour = "#1a1a18"
+  ) +
+  geom_point(
+    data  = pred_df,
+    aes(x = treatment, y = mean_est, colour = treatment),
+    size  = 4, shape = 18
+  ) +
+  scale_colour_manual(values = c(Sun = "#c8832a", Shade = "#2d5a3d"),
+                      guide  = "none") +
+  labs(
+    x = NULL, y = "Air temperature (°C)",
+    title    = "Estimated shade treatment effect",
+    subtitle = "Diamonds = model-estimated means ± 95% CI; dots = raw observations"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold", colour = "#1e3a2f"),
+    plot.subtitle = element_text(colour = "#7a7a72", size = 10)
+  )
+```
+
+<div class="callout callout-task">
+<strong>🖊 Write-up prompt</strong>
+
+In 2–3 sentences, summarise your findings: (1) What was the estimated temperature difference between shaded and sun-exposed locations? (2) Was the effect statistically significant? (3) How large was the site-to-site variance compared to the residual variance — what does that tell you about the consistency of the effect across different public spaces?
+</div>
+
+---
+
+## Going Further {#further}
+
+### Adding time as a covariate
+
+The model above treats all time points equally. But you likely noticed a strong diel cycle — temperatures are far higher at 2 pm than at 6 am. You can add hour of day as a fixed effect to partial out this variation:
+
+```{r model-with-time, eval=FALSE}
+sensor_merged <- sensor_merged |>
+  mutate(hour = as.numeric(format(datetime, "%H")))
+
+model_time <- lmer(
+  temp_C ~ treatment + hour + (1 | site),
+  data = sensor_merged,
+  REML = TRUE
+)
+
+summary(model_time)
+```
+
+Adding `hour` as a linear covariate improves the model fit and gives you a cleaner estimate of the shade effect by removing the systematic time-of-day trend from the residuals. For a cyclic covariate like hour of day, you might also consider `sin` and `cos` transformations (see [Module 14 — Time Series](../advanced_stats/14_Time_Series.html)).
+
+### Random slopes
+
+The model above assumes the shade effect is identical at every site. To test whether the effect varies across sites, add a random slope:
+
+```{r random-slope, eval=FALSE}
+model_rs <- lmer(
+  temp_C ~ treatment + (treatment | site),
+  data = sensor_merged,
+  REML = TRUE
+)
+
+# Compare to random-intercept model
+anova(model1, model_rs)
+```
+
+If `model_rs` fits significantly better, the shade effect is genuinely heterogeneous — some sites benefit more from shade than others.
+
+### Mixed-effects model deep dive
+
+This activity has only scratched the surface of mixed-effects models. For a thorough treatment of random intercepts, random slopes, nested versus crossed effects, and model selection strategies, work through:
+
+<div class="key-box">
+<h4>📖 Further Reading</h4>
+<ul>
+<li><a href="../advanced_stats/13_Mixed_Effects_Models.html">Module 13 — Mixed-Effects Models</a> — covers the full theory and additional examples with environmental data, including how to handle convergence warnings and how to report results for publication.</li>
+<li><a href="https://www.jstatsoft.org/article/view/v067i01"><strong>Bates et al. (2015)</strong> — Fitting Linear Mixed-Effects Models Using lme4</a> — the primary reference for <code>lme4</code>, freely available at the Journal of Statistical Software.</li>
+<li><strong>Zuur et al. (2009)</strong> — <em>Mixed Effects Models and Extensions in Ecology with R</em>. The standard reference for ecologists; your library likely has a copy.</li>
+</ul>
+</div>
+
+---
+
+<div class="page-footer">
+EA030 &mdash; RTricks &nbsp;<span class="divider">|</span>&nbsp;
+Activity A14 &mdash; Public Space Temperature &nbsp;<span class="divider">|</span>&nbsp;
+<a href="https://github.com/marclos/RTricks">github.com/marclos/RTricks</a> &nbsp;<span class="divider">|</span>&nbsp;
+Compiled `r format(Sys.Date(), "%Y-%m-%d")`
+</div>

@@ -218,6 +218,14 @@ color: var(--charcoal); margin-top: 20px; margin-bottom: 4px;
 p { margin-bottom: 1em; }
 strong { color: var(--forest); }
 
+a { color: var(--fern); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { color: var(--forest); }
+
+.key-box a { color: var(--amber-lt) !important; text-decoration: underline; text-underline-offset: 2px; }
+.key-box a:hover { color: #fff !important; }
+.key-box strong { color: var(--sage) !important; }
+.key-box em { color: rgba(255,255,255,.75); font-style: italic; }
+
 code {
 font-family: 'Source Code Pro', monospace; font-size: .84em;
 background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
@@ -1206,16 +1214,16 @@ through:</p>
 </h4>
 <ul>
 <li>
-<a href="../advanced_stats/13_Mixed_Effects_Models.html" style="color: var(--amber-lt);">Module
-13 — Mixed-Effects Models</a> — covers the full theory and additional
+<a href="../advanced_stats/13_Mixed_Effects_Models.html">Module 13 —
+Mixed-Effects Models</a> — covers the full theory and additional
 examples with environmental data, including how to handle convergence
 warnings and how to report results for publication.
 </li>
 <li>
-<strong>Bates et al. (2015)</strong> — the primary reference for
-<code>lme4</code>. Available free at
-<a href="https://www.jstatsoft.org/article/view/v067i01" style="color: var(--sage);">Journal
-of Statistical Software</a>.
+<a href="https://www.jstatsoft.org/article/view/v067i01"><strong>Bates
+et al. (2015)</strong> — Fitting Linear Mixed-Effects Models Using
+lme4</a> — the primary reference for <code>lme4</code>, freely available
+at the Journal of Statistical Software.
 </li>
 <li>
 <strong>Zuur et al. (2009)</strong> — <em>Mixed Effects Models and
