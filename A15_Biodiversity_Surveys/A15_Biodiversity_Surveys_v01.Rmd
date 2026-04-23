@@ -1,0 +1,2066 @@
+---
+title: "Biodiversity Surveys: Plant and Bird Communities in the Pomona College Wash"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/Activities/A15_Biodiversity_Surveys.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 8,
+  fig.height = 5,
+  fig.align  = "center"
+)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+
+.main-container {
+  max-width: 960px !important;
+  margin: 0 auto !important;
+  padding: 0 clamp(10px, 2vw, 32px) 80px !important;
+}
+
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
+
+h1.title, h4.author, h4.date { display: none; }
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px,
+      rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+/* ── Section nav ─────────────────────────────────────────────────────────── */
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--fern);
+  text-decoration: none; border: 1px solid var(--mist); padding: 4px 12px;
+  border-radius: 3px; background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+/* ── Headings ────────────────────────────────────────────────────────────── */
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+
+/* ── Code ────────────────────────────────────────────────────────────────── */
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+/* ── Callouts ────────────────────────────────────────────────────────────── */
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-new     { border-color: #1565c0;      background: #f0f4ff; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+/* ── Outcomes box ────────────────────────────────────────────────────────── */
+.outcomes-box {
+  background: var(--white); border: 1px solid var(--mist);
+  border-left: 5px solid var(--fern); border-radius: 0 6px 6px 0;
+  padding: 18px 22px; margin: 0 0 2.5em;
+}
+.outcomes-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--forest);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.outcomes-box ol { padding-left: 1.4em; }
+.outcomes-box li { margin-bottom: .45em; font-size: .92em; }
+
+/* ── Pipeline grid ───────────────────────────────────────────────────────── */
+.pipeline-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px; margin: 2em 0 2.5em;
+}
+.pipeline-card {
+  background: var(--white); border: 1px solid var(--parchment);
+  border-radius: 6px; padding: 14px 16px; box-shadow: var(--card-shadow);
+  border-top: 3px solid var(--fern);
+}
+.pipeline-card.p2 { border-top-color: var(--amber); }
+.pipeline-card.p3 { border-top-color: #2e7d94; }
+.pipeline-card.p4 { border-top-color: #5d4037; }
+.pipeline-card.p5 { border-top-color: #6a1b9a; }
+.pc-num  { font-family: 'Source Code Pro', monospace; font-size: .68rem;
+           font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+           color: var(--dust); margin-bottom: 4px; }
+.pc-name { font-family: 'Libre Baskerville', serif; font-size: .95rem;
+           font-weight: 700; color: var(--forest); margin-bottom: 3px; }
+.pc-desc { font-size: .82rem; color: var(--charcoal); line-height: 1.45; }
+
+/* ── Step badges ─────────────────────────────────────────────────────────── */
+.step-badge {
+  display: inline-block; background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 3px; margin-right: 8px; vertical-align: middle;
+}
+
+/* ── Key box ─────────────────────────────────────────────────────────────── */
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+/* ── Math display ────────────────────────────────────────────────────────── */
+.math-block {
+  background: var(--white); border: 1px solid var(--parchment);
+  border-radius: 5px; padding: 16px 20px; margin: 1.2em 0;
+  text-align: center; box-shadow: var(--card-shadow);
+  font-family: 'Source Code Pro', monospace; font-size: .9em;
+}
+
+/* ── Discussion box ──────────────────────────────────────────────────────── */
+.discuss-box {
+  background: var(--parchment); border: 1px solid var(--mist);
+  border-radius: 6px; padding: 18px 22px; margin: 2em 0; font-size: .92em;
+}
+.discuss-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--moss);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.discuss-box ol { padding-left: 1.4em; }
+.discuss-box li { margin-bottom: .5em; }
+
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px calc(-1 * clamp(14px, 4vw, 48px)) 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; RTricks &mdash; Activity 15</div>
+<h1>Biodiversity Surveys: <span>Plants &amp; Birds in the Pomona College Wash</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College &nbsp;&bull;&nbsp; Environmental Analysis</p>
+<a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
+</div>
+
+<div class="section-nav">
+<a href="#intro">Introduction</a>
+<a href="#setup">Setup & Data</a>
+<a href="#explore">Explore</a>
+<a href="#richness">Species Richness</a>
+<a href="#rarefaction">Rarefaction</a>
+<a href="#diversity">Diversity Indices</a>
+<a href="#composition">Community Composition</a>
+<a href="#ordination">Ordination</a>
+<a href="#permanova">PERMANOVA</a>
+<a href="#summary">Part I Summary</a>
+<a href="#birds">&#9654; Part II: Bird Survey</a>
+<a href="#bird-data">Bird Data</a>
+<a href="#bird-richness">Bird Richness</a>
+<a href="#bird-guilds">Foraging Guilds</a>
+<a href="#bird-ordination">Bird Ordination</a>
+<a href="#cross-taxa">Cross-taxa</a>
+<a href="#summary-combined">Summary</a>
+</div>
+
+<div class="outcomes-box">
+<h4>&#127919; Learning Outcomes</h4>
+<ol>
+<li>Build and validate a **species × site matrix** from transect survey data.</li>
+<li>Calculate and compare species richness, Shannon diversity, and Simpson's index across parcels.</li>
+<li>Construct and interpret **rarefaction curves** to account for unequal sampling effort.</li>
+<li>Visualize community composition with stacked bar charts and explain what they reveal.</li>
+<li>Run a basic **NMDS ordination** with `vegan` and interpret the resulting plot.</li>
+<li>Use permutational MANOVA (PERMANOVA) to test whether plant communities differ among parcels.</li>
+<li>Connect your results to broader questions about disturbance, restoration, and riparian ecology.</li>
+</ol>
+</div>
+
+> **What this project covers.** The Pomona College Wash is a restored riparian corridor on the edge of campus — a patchwork of native bunchgrasses, willows, and mulefat interspersed with invasive annual grasses and ruderal forbs. This project has two parts. In **Part I** you analyze simulated vegetation transect data to ask: *how similar are plant communities across different parcels of the Wash, and is any one parcel substantially more diverse or distinct?* In **Part II** you analyze point-count bird survey data from the same parcels to ask: *which bird species use the Wash, how does avian diversity relate to vegetation structure, and do plant and bird communities track each other across the disturbance gradient?* Together the two surveys illustrate how the same core toolkit — richness, rarefaction, diversity indices, and NMDS ordination — applies to very different kinds of biodiversity data.
+
+---
+
+## The Analytical Pipeline {#intro}
+
+Plant community data require a specific sequence of steps before any comparative statistics can be run. The diagram below maps the full workflow.
+
+<div class="pipeline-grid">
+<div class="pipeline-card">
+  <div class="pc-num">Stage 1</div>
+  <div class="pc-name">Build the Matrix</div>
+  <div class="pc-desc">Aggregate raw transect records into a species × site abundance matrix — the standard input for all community analyses.</div>
+</div>
+<div class="pipeline-card">
+  <div class="pc-num">Stage 2</div>
+  <div class="pc-name">Explore & QA</div>
+  <div class="pc-desc">Check for data entry errors, confirm total cover, inspect the frequency distribution of species detections.</div>
+</div>
+<div class="pipeline-card p2">
+  <div class="pc-num">Stage 3</div>
+  <div class="pc-name">Richness & Diversity</div>
+  <div class="pc-desc">Count species per parcel, compare Shannon H' and Simpson 1−D indices, visualize with error bars.</div>
+</div>
+<div class="pipeline-card p3">
+  <div class="pc-num">Stage 4</div>
+  <div class="pc-name">Rarefaction</div>
+  <div class="pc-desc">Standardize for effort. Rarefy to a common sample size so richness comparisons are not confounded by transect count.</div>
+</div>
+<div class="pipeline-card p4">
+  <div class="pc-num">Stage 5</div>
+  <div class="pc-name">Composition</div>
+  <div class="pc-desc">Stacked bars and rank-abundance plots reveal which species dominate each parcel and which are rare.</div>
+</div>
+<div class="pipeline-card p5">
+  <div class="pc-num">Stage 6</div>
+  <div class="pc-name">Ordination</div>
+  <div class="pc-desc">NMDS reduces multivariate community data to two dimensions. PERMANOVA tests whether parcels differ significantly.</div>
+</div>
+</div>
+
+<div class="callout callout-new">
+<strong>&#128196; Study system.</strong>
+The data in this module are **simulated** but ecologically realistic. Species identities, cover values, and community structure are all modeled on published vegetation surveys from the Bernard Field Station, a 117-acre preserve adjacent to the Claremont Colleges. The Wash itself is a ~1 km restored drainage corridor managed by Pomona College's Sustainability office. If you are running this analysis as part of a field campaign, you can swap in your own `transect_data.csv` at the import step — the rest of the pipeline is unchanged.
+</div>
+
+---
+
+## 1. Setup & Data Generation {#setup}
+
+### 1.1 Packages
+
+```{r packages}
+# Install once (remove the # to uncomment, run, then re-comment):
+# install.packages(c("tidyverse", "vegan", "knitr", "kableExtra",
+#                    "ggrepel", "RColorBrewer", "viridis"))
+
+library(tidyverse)     # wrangling + ggplot2
+library(vegan)         # diversity, rarefaction, ordination
+library(knitr)         # tables in RMarkdown
+library(kableExtra)    # styled tables
+library(ggrepel)       # non-overlapping species labels on ordination
+library(RColorBrewer)  # color palettes
+library(viridis)       # colorblind-safe sequential palette
+```
+
+<div class="callout callout-formula">
+<strong>&#9881;&#65039; What is `vegan`?</strong><br>
+`vegan` (Oksanen et al. 2022) is the primary R package for community ecology. It implements essentially every diversity index, rarefaction algorithm, distance measure, and ordination technique in the ecological literature. The name is a historical joke — "vegetation analysis" — not a dietary statement.
+</div>
+
+### 1.2 Simulated transect data
+
+The Wash is divided into **10 parcels** (P01–P10), each surveyed with **20 transects** of 50 m. Along each transect, observers recorded the percent cover (to the nearest 5%) of every plant species rooted within a 1-m belt. The species list is drawn from Bernard Field Station surveys and includes native bunchgrasses, native shrubs, native forbs, and invasive annual grasses.
+
+```{r simulate-data, cache=FALSE}
+set.seed(2024)
+
+# ── Species pool ──────────────────────────────────────────────────────────────
+# 28 species: native shrubs, native grasses, native forbs, non-native grasses,
+# non-native forbs.  Modeled on BFS plant lists.
+species_pool <- tibble(
+  species  = c(
+    # Native shrubs / trees
+    "Baccharis salicifolia",    # mule fat        – dominant riparian shrub
+    "Salix laevigata",          # red willow
+    "Sambucus nigra",           # elderberry
+    "Artemisia californica",    # California sagebrush
+    "Encelia californica",      # bush sunflower
+    "Malosma laurina",          # laurel sumac
+    # Native bunchgrasses
+    "Nassella pulchra",         # purple needlegrass  – CA state grass
+    "Nassella lepida",          # foothill needlegrass
+    "Muhlenbergia rigens",      # deer grass
+    "Elymus condensatus",       # giant wild rye
+    "Melica imperfecta",        # coast melic
+    # Native forbs
+    "Mimulus aurantiacus",      # sticky monkeyflower
+    "Achillea millefolium",     # yarrow
+    "Lupinus bicolor",          # miniature lupine
+    "Eriogonum fasciculatum",   # California buckwheat
+    "Sisyrinchium bellum",      # blue-eyed grass
+    "Phacelia tanacetifolia",   # lacy phacelia
+    # Non-native annual grasses (invasive)
+    "Bromus diandrus",          # ripgut brome
+    "Bromus hordeaceus",        # soft chess
+    "Avena fatua",              # wild oat
+    "Festuca perennis",         # Italian ryegrass (formerly Lolium perenne)
+    "Hordeum murinum",          # wall barley
+    # Non-native forbs
+    "Brassica nigra",           # black mustard
+    "Hirschfeldia incana",      # shortpod mustard
+    "Foeniculum vulgare",       # fennel
+    "Centaurea melitensis",     # tocalote (star-thistle relative)
+    "Lactuca serriola",         # prickly lettuce
+    "Erodium cicutarium"        # redstem filaree
+  ),
+  guild = c(
+    rep("native_shrub",  6),
+    rep("native_grass",  5),
+    rep("native_forb",   6),
+    rep("nonnative_grass", 5),
+    rep("nonnative_forb",  6)
+  )
+)
+
+n_species <- nrow(species_pool)
+n_parcels <- 10
+n_transects <- 20   # per parcel
+
+# ── Parcel characteristics ────────────────────────────────────────────────────
+# Each parcel has a restoration age and a disturbance score (0–1).
+# Older, less-disturbed parcels have higher native cover.
+parcel_meta <- tibble(
+  parcel_id       = sprintf("P%02d", 1:n_parcels),
+  restore_age_yr  = c(15, 12, 10, 8, 6, 5, 4, 3, 2, 1),
+  disturbance     = c(0.10, 0.15, 0.20, 0.30, 0.40,
+                      0.50, 0.60, 0.70, 0.80, 0.90)
+)
+
+# ── Generate transect-level records ──────────────────────────────────────────
+# For each transect, sample species cover from a Dirichlet-like process:
+# natives are favored in older/less-disturbed parcels.
+generate_transect <- function(parcel_id, disturbance, transect_id) {
+  # Base occurrence probability shifts with disturbance
+  native_prob    <- pmax(0.05, 0.65 - disturbance * 0.50)
+  nonnative_prob <- pmax(0.05, 0.65 - (1 - disturbance) * 0.50)
+
+  prob_vec <- ifelse(
+    species_pool$guild %in% c("native_shrub", "native_grass", "native_forb"),
+    native_prob, nonnative_prob
+  )
+  prob_vec <- prob_vec / sum(prob_vec)
+
+  # Number of species encountered on this transect (8–18, Poisson-ish)
+  n_spp <- sample(8:18, 1)
+
+  # Which species are present?
+  spp_present <- sample(species_pool$species, size = n_spp,
+                        replace = FALSE, prob = prob_vec)
+
+  # Cover values: log-normal, rounded to nearest 5, capped at 80%
+  raw_cover <- rlnorm(n_spp, meanlog = 2.2, sdlog = 0.8)
+  cover     <- pmin(80, round(raw_cover / 5) * 5)
+  cover[cover == 0] <- 5
+
+  tibble(
+    parcel_id   = parcel_id,
+    transect_id = transect_id,
+    species     = spp_present,
+    cover_pct   = cover
+  )
+}
+
+# Build the full dataset
+transect_data <- parcel_meta %>%
+  pmap_dfr(function(parcel_id, restore_age_yr, disturbance) {
+    map_dfr(
+      sprintf("%s_T%02d", parcel_id, 1:n_transects),
+      ~ generate_transect(parcel_id, disturbance, .x)
+    )
+  }) %>%
+  left_join(select(species_pool, species, guild), by = "species")
+
+glimpse(transect_data)
+```
+
+<div class="callout callout-concept">
+<strong>&#128161; What does this data frame represent?</strong>
+Each row is one species recorded on one transect in one parcel. This is **long format** — one observation per row — which is tidy and easy to manipulate with `dplyr`. For most community ecology analyses, we will need to convert this to **wide format** (species as columns, parcels as rows). That conversion happens in section 2.
+</div>
+
+---
+
+## 2. Explore the Raw Data {#explore}
+
+Before running any statistics, it is worth understanding the shape of your data: how many observations, how many species, how cover is distributed, and whether any anomalies exist.
+
+### 2.1 How many records per parcel?
+
+```{r records-per-parcel}
+transect_data %>%
+  count(parcel_id, name = "n_records") %>%
+  kbl(caption = "Total species × transect records per parcel") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+### 2.2 Species detected across all parcels
+
+```{r species-detected}
+n_spp_total <- n_distinct(transect_data$species)
+cat("Total species detected across all parcels:", n_spp_total, "\n")
+
+# Frequency: how many parcels does each species appear in?
+spp_freq <- transect_data %>%
+  distinct(parcel_id, species, guild) %>%
+  count(species, guild, name = "parcels_present") %>%
+  arrange(desc(parcels_present))
+
+spp_freq %>%
+  slice_head(n = 12) %>%
+  kbl(caption = "Most widely distributed species (number of parcels)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+### 2.3 Cover distribution
+
+```{r cover-dist, fig.height=4}
+ggplot(transect_data, aes(x = cover_pct, fill = guild)) +
+  geom_histogram(binwidth = 5, color = "white", linewidth = 0.2, alpha = 0.88) +
+  scale_fill_manual(
+    values = c(
+      "native_shrub"    = "#1e3a2f",
+      "native_grass"    = "#4a7c5e",
+      "native_forb"     = "#8aad96",
+      "nonnative_grass" = "#c8832a",
+      "nonnative_forb"  = "#e8a84a"
+    ),
+    name = "Functional guild"
+  ) +
+  facet_wrap(~ guild, scales = "free_y", ncol = 3) +
+  labs(
+    title = "Distribution of percent cover values by functional guild",
+    x = "Cover (%)", y = "Number of transect records"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold",
+                                   color = "#1e3a2f", size = 13),
+    legend.position = "none",
+    strip.text      = element_text(face = "bold", size = 10)
+  )
+```
+
+<div class="callout callout-tip">
+<strong>&#128161; Log-normal cover distributions are normal in plant ecology.</strong>
+Most species are rare: a few individuals contributing little cover. A small number of dominant species contribute the bulk. This right-skewed, log-normal pattern is one of the most robust empirical regularities in community ecology (Preston 1948; McGill et al. 2007). It is why log-transformation is often applied before parametric tests on cover data.
+</div>
+
+---
+
+## 3. Building the Species × Site Matrix {#richness}
+
+The **community matrix** (also called a site × species matrix) has one row per parcel and one column per species. Cell values are the summed percent cover of that species across all 20 transects. This matrix is the foundation for every analysis that follows.
+
+### <span class="step-badge">Step 1</span> Aggregate to parcel level
+
+```{r community-matrix}
+# Sum cover across all transects within each parcel × species combination
+parcel_cover <- transect_data %>%
+  group_by(parcel_id, species) %>%
+  summarise(total_cover = sum(cover_pct), .groups = "drop")
+
+# Pivot to wide format: rows = parcels, columns = species, values = total cover
+comm_wide <- parcel_cover %>%
+  pivot_wider(
+    names_from  = species,
+    values_from = total_cover,
+    values_fill = 0          # species absent from a parcel get 0
+  ) %>%
+  column_to_rownames("parcel_id")
+
+dim(comm_wide)   # should be 10 parcels × up to 28 species
+```
+
+### <span class="step-badge">Step 2</span> Spot-check the matrix
+
+```{r check-matrix}
+# Row sums = total cover per parcel (sum across all species)
+rowSums(comm_wide) %>% sort()
+
+# Column sums = total cover of each species across all parcels
+sort(colSums(comm_wide), decreasing = TRUE) %>% head(10)
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; The community matrix in `vegan`</strong>
+Every function in `vegan` expects the community matrix in the format **rows = sites, columns = species**. Make sure your matrix matches this convention — it is easy to accidentally transpose it. The function `t()` can fix a transposed matrix.
+</div>
+
+### 3.1 Raw species richness per parcel
+
+**Species richness** (*S*) is the simplest diversity measure: just a count of species present. It treats all species equally regardless of their abundance.
+
+```{r richness-per-parcel, fig.height=4}
+# specnumber() from vegan counts species per site (non-zero columns per row)
+richness <- tibble(
+  parcel_id = rownames(comm_wide),
+  S         = specnumber(comm_wide)
+) %>%
+  left_join(parcel_meta, by = "parcel_id")
+
+richness %>%
+  kbl(caption = "Raw species richness by parcel") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+
+ggplot(richness, aes(x = reorder(parcel_id, -S), y = S, fill = disturbance)) +
+  geom_col(color = "#1e3a2f", linewidth = 0.3) +
+  geom_text(aes(label = S), vjust = -0.4,
+            family = "mono", size = 3.5, color = "#1e3a2f") +
+  scale_fill_viridis_c(
+    option = "viridis", direction = -1,
+    name   = "Disturbance\nscore"
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+  labs(
+    title = "Raw species richness per parcel",
+    subtitle = "Color indicates relative disturbance level (darker = less disturbed)",
+    x = NULL, y = "Species richness (S)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10),
+    axis.text.x   = element_text(face = "bold")
+  )
+```
+
+<div class="callout callout-warn">
+<strong>&#9888;&#65039; Raw richness is confounded by effort.</strong>
+If some parcels had more transects, or longer transects, they would detect more species simply due to greater sampling effort — not because they are genuinely more diverse. Before comparing richness across sites, we need to account for sampling effort. That is what **rarefaction** does.
+</div>
+
+---
+
+## 4. Rarefaction: Accounting for Sampling Effort {#rarefaction}
+
+**Rarefaction** asks: *if we had sampled all parcels equally intensively, how many species would we expect to find?* The algorithm repeatedly subsamples each site down to the same standardized abundance, averages the results, and produces an expected richness with a confidence interval.
+
+<div class="math-block">
+E[S<sub>n</sub>] = S − Σ<sub>i=1</sub><sup>S</sup> C(N−n<sub>i</sub>, n) / C(N, n)
+
+where N = total individuals/abundance, n = rarefied sample size,
+n<sub>i</sub> = abundance of species i, C() = binomial coefficient
+</div>
+
+### 4.1 Rarefaction curves for all parcels
+
+```{r rarefaction-curves, fig.height=6, fig.width=9}
+# rarecurve() expects integers; round cover sums to nearest integer
+comm_int <- round(comm_wide)
+
+# Build rarefaction curves (step = 50 for smooth curves without excessive computation)
+rare_list <- rarecurve(comm_int, step = 20, sample = min(rowSums(comm_int)),
+                       label = FALSE, plot = FALSE)
+
+# Tidy the list output into a data frame for ggplot
+rare_df <- imap_dfr(rare_list, function(curve, idx) {
+  tibble(
+    parcel_id  = rownames(comm_int)[idx],
+    abundance  = as.integer(attr(curve, "Subsample")),
+    richness   = as.numeric(curve)
+  )
+}) %>%
+  left_join(parcel_meta, by = "parcel_id")
+
+# Vertical line at the smallest total cover (the rarefaction standard)
+std_n <- min(rowSums(comm_int))
+
+ggplot(rare_df, aes(x = abundance, y = richness,
+                    color = disturbance, group = parcel_id)) +
+  geom_line(linewidth = 0.9, alpha = 0.85) +
+  geom_vline(xintercept = std_n, linetype = "dashed",
+             color = "#c8832a", linewidth = 0.7) +
+  annotate("text", x = std_n + 30, y = 3,
+           label = paste0("Rarefaction\nstandard\n(n = ", std_n, ")"),
+           size = 3, color = "#c8832a", hjust = 0,
+           fontface = "italic") +
+  scale_color_viridis_c(
+    option = "viridis", direction = -1,
+    name   = "Disturbance\nscore"
+  ) +
+  labs(
+    title    = "Rarefaction curves — Pomona College Wash parcels",
+    subtitle = "Each curve traces expected richness as sampling effort increases",
+    x = "Accumulated cover (sum across transects)",
+    y = "Expected species richness"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10)
+  )
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; Reading a rarefaction curve</strong>
+<ul>
+<li><strong>A steep initial slope</strong> means many new species are discovered with each additional sampling unit — the parcel likely has high evenness.</li>
+<li><strong>A flattening plateau</strong> means the sampling is approaching completeness for that parcel at that effort level.</li>
+<li><strong>Comparing curves at the dashed line</strong> standardizes richness: the y-value at the dashed line is each parcel's rarefied richness estimate.</li>
+</ul>
+</div>
+
+### 4.2 Rarefied richness at the standard effort
+
+```{r rarefied-richness}
+# rarefy() returns the expected richness at a single standardized sample size
+rare_S <- rarefy(comm_int, sample = std_n)
+
+tibble(
+  parcel_id      = names(rare_S),
+  rarefied_S     = round(as.numeric(rare_S), 1),
+  raw_S          = specnumber(comm_wide)
+) %>%
+  left_join(parcel_meta, by = "parcel_id") %>%
+  arrange(desc(rarefied_S)) %>%
+  kbl(caption = paste0("Rarefied species richness at n = ", std_n,
+                       " (vs. raw richness)"),
+      digits = 1) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+---
+
+## 5. Diversity Indices {#diversity}
+
+Richness counts species but ignores **how evenly they are distributed**. A parcel with 20 species where one grass covers 95% of the area is less functionally diverse than a parcel where 20 species share cover roughly equally. Diversity indices capture both components.
+
+<div class="key-box">
+<h4>Three indices you will use</h4>
+<ul>
+<li><strong>Shannon H'</strong> — penalizes both low richness and uneven abundances. Sensitive to rare species. Range: 0 (monoculture) to ln(S) (maximum evenness). Formula: H' = −Σ p<sub>i</sub> ln(p<sub>i</sub>)</li>
+<li><strong>Simpson 1−D</strong> — probability that two randomly drawn individuals belong to different species. More robust to rare species. Range: 0–1.</li>
+<li><strong>Pielou's J (evenness)</strong> — Shannon diversity divided by ln(S). Ranges 0–1; J = 1 means all species are equally abundant.</li>
+</ul>
+</div>
+
+```{r diversity-indices, fig.height=5, fig.width=9}
+div_df <- tibble(
+  parcel_id = rownames(comm_wide),
+  H_shannon = diversity(comm_wide, index = "shannon"),
+  D_simpson = diversity(comm_wide, index = "simpson"),
+  S         = specnumber(comm_wide),
+  J_pielou  = H_shannon / log(S)           # Pielou's evenness
+) %>%
+  left_join(parcel_meta, by = "parcel_id") %>%
+  pivot_longer(cols = c(H_shannon, D_simpson, J_pielou),
+               names_to = "index", values_to = "value") %>%
+  mutate(index = recode(index,
+    "H_shannon" = "Shannon H'",
+    "D_simpson" = "Simpson 1−D",
+    "J_pielou"  = "Pielou's J (evenness)"
+  ))
+
+ggplot(div_df, aes(x = reorder(parcel_id, disturbance),
+                   y = value, fill = disturbance)) +
+  geom_col(color = "#1e3a2f", linewidth = 0.25, alpha = 0.9) +
+  facet_wrap(~ index, scales = "free_y", ncol = 3) +
+  scale_fill_viridis_c(option = "viridis", direction = -1,
+                       name = "Disturbance") +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(
+    title = "Diversity indices across Wash parcels",
+    subtitle = "Parcels ordered from least (P01) to most (P10) disturbed",
+    x = NULL, y = "Index value"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10),
+    strip.text    = element_text(face = "bold"),
+    legend.position = "right"
+  )
+```
+
+### 5.1 Do diversity indices correlate with disturbance?
+
+```{r diversity-disturbance, fig.height=4, fig.width=8}
+div_wide <- div_df %>%
+  pivot_wider(names_from = index, values_from = value)
+
+# Shannon vs. disturbance
+ggplot(div_wide,
+       aes(x = disturbance, y = `Shannon H'`, label = parcel_id)) +
+  geom_point(aes(color = restore_age_yr), size = 4) +
+  geom_smooth(method = "lm", se = TRUE,
+              color = "#c8832a", fill = "#fdf8f0", linewidth = 0.8) +
+  geom_text(nudge_y = 0.04, size = 3, color = "#1e3a2f", fontface = "bold") +
+  scale_color_viridis_c(
+    option = "mako", direction = -1,
+    name   = "Restoration\nage (yr)"
+  ) +
+  labs(
+    title = "Shannon diversity declines with disturbance intensity",
+    x = "Disturbance score", y = "Shannon H'"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(family = "serif", face = "bold",
+                              color = "#1e3a2f", size = 13)
+  )
+
+# Pearson correlation
+cor.test(div_wide$disturbance, div_wide$`Shannon H'`)
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; Interpreting the Pearson correlation here</strong>
+A strong negative correlation between disturbance and Shannon H' supports the **intermediate disturbance hypothesis** only if the relationship is non-linear (hump-shaped). A linear negative relationship is more consistent with simple community degradation: as disturbance increases, native species drop out and one or two invasive grasses come to dominate, reducing both richness and evenness. Look at the scatter plot carefully — is the relationship linear or curved?
+</div>
+
+---
+
+## 6. Community Composition {#composition}
+
+Diversity indices summarize a community in a single number, but they discard information about *which* species are present. Stacked bar charts and rank-abundance plots reveal the full compositional picture.
+
+### 6.1 Relative cover by functional guild per parcel
+
+```{r guild-composition, fig.height=5}
+guild_cover <- transect_data %>%
+  group_by(parcel_id, guild) %>%
+  summarise(total_cover = sum(cover_pct), .groups = "drop") %>%
+  group_by(parcel_id) %>%
+  mutate(rel_cover = total_cover / sum(total_cover)) %>%
+  ungroup() %>%
+  left_join(parcel_meta, by = "parcel_id") %>%
+  mutate(
+    parcel_id = fct_reorder(parcel_id, disturbance),
+    guild = factor(guild, levels = c(
+      "native_shrub", "native_grass", "native_forb",
+      "nonnative_grass", "nonnative_forb"
+    ))
+  )
+
+guild_colors <- c(
+  "native_shrub"    = "#1e3a2f",
+  "native_grass"    = "#4a7c5e",
+  "native_forb"     = "#8aad96",
+  "nonnative_grass" = "#c8832a",
+  "nonnative_forb"  = "#e8a84a"
+)
+
+ggplot(guild_cover,
+       aes(x = parcel_id, y = rel_cover, fill = guild)) +
+  geom_col(color = "white", linewidth = 0.25) +
+  scale_fill_manual(
+    values = guild_colors,
+    labels = c(
+      "native_shrub"    = "Native shrub / tree",
+      "native_grass"    = "Native bunchgrass",
+      "native_forb"     = "Native forb",
+      "nonnative_grass" = "Non-native grass",
+      "nonnative_forb"  = "Non-native forb"
+    ),
+    name = "Functional guild"
+  ) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title    = "Community composition by functional guild",
+    subtitle = "Parcels ordered from least (P01) to most (P10) disturbed",
+    x = "Parcel (increasing disturbance →)", y = "Relative cover"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold",
+                                   color = "#1e3a2f", size = 13),
+    plot.subtitle   = element_text(color = "#7a7a72", size = 10),
+    legend.position = "bottom",
+    legend.key.size = unit(0.4, "cm")
+  ) +
+  guides(fill = guide_legend(nrow = 2))
+```
+
+### 6.2 Top-10 species per parcel (heatmap)
+
+```{r species-heatmap, fig.height=6, fig.width=10}
+# Find the 12 most abundant species overall to display on the heatmap
+top_species <- colSums(comm_wide) %>%
+  sort(decreasing = TRUE) %>%
+  head(12) %>%
+  names()
+
+comm_top <- comm_wide[, top_species] %>%
+  as.data.frame() %>%
+  rownames_to_column("parcel_id") %>%
+  pivot_longer(-parcel_id, names_to = "species", values_to = "cover") %>%
+  left_join(parcel_meta, by = "parcel_id") %>%
+  mutate(
+    parcel_id = fct_reorder(parcel_id, disturbance),
+    species   = fct_reorder(species, cover, .fun = sum)
+  )
+
+ggplot(comm_top,
+       aes(x = parcel_id, y = species, fill = cover)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  scale_fill_viridis_c(
+    option = "mako", direction = -1,
+    name   = "Total cover\nacross transects"
+  ) +
+  labs(
+    title    = "Heatmap of top-12 species cover across parcels",
+    subtitle = "Darker = higher accumulated cover",
+    x = "Parcel (increasing disturbance →)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10),
+    axis.text.y   = element_text(face = "italic", size = 9.5),
+    legend.position = "right"
+  )
+```
+
+<div class="callout callout-tip">
+<strong>&#127775; What to look for in the heatmap</strong>
+Notice whether native shrubs (*Baccharis salicifolia*, *Salix laevigata*) dominate the low-disturbance parcels while non-native annual grasses (*Bromus diandrus*, *Avena fatua*) dominate the high-disturbance end. This shift — from perennial-dominated to annual-dominated communities — is one of the most commonly documented signatures of disturbance in Southern California grasslands.
+</div>
+
+---
+
+## 7. Multivariate Ordination with NMDS {#ordination}
+
+Diversity indices and composition charts treat each species individually. But **community composition is multivariate** — a parcel is characterized by its pattern across all 28 species simultaneously. Ordination techniques reduce this high-dimensional space to a low-dimensional representation that preserves the relative (dis)similarities among parcels.
+
+### 7.1 Why NMDS?
+
+**Non-metric multidimensional scaling (NMDS)** is the preferred ordination method for community ecology because it makes no assumptions about linearity or normality. It works purely on **ranks** of pairwise dissimilarities (usually Bray-Curtis) and tries to represent those ranks faithfully in 2D space.
+
+<div class="callout callout-formula">
+<strong>&#9881;&#65039; Bray-Curtis dissimilarity</strong><br>
+BC<sub>ij</sub> = 1 − 2 × Σ min(n<sub>ik</sub>, n<sub>jk</sub>) / (Σ n<sub>ik</sub> + Σ n<sub>jk</sub>)<br><br>
+Where n<sub>ik</sub> is the abundance of species k in site i. BC = 0 when two sites share identical composition; BC = 1 when they share no species. Bray-Curtis is preferred over Euclidean distance for community data because it is unaffected by joint absences — two sites that both lack a rare species should not be considered "more similar" because of it.
+</div>
+
+### 7.2 Run NMDS
+
+```{r nmds, results='hide', cache=TRUE}
+# Use Hellinger-transformed cover to down-weight dominant species
+comm_hel <- decostand(comm_wide, method = "hellinger")
+
+set.seed(42)   # NMDS is stochastic; setting a seed makes results reproducible
+nmds_result <- metaMDS(
+  comm_hel,
+  distance = "bray",
+  k        = 2,     # 2 dimensions
+  trymax   = 100,   # maximum random starts
+  autotransform = FALSE   # we already transformed
+)
+```
+
+```{r nmds-stress}
+cat("NMDS stress:", round(nmds_result$stress, 4), "\n")
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; What is stress?</strong>
+Stress measures how well the 2D ordination preserves the rank-order of pairwise dissimilarities from the full multivariate space. Lower is better:
+<ul>
+<li>Stress &lt; 0.10 — excellent representation</li>
+<li>Stress 0.10–0.20 — good; minor distortions</li>
+<li>Stress 0.20–0.30 — suspect; consider 3 dimensions or interpret cautiously</li>
+<li>Stress &gt; 0.30 — poor fit; ordination is unreliable</li>
+</ul>
+</div>
+
+### 7.3 Plot the ordination
+
+```{r nmds-plot, fig.height=6, fig.width=8}
+# Extract site scores (parcel positions in 2D space)
+site_scores <- scores(nmds_result, display = "sites") %>%
+  as.data.frame() %>%
+  rownames_to_column("parcel_id") %>%
+  left_join(parcel_meta, by = "parcel_id")
+
+# Extract species scores (species positions — shows which species drive separation)
+spp_scores <- scores(nmds_result, display = "species") %>%
+  as.data.frame() %>%
+  rownames_to_column("species") %>%
+  left_join(species_pool, by = "species") %>%
+  # Display only the 10 species most strongly positioned
+  mutate(vec_len = sqrt(NMDS1^2 + NMDS2^2)) %>%
+  slice_max(vec_len, n = 10)
+
+ggplot() +
+  # Species points and labels
+  geom_point(data = spp_scores,
+             aes(x = NMDS1, y = NMDS2, color = guild),
+             shape = 3, size = 2.5, stroke = 1.2, alpha = 0.7) +
+  geom_text_repel(data = spp_scores,
+                  aes(x = NMDS1, y = NMDS2, label = species, color = guild),
+                  size = 2.8, fontface = "italic", max.overlaps = 20,
+                  segment.color = "grey70", segment.size = 0.3) +
+  # Parcel points — sized by restoration age
+  geom_point(data = site_scores,
+             aes(x = NMDS1, y = NMDS2, fill = disturbance,
+                 size = restore_age_yr),
+             shape = 21, color = "#1e3a2f", stroke = 0.8, alpha = 0.9) +
+  geom_text_repel(data = site_scores,
+                  aes(x = NMDS1, y = NMDS2, label = parcel_id),
+                  size = 3.5, fontface = "bold", color = "#1e3a2f",
+                  nudge_y = 0.04) +
+  scale_fill_viridis_c(
+    option = "viridis", direction = -1,
+    name   = "Disturbance"
+  ) +
+  scale_color_manual(
+    values = c(
+      "native_shrub"    = "#1e3a2f",
+      "native_grass"    = "#4a7c5e",
+      "native_forb"     = "#8aad96",
+      "nonnative_grass" = "#c8832a",
+      "nonnative_forb"  = "#e8a84a"
+    ),
+    name = "Guild"
+  ) +
+  scale_size_continuous(name = "Restore age\n(years)", range = c(4, 10)) +
+  labs(
+    title    = "NMDS ordination of plant communities — Pomona College Wash",
+    subtitle = paste0("Bray-Curtis dissimilarity on Hellinger-transformed cover; stress = ",
+                      round(nmds_result$stress, 3)),
+    x = "NMDS 1", y = "NMDS 2"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10),
+    legend.position = "right",
+    panel.grid    = element_line(color = "#d4e6da", linewidth = 0.3)
+  )
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; How to read an NMDS biplot</strong>
+<ul>
+<li><strong>Parcel points (circles)</strong>: parcels that are closer together have more similar species composition. Parcels that are far apart are compositionally very different.</li>
+<li><strong>Species markers (crosses)</strong>: a species positioned close to a parcel is abundant in that parcel. Species near the center are widespread across all parcels.</li>
+<li><strong>Axes have no inherent meaning</strong>: NMDS1 and NMDS2 are not "latent variables" — do not interpret their direction or units. Only distances between points matter.</li>
+</ul>
+</div>
+
+### 7.4 Shepard plot: assessing ordination quality
+
+```{r shepard-plot, fig.height=4}
+# The Shepard diagram plots ranked real dissimilarities against
+# distances in the ordination — good fit = tight, monotone scatter
+stressplot(nmds_result, main = "Shepard plot")
+```
+
+---
+
+## 8. PERMANOVA: Do Communities Differ Among Parcels? {#permanova}
+
+The ordination suggests parcels differ in composition, but is that difference statistically significant? **PERMANOVA** (permutational MANOVA; `adonis2()` in vegan) tests whether the within-group variance is significantly smaller than among-group variance, using random permutations of the data to generate a null distribution.
+
+### 8.1 Do disturbance categories explain community composition?
+
+```{r permanova}
+# Create a categorical disturbance group (low / medium / high)
+parcel_meta_cats <- parcel_meta %>%
+  mutate(
+    dist_cat = cut(
+      disturbance,
+      breaks = c(0, 0.33, 0.66, 1.0),
+      labels = c("low", "medium", "high"),
+      include.lowest = TRUE
+    )
+  )
+
+# Match order to comm_wide rows
+meta_ordered <- parcel_meta_cats[match(rownames(comm_wide),
+                                       parcel_meta_cats$parcel_id), ]
+
+set.seed(99)
+perm_result <- adonis2(
+  comm_hel ~ dist_cat,
+  data   = meta_ordered,
+  method = "bray",
+  permutations = 999
+)
+
+print(perm_result)
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; Interpreting PERMANOVA output</strong>
+<ul>
+<li><code>R2</code> — the proportion of total variance explained by the grouping factor. An R² of 0.45 means that 45% of compositional variation is attributable to disturbance category.</li>
+<li><code>Pr(&gt;F)</code> — the permutation-based p-value. If &lt; 0.05, communities in different disturbance categories are more different from each other than expected by chance.</li>
+<li>PERMANOVA assumes roughly equal within-group dispersion. Test this with <code>betadisper()</code> below.</li>
+</ul>
+</div>
+
+### 8.2 Test for homogeneity of dispersion
+
+```{r betadisper}
+# Calculate Bray-Curtis distance matrix
+bc_dist <- vegdist(comm_hel, method = "bray")
+
+# betadisper tests whether variance *within* groups differs
+disp_result <- betadisper(bc_dist, meta_ordered$dist_cat)
+anova(disp_result)
+plot(disp_result, main = "Within-group dispersion by disturbance category",
+     col = c("#4a7c5e", "#c8832a", "#e65100"))
+```
+
+<div class="callout callout-warn">
+<strong>&#9888;&#65039; Dispersion ≠ composition</strong>
+A significant PERMANOVA result could reflect genuine differences in species composition *or* differences in within-group variability (dispersion). If `betadisper` returns a significant result, the two effects are confounded and you should report both tests and discuss this limitation. If dispersion is homogeneous (non-significant), the PERMANOVA result is unambiguous.
+</div>
+
+---
+
+## 9. Summary and Interpretation {#summary}
+
+```{r summary-table}
+# Compile all metrics into one summary table
+summary_tbl <- div_wide %>%
+  select(parcel_id, disturbance, restore_age_yr, `Shannon H'`, `Simpson 1−D`) %>%
+  left_join(
+    tibble(parcel_id = names(rare_S),
+           rarefied_S = round(as.numeric(rare_S), 1)),
+    by = "parcel_id"
+  ) %>%
+  arrange(disturbance) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+summary_tbl %>%
+  kbl(
+    caption = "Summary of diversity metrics across Wash parcels (ordered by disturbance)",
+    col.names = c("Parcel", "Disturbance", "Restore age (yr)",
+                  "Shannon H'", "Simpson 1−D", "Rarefied S")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE) %>%
+  column_spec(2, color = "white",
+              background = spec_color(summary_tbl$disturbance,
+                                      palette = "viridis",
+                                      direction = -1))
+```
+
+<div class="key-box">
+<h4>Key takeaways from this analysis</h4>
+<ul>
+<li><strong>Richness and diversity both decline with disturbance</strong> in this simulated dataset, consistent with expectations for Southern California riparian corridors invaded by annual grasses.</li>
+<li><strong>Rarefaction is essential</strong>: if transect counts had varied between parcels, raw richness comparisons would be misleading. Always rarefy before comparing richness.</li>
+<li><strong>Shannon H' and Simpson 1−D agree in direction</strong> but differ in magnitude. Shannon is more sensitive to rare species; Simpson weights dominant species more heavily. Report both when the choice might matter.</li>
+<li><strong>Ordination and PERMANOVA add information that diversity indices cannot</strong>: they reveal *which* species are driving the compositional differences and whether those differences are statistically significant.</li>
+<li><strong>Native shrubs and bunchgrasses are indicators of restoration success</strong>. Parcels with longer restoration histories harbor higher cover of <em>Baccharis salicifolia</em>, <em>Nassella pulchra</em>, and <em>Salix laevigata</em>.</li>
+</ul>
+</div>
+
+<div class="discuss-box">
+<h4>&#128172; Discussion questions</h4>
+<ol>
+<li>P05 and P06 have similar disturbance scores but different Shannon diversity values. What ecological processes might explain this discrepancy beyond simple disturbance intensity?</li>
+<li>The rarefaction curves for some high-disturbance parcels plateau quickly. What does a fast-flattening curve tell you about the community structure of those parcels?</li>
+<li>NMDS axes have no inherent meaning. How would you communicate the ordination results to a non-technical audience — for example, a Pomona College land manager deciding where to prioritize restoration investment?</li>
+<li>If you were designing a follow-up field survey to validate these results, what additional variables would you measure along each transect and why?</li>
+<li>The PERMANOVA tests whether communities differ among disturbance categories. Why is it important to also run `betadisper()`? Give an example of how a significant dispersion result would change your interpretation.</li>
+</ol>
+</div>
+
+---
+
+<div class="part-divider" style="
+  background: linear-gradient(160deg, #1a3d30 0%, #2d5a3d 100%);
+  color: #fff; border-radius: 8px; padding: 28px 32px; margin: 60px 0 48px;
+  border-left: 6px solid var(--amber); position: relative; overflow: hidden;">
+<div style="font-family: 'Source Code Pro', monospace; font-size: .68rem;
+     font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+     color: var(--amber-lt); margin-bottom: 8px;">Part II</div>
+<div style="font-family: 'Libre Baskerville', serif; font-size: 1.5rem;
+     font-weight: 700; line-height: 1.2; margin-bottom: 8px;">
+  Bird Community Surveys
+</div>
+<div style="font-size: .9rem; color: rgba(255,255,255,.7); line-height: 1.6;">
+  Point-count surveys across the same 10 parcels &nbsp;&#8226;&nbsp;
+  detection-based counts &nbsp;&#8226;&nbsp; foraging guilds &nbsp;&#8226;&nbsp;
+  avian diversity indices &nbsp;&#8226;&nbsp; cross-taxa comparison
+</div>
+</div>
+
+## 10. Part II — Bird Surveys in the Wash {#birds}
+
+Birds are ideal biodiversity indicators for riparian corridors: they respond rapidly to changes in vegetation structure, are detectable by sight and sound, and their assemblages integrate conditions across large spatial scales. Point-count surveys are the standard field method — a trained observer stands at a fixed location for a fixed time and records every bird detected within a defined radius.
+
+The same 10 parcels surveyed for plants were each visited **6 times** across the breeding season (March–June). At each visit, **3 point-count stations** were established within the parcel, and all birds detected within **25 m** during a **5-minute count** were recorded with species, count, detection method (visual/auditory), and distance band. This gives us 10 parcels × 6 visits × 3 stations = 180 count records per species.
+
+<div class="callout callout-concept">
+<strong>&#128204; Why count birds differently from plants?</strong>
+Plants stay put — you can measure their cover precisely. Birds move, hide, and sing from concealed locations. Point counts capture <em>detections</em>, not true abundance. Two important consequences: (1) detection probability varies by species, habitat, and observer; and (2) the same individual can theoretically be counted at multiple stations. In a full occupancy-modeling framework (see the Camera Trap module) we would formally estimate detection probability. Here we treat detection counts as an index of relative abundance, which is appropriate for comparing across parcels where conditions are broadly similar.
+</div>
+
+### 10.1 The bird analytical pipeline
+
+<div class="pipeline-grid">
+<div class="pipeline-card">
+  <div class="pc-num">Stage 1</div>
+  <div class="pc-name">Simulate & Import</div>
+  <div class="pc-desc">Generate realistic point-count data for 35 bird species from the Wash / BFS checklist.</div>
+</div>
+<div class="pipeline-card">
+  <div class="pc-num">Stage 2</div>
+  <div class="pc-name">Detection Summary</div>
+  <div class="pc-desc">Total detections per species, visit-level completeness, naïve occupancy.</div>
+</div>
+<div class="pipeline-card p2">
+  <div class="pc-num">Stage 3</div>
+  <div class="pc-name">Richness & Rarefaction</div>
+  <div class="pc-desc">Species richness per parcel; rarefy to equal visit effort before comparing.</div>
+</div>
+<div class="pipeline-card p3">
+  <div class="pc-num">Stage 4</div>
+  <div class="pc-name">Foraging Guilds</div>
+  <div class="pc-desc">Classify species into functional foraging guilds; compare guild composition across the disturbance gradient.</div>
+</div>
+<div class="pipeline-card p4">
+  <div class="pc-num">Stage 5</div>
+  <div class="pc-name">NMDS Ordination</div>
+  <div class="pc-desc">Bray-Curtis NMDS of bird assemblages; overlay vegetation structure covariates with envfit.</div>
+</div>
+<div class="pipeline-card p5">
+  <div class="pc-num">Stage 6</div>
+  <div class="pc-name">Cross-taxa Test</div>
+  <div class="pc-desc">Does avian diversity track plant diversity across parcels? Mantel test for matrix correlation.</div>
+</div>
+</div>
+
+---
+
+## 11. Bird Data Simulation {#bird-data}
+
+### 11.1 The species pool
+
+The bird species list is drawn from the Bernard Field Station checklist and eBird records from the Claremont area, filtered to species that regularly use riparian scrub and grassland habitat.
+
+```{r bird-species-pool}
+bird_pool <- tibble(
+  species = c(
+    # Riparian obligates and specialists
+    "Empidonax traillii",         # Willow Flycatcher – riparian obligate
+    "Geothlypis trichas",         # Common Yellowthroat
+    "Cistothorus palustris",      # Marsh Wren
+    "Agelaius phoeniceus",        # Red-winged Blackbird
+    "Melospiza melodia",          # Song Sparrow
+    # Shrub/scrub species
+    "Chamaea fasciata",           # Wrentit – chaparral indicator
+    "Polioptila californica",     # California Gnatcatcher (threatened)
+    "Toxostoma redivivum",        # California Thrasher
+    "Pipilo maculatus",           # Spotted Towhee
+    "Melozone crissalis",         # California Towhee
+    "Artemisiospiza belli",       # Bell's Sparrow
+    "Passerculus sandwichensis",  # Savannah Sparrow
+    # Aerial insectivores
+    "Petrochelidon pyrrhonota",   # Cliff Swallow
+    "Hirundo rustica",            # Barn Swallow
+    "Tachycineta bicolor",        # Tree Swallow
+    "Chaetura vauxi",             # Vaux's Swift
+    # Generalist passerines / edge species
+    "Mimus polyglottos",          # Northern Mockingbird
+    "Sturnus vulgaris",           # European Starling (invasive)
+    "Passer domesticus",          # House Sparrow (invasive)
+    "Spinus psaltria",            # Lesser Goldfinch
+    "Haemorhous mexicanus",       # House Finch
+    "Poecile rufescens",          # Chestnut-backed Chickadee
+    "Sitta canadensis",           # Red-breasted Nuthatch
+    # Foragers / omnivores
+    "Corvus brachyrhynchos",      # American Crow
+    "Aphelocoma californica",     # California Scrub-Jay
+    "Turdus migratorius",         # American Robin
+    "Catharus ustulatus",         # Swainson's Thrush (migrant)
+    # Raptors / predators
+    "Buteo jamaicensis",          # Red-tailed Hawk
+    "Accipiter cooperii",         # Cooper's Hawk
+    "Falco sparverius",           # American Kestrel
+    "Tyto alba",                  # Barn Owl
+    # Ground foragers
+    "Zenaida macroura",           # Mourning Dove
+    "Geococcyx californianus",    # Greater Roadrunner
+    "Picoides pubescens",         # Downy Woodpecker
+    "Melanerpes formicivorus"     # Acorn Woodpecker
+  ),
+  # Foraging guild assignment
+  guild_bird = c(
+    rep("riparian_specialist", 5),
+    rep("shrub_scrub",         6),
+    rep("aerial_insectivore",  4),
+    rep("generalist",          7),
+    rep("omnivore",            4),
+    rep("raptor",              4),
+    rep("ground_forager",      5)
+  ),
+  # Sensitivity to disturbance: 1 = avoids disturbed, -1 = favors disturbed
+  disturbance_response = c(
+    # riparian specialists — strongly avoid disturbance
+     1,  1,  1,  0.5,  0.5,
+    # shrub/scrub — avoid disturbance
+     1,  1,  0.8, 0.6, 0.4, 0.3,
+    # aerial insectivores — neutral to slight preference for open
+    -0.2, -0.2, -0.2, -0.3,
+    # generalists — variable, invasives favor disturbance
+     0.2, -0.8, -0.8,  0.3,  0.1,  0.4,  0.5,
+    # omnivores — slight disturbance avoidance
+     0.4,  0.3,  0.2,  0.3,
+    # raptors — neutral to open habitat
+    -0.1, -0.2, -0.3, -0.1,
+    # ground foragers
+    -0.2,  0.3, 0.4, 0.2, 0.2
+  )
+)
+
+cat("Bird species in pool:", nrow(bird_pool), "\n")
+cat("Foraging guilds:", paste(unique(bird_pool$guild_bird), collapse = ", "), "\n")
+```
+
+### 11.2 Simulate point-count records
+
+```{r simulate-bird-data, cache=FALSE}
+set.seed(2025)
+
+n_visits   <- 6     # survey visits per parcel
+n_stations <- 3     # point-count stations per parcel visit
+
+simulate_pointcount <- function(parcel_id, disturbance) {
+  map_dfr(1:n_visits, function(visit) {
+    map_dfr(1:n_stations, function(station) {
+      # Detection probability for each species given this parcel's disturbance
+      # Higher disturbance_response → higher p in low-disturbance parcels
+      base_p <- 0.35 - disturbance * 0.18 * bird_pool$disturbance_response
+      det_p  <- pmin(0.85, pmax(0.02, base_p))
+
+      # Did each species occur? (Bernoulli draw)
+      detected <- rbinom(nrow(bird_pool), 1, det_p)
+
+      # Count given detection: negative binomial (overdispersed counts typical of birds)
+      counts <- ifelse(detected == 1,
+                       rnbinom(nrow(bird_pool), size = 1.5, mu = 2.8) + 1,
+                       0L)
+
+      tibble(
+        parcel_id  = parcel_id,
+        visit      = visit,
+        station    = station,
+        species    = bird_pool$species,
+        guild_bird = bird_pool$guild_bird,
+        count      = counts
+      ) %>%
+        filter(count > 0)
+    })
+  })
+}
+
+bird_raw <- parcel_meta %>%
+  pmap_dfr(function(parcel_id, restore_age_yr, disturbance) {
+    simulate_pointcount(parcel_id, disturbance)
+  })
+
+glimpse(bird_raw)
+```
+
+---
+
+## 12. Exploring the Bird Data {#bird-richness}
+
+### 12.1 Detection totals per species
+
+Which species were detected most frequently across all parcels and visits?
+
+```{r bird-detection-summary, fig.height=6}
+bird_totals <- bird_raw %>%
+  group_by(species, guild_bird) %>%
+  summarise(
+    total_count    = sum(count),
+    n_detections   = n(),           # number of station-visits with ≥ 1 bird
+    n_parcels      = n_distinct(parcel_id),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_count))
+
+guild_bird_colors <- c(
+  "riparian_specialist" = "#1e3a2f",
+  "shrub_scrub"         = "#4a7c5e",
+  "aerial_insectivore"  = "#2e7d94",
+  "generalist"          = "#8aad96",
+  "omnivore"            = "#c8832a",
+  "raptor"              = "#7a3a2a",
+  "ground_forager"      = "#a0885a"
+)
+
+ggplot(bird_totals,
+       aes(x = reorder(species, total_count),
+           y = total_count, fill = guild_bird)) +
+  geom_col(color = "white", linewidth = 0.2, alpha = 0.9) +
+  coord_flip() +
+  scale_fill_manual(values = guild_bird_colors, name = "Foraging guild") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.08))) +
+  labs(
+    title    = "Total bird detections by species across all parcels",
+    subtitle = "Summed across all visits and stations",
+    x = NULL, y = "Total individuals counted"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold",
+                                   color = "#1e3a2f", size = 13),
+    plot.subtitle   = element_text(color = "#7a7a72", size = 10),
+    axis.text.y     = element_text(face = "italic", size = 8.5),
+    legend.position = "bottom",
+    legend.key.size = unit(0.35, "cm"),
+    legend.text     = element_text(size = 9)
+  )
+```
+
+### 12.2 Build the bird community matrix
+
+For community analyses, we need a matrix of total counts per species per parcel (summed across all visits and stations).
+
+```{r bird-community-matrix}
+# Aggregate: total count per parcel × species
+bird_parcel <- bird_raw %>%
+  group_by(parcel_id, species) %>%
+  summarise(total_count = sum(count), .groups = "drop")
+
+# Pivot to wide format
+bird_wide <- bird_parcel %>%
+  pivot_wider(
+    names_from  = species,
+    values_from = total_count,
+    values_fill = 0L
+  ) %>%
+  column_to_rownames("parcel_id")
+
+dim(bird_wide)
+cat("Parcels × species:", paste(dim(bird_wide), collapse = " × "), "\n")
+```
+
+### 12.3 Bird species richness per parcel
+
+```{r bird-richness-plot, fig.height=4}
+bird_richness <- tibble(
+  parcel_id = rownames(bird_wide),
+  S_birds   = specnumber(bird_wide)
+) %>%
+  left_join(parcel_meta, by = "parcel_id")
+
+ggplot(bird_richness,
+       aes(x = reorder(parcel_id, -S_birds),
+           y = S_birds, fill = disturbance)) +
+  geom_col(color = "#1e3a2f", linewidth = 0.3) +
+  geom_text(aes(label = S_birds), vjust = -0.4,
+            family = "mono", size = 3.5, color = "#1e3a2f") +
+  scale_fill_viridis_c(option = "viridis", direction = -1,
+                       name = "Disturbance\nscore") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+  labs(
+    title    = "Bird species richness per parcel",
+    subtitle = "Color indicates relative disturbance level",
+    x = NULL, y = "Species richness (S)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10),
+    axis.text.x   = element_text(face = "bold")
+  )
+```
+
+### 12.4 Rarefaction of bird counts
+
+Bird rarefaction standardizes for sampling effort — here, total individuals counted per parcel.
+
+```{r bird-rarefaction, fig.height=6, fig.width=9}
+bird_int <- round(bird_wide)
+bird_std_n <- min(rowSums(bird_int))
+
+bird_rare_list <- rarecurve(bird_int, step = 10,
+                             sample = bird_std_n,
+                             label = FALSE, plot = FALSE)
+
+bird_rare_df <- imap_dfr(bird_rare_list, function(curve, idx) {
+  tibble(
+    parcel_id = rownames(bird_int)[idx],
+    n_indiv   = as.integer(attr(curve, "Subsample")),
+    richness  = as.numeric(curve)
+  )
+}) %>%
+  left_join(parcel_meta, by = "parcel_id")
+
+ggplot(bird_rare_df,
+       aes(x = n_indiv, y = richness,
+           color = disturbance, group = parcel_id)) +
+  geom_line(linewidth = 0.9, alpha = 0.85) +
+  geom_vline(xintercept = bird_std_n, linetype = "dashed",
+             color = "#c8832a", linewidth = 0.7) +
+  annotate("text", x = bird_std_n + 8, y = 2,
+           label = paste0("Standard\nn = ", bird_std_n),
+           size = 3, color = "#c8832a", hjust = 0, fontface = "italic") +
+  scale_color_viridis_c(option = "viridis", direction = -1,
+                        name = "Disturbance") +
+  labs(
+    title    = "Bird rarefaction curves — Pomona College Wash parcels",
+    subtitle = "Expected richness as a function of accumulated individual count",
+    x = "Accumulated count (individuals)",
+    y = "Expected bird species richness"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10)
+  )
+```
+
+```{r bird-rarefied-richness}
+bird_rare_S <- rarefy(bird_int, sample = bird_std_n)
+
+tibble(
+  parcel_id  = names(bird_rare_S),
+  rarefied_S = round(as.numeric(bird_rare_S), 1),
+  raw_S      = specnumber(bird_wide)
+) %>%
+  left_join(parcel_meta, by = "parcel_id") %>%
+  arrange(disturbance) %>%
+  kbl(caption = paste0("Rarefied bird richness at n = ", bird_std_n,
+                       " individuals per parcel"),
+      digits = 1) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+### 12.5 Bird diversity indices
+
+```{r bird-diversity, fig.height=5, fig.width=9}
+bird_div <- tibble(
+  parcel_id  = rownames(bird_wide),
+  H_birds    = diversity(bird_wide, index = "shannon"),
+  D_birds    = diversity(bird_wide, index = "simpson"),
+  S_birds    = specnumber(bird_wide),
+  J_birds    = H_birds / log(S_birds)
+) %>%
+  left_join(parcel_meta, by = "parcel_id") %>%
+  pivot_longer(cols = c(H_birds, D_birds, J_birds),
+               names_to = "index", values_to = "value") %>%
+  mutate(index = recode(index,
+    "H_birds" = "Shannon H'",
+    "D_birds" = "Simpson 1−D",
+    "J_birds"  = "Pielou's J (evenness)"
+  ))
+
+ggplot(bird_div,
+       aes(x = reorder(parcel_id, disturbance),
+           y = value, fill = disturbance)) +
+  geom_col(color = "#1e3a2f", linewidth = 0.25, alpha = 0.9) +
+  facet_wrap(~ index, scales = "free_y", ncol = 3) +
+  scale_fill_viridis_c(option = "viridis", direction = -1,
+                       name = "Disturbance") +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(
+    title    = "Avian diversity indices across Wash parcels",
+    subtitle = "Parcels ordered from least (P01) to most (P10) disturbed",
+    x = NULL, y = "Index value"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10),
+    strip.text    = element_text(face = "bold"),
+    legend.position = "right"
+  )
+```
+
+---
+
+## 13. Foraging Guild Composition {#bird-guilds}
+
+Diversity indices collapse all species into a single number. But *which* species are present matters biologically — a parcel dominated by invasive European Starlings is ecologically very different from one with equivalent richness driven by riparian specialists. **Foraging guilds** group species by how they feed, providing a functional lens on community change.
+
+### 13.1 Guild proportions across the disturbance gradient
+
+```{r bird-guild-composition, fig.height=5}
+bird_guild_cover <- bird_raw %>%
+  group_by(parcel_id, guild_bird) %>%
+  summarise(total_count = sum(count), .groups = "drop") %>%
+  group_by(parcel_id) %>%
+  mutate(rel_count = total_count / sum(total_count)) %>%
+  ungroup() %>%
+  left_join(parcel_meta, by = "parcel_id") %>%
+  mutate(
+    parcel_id  = fct_reorder(parcel_id, disturbance),
+    guild_bird = factor(guild_bird, levels = c(
+      "riparian_specialist", "shrub_scrub", "aerial_insectivore",
+      "omnivore", "generalist", "ground_forager", "raptor"
+    ))
+  )
+
+ggplot(bird_guild_cover,
+       aes(x = parcel_id, y = rel_count, fill = guild_bird)) +
+  geom_col(color = "white", linewidth = 0.25) +
+  scale_fill_manual(
+    values = guild_bird_colors,
+    labels = c(
+      "riparian_specialist" = "Riparian specialist",
+      "shrub_scrub"         = "Shrub / scrub",
+      "aerial_insectivore"  = "Aerial insectivore",
+      "omnivore"            = "Omnivore",
+      "generalist"          = "Generalist",
+      "ground_forager"      = "Ground forager",
+      "raptor"              = "Raptor"
+    ),
+    name = "Foraging guild"
+  ) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title    = "Avian community composition by foraging guild",
+    subtitle = "Parcels ordered from least (P01) to most (P10) disturbed",
+    x = "Parcel (increasing disturbance →)", y = "Relative abundance"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold",
+                                   color = "#1e3a2f", size = 13),
+    plot.subtitle   = element_text(color = "#7a7a72", size = 10),
+    legend.position = "bottom",
+    legend.key.size = unit(0.4, "cm")
+  ) +
+  guides(fill = guide_legend(nrow = 2))
+```
+
+<div class="callout callout-tip">
+<strong>&#127775; The riparian specialist signal</strong>
+Species like Willow Flycatcher (<em>Empidonax traillii</em>), Common Yellowthroat (<em>Geothlypis trichas</em>), and Song Sparrow (<em>Melospiza melodia</em>) are tightly dependent on structurally complex riparian vegetation with native shrubs and dense understory. Their proportional abundance in the guild composition plot is a direct readout of habitat quality — watch for their decline across the disturbance gradient.
+</div>
+
+### 13.2 Indicator species: which birds best characterize each disturbance class?
+
+We can ask, for each species, whether its detection rate differs significantly between low- and high-disturbance parcels using a simple Wilcoxon rank-sum test applied across parcels.
+
+```{r indicator-species}
+library(broom)
+
+# Classify parcels into low vs. high disturbance (top 5 / bottom 5)
+parcel_dist_class <- parcel_meta %>%
+  mutate(dist_class = if_else(disturbance <= 0.5, "low", "high"))
+
+# Per-species detection rate per parcel (mean count per station-visit)
+bird_rate <- bird_raw %>%
+  group_by(parcel_id, species) %>%
+  summarise(
+    mean_count = sum(count) / (n_visits * n_stations),
+    .groups = "drop"
+  ) %>%
+  left_join(parcel_dist_class, by = "parcel_id")
+
+# Wilcoxon test for each species (low vs. high disturbance)
+indicator_tests <- bird_rate %>%
+  group_by(species) %>%
+  group_modify(~ {
+    low  <- .x$mean_count[.x$dist_class == "low"]
+    high <- .x$mean_count[.x$dist_class == "high"]
+    if (length(unique(c(low, high))) < 2) {
+      return(tibble(p_value = NA_real_, W = NA_real_,
+                    mean_low = mean(low), mean_high = mean(high)))
+    }
+    wt <- wilcox.test(low, high, exact = FALSE)
+    tibble(p_value = wt$p.value, W = wt$statistic,
+           mean_low = mean(low), mean_high = mean(high))
+  }) %>%
+  ungroup() %>%
+  left_join(select(bird_pool, species, guild_bird), by = "species") %>%
+  mutate(
+    direction = if_else(mean_low > mean_high,
+                        "more in low disturbance", "more in high disturbance"),
+    p_adj = p.adjust(p_value, method = "BH")   # Benjamini-Hochberg FDR correction
+  ) %>%
+  filter(!is.na(p_value)) %>%
+  arrange(p_adj)
+
+# Show significant indicators (FDR-corrected p < 0.10)
+indicator_tests %>%
+  filter(p_adj < 0.10) %>%
+  select(species, guild_bird, mean_low, mean_high, direction, p_adj) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3))) %>%
+  kbl(
+    caption = "Indicator species: significant differences between low- and high-disturbance parcels (FDR q < 0.10)",
+    col.names = c("Species", "Guild", "Mean rate (low dist.)",
+                  "Mean rate (high dist.)", "Direction", "FDR q")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+<div class="callout callout-formula">
+<strong>&#9881;&#65039; Multiple testing and FDR correction</strong>
+We are running one Wilcoxon test per species (35 tests). By chance alone, about 5% of tests would be significant at p &lt; 0.05 — roughly 1–2 false positives. The Benjamini-Hochberg procedure controls the **false discovery rate (FDR)**: among all tests called significant, at most 10% (q &lt; 0.10) are expected to be false positives. Always apply multiple-testing correction when comparing many species simultaneously.
+</div>
+
+---
+
+## 14. Bird Community Ordination {#bird-ordination}
+
+### 14.1 NMDS of bird assemblages
+
+```{r bird-nmds, results='hide', cache=TRUE}
+bird_hel <- decostand(bird_wide, method = "hellinger")
+
+set.seed(77)
+bird_nmds <- metaMDS(
+  bird_hel,
+  distance = "bray",
+  k        = 2,
+  trymax   = 100,
+  autotransform = FALSE
+)
+```
+
+```{r bird-nmds-stress}
+cat("Bird NMDS stress:", round(bird_nmds$stress, 4), "\n")
+```
+
+### 14.2 Overlay vegetation structure as environmental vectors
+
+`envfit()` fits environmental variables as vectors onto the ordination. Variables that explain more of the community variation are drawn as longer arrows pointing in the direction of maximum increase.
+
+```{r bird-envfit, fig.height=7, fig.width=8}
+# Environmental variables: plant diversity, disturbance, restoration age,
+# and native cover fraction from Part I
+native_cover_frac <- transect_data %>%
+  group_by(parcel_id) %>%
+  summarise(
+    native_frac = sum(cover_pct[guild %in% c("native_shrub",
+                                              "native_grass",
+                                              "native_forb")]) /
+                  sum(cover_pct),
+    shrub_cover = sum(cover_pct[guild == "native_shrub"]) / sum(cover_pct),
+    .groups = "drop"
+  )
+
+env_vars <- parcel_meta %>%
+  left_join(native_cover_frac, by = "parcel_id") %>%
+  left_join(
+    tibble(
+      parcel_id = rownames(bird_wide),
+      H_plants  = diversity(comm_wide, index = "shannon")
+    ),
+    by = "parcel_id"
+  ) %>%
+  select(parcel_id, disturbance, restore_age_yr,
+         native_frac, shrub_cover, H_plants) %>%
+  column_to_rownames("parcel_id")
+
+# Reorder rows to match ordination
+env_vars <- env_vars[rownames(bird_wide), ]
+
+set.seed(42)
+ef <- envfit(bird_nmds, env_vars, permutations = 999, na.rm = TRUE)
+print(ef)
+```
+
+```{r bird-nmds-plot, fig.height=7, fig.width=8}
+bird_site_scores <- scores(bird_nmds, display = "sites") %>%
+  as.data.frame() %>%
+  rownames_to_column("parcel_id") %>%
+  left_join(parcel_meta, by = "parcel_id")
+
+bird_spp_scores <- scores(bird_nmds, display = "species") %>%
+  as.data.frame() %>%
+  rownames_to_column("species") %>%
+  left_join(bird_pool, by = "species") %>%
+  mutate(vec_len = sqrt(NMDS1^2 + NMDS2^2)) %>%
+  slice_max(vec_len, n = 10)
+
+# envfit arrow coordinates
+ef_df <- as.data.frame(ef$vectors$arrows * sqrt(ef$vectors$r)) %>%
+  rownames_to_column("variable") %>%
+  mutate(variable = recode(variable,
+    "disturbance"    = "Disturbance",
+    "restore_age_yr" = "Restoration age",
+    "native_frac"    = "Native cover",
+    "shrub_cover"    = "Shrub cover",
+    "H_plants"       = "Plant diversity H'"
+  ))
+
+ggplot() +
+  # Species markers
+  geom_point(data = bird_spp_scores,
+             aes(x = NMDS1, y = NMDS2, color = guild_bird),
+             shape = 3, size = 2, stroke = 1.1, alpha = 0.65) +
+  geom_text_repel(data = bird_spp_scores,
+                  aes(x = NMDS1, y = NMDS2, label = species,
+                      color = guild_bird),
+                  size = 2.6, fontface = "italic", max.overlaps = 15,
+                  segment.color = "grey70", segment.size = 0.3) +
+  # Site points
+  geom_point(data = bird_site_scores,
+             aes(x = NMDS1, y = NMDS2, fill = disturbance,
+                 size = restore_age_yr),
+             shape = 21, color = "#1e3a2f", stroke = 0.8, alpha = 0.9) +
+  geom_text_repel(data = bird_site_scores,
+                  aes(x = NMDS1, y = NMDS2, label = parcel_id),
+                  size = 3.5, fontface = "bold", color = "#1e3a2f",
+                  nudge_y = 0.04) +
+  # envfit arrows
+  geom_segment(data = ef_df,
+               aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2),
+               arrow = arrow(length = unit(0.22, "cm"), type = "closed"),
+               color = "#c8832a", linewidth = 0.7, alpha = 0.85) +
+  geom_text_repel(data = ef_df,
+                  aes(x = NMDS1, y = NMDS2, label = variable),
+                  color = "#c8832a", size = 3, fontface = "bold",
+                  segment.alpha = 0) +
+  scale_fill_viridis_c(option = "viridis", direction = -1,
+                       name = "Disturbance") +
+  scale_color_manual(values = guild_bird_colors, name = "Foraging guild") +
+  scale_size_continuous(name = "Restore age\n(yr)", range = c(4, 10)) +
+  labs(
+    title    = "Bird community NMDS with vegetation covariates",
+    subtitle = paste0("Stress = ", round(bird_nmds$stress, 3),
+                      "  |  Orange arrows = envfit vectors (p < 0.05)"),
+    x = "NMDS 1", y = "NMDS 2"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10),
+    legend.position = "right",
+    panel.grid    = element_line(color = "#d4e6da", linewidth = 0.3)
+  )
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; How to read `envfit` vectors</strong>
+Each orange arrow points in the direction of maximum increase for that environmental variable in the ordination space. The arrow length is proportional to the correlation between that variable and the ordination axes (longer = stronger). A permutation test (999 permutations) tests whether the correlation is stronger than expected by chance. If "Native cover" and "Plant diversity H'" both point in the same direction as the low-disturbance parcels, that is strong evidence that vegetation structure drives bird community composition.
+</div>
+
+---
+
+## 15. Cross-taxa Analysis: Do Plant and Bird Communities Track Each Other? {#cross-taxa}
+
+A fundamental question in conservation biology is whether protecting plant diversity also protects animal diversity — the **surrogate species hypothesis**. If the answer is yes, we can use easily-surveyed plants as proxies for harder-to-survey animals. We test this in two ways:
+
+1. **Correlation of diversity indices** — does Shannon H' for plants correlate with Shannon H' for birds across parcels?
+2. **Mantel test** — are plant community dissimilarities correlated with bird community dissimilarities? (A matrix-level test that accounts for all pairwise relationships.)
+
+### 15.1 Diversity–diversity correlation
+
+```{r diversity-correlation, fig.height=4.5, fig.width=6}
+plant_div_wide <- div_df %>%
+  pivot_wider(names_from = index, values_from = value) %>%
+  select(parcel_id, H_plants = `Shannon H'`)
+
+bird_div_wide <- bird_div %>%
+  pivot_wider(names_from = index, values_from = value) %>%
+  select(parcel_id, H_birds = `Shannon H'`)
+
+div_compare <- plant_div_wide %>%
+  left_join(bird_div_wide, by = "parcel_id") %>%
+  left_join(parcel_meta, by = "parcel_id")
+
+ggplot(div_compare,
+       aes(x = H_plants, y = H_birds, label = parcel_id,
+           color = disturbance)) +
+  geom_point(size = 5, alpha = 0.9) +
+  geom_smooth(method = "lm", se = TRUE,
+              color = "#c8832a", fill = "#fdf8f0", linewidth = 0.8) +
+  geom_text_repel(size = 3.2, fontface = "bold", color = "#1e3a2f") +
+  scale_color_viridis_c(option = "viridis", direction = -1,
+                        name = "Disturbance") +
+  labs(
+    title    = "Plant vs. bird Shannon diversity across Wash parcels",
+    subtitle = "Each point = one parcel; line = OLS regression with 95% CI",
+    x = "Plant Shannon H'",
+    y = "Bird Shannon H'"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10)
+  )
+
+cor_result <- cor.test(div_compare$H_plants, div_compare$H_birds,
+                       method = "pearson")
+cat(sprintf("\nPearson r = %.3f  (95%% CI: %.3f – %.3f)  p = %.4f\n",
+            cor_result$estimate,
+            cor_result$conf.int[1],
+            cor_result$conf.int[2],
+            cor_result$p.value))
+```
+
+### 15.2 Mantel test: are dissimilarity matrices correlated?
+
+The Mantel test asks whether parcels that are floristically similar (small plant Bray-Curtis distance) also tend to have similar bird communities (small bird Bray-Curtis distance). It tests this using permutations of the matrix labels.
+
+```{r mantel-test}
+# Distance matrices for plants and birds (Bray-Curtis on Hellinger-transformed data)
+plant_dist <- vegdist(decostand(comm_wide, method = "hellinger"),
+                      method = "bray")
+bird_dist  <- vegdist(bird_hel, method = "bray")
+
+# Ensure same row/column order
+plant_dist <- as.dist(as.matrix(plant_dist)[rownames(bird_wide),
+                                             rownames(bird_wide)])
+
+set.seed(123)
+mantel_result <- mantel(plant_dist, bird_dist,
+                        method = "pearson",
+                        permutations = 999)
+print(mantel_result)
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; Interpreting the Mantel test</strong>
+The Mantel statistic r measures the correlation between corresponding elements of the two distance matrices — one entry per parcel pair. If plant community dissimilarity consistently predicts bird community dissimilarity, r will be positive and significantly different from zero. A significant positive Mantel r would support using plant diversity surveys as a proxy for bird diversity in the Wash restoration program.
+</div>
+
+### 15.3 Side-by-side summary: plants vs. birds
+
+```{r cross-taxa-summary-table}
+bird_div_sum <- tibble(
+  parcel_id = rownames(bird_wide),
+  H_birds   = diversity(bird_wide, index = "shannon"),
+  S_birds   = specnumber(bird_wide),
+  rarefied_birds = round(as.numeric(rarefy(bird_int, bird_std_n)), 1)
+) %>%
+  left_join(parcel_meta, by = "parcel_id")
+
+cross_tbl <- plant_div_wide %>%
+  left_join(bird_div_sum, by = "parcel_id") %>%
+  left_join(
+    tibble(parcel_id = names(rare_S),
+           S_plants  = specnumber(comm_wide),
+           rarefied_plants = round(as.numeric(rare_S), 1)),
+    by = "parcel_id"
+  ) %>%
+  arrange(disturbance) %>%
+  select(parcel_id, disturbance,
+         S_plants, rarefied_plants, H_plants,
+         S_birds, rarefied_birds, H_birds) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+cross_tbl %>%
+  kbl(
+    caption = "Side-by-side plant and bird diversity metrics by parcel",
+    col.names = c("Parcel", "Disturbance",
+                  "Plant S", "Plant S (rarefied)", "Plant H'",
+                  "Bird S", "Bird S (rarefied)", "Bird H'")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE) %>%
+  add_header_above(c(" " = 2,
+                     "Plants (Part I)" = 3,
+                     "Birds (Part II)" = 3)) %>%
+  column_spec(2, color = "white",
+              background = spec_color(cross_tbl$disturbance,
+                                      palette = "viridis",
+                                      direction = -1))
+```
+
+---
+
+## 16. Summary and Interpretation {#summary-combined}
+
+```{r combined-summary-figure, fig.height=5, fig.width=9}
+# Final synthesis figure: plant H' and bird H' on same axis, across disturbance
+ggplot(div_compare, aes(x = disturbance)) +
+  geom_line(aes(y = H_plants, color = "Plant H'"), linewidth = 1.1) +
+  geom_point(aes(y = H_plants, color = "Plant H'"), size = 3.5) +
+  geom_line(aes(y = H_birds, color = "Bird H'"),
+            linewidth = 1.1, linetype = "dashed") +
+  geom_point(aes(y = H_birds, color = "Bird H'"), size = 3.5, shape = 17) +
+  scale_color_manual(
+    values = c("Plant H'" = "#1e3a2f", "Bird H'" = "#2e7d94"),
+    name   = NULL
+  ) +
+  scale_x_continuous(
+    breaks = parcel_meta$disturbance,
+    labels = parcel_meta$parcel_id
+  ) +
+  labs(
+    title    = "Plant and bird Shannon diversity across the disturbance gradient",
+    subtitle = "Both taxa decline with increasing disturbance, but at different rates",
+    x = "Parcel (increasing disturbance →)", y = "Shannon H'"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold",
+                                   color = "#1e3a2f", size = 13),
+    plot.subtitle   = element_text(color = "#7a7a72", size = 10),
+    legend.position = "top",
+    axis.text.x     = element_text(face = "bold", size = 9)
+  )
+```
+
+<div class="key-box">
+<h4>Key takeaways — Part II and combined</h4>
+<ul>
+<li><strong>Bird richness and diversity decline with disturbance</strong>, parallel to the plant pattern — but the slope differs. Birds are more mobile and some generalists compensate for habitat degradation, buffering the decline.</li>
+<li><strong>Foraging guild composition is a sensitive indicator</strong>. The loss of riparian specialists (Willow Flycatcher, Common Yellowthroat) begins before overall richness declines — guild composition can detect degradation that richness misses.</li>
+<li><strong>Native vegetation structure drives bird assemblages.</strong> The <code>envfit</code> vectors for native cover and plant diversity point toward low-disturbance parcels in the NMDS, confirming that vegetation restoration directly benefits avian communities.</li>
+<li><strong>The Mantel test links the two surveys.</strong> A significant positive r means that plant and bird dissimilarity matrices are correlated — parcels floristically alike host similar bird communities. This supports using vegetation as a surrogate for avian biodiversity monitoring.</li>
+<li><strong>Rarefaction matters for counts too.</strong> Bird counts vary among parcels because some parcels had more detectable birds. Rarefied richness gives a fairer comparison than raw species counts.</li>
+<li><strong>FDR correction is essential for indicator species analysis.</strong> With 35 simultaneous tests, uncorrected p-values inflate false positives. Always report adjusted q-values alongside raw p-values.</li>
+</ul>
+</div>
+
+<div class="discuss-box">
+<h4>&#128172; Discussion questions — Part II and combined</h4>
+<ol>
+<li>The California Gnatcatcher (<em>Polioptila californica</em>) is listed as Threatened under the Endangered Species Act. If it appeared in low-disturbance parcels in the indicator species analysis, how would that change the management implications of this survey?</li>
+<li>Point counts record detections, not true abundance. How might imperfect detection probability bias your estimates of species richness, particularly for secretive species like wrens and rails?</li>
+<li>The Mantel test found a significant correlation between plant and bird dissimilarity matrices. Does this mean plants *cause* bird community composition, or could both be responding independently to the same underlying disturbance gradient? How would you design a study to distinguish these hypotheses?</li>
+<li>Invasive European Starlings and House Sparrows increased in proportion with disturbance in the guild composition plot. Why might this matter for native cavity-nesting species like woodpeckers? What management action could address this?</li>
+<li>This project used two different survey protocols (transect cover vs. point counts) for two taxa. What are the practical tradeoffs of standardizing both to point counts, or both to belt transects? Which would you recommend for a long-term monitoring program and why?</li>
+</ol>
+</div>
+
+---
+
+## References
+
+Bray, J. R., and J. T. Curtis. 1957. An ordination of the upland forest communities of southern Wisconsin. *Ecological Monographs* 27:325–349.
+
+Legendre, P., and M. Fortin. 1989. Spatial pattern and ecological analysis. *Vegetatio* 80:107–138.
+
+MacKenzie, D. I., et al. 2002. Estimating site occupancy rates when detection probabilities are less than one. *Ecology* 83:2248–2255.
+
+Mantel, N. 1967. The detection of disease clustering and a generalized regression approach. *Cancer Research* 27:209–220.
+
+McGill, B. J., et al. 2007. Species abundance distributions: moving beyond single prediction theories to integration within an ecological framework. *Ecology Letters* 10:995–1015.
+
+Oksanen, J., et al. 2022. *vegan: Community Ecology Package*. R package version 2.6. https://CRAN.R-project.org/package=vegan
+
+Preston, F. W. 1948. The commonness and rarity of species. *Ecology* 29:254–283.
+
+Ralph, C. J., G. R. Geupel, P. Pyle, T. E. Martin, and D. F. DeSante. 1993. *Handbook of Field Methods for Monitoring Landbirds*. USDA Forest Service General Technical Report PSW-GTR-144.
+
+Shannon, C. E. 1948. A mathematical theory of communication. *Bell System Technical Journal* 27:379–423.
+
+Simpson, E. H. 1949. Measurement of diversity. *Nature* 163:688.
+
+<div class="page-footer">
+EA030 RTricks &nbsp;<span class="divider">|</span>&nbsp; Prof. Marc Los Huertos &nbsp;<span class="divider">|</span>&nbsp; Pomona College &nbsp;<span class="divider">|</span>&nbsp; Activity 15 &nbsp;<span class="divider">|</span>&nbsp; <a href="../index.html">Back to index</a>
+</div>
