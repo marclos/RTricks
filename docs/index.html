@@ -431,8 +431,7 @@ pre, .callout, table, .goals-box { page-break-inside: avoid; }
 <!--    tag    : small label shown at bottom of card              -->
 <!--    href   : URL or relative path to the module               -->
 <!--             Leave as "" until the page exists                -->
-<!--    status : "ready" (default) | "coming soon"                -->
-<!--             Set to "coming soon" to grey the card out        -->
+<!--    status : "ready" | "1st Draft" | "coming soon"            -->
 <!--                                                              -->
 <!--  To add a card : add a list() entry to any section           -->
 <!--  To add a section : copy a section block, give it a new id,  -->
@@ -503,7 +502,7 @@ font-size: .88rem; color: var(--charcoal); flex-grow: 1; margin: 0;
 }
 .card-tag {
 display: inline-block;
-margin-top: auto; padding-top: 13px; 
+margin-top: auto; padding-top: 13px;
 font-family: 'Source Code Pro', monospace; font-size: .67rem; letter-spacing: .1em; text-transform: uppercase;
 padding: 13px 7px 2px; border-radius: 2px; background: var(--mist); color: var(--fern); font-weight: 600; align-self: flex-start;
 }
@@ -863,7 +862,7 @@ lubridate and tsibble.
 Change Point and Shifting Baseline Analysis
 </div>
 <div class="card-desc">
-Sequential CUSUM monitoring and breakpoint confidence intervals
+Sequential CUSUM monitoring and breakpoint confidence intervals.
 </div>
 <p><span class="card-tag">changepoint</span></p>
 </div>
@@ -917,7 +916,7 @@ cleaner, type-safe pipelines.
 <p><span class="card-tag">purrr</span></p>
 </div>
 <div class="card">
-<a class="card-overlay" href="RGuides/R09_Tidyverse_Wrangling.htm" aria-label="Tidyverse Data Wrangling"></a>
+<a class="card-overlay" href="RGuides/R09_Tidyverse_Wrangling.html" aria-label="Tidyverse Data Wrangling"></a>
 <span class="card-icon">🔧</span>
 <div class="card-title">
 Tidyverse Data Wrangling
@@ -969,17 +968,20 @@ machines.
 Sort through R Error Headaches
 </div>
 <div class="card-desc">
-TBD.
+Decode common R error messages, trace the source of warnings, and build
+a systematic debugging strategy.
 </div>
 <p><span class="card-tag">coming soon</span></p>
 </div>
 <div class="card coming-soon">
-<span class="card-icon">🚧</span>
+<span class="card-icon">📅</span>
 <div class="card-title">
 Dealing with Dates
 </div>
 <div class="card-desc">
-TBD.
+Parse, manipulate, and plot date-time data with lubridate. Covers
+POSIXct vs Date, time zones, floor_date(), and sensor timestamp
+correction.
 </div>
 <p><span class="card-tag">coming soon</span></p>
 </div>
@@ -1015,7 +1017,9 @@ Water Quality.
 Glassware Precision
 </div>
 <div class="card-desc">
-.
+Quantifying measurement uncertainty in volumetric glassware. Repeated
+weighing trials, propagation of error, and reporting precision in lab
+notebooks.
 </div>
 <p><span class="card-tag">coming soon</span></p>
 </div>
@@ -1030,7 +1034,7 @@ Thirty years of daily fine particulate matter (PM2.5) for a US county.
 Download EPA AQS data, clean monitoring records, visualize long-term
 trends, compute monthly means with 95% CIs by decade, and evaluate
 exceedances of the 24-hr NAAQS (35 µg/m³). Includes environmental
-justice discussion. Helper functions in 06_EPA_PM25/.
+justice discussion.
 </div>
 <p><span class="card-tag">air quality</span></p>
 </div>
@@ -1066,7 +1070,9 @@ comparing land-use treatments.
 pHake Lake Stratification
 </div>
 <div class="card-desc">
-.
+Seasonal temperature and dissolved-oxygen profiles in a small lake.
+Thermocline detection, Schmidt stability index, and comparison of
+stratification across years.
 </div>
 <p><span class="card-tag">coming soon</span></p>
 </div>
@@ -1082,22 +1088,22 @@ spatial variation.
 <p><span class="card-tag">coming soon</span></p>
 </div>
 <div class="card">
-<a class="card-overlay" href="Activities/Biodiversity_Surveys.html" aria-label="Biodiversity Surveys"></a>
+<a class="card-overlay" href="Activities/A15_Biodiversity_Surveys.html" aria-label="Biodiversity Surveys"></a>
 <span class="card-icon">🦋</span>
 <div class="card-title">
 Biodiversity Surveys
 </div>
 <div class="card-desc">
-Species richness, rarefaction curves, and community composition with
-vegan.
+Species richness, rarefaction curves, NMDS ordination, and PERMANOVA for
+plant and bird communities in the Pomona College Wash. Uses vegan.
 </div>
-<p><span class="card-tag">project</span></p>
+<p><span class="card-tag">ecology</span></p>
 </div>
 <div class="card">
-<a class="card-overlay" href="Activities/A08_Camera_Trap.html" aria-label="Biodiversity"></a>
+<a class="card-overlay" href="Activities/A08_Camera_Trap.html" aria-label="Camera Traps"></a>
 <span class="card-icon">📷</span>
 <div class="card-title">
-Biodiversity
+Camera Traps
 </div>
 <div class="card-desc">
 Camera traps record who was present, when, and what they were doing
@@ -1108,20 +1114,22 @@ quantitative methods: chi-square/Fisher tests of diel behavior shifts,
 kernel-density activity overlap, rarefaction-corrected diversity, and
 single-season occupancy modeling.
 </div>
-<p><span class="card-tag">project</span></p>
-</div>
-<div class="card coming-soon">
-<span class="card-icon">🌡️</span>
-<div class="card-title">
-Climate Data &amp; Trends
-</div>
-<div class="card-desc">
-Downloading NOAA/EPA data, trend detection, and visualising temperature
-and precipitation records.
-</div>
-<p><span class="card-tag">coming soon</span></p>
+<p><span class="card-tag">wildlife</span></p>
 </div>
 <div class="card">
+<a class="card-overlay" href="Activities/A14_Public_Space_Temperature.html" aria-label="Temperature in Public Spaces"></a>
+<span class="card-icon">🌡️</span>
+<div class="card-title">
+Temperature in Public Spaces
+</div>
+<div class="card-desc">
+Comparing sun and shade temperatures in parks and public spaces across
+Southern California using paired iButton sensors. Analyze shade
+treatment effects with a linear mixed-effects model.
+</div>
+<p><span class="card-tag">climate</span></p>
+</div>
+<div class="card coming-soon">
 <span class="card-icon">🌦️</span>
 <div class="card-title">
 Regional Climate Trends
@@ -1131,7 +1139,7 @@ Analyzing long-term temperature and precipitation patterns across
 Southern California using PRISM and NOAA station data. Trend detection
 with Mann-Kendall tests and visualization of seasonal shifts.
 </div>
-<p><span class="card-tag">climate</span></p>
+<p><span class="card-tag">coming soon</span></p>
 </div>
 <div class="card">
 <a class="card-overlay" href="Activities/A13_Urban_Canopy_Temperature_Analysis.html" aria-label="Urban Heat Island"></a>
@@ -1143,7 +1151,7 @@ Urban Heat Island
 Raster data from Landsat, land-cover classification, and surface
 temperature analysis.
 </div>
-<p><span class="card-tag">project</span></p>
+<p><span class="card-tag">remote sensing</span></p>
 </div>
 <div class="card coming-soon">
 <span class="card-icon">📍</span>
