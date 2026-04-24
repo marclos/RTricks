@@ -1,0 +1,943 @@
+---
+title: "Soil Carbon Analysis"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/Activities/A17_Soil_Carbon.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = TRUE,
+  warning   = FALSE,
+  message   = FALSE,
+  fig.width  = 8,
+  fig.height = 5,
+  fig.align  = "center"
+)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+h4 {
+  font-family: 'Source Code Pro', monospace; font-size: .9rem; font-weight: 600;
+  color: var(--charcoal); margin-top: 20px; margin-bottom: 4px;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+ol, ul { padding-left: 1.5em; margin-bottom: 1em; }
+li { margin-bottom: .35em; }
+blockquote {
+  border-left: 4px solid var(--sage); margin: 1.2em 0;
+  padding: .5em 1em; background: var(--white);
+  border-radius: 0 5px 5px 0; font-size: .94em; color: var(--charcoal);
+}
+
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-new     { border-color: #1565c0;      background: #f0f4ff; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+.outcomes-box {
+  background: var(--white); border: 1px solid var(--mist);
+  border-left: 5px solid var(--fern); border-radius: 0 6px 6px 0;
+  padding: 18px 22px; margin: 0 0 2.5em;
+}
+.outcomes-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--forest);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.outcomes-box ol { padding-left: 1.4em; }
+.outcomes-box li { margin-bottom: .45em; font-size: .92em; }
+
+.pipeline-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px; margin: 1.6em 0 2em;
+}
+.pipeline-card {
+  background: var(--white); border: 1px solid var(--mist);
+  border-top: 3px solid var(--fern); border-radius: 4px;
+  padding: 12px 14px; box-shadow: var(--card-shadow);
+}
+.pipeline-card.s2 { border-top-color: var(--amber); }
+.pipeline-card.s3 { border-top-color: #2e7d94; }
+.pipeline-card.s4 { border-top-color: #5d4037; }
+.pipeline-card.s5 { border-top-color: #6a1b9a; }
+.pc-num {
+  font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--dust); margin-bottom: 4px;
+}
+.pc-name {
+  font-family: 'Libre Baskerville', serif; font-size: .93rem;
+  font-weight: 700; color: var(--forest); margin-bottom: 3px;
+}
+.pc-desc { font-size: .82rem; color: var(--charcoal); line-height: 1.4; }
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); vertical-align: top; }
+
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box strong { color: var(--amber-lt); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+.discuss-box {
+  background: var(--parchment); border: 1px solid var(--mist);
+  border-radius: 6px; padding: 18px 22px; margin: 2em 0; font-size: .92em;
+}
+.discuss-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--moss);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.discuss-box ol { padding-left: 1.4em; }
+.discuss-box li { margin-bottom: .5em; }
+
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; RTricks &mdash; Activity 17</div>
+<h1>Soil Carbon Analysis: <span>Depth Profiles and Land-Use Comparisons</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College &nbsp;&bull;&nbsp; Environmental Analysis</p>
+<a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
+</div>
+
+<div class="section-nav">
+<a href="#intro">Introduction</a>
+<a href="#setup">Setup & Data</a>
+<a href="#import">Import & Clean</a>
+<a href="#profiles">Depth Profiles</a>
+<a href="#models">Fitting Models</a>
+<a href="#compare">Land-Use Comparison</a>
+<a href="#stocks">Carbon Stocks</a>
+<a href="#stats">Inferential Tests</a>
+<a href="#summary">Summary</a>
+</div>
+
+<div class="outcomes-box">
+<h4>&#127919; Learning Outcomes</h4>
+<ol>
+<li>Import and clean a multi-site, multi-horizon soil survey dataset using `readr` and `dplyr`.</li>
+<li>Visualise organic carbon concentration as a function of depth using flipped coordinate plots.</li>
+<li>Fit and compare exponential decay and polynomial depth-profile models with `nls()` and `lm()`.</li>
+<li>Calculate soil organic carbon stocks (Mg C ha⁻¹) by integrating concentration over depth using bulk density.</li>
+<li>Compare SOC stocks across land-use treatments using one-way ANOVA with post-hoc Tukey tests.</li>
+<li>Communicate model uncertainty with confidence and prediction intervals on profile plots.</li>
+</ol>
+</div>
+
+> **What this activity covers.** Soil organic carbon (SOC) is the largest terrestrial carbon pool — roughly twice the carbon held in the atmosphere. How much SOC a soil holds, and how it is distributed with depth, depends strongly on land use: native vegetation typically stores far more carbon than cultivated or degraded soils. In this activity you will import and clean a simulated soil survey dataset, fit depth-profile models, calculate carbon stocks to 1 m depth, and test whether land-use treatments differ significantly — a workflow directly applicable to the EA030 compost and land-use projects.
+
+---
+
+## The Analytical Pipeline {#intro}
+
+<div class="pipeline-grid">
+<div class="pipeline-card">
+<div class="pc-num">Stage 1</div>
+<div class="pc-name">Import & Clean</div>
+<div class="pc-desc">Read CSV, fix horizon mid-depths, flag QA issues, filter to analysis-ready records.</div>
+</div>
+<div class="pipeline-card s2">
+<div class="pc-num">Stage 2</div>
+<div class="pc-name">Depth Profiles</div>
+<div class="pc-desc">Plot SOC vs depth for each site and land use. Flip coordinates so depth increases downward.</div>
+</div>
+<div class="pipeline-card s3">
+<div class="pc-num">Stage 3</div>
+<div class="pc-name">Fit Models</div>
+<div class="pc-desc">Exponential decay with nls(); polynomial with lm(). Compare AIC. Add CI ribbons to profile plots.</div>
+</div>
+<div class="pipeline-card s4">
+<div class="pc-num">Stage 4</div>
+<div class="pc-name">Carbon Stocks</div>
+<div class="pc-desc">Integrate SOC × bulk density × horizon thickness to get Mg C ha⁻¹ to a fixed reference depth.</div>
+</div>
+<div class="pipeline-card s5">
+<div class="pc-num">Stage 5</div>
+<div class="pc-name">Compare Treatments</div>
+<div class="pc-desc">ANOVA and Tukey HSD test whether land-use treatments differ in total SOC stock.</div>
+</div>
+</div>
+
+---
+
+## 1. Setup {#setup}
+
+### 1.1 Packages
+
+```{r packages}
+library(tidyverse)   # dplyr, tidyr, ggplot2, readr
+library(broom)       # tidy() model summaries
+library(knitr)       # kable() tables
+library(kableExtra)  # styled tables
+```
+
+### 1.2 Simulated soil survey data
+
+The dataset is modelled on soil surveys from paired land-use plots in Southern California: **native chaparral**, **annual grassland** (invaded by non-native species), **cultivated cropland**, and **restored native** (10-year revegetation). Each land use has 5 replicate sites, each sampled at standard horizon mid-depths (5, 15, 30, 50, 75, and 100 cm).
+
+```{r simulate-data}
+set.seed(2024)
+
+land_uses <- c("native_chaparral", "annual_grassland",
+               "cultivated",       "restored_native")
+n_sites   <- 5    # replicates per land use
+depths_cm <- c(5, 15, 30, 50, 75, 100)
+
+# Exponential decay parameters (A = surface SOC g/kg, k = decay rate /cm)
+# Bulk density (g/cm³) increases with depth for all land uses
+params <- tribble(
+  ~land_use,          ~A,    ~k,      ~bd_surface, ~bd_deep,
+  "native_chaparral",  62,   0.028,   0.82,        1.25,
+  "annual_grassland",  34,   0.032,   0.95,        1.32,
+  "cultivated",        22,   0.038,   1.10,        1.45,
+  "restored_native",   48,   0.030,   0.88,        1.28
+)
+
+soil_raw <- params %>%
+  rowwise() %>%
+  reframe(
+    land_use    = land_use,
+    site_id     = paste0(substr(land_use, 1, 3), "_", str_pad(1:n_sites, 2, "left", "0")),
+    depth_cm    = list(depths_cm)
+  ) %>%
+  unnest(depth_cm) %>%
+  left_join(params, by = "land_use") %>%
+  mutate(
+    # SOC concentration: exponential decay + site-level random effect + noise
+    site_effect = rnorm(n(), 0, 4),
+    soc_g_kg    = pmax(0.5,
+                    A * exp(-k * depth_cm) +
+                    site_effect * exp(-0.02 * depth_cm) +
+                    rnorm(n(), 0, 1.5)),
+    # Bulk density: linear increase from surface to 100 cm
+    bulk_density_g_cm3 = bd_surface +
+                         (bd_deep - bd_surface) * depth_cm / 100 +
+                         rnorm(n(), 0, 0.03),
+    bulk_density_g_cm3 = pmax(0.6, bulk_density_g_cm3),
+    # Horizon thickness (cm) for stock calculation
+    horizon_thick_cm   = case_when(
+      depth_cm ==   5 ~ 10,
+      depth_cm ==  15 ~ 10,
+      depth_cm ==  30 ~ 20,
+      depth_cm ==  50 ~ 20,
+      depth_cm ==  75 ~ 25,
+      depth_cm == 100 ~ 25
+    )
+  ) %>%
+  select(land_use, site_id, depth_cm, horizon_thick_cm,
+         soc_g_kg, bulk_density_g_cm3)
+
+glimpse(soil_raw)
+```
+
+<div class="callout callout-new">
+<strong>&#128196; Using your own data.</strong>
+If you are bringing real soil survey data from the EA030 field campaign,
+swap in your CSV at the import step below. Your file needs at minimum:
+a <strong>site identifier</strong>, a <strong>depth column</strong> (cm),
+an <strong>SOC column</strong> (g/kg or %), and a
+<strong>bulk density column</strong> (g/cm³). If bulk density was not
+measured, use a published pedotransfer function — the Saxton-Rawls equations
+are a common choice for California soils.
+</div>
+
+---
+
+## 2. Import and Clean {#import}
+
+### 2.1 Write and re-read as a CSV (simulating a real import)
+
+In a real project you would load your data with `read_csv()`. Here we write
+the simulated data to disk and read it back so the workflow is identical.
+
+```{r write-csv}
+# Write to a temporary file — replace this path with your real data file
+tmp <- tempfile(fileext = ".csv")
+write_csv(soil_raw, tmp)
+
+# Import exactly as you would in a real project
+soil <- read_csv(tmp, show_col_types = FALSE)
+glimpse(soil)
+```
+
+### 2.2 Quality checks
+
+Before any analysis, verify that the data look physically reasonable.
+
+```{r qa-checks}
+cat("=== Basic dimensions ===\n")
+cat("Rows:", nrow(soil), "| Sites:", n_distinct(soil$site_id),
+    "| Land uses:", n_distinct(soil$land_use), "\n\n")
+
+cat("=== Missing values per column ===\n")
+soil %>% summarise(across(everything(), ~ sum(is.na(.)))) %>% print()
+
+cat("\n=== SOC range (g/kg) ===\n")
+summary(soil$soc_g_kg)
+
+cat("\n=== Bulk density range (g/cm³) ===\n")
+summary(soil$bulk_density_g_cm3)
+
+# Flag physically implausible values
+soil <- soil %>%
+  mutate(
+    flag_soc = soc_g_kg < 0 | soc_g_kg > 200,
+    flag_bd  = bulk_density_g_cm3 < 0.4 | bulk_density_g_cm3 > 2.0
+  )
+
+cat("\n=== Flagged rows ===\n")
+soil %>% filter(flag_soc | flag_bd) %>% print()
+```
+
+<div class="callout callout-warn">
+<strong>&#9888;&#65039; Common real-data problems to watch for.</strong>
+SOC values above 200 g/kg suggest an organic horizon (O horizon) that may
+need separate treatment. Bulk density below 0.4 g/cm³ is physically
+unrealistic for mineral soil. Negative values in either column indicate
+data-entry errors. Check them before proceeding.
+</div>
+
+### 2.3 Standardise land-use labels and factor ordering
+
+```{r factor-order}
+soil <- soil %>%
+  filter(!flag_soc, !flag_bd) %>%         # remove any flagged rows
+  select(-flag_soc, -flag_bd) %>%
+  mutate(
+    land_use = factor(land_use,
+      levels = c("native_chaparral", "restored_native",
+                 "annual_grassland",  "cultivated"),
+      labels = c("Native chaparral", "Restored native",
+                 "Annual grassland",  "Cultivated")
+    )
+  )
+
+# Confirm sample size per land use × depth combination
+soil %>%
+  count(land_use, depth_cm) %>%
+  pivot_wider(names_from = depth_cm, values_from = n) %>%
+  kbl(caption = "Sample counts per land use and depth (cm)") %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+---
+
+## 3. Depth Profile Visualisation {#profiles}
+
+### 3.1 Profile plot with depth on the vertical axis
+
+In soil science, depth always increases **downward**. We achieve this in
+ggplot2 with `scale_y_reverse()` on a flipped-coordinate plot.
+
+```{r profile-plot, fig.height=6}
+lu_colors <- c(
+  "Native chaparral" = "#1e3a2f",
+  "Restored native"  = "#4a7c5e",
+  "Annual grassland" = "#c8832a",
+  "Cultivated"       = "#8b4513"
+)
+
+ggplot(soil, aes(x = soc_g_kg, y = depth_cm,
+                 color = land_use, group = interaction(land_use, site_id))) +
+  geom_line(alpha = 0.35, linewidth = 0.6) +
+  geom_point(alpha = 0.55, size = 1.8) +
+  # Add land-use mean profile
+  stat_summary(
+    aes(group = land_use),
+    fun   = mean,
+    geom  = "line",
+    linewidth = 1.4,
+    alpha = 0.95
+  ) +
+  scale_y_reverse(breaks = depths_cm) +
+  scale_color_manual(values = lu_colors, name = NULL) +
+  labs(
+    title    = "Soil organic carbon depth profiles by land use",
+    subtitle = "Thin lines = individual sites; thick lines = land-use means",
+    x        = "SOC concentration (g kg\u207b\u00b9)",
+    y        = "Depth (cm)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title     = element_text(family = "serif", face = "bold",
+                                  color = "#1e3a2f", size = 13),
+    plot.subtitle  = element_text(color = "#7a7a72", size = 10),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; Reading a depth profile.</strong>
+SOC is always highest at the surface where plant litter inputs are greatest
+and declines with depth as microbial decomposition and root inputs diminish.
+The <strong>steepness</strong> of the decline captures how deeply carbon is
+stored — native vegetation with deep roots typically maintains higher SOC
+at depth than disturbed or cultivated soils.
+</div>
+
+### 3.2 Faceted profiles — one panel per land use
+
+```{r profile-facet, fig.height=7}
+# Pre-compute mean ± 1 SD per land use × depth for the ribbon
+soil_ribbon <- soil %>%
+  group_by(land_use, depth_cm) %>%
+  summarise(
+    soc_mean = mean(soc_g_kg),
+    soc_lo   = mean(soc_g_kg) - sd(soc_g_kg),
+    soc_hi   = mean(soc_g_kg) + sd(soc_g_kg),
+    .groups  = "drop"
+  )
+
+ggplot(soil, aes(x = soc_g_kg, y = depth_cm, color = land_use)) +
+  geom_line(aes(group = site_id), alpha = 0.4, linewidth = 0.7) +
+  geom_point(size = 2, alpha = 0.6) +
+  # Mean ± 1 SD ribbon from pre-computed data
+  geom_ribbon(data = soil_ribbon,
+              aes(x = soc_mean, y = depth_cm,
+                  xmin = soc_lo, xmax = soc_hi,
+                  fill = land_use),
+              alpha = 0.18, color = NA) +
+  # Mean profile line from pre-computed data
+  geom_line(data = soil_ribbon,
+            aes(x = soc_mean, y = depth_cm, color = land_use),
+            linewidth = 1.6, alpha = 0.95) +
+  scale_y_reverse(breaks = depths_cm) +
+  scale_color_manual(values = lu_colors, name = NULL) +
+  scale_fill_manual(values  = lu_colors, guide = "none") +
+  facet_wrap(~ land_use, nrow = 1) +
+  labs(
+    title    = "SOC depth profiles — mean ± 1 SD by land use",
+    subtitle = "Shaded band = mean ± 1 SD across replicate sites",
+    x        = "SOC (g kg\u207b\u00b9)",
+    y        = "Depth (cm)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold",
+                                   color = "#1e3a2f", size = 13),
+    plot.subtitle   = element_text(color = "#7a7a72", size = 9.5),
+    legend.position = "none",
+    strip.text      = element_text(face = "bold", size = 9.5),
+    panel.grid.minor = element_blank()
+  )
+```
+
+---
+
+## 4. Fitting Depth-Profile Models {#models}
+
+Two model families are commonly used for SOC depth profiles:
+
+| Model | Formula | When to use |
+|---|---|---|
+| **Exponential decay** | SOC = A · e^(−k · depth) | Physically interpretable; A = surface SOC, k = decay rate |
+| **Polynomial (log-linear)** | log(SOC) = β₀ + β₁·depth | Flexible; easy to fit with `lm()`; less interpretable |
+
+We fit both, compare AIC, and visualise the fits with confidence intervals.
+
+### 4.1 Exponential decay with `nls()`
+
+`nls()` (non-linear least squares) fits models where parameters enter
+non-linearly. We must supply starting values — use the known true values
+as starting guesses.
+
+```{r nls-fit}
+# Fit one exponential model per land use
+exp_fits <- soil %>%
+  group_by(land_use) %>%
+  group_modify(~ {
+    tryCatch(
+      broom::tidy(
+        nls(soc_g_kg ~ A * exp(-k * depth_cm),
+            data  = .x,
+            start = list(A = 50, k = 0.03),
+            control = nls.control(maxiter = 200))
+      ) %>% mutate(.rows = nrow(.x)),
+      error = function(e) tibble(term = "error", estimate = NA_real_,
+                                 std.error = NA_real_, statistic = NA_real_,
+                                 p.value = NA_real_, .rows = nrow(.x))
+    )
+  }) %>%
+  ungroup()
+
+exp_fits %>%
+  select(land_use, term, estimate, std.error, p.value) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 4))) %>%
+  kbl(caption = "Exponential decay parameters by land use  (SOC = A · exp(−k · depth))") %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+<div class="callout callout-formula">
+<strong>&#9881;&#65039; Interpreting A and k.</strong>
+<strong>A</strong> (g/kg) is the modelled SOC at depth = 0 (the soil surface).
+<strong>k</strong> (/cm) is the exponential decay rate — larger k means
+carbon declines more steeply with depth. Native chaparral should have the
+highest A and one of the lower k values (deep carbon storage), while
+cultivated soil should have low A and high k (carbon concentrated near
+the ploughed surface).
+</div>
+
+### 4.2 Log-linear model with `lm()`
+
+```{r lm-fit}
+lm_fits <- soil %>%
+  group_by(land_use) %>%
+  group_modify(~ broom::glance(
+    lm(log(soc_g_kg) ~ depth_cm, data = .x)
+  )) %>%
+  ungroup()
+
+lm_fits %>%
+  select(land_use, r.squared, AIC, BIC) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3))) %>%
+  kbl(caption = "Log-linear model fit statistics by land use") %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+### 4.3 Profile plot with model fits and confidence intervals
+
+```{r profile-with-fits, fig.height=6, fig.width=9}
+# Generate predicted values over a fine depth grid for each land use
+depth_grid <- tibble(depth_cm = seq(2, 105, by = 1))
+
+pred_curves <- soil %>%
+  group_by(land_use) %>%
+  group_modify(~ {
+    fit <- tryCatch(
+      nls(soc_g_kg ~ A * exp(-k * depth_cm),
+          data  = .x,
+          start = list(A = 50, k = 0.03),
+          control = nls.control(maxiter = 200)),
+      error = function(e) NULL
+    )
+    if (is.null(fit)) return(tibble())
+    # Confidence interval via parametric bootstrap
+    set.seed(42)
+    pred_boot <- replicate(500, {
+      coefs <- MASS::mvrnorm(1,
+                             mu    = coef(fit),
+                             Sigma = vcov(fit))
+      coefs["A"] * exp(-coefs["k"] * depth_grid$depth_cm)
+    })
+    tibble(
+      depth_cm  = depth_grid$depth_cm,
+      fitted    = predict(fit, newdata = depth_grid),
+      ci_lo     = apply(pred_boot, 1, quantile, 0.025),
+      ci_hi     = apply(pred_boot, 1, quantile, 0.975)
+    )
+  }) %>%
+  ungroup()
+
+ggplot() +
+  # Raw data points
+  geom_point(data = soil,
+             aes(x = soc_g_kg, y = depth_cm, color = land_use),
+             alpha = 0.4, size = 1.8) +
+  # CI ribbon
+  geom_ribbon(data = pred_curves,
+              aes(x = fitted, y = depth_cm,
+                  xmin = ci_lo, xmax = ci_hi,
+                  fill = land_use),
+              alpha = 0.18) +
+  # Fitted curve
+  geom_line(data = pred_curves,
+            aes(x = fitted, y = depth_cm, color = land_use),
+            linewidth = 1.3) +
+  scale_y_reverse(breaks = depths_cm) +
+  scale_color_manual(values = lu_colors, name = NULL) +
+  scale_fill_manual(values  = lu_colors, guide = "none") +
+  labs(
+    title    = "SOC depth profiles with exponential decay fits",
+    subtitle = "Shaded bands = 95% parametric bootstrap CI",
+    x        = "SOC (g kg\u207b\u00b9)",
+    y        = "Depth (cm)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold",
+                                   color = "#1e3a2f", size = 13),
+    plot.subtitle   = element_text(color = "#7a7a72", size = 10),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+```
+
+---
+
+## 5. Calculating Soil Carbon Stocks {#stocks}
+
+### 5.1 The stock calculation
+
+Concentrations (g/kg) need to be converted to **stocks** (Mg C ha⁻¹) so
+we can compare how much carbon is actually stored per unit land area. The
+formula for each horizon is:
+
+> **Stock (Mg C ha⁻¹) = SOC (g/kg) × BD (g/cm³) × thickness (cm) × 0.1**
+
+The factor 0.1 converts g/kg × g/cm³ × cm to Mg/ha.
+
+```{r stock-calc}
+soil_stocks <- soil %>%
+  mutate(
+    # Stock per horizon (Mg C ha⁻¹)
+    stock_Mg_ha = soc_g_kg * bulk_density_g_cm3 * horizon_thick_cm * 0.1
+  ) %>%
+  group_by(land_use, site_id) %>%
+  summarise(
+    stock_0_30  = sum(stock_Mg_ha[depth_cm <= 30]),   # 0–30 cm
+    stock_0_100 = sum(stock_Mg_ha),                    # 0–100 cm
+    .groups = "drop"
+  )
+
+# Summary statistics by land use
+soil_stocks %>%
+  group_by(land_use) %>%
+  summarise(
+    n          = n(),
+    mean_30    = round(mean(stock_0_30),  1),
+    sd_30      = round(sd(stock_0_30),    1),
+    mean_100   = round(mean(stock_0_100), 1),
+    sd_100     = round(sd(stock_0_100),   1)
+  ) %>%
+  kbl(
+    caption   = "SOC stocks (Mg C ha\u207b\u00b9) to 30 cm and 100 cm by land use",
+    col.names = c("Land use", "n",
+                  "Mean 0–30", "SD 0–30",
+                  "Mean 0–100", "SD 0–100")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+### 5.2 Visualise stocks
+
+```{r stock-plot, fig.height=5}
+soil_stocks_long <- soil_stocks %>%
+  pivot_longer(c(stock_0_30, stock_0_100),
+               names_to  = "depth_range",
+               values_to = "stock") %>%
+  mutate(depth_range = recode(depth_range,
+    "stock_0_30"  = "0–30 cm",
+    "stock_0_100" = "0–100 cm"
+  ))
+
+ggplot(soil_stocks_long,
+       aes(x = land_use, y = stock, fill = land_use)) +
+  geom_boxplot(alpha = 0.75, outlier.shape = 21,
+               outlier.size = 2.5, outlier.fill = "white") +
+  geom_jitter(width = 0.12, size = 2.2, alpha = 0.65,
+              aes(color = land_use)) +
+  scale_fill_manual(values  = lu_colors, guide = "none") +
+  scale_color_manual(values = lu_colors, guide = "none") +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_wrap(~ depth_range, scales = "free_y") +
+  labs(
+    title    = "SOC stocks by land use and reference depth",
+    x        = NULL,
+    y        = "SOC stock (Mg C ha\u207b\u00b9)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title   = element_text(family = "serif", face = "bold",
+                                color = "#1e3a2f", size = 13),
+    strip.text   = element_text(face = "bold"),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; 0–30 cm vs 0–100 cm stocks.</strong>
+The 0–30 cm stock captures the biologically active topsoil where most
+carbon inputs and turnover occur. The 0–100 cm stock is the standard
+reference depth for national carbon inventories (IPCC 2006). The
+<em>ratio</em> of the two tells you how deeply carbon is stored: native
+vegetation has a lower ratio (more carbon at depth) while cultivated soils
+have a higher ratio (carbon concentrated near the surface by tillage).
+</div>
+
+---
+
+## 6. Inferential Statistics: Do Land Uses Differ? {#stats}
+
+### 6.1 Check ANOVA assumptions
+
+Before running ANOVA, verify that residuals are approximately normal and
+that group variances are similar.
+
+```{r assumptions, fig.height=4}
+# Focus on 0–100 cm stocks
+lm_full <- lm(stock_0_100 ~ land_use, data = soil_stocks)
+
+par(mfrow = c(1, 2), mar = c(4, 4, 3, 1))
+qqnorm(residuals(lm_full), main = "Normal Q-Q — SOC stock residuals",
+       col = "#4a7c5e", pch = 19)
+qqline(residuals(lm_full), col = "#c8832a", lwd = 2)
+plot(fitted(lm_full), residuals(lm_full),
+     xlab = "Fitted values", ylab = "Residuals",
+     main = "Residuals vs fitted",
+     col = "#4a7c5e", pch = 19)
+abline(h = 0, col = "#c8832a", lwd = 2, lty = 2)
+par(mfrow = c(1, 1))
+```
+
+```{r levene-test}
+# Levene's test for homogeneity of variance
+if (!requireNamespace("car", quietly = TRUE)) install.packages("car")
+car::leveneTest(stock_0_100 ~ land_use, data = soil_stocks)
+```
+
+<div class="callout callout-tip">
+<strong>&#128161; What to do if assumptions are violated.</strong>
+If residuals are strongly non-normal or variances are heterogeneous, two
+options: (1) log-transform SOC stocks before ANOVA — log stocks are often
+more normally distributed; (2) use the non-parametric Kruskal-Wallis test
+as a robust alternative. Both are shown below.
+</div>
+
+### 6.2 One-way ANOVA
+
+```{r anova}
+aov_result <- aov(stock_0_100 ~ land_use, data = soil_stocks)
+summary(aov_result)
+```
+
+### 6.3 Tukey HSD post-hoc test
+
+A significant ANOVA F-test tells you that *at least one* pair of land uses
+differs. Tukey's HSD identifies *which* pairs.
+
+```{r tukey}
+tukey_result <- TukeyHSD(aov_result)
+print(tukey_result)
+
+# Tidy and select the columns we want for the table
+tukey_tbl <- broom::tidy(tukey_result) %>%
+  select(contrast, estimate, conf.low, conf.high, adj.p.value) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3))) %>%
+  arrange(adj.p.value)
+
+tukey_tbl %>%
+  kbl(
+    caption   = "Tukey HSD pairwise comparisons — SOC stock 0–100 cm",
+    col.names = c("Comparison", "Difference (Mg/ha)",
+                  "Lower 95% CI", "Upper 95% CI", "Adj. p-value")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE) %>%
+  row_spec(which(tukey_tbl$adj.p.value < 0.05),
+           bold = TRUE, background = "#f1f8f1")
+```
+
+### 6.4 Non-parametric alternative: Kruskal-Wallis
+
+```{r kruskal}
+kruskal.test(stock_0_100 ~ land_use, data = soil_stocks)
+```
+
+### 6.5 Effect size: η² (eta-squared)
+
+A significant p-value does not tell you how *large* the difference is. η²
+is the proportion of total variance explained by the treatment.
+
+```{r effect-size}
+ss_treatment <- sum(aov_result$effects[2:length(levels(soil_stocks$land_use))]^2)
+ss_total     <- sum((soil_stocks$stock_0_100 - mean(soil_stocks$stock_0_100))^2)
+eta_sq       <- ss_treatment / ss_total
+
+cat(sprintf("eta-squared (\u03b7\u00b2) = %.3f\n", eta_sq))
+cat(sprintf(
+  "Interpretation: %.0f%% of variance in SOC stock is explained by land use.\n",
+  eta_sq * 100
+))
+```
+
+---
+
+## 7. Summary {#summary}
+
+<div class="key-box">
+<h4>&#128161; Key takeaways</h4>
+<ul>
+<li><strong>Depth profiles always decrease with depth</strong> — flip the y-axis with <code>scale_y_reverse()</code> so depth increases downward, matching the physical reality.</li>
+<li><strong>Exponential decay</strong> (fit with <code>nls()</code>) is the standard SOC profile model. Parameter A gives surface SOC; k gives the decay rate. Larger k = steeper decline = less deep storage.</li>
+<li><strong>Carbon stocks require bulk density.</strong> Concentration × bulk density × thickness × 0.1 converts g/kg to Mg C ha⁻¹. Always report the reference depth (e.g., 0–30 cm or 0–100 cm).</li>
+<li><strong>Native and restored vegetation consistently stores more carbon</strong> than cultivated soils, particularly at depth where roots contribute to stable carbon pools.</li>
+<li><strong>Check ANOVA assumptions before testing.</strong> Q-Q plots, residual plots, and Levene's test are a minimal checklist. Log-transform stocks or use Kruskal-Wallis when assumptions are violated.</li>
+<li><strong>Report effect size alongside p-values.</strong> η² tells you whether a statistically significant difference is also ecologically meaningful.</li>
+</ul>
+</div>
+
+<div class="discuss-box">
+<h4>&#128172; Discussion questions</h4>
+<ol>
+<li>The exponential decay model fits well for mineral soils but often underestimates SOC in the top 5 cm where organic matter accumulates. What modification to the model structure would you make, and how would you test whether it improves fit?</li>
+<li>Bulk density was not measured in many historical soil surveys, so it is often estimated from pedotransfer functions using texture and organic matter content. How would uncertainty in bulk density propagate into the stock estimates?</li>
+<li>Restored native sites were planted 10 years ago. The model predicts they will eventually approach native chaparral SOC levels. Using the fitted k values from both land uses, estimate how many years it would take for the restored site to reach 90% of the native chaparral surface SOC (A parameter).</li>
+<li>The Tukey test adjusts p-values for multiple comparisons. If you were testing all six pairwise combinations of four land uses, what is the familywise error rate without correction at α = 0.05, and why does this motivate the adjustment?</li>
+<li>Carbon sequestration projects often report "additional carbon" relative to a baseline land use. Using the mean stocks from this analysis, calculate the additional carbon stored by native chaparral relative to cultivated land at 0–100 cm depth. Express your answer in Mg C ha⁻¹ and in tonnes CO₂-equivalent per hectare.</li>
+</ol>
+</div>
+
+---
+
+## References
+
+Batjes, N. H. 1996. Total carbon and nitrogen in the soils of the world. *European Journal of Soil Science* 47:151–163.
+
+IPCC. 2006. *2006 IPCC Guidelines for National Greenhouse Gas Inventories*. Volume 4: Agriculture, Forestry and Other Land Use. IGES, Hayama, Japan.
+
+Jobbágy, E. G., and R. B. Jackson. 2000. The vertical distribution of soil organic carbon and its relation to climate and vegetation. *Ecological Applications* 10:423–436.
+
+Saxton, K. E., and W. J. Rawls. 2006. Soil water characteristic estimates by texture and organic matter for hydrologic solutions. *Soil Science Society of America Journal* 70:1569–1578.
+
+<div class="page-footer">
+EA030 RTricks &nbsp;<span class="divider">|</span>&nbsp; Prof. Marc Los Huertos &nbsp;<span class="divider">|</span>&nbsp; Pomona College &nbsp;<span class="divider">|</span>&nbsp; Activity 17 &nbsp;<span class="divider">|</span>&nbsp; <a href="../index.html">Back to index</a>
+</div>
