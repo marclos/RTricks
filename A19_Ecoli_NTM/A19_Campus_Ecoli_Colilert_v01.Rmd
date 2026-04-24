@@ -1,0 +1,852 @@
+---
+title: "Campus Water Quality: E. coli and Total Coliform"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/Activities/A19_Campus_Ecoli_Colilert.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = TRUE,
+  warning   = FALSE,
+  message   = FALSE,
+  fig.width  = 7,
+  fig.height = 4,
+  fig.align  = "center"
+)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+h4 {
+  font-family: 'Source Code Pro', monospace; font-size: .9rem; font-weight: 600;
+  color: var(--charcoal); margin-top: 20px; margin-bottom: 4px;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+ol, ul { padding-left: 1.5em; margin-bottom: 1em; }
+li { margin-bottom: .35em; }
+blockquote {
+  border-left: 4px solid var(--sage); margin: 1.2em 0;
+  padding: .5em 1em; background: var(--white);
+  border-radius: 0 5px 5px 0; font-size: .94em; color: var(--charcoal);
+}
+
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-new     { border-color: #1565c0;      background: #f0f4ff; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+.outcomes-box {
+  background: var(--white); border: 1px solid var(--mist);
+  border-left: 5px solid var(--fern); border-radius: 0 6px 6px 0;
+  padding: 18px 22px; margin: 0 0 2.5em;
+}
+.outcomes-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--forest);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.outcomes-box ol { padding-left: 1.4em; }
+.outcomes-box li { margin-bottom: .45em; font-size: .92em; }
+
+.pipeline-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px; margin: 1.6em 0 2em;
+}
+.pipeline-card {
+  background: var(--white); border: 1px solid var(--mist);
+  border-top: 3px solid var(--fern); border-radius: 4px;
+  padding: 12px 14px; box-shadow: var(--card-shadow);
+}
+.pipeline-card.s2 { border-top-color: var(--amber); }
+.pipeline-card.s3 { border-top-color: #2e7d94; }
+.pipeline-card.s4 { border-top-color: #5d4037; }
+.pc-num  { font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 700;
+           letter-spacing: .12em; text-transform: uppercase; color: var(--dust); margin-bottom: 4px; }
+.pc-name { font-family: 'Libre Baskerville', serif; font-size: .93rem;
+           font-weight: 700; color: var(--forest); margin-bottom: 3px; }
+.pc-desc { font-size: .82rem; color: var(--charcoal); line-height: 1.4; }
+
+.data-pipeline {
+  background: var(--ink); border-left: 4px solid var(--fern);
+  border-radius: 5px; padding: 16px 20px; margin: 1.4em 0;
+  font-family: 'Source Code Pro', monospace; font-size: .83rem; line-height: 2;
+  overflow-x: auto;
+}
+.dp-step  { color: var(--amber-lt); font-weight: 700; }
+.dp-arrow { color: var(--sage); }
+.dp-note  { color: #8b949e; font-size: .78rem; }
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); vertical-align: top; }
+
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box strong { color: var(--amber-lt); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+.discuss-box {
+  background: var(--parchment); border: 1px solid var(--mist);
+  border-radius: 6px; padding: 18px 22px; margin: 2em 0; font-size: .92em;
+}
+.discuss-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--moss);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.discuss-box ol { padding-left: 1.4em; }
+.discuss-box li { margin-bottom: .5em; }
+
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; RTricks &mdash; Activity 19</div>
+<h1>Campus Water Quality: <span>E. coli, Total Coliform, and Colilert MPN</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College &nbsp;&bull;&nbsp; Environmental Analysis</p>
+<a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
+</div>
+
+<div class="section-nav">
+<a href="#background">Background</a>
+<a href="#colilert">Colilert Method</a>
+<a href="#data-pipeline">Data Pipeline</a>
+<a href="#import">Import & Clean</a>
+<a href="#dilutions">Dilution Correction</a>
+<a href="#visualise">Visualise</a>
+<a href="#anova">ANOVA</a>
+<a href="#interpret">Interpret</a>
+<a href="#summary">Summary</a>
+</div>
+
+<div class="outcomes-box">
+<h4>&#127919; Learning Outcomes</h4>
+<ol>
+<li>Explain why *E. coli* and total coliform are used as indicator organisms for water quality, and describe the health risks associated with each.</li>
+<li>Describe how the Colilert Quanti-Tray system produces MPN (Most Probable Number) estimates and why dilution correction is necessary.</li>
+<li>Import the class Colilert data from a CSV export, standardise column names, and apply dilution correction factors to compute true MPN/100 mL.</li>
+<li>Visualise MPN distributions across sampling sites and compare them to California Basin Plan recreational standards.</li>
+<li>Run a one-way ANOVA and Kruskal-Wallis test to determine whether bacterial concentrations differ significantly among campus sites.</li>
+<li>Interpret results in the context of campus hydrology and propose monitoring or management recommendations.</li>
+</ol>
+</div>
+
+> **What this activity covers.** Each semester, EA030 students collect water samples from three campus sites — pHake Lake, Seal Court, and the Pomona Bioswale — and analyse them for *E. coli* and total coliform using the Colilert Quanti-Tray method. This module explains the biology behind the test, walks through the data pipeline from raw Colilert readings to corrected MPN/100 mL, and guides you through the statistical analysis of class results. The goal is not just to run a t-test on your own group's two samples, but to analyse the entire class dataset — which gives enough replication to make meaningful statistical inferences about site differences.
+
+---
+
+## 1. Background: Why *E. coli*? {#background}
+
+*Escherichia coli* (*E. coli*) is a bacterium found in the intestines of humans and warm-blooded animals, where most strains are harmless and aid digestion. However, its presence in water is a primary public health concern for two reasons.
+
+**As an indicator organism.** *E. coli* itself is not always dangerous in water, but its presence signals **fecal contamination** — meaning the water has been in contact with human or animal waste. Where fecal matter goes, pathogenic organisms follow: *Cryptosporidium*, *Giardia*, *Salmonella*, *Hepatitis A*, and noroviruses all co-occur with fecal contamination and are far harder and more expensive to detect directly. Testing for *E. coli* is a fast, inexpensive proxy for the presence of the entire suite of fecal pathogens.
+
+**As a direct pathogen.** Certain strains — especially O157:H7 (Shiga-toxin-producing *E. coli*, STEC) — cause severe illness including haemorrhagic diarrhoea, urinary tract infections, and haemolytic uraemic syndrome (HUS), which can cause kidney failure and death. These strains enter water through agricultural runoff from cattle operations, sewage spills, and stormwater overflows.
+
+### Sources of fecal contamination on and near the Pomona campus
+
+The three sampling sites capture distinct potential contamination pathways:
+
+| Site | Potential sources |
+|---|---|
+| **pHake Lake** | Waterfowl (geese, ducks) — major fecal contributors; irrigation return flow; adjacent lawn runoff |
+| **Seal Court** | Urban stormwater from hardscaped surfaces; pet waste; adjacent building drain connections |
+| **Pomona Bioswale** | Designed to filter runoff — acts as a treatment system; captures street and parking lot runoff before it enters groundwater |
+
+<div class="callout callout-concept">
+<strong>&#128204; Total coliform vs. *E. coli* — what's the difference?</strong>
+<strong>Total coliform</strong> includes a broader group of bacteria in the family Enterobacteriaceae (including <em>E. coli</em>, <em>Klebsiella</em>, and <em>Enterobacter</em>). Some are environmental organisms that do not indicate fecal contamination — they naturally inhabit soil and plant matter. <strong><em>E. coli</em></strong> is a subset of total coliform that is almost exclusively fecal in origin. This is why regulatory standards for drinking water use <em>E. coli</em> as the indicator, while total coliform is used as a more sensitive screening test: if total coliform is absent, <em>E. coli</em> cannot be present, and no further testing is needed.
+</div>
+
+### Regulatory standards
+
+| Use | Standard | Regulation |
+|---|---|---|
+| Contact recreation (swimming) | 320 MPN/100 mL (single sample) | CA Basin Plan REC-1 |
+| Contact recreation (geometric mean) | 100 MPN/100 mL | CA Basin Plan REC-1 |
+| Non-contact recreation | 1,000 MPN/100 mL | CA Basin Plan REC-2 |
+| Drinking water | 0 (any detection) | EPA SDWA / SWTR |
+
+---
+
+## 2. The Colilert Method {#colilert}
+
+### 2.1 How Colilert works
+
+Colilert (IDEXX Laboratories) is an enzyme-substrate method that simultaneously detects total coliform and *E. coli* in a single test. The reagent contains two chromogenic substrates:
+
+- **ONPG** (ortho-nitrophenyl-β-D-galactopyranoside) — cleaved by β-galactosidase, an enzyme produced by total coliform. Produces a **yellow colour** visible to the naked eye.
+- **MUG** (4-methylumbelliferyl-β-D-glucuronide) — cleaved by β-glucuronidase, an enzyme produced almost exclusively by *E. coli*. Produces **blue fluorescence** under a 365 nm UV lamp.
+
+The sample is sealed in an IDEXX Quanti-Tray — a plastic tray with 97 large wells and 48 small wells — and incubated at 35°C for 24 hours. After incubation, you count the number of yellow (total coliform) and fluorescent (E. coli) wells and use the IDEXX MPN table to convert well counts to MPN/100 mL.
+
+<div class="pipeline-grid">
+<div class="pipeline-card">
+<div class="pc-num">Step 1</div>
+<div class="pc-name">Collect sample</div>
+<div class="pc-desc">100 mL in sterile bottle. Keep cold, analyse within 6 hours. If turbid, dilute 1:10 with sterile water.</div>
+</div>
+<div class="pipeline-card s2">
+<div class="pc-num">Step 2</div>
+<div class="pc-name">Add Colilert</div>
+<div class="pc-desc">Add one Colilert reagent sachet to the 100 mL sample. Mix until dissolved.</div>
+</div>
+<div class="pipeline-card s3">
+<div class="pc-num">Step 3</div>
+<div class="pc-name">Seal tray</div>
+<div class="pc-desc">Pour reagent mixture into a Quanti-Tray. Heat-seal with the Quanti-Tray Sealer. Label with site and time.</div>
+</div>
+<div class="pipeline-card s4">
+<div class="pc-num">Step 4</div>
+<div class="pc-name">Incubate &amp; read</div>
+<div class="pc-desc">35°C ± 0.5°C for 24–28 hours. Count yellow wells (TC) and fluorescent wells (EC) under UV lamp.</div>
+</div>
+</div>
+
+### 2.2 The MPN concept
+
+MPN (Most Probable Number) is a statistical estimate of microbial density based on the pattern of positive (enzyme-active) and negative wells. It is not a direct count — it is the bacterial concentration most likely to produce the observed pattern of positives. The Quanti-Tray system uses a maximum-likelihood algorithm to convert the (large positive wells, small positive wells) pair to an MPN/100 mL value.
+
+<div class="callout callout-formula">
+<strong>&#9881;&#65039; MPN and dilution correction.</strong>
+If a sample was too turbid to analyse undiluted, it is diluted 1:10 before adding Colilert. The Quanti-Tray then sees only 1/10 of the original bacteria. To recover the true concentration:
+<br><br>
+MPN<sub>corrected</sub> = MPN<sub>raw</sub> × dilution factor
+<br><br>
+A raw reading of 450 MPN/100 mL from a 1:10 diluted sample represents a true concentration of 4,500 MPN/100 mL in the original water. Failing to apply this correction systematically underestimates bacterial concentrations from turbid samples — which are typically the most contaminated.
+</div>
+
+### 2.3 Reading results — what you look for in the tray
+
+| Observation | Indicator | Count |
+|---|---|---|
+| Yellow large well | Total coliform positive | Count as TC+ |
+| Yellow small well | Total coliform positive | Count as TC+ |
+| Blue fluorescence (UV) large well | *E. coli* positive | Count as EC+ |
+| Blue fluorescence (UV) small well | *E. coli* positive | Count as EC+ |
+| Colourless, no fluorescence | Negative | Not counted |
+
+All *E. coli*-positive wells are also total coliform positive (yellow), because *E. coli* produces both enzymes. But not all yellow wells fluoresce — environmental coliforms produce β-galactosidase but not β-glucuronidase.
+
+---
+
+## 3. The Data Pipeline {#data-pipeline}
+
+Before writing any R code, it helps to map the full workflow from Colilert tray to statistical result.
+
+<div class="data-pipeline">
+<span class="dp-step">Field</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Collect 100 mL sample &rarr; dilute if turbid &rarr; note dilution factor<br>
+<span class="dp-arrow">&darr;</span><br>
+<span class="dp-step">Lab</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add Colilert &rarr; seal Quanti-Tray &rarr; incubate 24 hr &rarr; count yellow/UV wells<br>
+<span class="dp-arrow">&darr;</span><br>
+<span class="dp-step">Google Sheet</span>&nbsp;Each group enters: Site_ID, Dilution, TC_wells, EC_wells, raw MPN<br>
+<span class="dp-arrow">&darr;</span><br>
+<span class="dp-step">R: Import</span>&nbsp;&nbsp;&nbsp;&nbsp;read_csv() &rarr; standardise column names &rarr; remove controls<br>
+<span class="dp-arrow">&darr;</span><br>
+<span class="dp-step">R: Clean</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Apply dilution correction &rarr; handle NAs &rarr; check ranges<br>
+<span class="dp-arrow">&darr;</span><br>
+<span class="dp-step">R: Analyse</span>&nbsp;&nbsp;&nbsp;Visualise &rarr; compare to standards &rarr; ANOVA / Kruskal-Wallis<br>
+<span class="dp-arrow">&darr;</span><br>
+<span class="dp-step">Interpret</span>&nbsp;&nbsp;&nbsp;&nbsp;Which sites exceed Basin Plan limits? Do sites differ? Why?<br>
+<span class="dp-note">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(This is the question you answer in your lab write-up)</span>
+</div>
+
+---
+
+## 4. Import and Clean the Class Data {#import}
+
+### 4.1 Packages
+
+```{r packages}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+### 4.2 Import
+
+Export the class Google Sheet as CSV and place it in your project's
+`data/` folder. The expected column structure from the Colilert data
+entry sheet is shown below.
+
+```{r import-real, eval=FALSE}
+# ── Use this chunk with your real class data ─────────────────────────────────
+# MPN_data <- read_csv("data/Ecoli_Total_Coliform_Data_Entry.csv")
+```
+
+```{r import-simulated}
+# ── Simulated class dataset ───────────────────────────────────────────────────
+# Three sites, three sampling rounds, ~4 student groups per site per round
+set.seed(2025)
+
+n_groups <- 4   # groups per site per round
+rounds   <- 3   # sampling rounds across the semester
+sites    <- c("pHake Lake", "Seal Court", "Pomona Bioswale")
+
+MPN_data <- expand.grid(
+  Site_ID       = sites,
+  Round         = paste0("Round_", 1:rounds),
+  Group         = paste0("Group_", 1:n_groups),
+  stringsAsFactors = FALSE
+) %>%
+  as_tibble() %>%
+  mutate(
+    # Dilution: pHake Lake often turbid; Bioswale usually undiluted
+    Dilution = case_when(
+      Site_ID == "pHake Lake"     ~ sample(c("Undiluted", "Diluted, 1:10"),
+                                            n(), replace = TRUE,
+                                            prob = c(0.4, 0.6)),
+      Site_ID == "Seal Court"     ~ sample(c("Undiluted", "Diluted, 1:10"),
+                                            n(), replace = TRUE,
+                                            prob = c(0.7, 0.3)),
+      Site_ID == "Pomona Bioswale" ~ "Undiluted"
+    ),
+    # Raw MPN from Quanti-Tray (log-normal; pHake Lake highest due to waterfowl)
+    raw_TC = round(case_when(
+      Site_ID == "pHake Lake"      ~ rlnorm(n(), log(280),  0.9),
+      Site_ID == "Seal Court"      ~ rlnorm(n(), log(150),  1.0),
+      Site_ID == "Pomona Bioswale" ~ rlnorm(n(), log(40),   0.8)
+    )),
+    raw_EC = round(case_when(
+      Site_ID == "pHake Lake"      ~ rlnorm(n(), log(180),  1.0),
+      Site_ID == "Seal Court"      ~ rlnorm(n(), log(90),   1.0),
+      Site_ID == "Pomona Bioswale" ~ rlnorm(n(), log(18),   0.9)
+    ))
+  )
+
+head(MPN_data)
+```
+
+### 4.3 Remove controls
+
+The data entry sheet includes positive and negative controls run by the
+instructor. These are not environmental samples and must be excluded
+before any analysis.
+
+```{r remove-controls}
+MPN_data <- MPN_data %>%
+  filter(!grepl("Control", Site_ID, ignore.case = TRUE))
+
+cat("Rows after removing controls:", nrow(MPN_data), "\n")
+```
+
+### 4.4 Column names and type coercion
+
+Real Colilert CSV exports often have spaces in column headers and store
+MPN values as character (especially when the IDEXX table shows ">2419.6"
+for fully positive trays). This chunk standardises everything.
+
+```{r clean-names}
+# With real data, uncomment this line to standardise column names:
+# library(janitor)
+# MPN_data <- clean_names(MPN_data)
+
+# Coerce MPN columns to numeric; ">" prefix produces NA — handle explicitly
+MPN_data <- MPN_data %>%
+  mutate(
+    # Replace ">2419.6" (fully positive tray) with the IDEXX maximum value
+    raw_TC = case_when(
+      is.character(raw_TC) & grepl("^>", raw_TC) ~ 2419.6,
+      TRUE ~ as.numeric(as.character(raw_TC))
+    ),
+    raw_EC = case_when(
+      is.character(raw_EC) & grepl("^>", raw_EC) ~ 2419.6,
+      TRUE ~ as.numeric(as.character(raw_EC))
+    ),
+    # Treat remaining NAs as 0 (no positive wells observed)
+    raw_TC = replace_na(raw_TC, 0),
+    raw_EC = replace_na(raw_EC, 0)
+  )
+```
+
+<div class="callout callout-warn">
+<strong>&#9888;&#65039; ">2419.6" is the Quanti-Tray ceiling, not a missing value.</strong>
+When every well in the tray is positive, the IDEXX MPN table reports
+">2419.6 MPN/100 mL" — meaning the true concentration is at least that
+high but cannot be precisely estimated. These samples need dilution and
+re-analysis. Do NOT replace this value with <code>NA</code>. For
+statistical analysis, use the lower bound 2419.6 (conservative) and note
+this as a censored observation in your methods.
+</div>
+
+---
+
+## 5. Dilution Correction {#dilutions}
+
+This is the most common source of error in student Colilert analyses.
+Apply the correction *before* any visualisation or statistics.
+
+```{r dilution-correction}
+MPN_data <- MPN_data %>%
+  mutate(
+    # Extract dilution factor as a number
+    dilution_factor = case_when(
+      Dilution == "Diluted, 1:10"  ~ 10,
+      Dilution == "Diluted, 1:100" ~ 100,
+      TRUE                         ~ 1      # Undiluted or any other value
+    ),
+    # Apply correction: corrected MPN = raw MPN × dilution factor
+    TC_MPN = raw_TC * dilution_factor,
+    EC_MPN = raw_EC * dilution_factor
+  )
+
+# Sanity check: corrected values should be ≥ raw values
+MPN_data %>%
+  group_by(Site_ID, Dilution) %>%
+  summarise(
+    n        = n(),
+    mean_raw_EC  = round(mean(raw_EC), 1),
+    mean_corr_EC = round(mean(EC_MPN), 1),
+    .groups = "drop"
+  ) %>%
+  kbl(caption = "Effect of dilution correction on mean E. coli MPN") %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+<div class="callout callout-tip">
+<strong>&#128161; Always verify your dilution correction by inspection.</strong>
+After applying the correction, sort by <code>EC_MPN</code> descending and
+scan the top values. Any sample with a 1:10 dilution should have a corrected
+MPN 10× its raw value. If you see corrected values that are lower than raw
+values, or the same as raw values for diluted samples, your correction code
+has a bug.
+</div>
+
+---
+
+## 6. Visualise Results {#visualise}
+
+### 6.1 MPN distributions by site
+
+```{r mpn-boxplot, fig.height=4.5}
+site_colors <- c(
+  "pHake Lake"      = "#2e7d94",
+  "Seal Court"      = "#c8832a",
+  "Pomona Bioswale" = "#4a7c5e"
+)
+
+ggplot(MPN_data, aes(x = Site_ID, y = EC_MPN + 1, fill = Site_ID)) +
+  geom_boxplot(alpha = 0.8, outlier.shape = 21, outlier.size = 2.5,
+               outlier.fill = "white") +
+  geom_jitter(width = 0.12, size = 2.2, alpha = 0.65,
+              aes(color = Site_ID)) +
+  # California Basin Plan REC-1 single-sample standard
+  geom_hline(yintercept = 320, linetype = "dashed",
+             color = "#c0392b", linewidth = 0.9) +
+  annotate("text", x = 0.6, y = 360,
+           label = "CA REC-1: 320 MPN/100 mL",
+           color = "#c0392b", hjust = 0, size = 3.2, fontface = "italic") +
+  geom_hline(yintercept = 1000, linetype = "dotted",
+             color = "#7a3a00", linewidth = 0.7) +
+  annotate("text", x = 0.6, y = 1100,
+           label = "CA REC-2: 1,000 MPN/100 mL",
+           color = "#7a3a00", hjust = 0, size = 3.2, fontface = "italic") +
+  scale_y_log10(
+    labels = scales::comma,
+    breaks = c(1, 10, 100, 320, 1000, 10000)
+  ) +
+  scale_fill_manual(values = site_colors,  guide = "none") +
+  scale_color_manual(values = site_colors, guide = "none") +
+  labs(
+    title    = "E. coli MPN/100 mL — Pomona College campus sampling sites",
+    subtitle = "log\u2081\u2080 scale  \u00b7  dashed = contact recreation  \u00b7  dotted = non-contact standard",
+    x = NULL, y = "E. coli (MPN/100 mL + 1, log scale)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 10),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank()
+  )
+```
+
+### 6.2 Total coliform vs. *E. coli* scatter
+
+The ratio of TC to EC reveals the proportion of contamination that is
+fecal vs. environmental in origin. Points near the 1:1 line indicate
+predominantly fecal contamination; points well above it indicate a mix
+of environmental and fecal coliforms.
+
+```{r tc-ec-scatter, fig.height=4}
+ggplot(MPN_data, aes(x = TC_MPN + 1, y = EC_MPN + 1, color = Site_ID)) +
+  geom_point(size = 2.8, alpha = 0.75) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed",
+              color = "#7a7a72", linewidth = 0.8) +
+  annotate("text", x = 20, y = 28, label = "TC = EC (1:1 line)",
+           color = "#7a7a72", size = 3, angle = 42, fontface = "italic") +
+  scale_x_log10(labels = scales::comma) +
+  scale_y_log10(labels = scales::comma) +
+  scale_color_manual(values = site_colors, name = NULL) +
+  labs(
+    title    = "Total coliform vs. E. coli (MPN/100 mL + 1)",
+    subtitle = "Points above the 1:1 line have TC > EC — environmental coliforms present",
+    x = "Total coliform MPN/100 mL (log scale)",
+    y = "E. coli MPN/100 mL (log scale)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 9.5),
+    legend.position = "bottom"
+  )
+```
+
+### 6.3 Exceedance summary table
+
+```{r exceedance-table}
+MPN_data %>%
+  group_by(Site_ID) %>%
+  summarise(
+    n           = n(),
+    gm_EC       = round(exp(mean(log(EC_MPN + 1))), 1),
+    median_EC   = round(median(EC_MPN), 1),
+    pct_rec1    = round(100 * mean(EC_MPN > 320),  1),
+    pct_rec2    = round(100 * mean(EC_MPN > 1000), 1),
+    n_diluted   = sum(dilution_factor > 1),
+    .groups     = "drop"
+  ) %>%
+  kbl(
+    caption   = "E. coli summary by site (corrected MPN/100 mL)",
+    col.names = c("Site", "N", "Geometric mean", "Median",
+                  "% > REC-1 (320)", "% > REC-2 (1000)", "Diluted samples")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE) %>%
+  row_spec(which(MPN_data %>%
+                   group_by(Site_ID) %>%
+                   summarise(pct = mean(EC_MPN > 320), .groups="drop") %>%
+                   pull(pct) > 0.25),
+           bold = TRUE, background = "#fff5f5")
+```
+
+---
+
+## 7. Statistical Tests: Do Sites Differ? {#anova}
+
+With the full class dataset (all groups, all rounds), we have enough
+replication to test whether bacterial concentrations differ significantly
+among sites. We use both ANOVA on log-transformed values and
+Kruskal-Wallis as a non-parametric check.
+
+### 7.1 Log-transform and assumption check
+
+```{r anova-assumptions, fig.height=4}
+MPN_data <- MPN_data %>%
+  mutate(log_EC = log(EC_MPN + 1))
+
+aov_ec <- aov(log_EC ~ Site_ID, data = MPN_data)
+
+par(mfrow = c(1, 2), mar = c(4, 4, 3, 1))
+qqnorm(residuals(aov_ec), main = "Q-Q: log(EC_MPN + 1) residuals",
+       col = "#2e7d94", pch = 19, cex = 0.8)
+qqline(residuals(aov_ec), col = "#c8832a", lwd = 2)
+plot(fitted(aov_ec), residuals(aov_ec),
+     xlab = "Fitted values", ylab = "Residuals",
+     main = "Residuals vs. fitted",
+     col = "#2e7d94", pch = 19, cex = 0.8)
+abline(h = 0, col = "#c8832a", lwd = 2, lty = 2)
+par(mfrow = c(1, 1))
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; Why log-transform MPN data?</strong>
+Raw MPN values are highly right-skewed — a few very high readings from
+storm events or turbid samples dominate the arithmetic mean. Taking
+log(MPN + 1) pulls outliers toward the bulk of the data, making the
+residuals more normally distributed and ANOVA assumptions more defensible.
+The "+1" prevents log(0) errors when a sample had no positive wells.
+This is the same reason the geometric mean is used instead of the
+arithmetic mean for regulatory assessments.
+</div>
+
+### 7.2 One-way ANOVA
+
+```{r anova-ec}
+summary(aov_ec)
+```
+
+### 7.3 Tukey HSD post-hoc
+
+```{r tukey-ec}
+tukey_ec <- TukeyHSD(aov_ec)
+print(tukey_ec)
+
+tukey_tbl <- broom::tidy(tukey_ec) %>%
+  select(contrast, estimate, conf.low, conf.high, adj.p.value) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
+
+tukey_tbl %>%
+  kbl(
+    caption   = "Tukey HSD pairwise comparisons — log(E. coli MPN + 1)",
+    col.names = c("Comparison", "Difference (log scale)",
+                  "Lower 95% CI", "Upper 95% CI", "Adj. p-value")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE) %>%
+  row_spec(which(tukey_tbl$adj.p.value < 0.05),
+           bold = TRUE, background = "#f1f8f1")
+```
+
+### 7.4 Kruskal-Wallis (non-parametric check)
+
+```{r kruskal-ec}
+kruskal.test(EC_MPN ~ Site_ID, data = MPN_data)
+```
+
+<div class="callout callout-tip">
+<strong>&#128161; Do ANOVA and Kruskal-Wallis agree?</strong>
+If both are significant (or both non-significant), you can be confident
+in the conclusion. If they disagree, examine the Q-Q plot carefully — a
+few extreme outliers can make ANOVA non-significant while Kruskal-Wallis
+detects a real difference. With MPN data from a class field exercise,
+Kruskal-Wallis is often the more appropriate primary test because the
+sample sizes per site are small and log-normality is hard to verify.
+</div>
+
+### 7.5 Total coliform: same tests
+
+```{r anova-tc}
+aov_tc <- aov(log(TC_MPN + 1) ~ Site_ID, data = MPN_data)
+summary(aov_tc)
+kruskal.test(TC_MPN ~ Site_ID, data = MPN_data)
+```
+
+---
+
+## 8. Interpreting Your Results {#interpret}
+
+### 8.1 Connecting statistics to site characteristics
+
+Once you know which sites differ significantly, the next question is
+*why*. Use this framework:
+
+```{r interpret-summary}
+MPN_data %>%
+  group_by(Site_ID) %>%
+  summarise(
+    n           = n(),
+    gm_EC       = round(exp(mean(log(EC_MPN + 1))), 1),
+    gm_TC       = round(exp(mean(log(TC_MPN + 1))), 1),
+    EC_TC_ratio = round(gm_EC / gm_TC, 2),
+    pct_diluted = round(100 * mean(dilution_factor > 1), 1),
+    .groups     = "drop"
+  ) %>%
+  kbl(
+    caption   = "Summary metrics for interpreting site contamination patterns",
+    col.names = c("Site", "N", "Geom. mean EC", "Geom. mean TC",
+                  "EC:TC ratio", "% samples diluted")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+**How to use the EC:TC ratio:**
+
+- **EC:TC ratio close to 1.0** — nearly all coliforms are *E. coli*; contamination is predominantly fecal. Expected at pHake Lake (bird waste) and storm drains.
+- **EC:TC ratio much less than 1.0** — many non-*E. coli* coliforms present; contamination includes environmental organisms from soil, plant material, or old biofilms. May be expected at the Bioswale, which filters through organic material.
+
+### 8.2 Comparing your group's results to the class
+
+Your group's samples are two of the data points that contributed to the
+analysis above. To identify your group's samples:
+
+```{r your-group, eval=FALSE}
+# Replace "Group_1" and "Round_1" with your actual values
+your_data <- MPN_data %>%
+  filter(Group == "Group_1", Round == "Round_1")
+
+your_data %>%
+  select(Site_ID, Dilution, raw_TC, raw_EC, TC_MPN, EC_MPN) %>%
+  kbl(caption = "Your group's corrected MPN values") %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+---
+
+## 9. Summary {#summary}
+
+<div class="key-box">
+<h4>&#128161; Key takeaways</h4>
+<ul>
+<li><strong>E. coli is an indicator, not the only threat.</strong> Its presence signals fecal contamination and the potential presence of a suite of harder-to-detect pathogens. Absence does not guarantee safety — it just means fecal contamination is below detection.</li>
+<li><strong>Dilution correction is mandatory.</strong> A raw reading from a 1:10 diluted sample that is not multiplied by 10 systematically underestimates the true bacterial load by an order of magnitude. Always check the Dilution column before reporting any MPN value.</li>
+<li><strong>The ">2419.6" ceiling is a censored observation, not missing data.</strong> Do not replace it with NA. Use 2419.6 as a lower bound and note it in your methods. These are the most contaminated samples in your dataset.</li>
+<li><strong>Log-transform before ANOVA; use geometric mean for summaries.</strong> Both practices are required because MPN data is log-normally distributed. Reporting arithmetic means overstates typical exposure.</li>
+<li><strong>pHake Lake likely has the highest E. coli.</strong> Resident waterfowl (Canada geese, mallards) deposit large quantities of fecal matter directly into the lake. This is not a sewage problem — it is a wildlife management and urban park design problem with different interventions.</li>
+<li><strong>The Bioswale is doing its job</strong> if it shows lower concentrations than Seal Court stormwater inputs. Comparing upstream/downstream of the Bioswale would be a natural extension of this sampling design.</li>
+</ul>
+</div>
+
+<div class="discuss-box">
+<h4>&#128172; Discussion questions</h4>
+<ol>
+<li>Your group found that pHake Lake had the highest *E. coli* concentrations, but the ANOVA was not significant (p = 0.12). Does this mean the sites have the same bacterial contamination? What factors related to your class dataset might prevent the test from detecting a real difference?</li>
+<li>Two groups sampling the same site on the same day got very different MPN values. One group counted 12 yellow large wells and 8 yellow small wells; the other counted 85 large and 42 small. Neither sample was diluted. List three field or lab procedural differences that could produce this result.</li>
+<li>The Pomona Bioswale is designed to filter runoff. Based on your results, is it effective at reducing bacterial contamination? What additional sampling design would you need to definitively answer this question?</li>
+<li>Canada geese are protected under the Migratory Bird Treaty Act. Given that their waste is likely the primary source of elevated *E. coli* in pHake Lake, what management options are available to Pomona College, and what are the regulatory and ethical constraints on each?</li>
+<li>Your EC:TC ratio at Seal Court was 0.35, meaning only 35% of the coliforms were *E. coli*. What does the remaining 65% indicate about the source of contamination, and does it change your public health risk assessment for that site?</li>
+</ol>
+</div>
+
+---
+
+## References
+
+IDEXX Laboratories. 2013. *Colilert and Quanti-Tray/2000 Procedure*. Westbrook, ME.
+
+US EPA. 2012. *Recreational Water Quality Criteria*. EPA 820-F-12-058. Washington, DC.
+
+California State Water Resources Control Board. 2022. *Water Quality Control Plan for the Inland Valleys Basin (Basin Plan)*. Region 8.
+
+Rompré, A., et al. 2002. Detection and enumeration of coliforms in drinking water: current methods and emerging approaches. *Journal of Microbiological Methods* 49:31–54.
+
+<div class="page-footer">
+EA030 RTricks &nbsp;<span class="divider">|</span>&nbsp; Prof. Marc Los Huertos &nbsp;<span class="divider">|</span>&nbsp; Pomona College &nbsp;<span class="divider">|</span>&nbsp; Activity 19 &nbsp;<span class="divider">|</span>&nbsp; <a href="../index.html">Back to index</a>
+</div>

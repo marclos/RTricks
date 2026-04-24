@@ -1,0 +1,939 @@
+---
+title: "Stream Water Quality Monitoring"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/Activities/A06_Stream_Water_Monitoring.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = TRUE,
+  warning   = FALSE,
+  message   = FALSE,
+  fig.width  = 8,
+  fig.height = 4.5,
+  fig.align  = "center"
+)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+.main-container { max-width: 920px !important; margin: 0 auto !important; padding: 0 clamp(10px, 2vw, 32px) 80px !important; }
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
+h1.title, h4.author, h4.date { display: none; }
+
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif; font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+h4 {
+  font-family: 'Source Code Pro', monospace; font-size: .9rem; font-weight: 600;
+  color: var(--charcoal); margin-top: 20px; margin-bottom: 4px;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+ol, ul { padding-left: 1.5em; margin-bottom: 1em; }
+li { margin-bottom: .35em; }
+blockquote {
+  border-left: 4px solid var(--sage); margin: 1.2em 0;
+  padding: .5em 1em; background: var(--white);
+  border-radius: 0 5px 5px 0; font-size: .94em; color: var(--charcoal);
+}
+
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-new     { border-color: #1565c0;      background: #f0f4ff; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+
+.outcomes-box {
+  background: var(--white); border: 1px solid var(--mist);
+  border-left: 5px solid var(--fern); border-radius: 0 6px 6px 0;
+  padding: 18px 22px; margin: 0 0 2.5em;
+}
+.outcomes-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--forest);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.outcomes-box ol { padding-left: 1.4em; }
+.outcomes-box li { margin-bottom: .45em; font-size: .92em; }
+
+.pipeline-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px; margin: 1.6em 0 2em;
+}
+.pipeline-card {
+  background: var(--white); border: 1px solid var(--mist);
+  border-top: 3px solid var(--fern); border-radius: 4px;
+  padding: 12px 14px; box-shadow: var(--card-shadow);
+}
+.pipeline-card.s2 { border-top-color: var(--amber); }
+.pipeline-card.s3 { border-top-color: #2e7d94; }
+.pipeline-card.s4 { border-top-color: #5d4037; }
+.pipeline-card.s5 { border-top-color: #6a1b9a; }
+.pc-num  { font-family: 'Source Code Pro', monospace; font-size: .68rem; font-weight: 700;
+           letter-spacing: .12em; text-transform: uppercase; color: var(--dust); margin-bottom: 4px; }
+.pc-name { font-family: 'Libre Baskerville', serif; font-size: .93rem;
+           font-weight: 700; color: var(--forest); margin-bottom: 3px; }
+.pc-desc { font-size: .82rem; color: var(--charcoal); line-height: 1.4; }
+
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); vertical-align: top; }
+
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box strong { color: var(--amber-lt); }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+.discuss-box {
+  background: var(--parchment); border: 1px solid var(--mist);
+  border-radius: 6px; padding: 18px 22px; margin: 2em 0; font-size: .92em;
+}
+.discuss-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--moss);
+  font-size: 1rem; margin-bottom: 10px; text-transform: none; letter-spacing: 0;
+}
+.discuss-box ol { padding-left: 1.4em; }
+.discuss-box li { margin-bottom: .5em; }
+
+.site-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 3px;
+  margin-right: 4px; vertical-align: middle;
+}
+.st-sac  { background: #d4e6da; color: #1e3a2f; }
+.st-sar  { background: #fdf0e0; color: #7a3a00; }
+.st-sdc  { background: #e8f4fb; color: #1a3d5a; }
+.st-sgr  { background: #f5f0fa; color: #4a1b7a; }
+
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; RTricks &mdash; Activity 06</div>
+<h1>Stream Water Quality: <span>Inland Empire Watershed Monitoring</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College &nbsp;&bull;&nbsp; Environmental Analysis</p>
+<a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
+</div>
+
+<div class="section-nav">
+<a href="#context">Context</a>
+<a href="#setup">Setup & Data</a>
+<a href="#explore">Explore</a>
+<a href="#exceedance">Exceedances</a>
+<a href="#ecoli">E. coli</a>
+<a href="#nutrients">Nutrients</a>
+<a href="#trends">Trends</a>
+<a href="#anova">ANOVA</a>
+<a href="#logistic">Risk Model</a>
+<a href="#summary">Summary</a>
+</div>
+
+<div class="outcomes-box">
+<h4>&#127919; Learning Outcomes</h4>
+<ol>
+<li>Build and quality-check a multi-site, multi-parameter water quality dataset.</li>
+<li>Apply EPA and California Basin Plan regulatory thresholds to classify measurements as exceeding or compliant.</li>
+<li>Visualise *E. coli* and nutrient concentrations relative to standards across four Southern California streams.</li>
+<li>Run a Seasonal Kendall trend test to detect long-term water quality trends while controlling for seasonality.</li>
+<li>Compare mean concentrations across sites with one-way ANOVA and Tukey HSD post-hoc tests.</li>
+<li>Model the probability of a regulatory exceedance as a function of site and season using logistic regression.</li>
+<li>Interpret results in the context of land use, urban runoff, and environmental justice in the Inland Empire.</li>
+</ol>
+</div>
+
+> **What this activity covers.** The streams draining the San Gabriel and San Bernardino Mountains through the Inland Empire — San Antonio Creek, Santa Ana River, San Dimas Creek, and San Gabriel River — receive runoff from a mixture of undeveloped mountain headwaters, suburban sprawl, dairy operations, golf courses, and treated wastewater effluent. This produces complex, spatially variable water quality: some sites regularly exceed bacterial contact standards; others show elevated nutrients from fertiliser and septic inputs. Using simulated but ecologically realistic monitoring data, you will apply the full toolkit of environmental water quality analysis: exceedance mapping, trend detection, ANOVA, and logistic regression for risk modelling.
+
+---
+
+## 1. Study System and Context {#context}
+
+### 1.1 The four streams
+
+<div class="pipeline-grid">
+<div class="pipeline-card">
+<div class="pc-num"><span class="site-tag st-sac">SAC</span></div>
+<div class="pc-name">San Antonio Creek</div>
+<div class="pc-desc">Drains Mt. Baldy; highly seasonal. Upper reaches are pristine; lower reaches receive dairy and residential runoff near Pomona.</div>
+</div>
+<div class="pipeline-card s2">
+<div class="pc-num"><span class="site-tag st-sar">SAR</span></div>
+<div class="pc-name">Santa Ana River</div>
+<div class="pc-desc">Largest river in Southern California. Heavily regulated; receives treated wastewater from multiple plants. Nutrient-rich year-round.</div>
+</div>
+<div class="pipeline-card s3">
+<div class="pc-num"><span class="site-tag st-sdc">SDC</span></div>
+<div class="pc-name">San Dimas Creek</div>
+<div class="pc-desc">Urbanised watershed; flows through San Dimas and La Verne. Bacterial contamination follows storm events closely.</div>
+</div>
+<div class="pipeline-card s4">
+<div class="pc-num"><span class="site-tag st-sgr">SGR</span></div>
+<div class="pc-name">San Gabriel River</div>
+<div class="pc-desc">Mixed montane and urban inputs; San Gabriel Reservoir provides some attenuation. Golf course and turf runoff elevates nitrogen in lower reaches.</div>
+</div>
+</div>
+
+### 1.2 Parameters and regulatory standards
+
+| Parameter | Units | Standard | Regulation | Context |
+|---|---|---|---|---|
+| *E. coli* | MPN/100 mL | 320 (single sample) | CA Basin Plan contact recreation | Above 320 triggers beach/swim closures |
+| Nitrate (NO₃⁻) | mg/L as N | 10 | EPA MCL for drinking water | Also an eutrophication driver at lower levels |
+| Nitrite (NO₂⁻) | mg/L as N | 1 | EPA MCL | Short-lived; indicates active nitrification |
+| Total Phosphorus | µg/L | 100 | CA Basin Plan (reference) | Eutrophication driver; no federal MCL |
+| Specific Conductance | µS/cm | 1600 | CA Basin Plan (freshwater) | Salinity proxy; elevated by wastewater and urban runoff |
+
+<div class="callout callout-concept">
+<strong>&#128204; Why these four streams?</strong>
+Together they represent a gradient of land use and water management: San Antonio Creek (mostly natural headwaters), San Dimas Creek (dense suburban), Santa Ana River (managed / wastewater-dominated), and San Gabriel River (mixed). Comparing them lets you attribute water quality patterns to underlying watershed processes rather than site-specific anomalies.
+</div>
+
+---
+
+## 2. Setup and Simulated Data {#setup}
+
+### 2.1 Packages
+
+```{r packages}
+library(tidyverse)
+library(lubridate)
+library(trend)       # Seasonal Kendall test
+library(broom)       # tidy() model output
+library(knitr)
+library(kableExtra)
+```
+
+### 2.2 EPA / Basin Plan standards
+
+```{r standards}
+standards <- tibble(
+  parameter  = c("ecoli", "nitrate_n", "nitrite_n",
+                 "tp_ug_l", "conductance"),
+  threshold  = c(320,  10,   1,    100,  1600),
+  units      = c("MPN/100 mL", "mg/L as N", "mg/L as N",
+                 "µg/L",       "µS/cm"),
+  regulation = c("CA Basin Plan (REC-1)", "EPA MCL", "EPA MCL",
+                 "CA Basin Plan", "CA Basin Plan"),
+  stringsAsFactors = FALSE
+)
+
+standards %>%
+  kbl(caption = "Regulatory thresholds used in this analysis") %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+### 2.3 Simulate monitoring data
+
+Ten years of monthly sampling at two stations per stream — an upstream (headwater/reference) and downstream (urban influence) location — gives 2,400 monitoring records.
+
+```{r simulate-data}
+set.seed(2024)
+
+# ── Site definitions ──────────────────────────────────────────────────────────
+sites <- tribble(
+  ~stream,             ~station,   ~position,    ~land_use,
+  "San Antonio Creek", "SAC-UP",   "upstream",   "natural",
+  "San Antonio Creek", "SAC-DN",   "downstream", "mixed_ag",
+  "Santa Ana River",   "SAR-UP",   "upstream",   "mixed_ag",
+  "Santa Ana River",   "SAR-DN",   "downstream", "wastewater",
+  "San Dimas Creek",   "SDC-UP",   "upstream",   "suburban",
+  "San Dimas Creek",   "SDC-DN",   "downstream", "urban",
+  "San Gabriel River", "SGR-UP",   "upstream",   "natural",
+  "San Gabriel River", "SGR-DN",   "downstream", "suburban"
+)
+
+# ── Parameter means by land-use type ─────────────────────────────────────────
+# ecoli (log-normal MPN), nitrate_n (mg/L N), tp_ug_l (µg/L),
+# conductance (µS/cm), nitrite_n (mg/L N)
+lu_params <- tribble(
+  ~land_use,     ~ec_mu, ~ec_sd, ~no3_mu, ~no3_sd, ~tp_mu, ~tp_sd, ~cond_mu, ~cond_sd, ~no2_mu, ~no2_sd,
+  "natural",      3.5,   1.0,    0.30,   0.20,    20,    8,     180,    40,    0.02,  0.02,
+  "mixed_ag",     4.2,   1.1,    3.50,   1.20,    80,   30,     480,   120,    0.12,  0.08,
+  "suburban",     4.8,   1.2,    5.00,   1.50,   110,   40,     650,   150,    0.20,  0.12,
+  "urban",        5.5,   1.3,    7.50,   2.00,   160,   60,     900,   200,    0.35,  0.18,
+  "wastewater",   4.0,   0.9,   12.00,   2.50,   380,   80,    1400,   250,    0.80,  0.30
+)
+
+# ── Generate monthly records 2014-2023 ────────────────────────────────────────
+dates <- seq(ymd("2014-01-01"), ymd("2023-12-01"), by = "month")
+
+wq <- sites %>%
+  left_join(lu_params, by = "land_use") %>%
+  crossing(date = dates) %>%
+  mutate(
+    mo       = month(date),
+    yr       = year(date),
+    # Seasonal multipliers: wet season (Dec-Mar) boosts bacteria; summer reduces flow
+    wet      = mo %in% c(12, 1, 2, 3),
+    dry      = mo %in% c(7, 8, 9),
+    # E. coli: log-normal; storm events in wet season inflate counts
+    ecoli    = round(rlnorm(n(), ec_mu + wet * 0.9 - dry * 0.3, ec_sd)),
+    # Nitrate: log-normal; slightly higher in wet season (flushing)
+    nitrate_n = pmax(0.01, rlnorm(n(), log(no3_mu) + wet * 0.2, no3_sd / no3_mu)),
+    # Nitrite: log-normal
+    nitrite_n = pmax(0.001, rlnorm(n(), log(no2_mu + 0.001), no2_sd / (no2_mu + 0.001))),
+    # Total phosphorus
+    tp_ug_l   = pmax(1, rnorm(n(), tp_mu + wet * 15 - dry * 5, tp_sd)),
+    # Conductance: higher in summer (concentration effect) and wastewater reaches
+    conductance = pmax(50, rnorm(n(), cond_mu - wet * 80 + dry * 100, cond_sd)),
+    # Exceedance flags
+    exc_ecoli  = ecoli     > 320,
+    exc_no3    = nitrate_n > 10,
+    exc_no2    = nitrite_n > 1,
+    exc_tp     = tp_ug_l   > 100,
+    exc_cond   = conductance > 1600,
+    season     = case_when(
+      mo %in% c(12, 1, 2)  ~ "Winter",
+      mo %in% c(3, 4, 5)   ~ "Spring",
+      mo %in% c(6, 7, 8)   ~ "Summer",
+      TRUE                  ~ "Fall"
+    ),
+    season = factor(season, levels = c("Winter", "Spring", "Summer", "Fall"))
+  ) %>%
+  select(stream, station, position, land_use, date, yr, mo, season,
+         ecoli, nitrate_n, nitrite_n, tp_ug_l, conductance,
+         exc_ecoli, exc_no3, exc_no2, exc_tp, exc_cond)
+
+glimpse(wq)
+```
+
+---
+
+## 3. Exploratory Overview {#explore}
+
+### 3.1 Sample counts and summary
+
+```{r explore-summary}
+wq %>%
+  group_by(stream, station, position, land_use) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  kbl(caption = "Monitoring records per station") %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+### 3.2 Distribution of key parameters across stations
+
+```{r explore-boxplots, fig.height=6}
+site_colors <- c(
+  "SAC-UP" = "#1e3a2f", "SAC-DN" = "#4a7c5e",
+  "SAR-UP" = "#7a4a00", "SAR-DN" = "#c8832a",
+  "SDC-UP" = "#1a3d5a", "SDC-DN" = "#2e7d94",
+  "SGR-UP" = "#4a1b7a", "SGR-DN" = "#8e5cb5"
+)
+
+wq %>%
+  pivot_longer(c(ecoli, nitrate_n, tp_ug_l, conductance),
+               names_to = "parameter", values_to = "value") %>%
+  mutate(parameter = recode(parameter,
+    "ecoli"       = "E. coli (MPN/100 mL)",
+    "nitrate_n"   = "Nitrate-N (mg/L)",
+    "tp_ug_l"     = "Total P (\u03bcg/L)",
+    "conductance" = "Conductance (\u03bcS/cm)"
+  )) %>%
+  ggplot(aes(x = station, y = value, fill = station)) +
+  geom_boxplot(outlier.size = 0.6, outlier.alpha = 0.3,
+               alpha = 0.8, show.legend = FALSE) +
+  scale_fill_manual(values = site_colors) +
+  scale_y_log10(labels = scales::comma) +
+  facet_wrap(~ parameter, scales = "free_y", ncol = 2) +
+  scale_x_discrete(guide = guide_axis(angle = 40)) +
+  labs(
+    title    = "Water quality distributions across Inland Empire monitoring stations",
+    subtitle = "log\u2081\u2080 y-axis  \u00b7  each box = 120 monthly samples",
+    x = NULL, y = "Concentration (log scale)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 9.5),
+    strip.text    = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+---
+
+## 4. Regulatory Exceedance Analysis {#exceedance}
+
+### 4.1 Exceedance rates by station
+
+```{r exceedance-table}
+exc_summary <- wq %>%
+  group_by(stream, station, land_use) %>%
+  summarise(
+    n          = n(),
+    pct_ecoli  = round(100 * mean(exc_ecoli), 1),
+    pct_no3    = round(100 * mean(exc_no3),   1),
+    pct_tp     = round(100 * mean(exc_tp),    1),
+    pct_cond   = round(100 * mean(exc_cond),  1),
+    .groups    = "drop"
+  ) %>%
+  arrange(stream, station)
+
+exc_summary %>%
+  kbl(
+    caption   = "Percent of monthly samples exceeding regulatory thresholds by station",
+    col.names = c("Stream", "Station", "Land use", "N",
+                  "E. coli >320", "NO\u2083-N >10 mg/L",
+                  "Total P >100 µg/L", "Cond >1600 µS/cm")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE) %>%
+  row_spec(which(exc_summary$pct_ecoli > 20), bold = TRUE,
+           background = "#fff5f5")
+```
+
+### 4.2 Exceedance heatmap
+
+```{r exceedance-heatmap, fig.height=4}
+exc_long <- wq %>%
+  group_by(stream, station, season) %>%
+  summarise(
+    `E. coli`   = mean(exc_ecoli),
+    `Nitrate-N` = mean(exc_no3),
+    `Total P`   = mean(exc_tp),
+    Conductance = mean(exc_cond),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(c("E. coli","Nitrate-N","Total P","Conductance"),
+               names_to = "parameter", values_to = "exc_rate")
+
+ggplot(exc_long, aes(x = season, y = station, fill = exc_rate)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  geom_text(aes(label = scales::percent(exc_rate, accuracy = 1)),
+            size = 2.6, color = ifelse(exc_long$exc_rate > 0.3, "white", "#1a1a18")) +
+  scale_fill_gradientn(
+    colors = c("#f7f3ed", "#d4e6da", "#c8832a", "#8b0000"),
+    limits = c(0, 1),
+    labels = scales::percent_format(),
+    name   = "Exceedance\nrate"
+  ) +
+  facet_wrap(~ parameter, nrow = 1) +
+  labs(
+    title    = "Seasonal exceedance rates by station and parameter",
+    x = NULL, y = NULL
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    plot.title  = element_text(family = "serif", face = "bold",
+                               color = "#1e3a2f", size = 13),
+    strip.text  = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 35, hjust = 1)
+  )
+```
+
+---
+
+## 5. *E. coli* Deep Dive {#ecoli}
+
+### 5.1 Time series relative to contact recreation standard
+
+```{r ecoli-ts, fig.height=5}
+wq %>%
+  ggplot(aes(x = date, y = ecoli, color = station)) +
+  geom_line(alpha = 0.45, linewidth = 0.55) +
+  geom_hline(yintercept = 320, linetype = "dashed",
+             color = "#c0392b", linewidth = 0.8) +
+  annotate("text", x = ymd("2014-06-01"), y = 360,
+           label = "CA Basin Plan limit (320 MPN/100 mL)",
+           color = "#c0392b", size = 3, hjust = 0, fontface = "italic") +
+  scale_y_log10(labels = scales::comma) +
+  scale_color_manual(values = site_colors, name = NULL) +
+  facet_wrap(~ stream, ncol = 2) +
+  labs(
+    title    = "Monthly E. coli concentrations — Inland Empire streams",
+    subtitle = "Red dashed line = CA Basin Plan contact-recreation standard",
+    x = NULL, y = "E. coli (MPN/100 mL, log scale)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 9.5),
+    legend.position = "bottom",
+    strip.text    = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+### 5.2 Seasonal *E. coli* patterns
+
+Wet-season storm runoff mobilises fecal bacteria from urban surfaces, livestock areas, and failing septic systems. The seasonal signal is strongest in urban and agricultural catchments.
+
+```{r ecoli-seasonal, fig.height=4}
+wq %>%
+  group_by(station, stream, season) %>%
+  summarise(
+    gm_ecoli = exp(mean(log(ecoli + 1))),  # geometric mean
+    .groups  = "drop"
+  ) %>%
+  ggplot(aes(x = season, y = gm_ecoli, fill = station)) +
+  geom_col(position = "dodge", color = "white", linewidth = 0.3, alpha = 0.85) +
+  geom_hline(yintercept = 320, linetype = "dashed",
+             color = "#c0392b", linewidth = 0.7) +
+  scale_fill_manual(values = site_colors, name = NULL) +
+  scale_y_continuous(labels = scales::comma) +
+  facet_wrap(~ stream, nrow = 1) +
+  labs(
+    title    = "Geometric mean E. coli by season and station",
+    subtitle = "Geometric mean accounts for the log-normal distribution of bacterial counts",
+    x = NULL, y = "Geometric mean E. coli (MPN/100 mL)"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 12),
+    plot.subtitle = element_text(color = "#7a7a72", size = 9),
+    strip.text    = element_text(face = "bold"),
+    legend.position = "bottom",
+    legend.key.size = unit(0.4, "cm")
+  )
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; Why geometric mean for bacteria?</strong>
+*E. coli* counts follow a log-normal distribution — a few extreme values can be 100× the typical reading. The arithmetic mean is heavily influenced by outliers and overestimates the central tendency of bacterial exposure. The geometric mean (= exp(mean(log(x)))) is the standard central-tendency measure used in Basin Plan assessments for contact recreation standards.
+</div>
+
+---
+
+## 6. Nutrient Analysis {#nutrients}
+
+### 6.1 Nitrate and total phosphorus distributions
+
+```{r nutrient-plot, fig.height=5}
+wq %>%
+  pivot_longer(c(nitrate_n, tp_ug_l),
+               names_to = "parameter", values_to = "value") %>%
+  mutate(
+    parameter = recode(parameter,
+      "nitrate_n" = "Nitrate-N (mg/L) — EPA MCL: 10 mg/L",
+      "tp_ug_l"   = "Total Phosphorus (\u03bcg/L) — CA limit: 100 \u03bcg/L"
+    ),
+    threshold = if_else(grepl("Nitrate", parameter), 10, 100)
+  ) %>%
+  ggplot(aes(x = reorder(station, value, median), y = value, fill = stream)) +
+  geom_boxplot(alpha = 0.8, outlier.size = 0.7, outlier.alpha = 0.4) +
+  geom_hline(aes(yintercept = threshold), linetype = "dashed",
+             color = "#c0392b", linewidth = 0.8) +
+  scale_fill_manual(
+    values = c(
+      "San Antonio Creek" = "#4a7c5e",
+      "Santa Ana River"   = "#c8832a",
+      "San Dimas Creek"   = "#2e7d94",
+      "San Gabriel River" = "#8e5cb5"
+    ),
+    name = NULL
+  ) +
+  scale_x_discrete(guide = guide_axis(angle = 35)) +
+  facet_wrap(~ parameter, scales = "free_y") +
+  labs(
+    title = "Nutrient concentrations by station",
+    subtitle = "Red dashed lines = regulatory thresholds",
+    x = NULL, y = "Concentration"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 9.5),
+    strip.text    = element_text(face = "bold"),
+    legend.position = "bottom"
+  )
+```
+
+### 6.2 N:P ratio and eutrophication risk
+
+The molar nitrogen-to-phosphorus (N:P) ratio indicates which nutrient limits algal growth: N:P < 16 (Redfield ratio) suggests nitrogen limitation; N:P > 16 suggests phosphorus limitation. Wastewater effluent typically has high N:P, favouring N-limited growth and cyanobacteria blooms.
+
+```{r np-ratio, fig.height=4}
+wq %>%
+  mutate(
+    # Convert to molar: N/14 and P/31 (converting µg/L to mg/L first for P)
+    N_molar = nitrate_n / 14,
+    P_molar = (tp_ug_l / 1000) / 31,
+    NP_ratio = N_molar / P_molar
+  ) %>%
+  group_by(station, stream) %>%
+  summarise(median_NP = median(NP_ratio, na.rm = TRUE), .groups = "drop") %>%
+  ggplot(aes(x = reorder(station, median_NP), y = median_NP, fill = stream)) +
+  geom_col(alpha = 0.85, color = "white") +
+  geom_hline(yintercept = 16, linetype = "dashed",
+             color = "#c0392b", linewidth = 0.8) +
+  annotate("text", x = 0.6, y = 17.5,
+           label = "Redfield ratio (N:P = 16)",
+           color = "#c0392b", hjust = 0, size = 3.2, fontface = "italic") +
+  scale_fill_manual(
+    values = c("San Antonio Creek" = "#4a7c5e", "Santa Ana River" = "#c8832a",
+               "San Dimas Creek" = "#2e7d94",   "San Gabriel River" = "#8e5cb5"),
+    name = NULL
+  ) +
+  scale_x_discrete(guide = guide_axis(angle = 35)) +
+  labs(
+    title    = "Median molar N:P ratio by station",
+    subtitle = "Above dashed line = P-limited (excess N); below = N-limited",
+    x = NULL, y = "Molar N:P ratio"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 13),
+    plot.subtitle = element_text(color = "#7a7a72", size = 9.5),
+    legend.position = "bottom"
+  )
+```
+
+---
+
+## 7. Trend Detection — Seasonal Kendall Test {#trends}
+
+The **Seasonal Kendall test** (Hirsch et al. 1982) tests for a monotonic trend in a time series while controlling for seasonal effects. It is the standard method for environmental monitoring data because it is non-parametric (no normality assumption) and handles the strong seasonal cycles typical of stream chemistry.
+
+<div class="callout callout-formula">
+<strong>&#9881;&#65039; How the Seasonal Kendall test works.</strong>
+The Mann-Kendall statistic S counts the number of concordant minus discordant pairs in the data. The Seasonal Kendall version computes S separately within each season (month), then sums across seasons. This removes the seasonal signal before testing for trend, so a winter that is consistently higher than summer does not appear as a trend.
+</div>
+
+```{r sk-trends}
+library(trend)
+
+# Apply Seasonal Kendall to log(E. coli) at each station
+sk_results <- wq %>%
+  group_by(station, stream) %>%
+  arrange(date) %>%
+  group_modify(~ {
+    x   <- log(.x$ecoli + 1)
+    mon <- .x$mo
+    tryCatch({
+      res <- seaken(x, mon)
+      tibble(
+        S        = res$S,
+        tau      = round(res$tau,   3),
+        p_value  = round(res$p.value, 4),
+        trend    = case_when(
+          res$p.value < 0.05 & res$tau > 0 ~ "Increasing",
+          res$p.value < 0.05 & res$tau < 0 ~ "Decreasing",
+          TRUE                              ~ "No trend"
+        )
+      )
+    }, error = function(e) tibble(S=NA, tau=NA, p_value=NA, trend="Error"))
+  }) %>%
+  ungroup()
+
+sk_results %>%
+  kbl(
+    caption   = "Seasonal Kendall trend test results for log(E. coli + 1), 2014–2023",
+    col.names = c("Station", "Stream", "S statistic", "\u03c4 (tau)", "p-value", "Trend")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE) %>%
+  row_spec(which(sk_results$trend == "Increasing"),
+           bold = TRUE, background = "#fff5f5") %>%
+  row_spec(which(sk_results$trend == "Decreasing"),
+           bold = TRUE, background = "#f1f8f1")
+```
+
+<div class="callout callout-tip">
+<strong>&#128161; Interpreting tau.</strong>
+Kendall's τ ranges from −1 (perfectly decreasing) to +1 (perfectly increasing). Values near zero indicate no monotonic trend. A τ of +0.15 with p &lt; 0.05 means there is a statistically significant but weak upward trend — statistically real but possibly not ecologically meaningful. Always consider the magnitude alongside the p-value.
+</div>
+
+---
+
+## 8. ANOVA: Do Sites Differ in Nitrate? {#anova}
+
+A significant Seasonal Kendall test tells you *whether* a trend exists at each station but not whether stations differ from each other. One-way ANOVA tests whether mean nitrate concentration differs among the eight stations.
+
+### 8.1 Assumption check
+
+```{r anova-assumptions, fig.height=4}
+aov_fit <- aov(log(nitrate_n) ~ station, data = wq)
+
+par(mfrow = c(1, 2), mar = c(4, 4, 3, 1))
+qqnorm(residuals(aov_fit), main = "Q-Q: log(Nitrate-N) residuals",
+       col = "#4a7c5e", pch = 19, cex = 0.6)
+qqline(residuals(aov_fit), col = "#c8832a", lwd = 2)
+plot(fitted(aov_fit), residuals(aov_fit),
+     xlab = "Fitted values", ylab = "Residuals",
+     main = "Residuals vs. fitted",
+     col = "#4a7c5e", pch = 19, cex = 0.6)
+abline(h = 0, col = "#c8832a", lwd = 2, lty = 2)
+par(mfrow = c(1, 1))
+```
+
+```{r levene-nitrate}
+car::leveneTest(log(nitrate_n) ~ station, data = wq)
+```
+
+### 8.2 ANOVA and Tukey HSD
+
+```{r anova-nitrate}
+summary(aov_fit)
+```
+
+```{r tukey-nitrate}
+tukey_res <- TukeyHSD(aov_fit)
+
+tukey_tbl <- broom::tidy(tukey_res) %>%
+  select(contrast, estimate, conf.low, conf.high, adj.p.value) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3))) %>%
+  filter(adj.p.value < 0.05) %>%
+  arrange(adj.p.value)
+
+cat("Significant pairwise differences (FDR-adjusted p < 0.05):", nrow(tukey_tbl), "\n")
+
+tukey_tbl %>%
+  head(12) %>%
+  kbl(
+    caption   = "Top 12 significant Tukey HSD comparisons — log(Nitrate-N)",
+    col.names = c("Comparison", "Difference (log scale)",
+                  "Lower CI", "Upper CI", "Adj. p-value")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+---
+
+## 9. Logistic Regression: Modelling Exceedance Risk {#logistic}
+
+Rather than just describing *where* exceedances occur, we can model the **probability** of an exceedance as a function of predictors. This turns water quality data into a risk management tool.
+
+**Question:** What predicts the probability of an *E. coli* exceedance? We test station identity (as a proxy for land use) and season.
+
+```{r logistic-ecoli}
+logit_fit <- glm(
+  exc_ecoli ~ station + season,
+  family  = binomial(link = "logit"),
+  data    = wq
+)
+
+broom::tidy(logit_fit, exponentiate = TRUE, conf.int = TRUE) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3))) %>%
+  kbl(
+    caption   = "Logistic regression: odds ratios for E. coli exceedance",
+    col.names = c("Term", "Odds ratio", "Std. error",
+                  "z-statistic", "p-value", "Lower CI", "Upper CI")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE) %>%
+  row_spec(which(broom::tidy(logit_fit)$p.value < 0.05), bold = TRUE)
+```
+
+```{r predicted-exceedance, fig.height=4}
+# Predicted exceedance probability by station and season
+pred_df <- expand.grid(
+  station = unique(wq$station),
+  season  = levels(wq$season)
+) %>%
+  mutate(
+    prob_exc = predict(logit_fit, newdata = ., type = "response"),
+    stream   = str_extract(station, "SAC|SAR|SDC|SGR") %>%
+               recode(SAC = "San Antonio Creek", SAR = "Santa Ana River",
+                      SDC = "San Dimas Creek",   SGR = "San Gabriel River")
+  )
+
+ggplot(pred_df, aes(x = season, y = prob_exc, color = station, group = station)) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 3) +
+  scale_color_manual(values = site_colors, name = NULL) +
+  scale_y_continuous(labels = scales::percent_format(), limits = c(0, 1)) +
+  facet_wrap(~ stream, nrow = 1) +
+  labs(
+    title    = "Predicted probability of E. coli exceedance (>320 MPN/100 mL)",
+    subtitle = "Logistic regression: exceedance ~ station + season",
+    x = NULL, y = "Predicted exceedance probability"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 color = "#1e3a2f", size = 12),
+    plot.subtitle = element_text(color = "#7a7a72", size = 9.5),
+    legend.position = "bottom",
+    strip.text    = element_text(face = "bold")
+  )
+```
+
+<div class="callout callout-concept">
+<strong>&#128204; Interpreting odds ratios.</strong>
+The logistic regression output shows **odds ratios** (exponentiated coefficients). An OR of 3.5 for SAC-DN relative to the reference station means that samples from SAC-DN have 3.5× the odds of exceeding the *E. coli* standard compared to the reference, holding season constant. OR > 1 increases risk; OR &lt; 1 decreases risk. The confidence interval tells you the precision of that estimate.
+</div>
+
+---
+
+## 10. Summary {#summary}
+
+<div class="key-box">
+<h4>&#128161; Key takeaways</h4>
+<ul>
+<li><strong>Land use drives water quality patterns.</strong> Wastewater-influenced Santa Ana River downstream stations show the highest nitrate and phosphorus; urban San Dimas Creek stations show the highest E. coli exceedance rates.</li>
+<li><strong>Seasonality matters for bacteria, not nutrients.</strong> E. coli concentrations spike in winter with storm runoff. Nitrate and phosphorus from wastewater effluent are elevated year-round.</li>
+<li><strong>The geometric mean is the correct central tendency for bacteria.</strong> Arithmetic means are inflated by extreme storm events that do not represent typical exposure conditions.</li>
+<li><strong>The Seasonal Kendall test is the standard for trend detection in water quality data.</strong> It is non-parametric and removes seasonal cycles before testing — essential for data that violates normality and has strong seasonal structure.</li>
+<li><strong>Logistic regression converts water quality data into risk.</strong> Expressing results as exceedance probabilities is more actionable for managers than reporting raw concentrations.</li>
+<li><strong>Upstream–downstream pairs reveal human impacts.</strong> Comparing reference (upstream) and impacted (downstream) stations at the same stream controls for climate and hydrology and isolates the land-use signal.</li>
+</ul>
+</div>
+
+<div class="discuss-box">
+<h4>&#128172; Discussion questions</h4>
+<ol>
+<li>SAR-DN (Santa Ana River downstream) has the highest nitrate concentration but relatively low *E. coli* because treated wastewater undergoes UV disinfection. What does this tell you about the limitations of using a single parameter to assess overall water quality?</li>
+<li>The Seasonal Kendall test found a significant increasing trend in *E. coli* at one or more downstream stations. What watershed-level changes since 2014 could produce an increasing bacterial trend — give one climate-related and one land-use-related explanation.</li>
+<li>You are advising a county health department on which sites to prioritise for posting swimming-closure warnings. Using the logistic regression results, rank the eight stations by winter exceedance probability. What additional information would you want before making management recommendations?</li>
+<li>The N:P ratio analysis showed that most stations are phosphorus-limited (N:P > 16). What are the ecological implications of phosphorus limitation for cyanobacteria blooms? How does this influence which nutrient you would target for management intervention?</li>
+<li>This analysis used simulated data. Describe three specific ways that real USGS/SWRCB monitoring data would complicate this workflow — consider irregular sampling intervals, non-detects below the method detection limit, and changes in laboratory methods over time.</li>
+</ol>
+</div>
+
+---
+
+## References
+
+California State Water Resources Control Board. 2022. *Water Quality Control Plan for the Santa Ana River Basin (Basin Plan)*. Region 8. Sacramento, CA.
+
+Hirsch, R. M., Slack, J. R., and Smith, R. A. 1982. Techniques of trend analysis for monthly water quality data. *Water Resources Research* 18:107–121.
+
+US EPA. 1986. *Ambient Water Quality Criteria for Bacteria*. EPA 440/5-84-002.
+
+US EPA. 2012. *Recreational Water Quality Criteria*. EPA 820-F-12-058.
+
+<div class="page-footer">
+EA030 RTricks &nbsp;<span class="divider">|</span>&nbsp; Prof. Marc Los Huertos &nbsp;<span class="divider">|</span>&nbsp; Pomona College &nbsp;<span class="divider">|</span>&nbsp; Activity 06 &nbsp;<span class="divider">|</span>&nbsp; <a href="../index.html">Back to index</a>
+</div>
