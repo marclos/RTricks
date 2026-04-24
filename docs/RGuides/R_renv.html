@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Marc Los Huertos" />
+
+
+<title>Package Management with renv</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Package Management with renv</h1>
+<h4 class="author">Marc Los Huertos</h4>
+<h4 class="date">EA030 · Compiled 2026-04-23</h4>
+
+
+
+<div class="page-header">
+<div class="module-tag">
+EA030 — Core R Skills
+</div>
+<h1>
+Package Management <span>with renv</span>
+</h1>
+<p class="sub">
+<strong>Prof. Marc Los Huertos</strong>  •  Pomona College  • 
+Environmental Analysis
+</p>
+<p><a class="back-link" href="../index.html">← Back to RTricks</a></p>
+</div>
+<div class="section-nav">
+<p><a href="#why">Why This Matters</a> <a href="#concept">How renv
+Works</a> <a href="#init">Initialising</a> <a href="#lockfile">The
+Lockfile</a> <a href="#workflow">Day-to-Day Workflow</a>
+<a href="#restore">Restoring</a> <a href="#github">With GitHub</a>
+<a href="#troubleshoot">Troubleshooting</a> <a href="#summary">Quick
+Reference</a></p>
+</div>
+<div class="outcomes-box">
+<h4>
+🎯 Learning Outcomes
+</h4>
+<ol>
+<li>
+Explain why package version differences cause analyses to break silently
+or loudly.
+</li>
+<li>
+Describe what renv records in a lockfile and how the project-local
+library works.
+</li>
+<li>
+Initialise renv in an existing RStudio Project with
+<code>renv::init()</code>.
+</li>
+<li>
+Record package versions with <code>renv::snapshot()</code> after
+installing or updating a package.
+</li>
+<li>
+Restore an identical package environment on a new machine with
+<code>renv::restore()</code>.
+</li>
+<li>
+Commit <code>renv.lock</code> (and not the library itself) to a GitHub
+repository.
+</li>
+<li>
+Diagnose and resolve the three most common renv issues.
+</li>
+</ol>
+</div>
+<blockquote>
+<p><strong>What this module covers.</strong> Your R analysis depends on
+dozens of packages, each of which changes with every update. An analysis
+that runs perfectly today may produce different results — or fail
+outright — when a collaborator opens it on a different machine, or when
+you return to it six months later after updating R. <code>renv</code>
+solves this by locking a snapshot of every package version your project
+uses into a file you commit alongside your code. This module teaches the
+complete workflow from first <code>init()</code> to sharing a
+reproducible environment via GitHub.</p>
+</blockquote>
+<hr />
+<div id="why" class="section level2">
+<h2>1. Why Package Versions Matter</h2>
+<p>Before installing renv, it helps to understand concretely what
+problem it solves.</p>
+<div id="the-works-on-my-machine-problem" class="section level3">
+<h3>The “works on my machine” problem</h3>
+<div class="scenario-grid">
+<div class="scenario bad">
+<div class="sc-head">
+✗ Without renv
+</div>
+<div class="sc-body">
+<p>You finish your PM2.5 analysis in January using <code>dplyr
+1.1.2</code>. You share the code with a labmate who has <code>dplyr
+1.0.8</code> installed. The <code>.by =</code> argument to
+<code>summarise()</code> — added in 1.1.0 — causes an error they cannot
+explain. They spend an afternoon debugging code that is actually
+correct.<br><br> Or worse: the analysis runs but produces different
+numbers because a statistical function’s default argument changed
+between versions. Neither of you notices.</p>
+</div>
+</div>
+<div class="scenario good">
+<div class="sc-head">
+✓ With renv
+</div>
+<div class="sc-body">
+<p>Your project folder contains <code>renv.lock</code> recording the
+exact version of every package. Your labmate runs
+<code>renv::restore()</code> after cloning your repo. renv installs the
+exact versions you used — not whatever happens to be current — and the
+analysis runs identically.<br><br> The lockfile is a few kilobytes of
+plain text committed to GitHub alongside your code. It costs almost
+nothing to maintain.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="packages-that-have-changed-in-ways-that-break-analyses" class="section level3">
+<h3>Packages that have changed in ways that break analyses</h3>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>Version where behaviour changed</th>
+<th>What broke</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>dplyr</code></td>
+<td>1.1.0</td>
+<td><code>.by =</code> added; <code>group_by()</code> scoping
+tightened</td>
+</tr>
+<tr class="even">
+<td><code>ggplot2</code></td>
+<td>3.4.0</td>
+<td><code>size</code> aesthetic split into <code>linewidth</code> +
+<code>size</code></td>
+</tr>
+<tr class="odd">
+<td><code>lubridate</code></td>
+<td>1.9.0</td>
+<td><code>as_date()</code> handling of POSIXct with tz changed</td>
+</tr>
+<tr class="even">
+<td><code>vegan</code></td>
+<td>2.6.0</td>
+<td><code>adonis()</code> deprecated in favour of
+<code>adonis2()</code></td>
+</tr>
+<tr class="odd">
+<td><code>lme4</code></td>
+<td>1.1-30</td>
+<td>Convergence tolerances tightened; some models now warn</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-warn">
+<p><strong>⚠️ Silent version breakage is the most dangerous
+kind.</strong> When a breaking change causes an error, you notice
+immediately and fix it. When it silently shifts a default argument — a
+different smoothing bandwidth, a changed sort order, a reversed factor
+level — your results change without any indication that something is
+wrong. Locking package versions prevents both.</p>
+</div>
+<hr />
+</div>
+</div>
+<div id="concept" class="section level2">
+<h2>2. How renv Works</h2>
+<p>renv adds three things to your RStudio Project:</p>
+<div class="file-tree">
+<p><span class="ft-dir">your-project/</span><br>  ├── <span class="ft-dir">data/</span><br>  ├── <span class="ft-dir">R/</span><br>
+ ├── your-project.Rproj<br>  ├── <span class="ft-new">renv.lock</span>
+    <span class="ft-note">← the lockfile: records every package +
+version</span><br>  ├── <span class="ft-new">.Rprofile</span>     <span class="ft-note">← one line that activates renv when the project
+opens</span><br>  └── <span class="ft-new">renv/</span><br>      ├──
+<span class="ft-lock">activate.R</span>   <span class="ft-note">← renv
+bootstrap script</span><br>      ├── library/      <span class="ft-note">← project-local package library (gitignored)</span><br>
+     └── .gitignore    <span class="ft-note">← keeps the library out of
+git automatically</span><br></p>
+</div>
+<p><strong>The project-local library.</strong> Normally all your R
+packages live in a single shared library folder (run
+<code>.libPaths()</code> to see it). renv gives each project its own
+library folder inside <code>renv/library/</code>. Packages installed for
+project A do not affect project B, and vice versa.</p>
+<p><strong>The lockfile.</strong> <code>renv.lock</code> is a JSON file
+that records the name, version, and source (CRAN, Bioconductor, GitHub)
+of every package your project uses. It is small, human-readable, and the
+only file you need to commit to reproduce the environment elsewhere.</p>
+<p><strong>The cache.</strong> renv maintains a global package cache on
+your machine (usually in <code>~/.cache/R/renv/</code>). When two
+projects use the same package version, renv hard-links the files rather
+than copying them, so you do not need gigabytes of disk space even with
+many projects.</p>
+<div class="callout callout-concept">
+<p><strong>📌 You commit the lockfile, not the library.</strong> The
+<code>renv/library/</code> folder is automatically added to
+<code>.gitignore</code> by renv. Committing compiled package binaries
+would bloat your repository by hundreds of megabytes. The lockfile alone
+— typically 5–50 KB — is everything needed to recreate the library on
+another machine.</p>
+</div>
+<hr />
+</div>
+<div id="init" class="section level2">
+<h2>3. Initialising renv</h2>
+<div id="prerequisites" class="section level3">
+<h3>Prerequisites</h3>
+<p>renv works inside an <strong>RStudio Project</strong>
+(<code>.Rproj</code> file). If your analysis is not already in a
+project, create one first: <em>File → New Project → Existing
+Directory</em>. See the Project Structure module for details.</p>
+</div>
+<div id="install-and-initialise" class="section level3">
+<h3>Install and initialise</h3>
+<pre class="r"><code># Install renv once (only needs to happen once per machine)
+install.packages(&quot;renv&quot;)
+
+# Initialise renv in your current project
+renv::init()</code></pre>
+<div class="console-out">
+<p><span class="co-label"># Console output from renv::init()</span>
+<span class="co-ok">* Initializing project … * Discovering package
+dependencies … Done! * Copying packages into the cache … [33 packages]
+Done!</p>
+<p>The following package(s) will be updated in the lockfile:</span>
+<span class="co-info"> # CRAN ——————————————————————- - dplyr [* -&gt;
+1.1.4] - ggplot2 [* -&gt; 3.5.1] - lubridate [* -&gt; 1.9.3] - readr [*
+-&gt; 2.1.5] - tidyr [* -&gt; 1.3.1] - vegan [* -&gt; 2.6-6.1] … (27
+more packages) </span> <span class="co-ok"> * Lockfile written to
+‘~/my-project/renv.lock’. </span></p>
+</div>
+<p>What <code>renv::init()</code> does:</p>
+<ol style="list-style-type: decimal">
+<li>Scans all <code>.R</code> and <code>.Rmd</code> files in your
+project for <code>library()</code> and <code>require()</code>
+calls.</li>
+<li>Identifies the installed versions of every package found.</li>
+<li>Copies those packages into the project-local library (or links to
+the global cache).</li>
+<li>Writes <code>renv.lock</code> recording every version.</li>
+<li>Writes <code>.Rprofile</code> with one line:
+<code>source(&quot;renv/activate.R&quot;)</code>.</li>
+</ol>
+<p>After <code>init()</code>, <strong>restart R</strong>
+(<code>Session → Restart R</code>) so the new <code>.Rprofile</code>
+activates the project library.</p>
+<div class="callout callout-tip">
+<p><strong>💡 Run <code>renv::init()</code> early, not at the end of a
+project.</strong> The best time to initialise renv is right after
+creating the RStudio Project, before installing any packages. This way
+the lockfile always matches exactly what your project uses, with no
+orphaned packages from other work on your machine.</p>
+</div>
+<hr />
+</div>
+</div>
+<div id="lockfile" class="section level2">
+<h2>4. The Lockfile in Detail</h2>
+<p><code>renv.lock</code> is plain JSON. Opening it in RStudio (or any
+text editor) shows you exactly what it records.</p>
+<div class="lock-block">
+<p><span class="lb-ann"># renv.lock (simplified excerpt)</span><br>
+{<br>   <span class="lb-key">“R”</span>: {<br>     <span class="lb-key">“Version”</span>: <span class="lb-str">“4.4.1”</span>,<span class="lb-ann"> &lt;– R version
+itself is recorded</span><br>     <span class="lb-key">“Repositories”</span>: [{ <span class="lb-key">“Name”</span>: <span class="lb-str">“CRAN”</span>, <span class="lb-key">“URL”</span>: <span class="lb-str">“<a href="https://cran.rstudio.com" class="uri">https://cran.rstudio.com</a>”</span> }]<br>   },<br>   <span class="lb-key">“Packages”</span>: {<br>     <span class="lb-key">“dplyr”</span>: {<br>       <span class="lb-key">“Package”</span>: <span class="lb-str">“dplyr”</span>,<br>       <span class="lb-key">“Version”</span>: <span class="lb-str">“1.1.4”</span>,<span class="lb-ann"> &lt;– exact version
+pinned</span><br>       <span class="lb-key">“Source”</span>: <span class="lb-str">“Repository”</span>,<br>       <span class="lb-key">“Repository”</span>: <span class="lb-str">“CRAN”</span>,<br>       <span class="lb-key">“Hash”</span>: <span class="lb-str">“fedd9d03c235d5a3ed7a05ee28588dbb”</span><span class="lb-ann"> &lt;– cryptographic hash for integrity</span><br>
+    },<br>     <span class="lb-key">“ggplot2”</span>: {<br>       <span class="lb-key">“Package”</span>: <span class="lb-str">“ggplot2”</span>,<br>       <span class="lb-key">“Version”</span>: <span class="lb-str">“3.5.1”</span>,<br>       <span class="lb-key">“Source”</span>: <span class="lb-str">“Repository”</span>,<br>       <span class="lb-key">“Repository”</span>: <span class="lb-str">“CRAN”</span>,<br>       <span class="lb-key">“Hash”</span>: <span class="lb-str">“9e4e4760f46cd7ef851a56cb1169cbb1”</span><br>     },<br>
+    <span class="lb-ann"> … one entry per package …</span><br>   }<br>
+}</p>
+</div>
+<p>Three fields matter most:</p>
+<ul>
+<li><strong><code>Version</code></strong> — the exact CRAN version
+pinned. <code>renv::restore()</code> will install this exact
+version.</li>
+<li><strong><code>Source</code></strong> — <code>&quot;Repository&quot;</code> for
+CRAN; <code>&quot;GitHub&quot;</code> for packages installed from GitHub;
+<code>&quot;Bioconductor&quot;</code> for Bioconductor packages.</li>
+<li><strong><code>Hash</code></strong> — a cryptographic fingerprint of
+the package tarball. renv uses this to verify that what it downloads is
+byte-for-byte identical to what you had.</li>
+</ul>
+<div id="packages-from-github" class="section level3">
+<h3>Packages from GitHub</h3>
+<p>If you use a package installed via
+<code>remotes::install_github()</code>, renv records the GitHub
+username, repository, and the exact commit SHA — not just a version
+number — so the identical commit is reinstalled.</p>
+<div class="lock-block">
+<p><span class="lb-key">“envnames”</span>: {<br>   <span class="lb-key">“Package”</span>: <span class="lb-str">“envnames”</span>,<br>   <span class="lb-key">“Version”</span>: <span class="lb-str">“0.4.0”</span>,<br>   <span class="lb-key">“Source”</span>: <span class="lb-str">“GitHub”</span>,<br>   <span class="lb-key">“RemoteUsername”</span>: <span class="lb-str">“mastropi”</span>,<br>   <span class="lb-key">“RemoteRepo”</span>: <span class="lb-str">“envnames”</span>,<br>   <span class="lb-key">“RemoteSha”</span>: <span class="lb-str">“d7a4f3c19b2a…”</span><span class="lb-ann"> &lt;– exact
+commit hash</span><br> }</p>
+</div>
+<hr />
+</div>
+</div>
+<div id="workflow" class="section level2">
+<h2>5. Day-to-Day Workflow</h2>
+<p>Once renv is initialised, the three functions you use regularly
+are:</p>
+<div class="workflow">
+<div class="wf-step">
+<div class="ws-fn">
+renv::status()
+</div>
+<div class="ws-desc">
+Check whether the lockfile matches the project library. Run this any
+time you are unsure.
+</div>
+</div>
+<div class="wf-step">
+<div class="ws-fn">
+renv::snapshot()
+</div>
+<div class="ws-desc">
+Update the lockfile to reflect current installed packages. Run after
+installing or updating any package.
+</div>
+</div>
+<div class="wf-step">
+<div class="ws-fn">
+renv::restore()
+</div>
+<div class="ws-desc">
+Install packages from the lockfile. Run after cloning a repo or when the
+lockfile has changed.
+</div>
+</div>
+<div class="wf-step">
+<div class="ws-fn">
+renv::install()
+</div>
+<div class="ws-desc">
+Install a package into the project library. Equivalent to
+<code>install.packages()</code> but renv-aware.
+</div>
+</div>
+<div class="wf-step">
+<div class="ws-fn">
+renv::update()
+</div>
+<div class="ws-desc">
+Update one or all packages to their latest CRAN versions. Always
+snapshot afterwards.
+</div>
+</div>
+</div>
+<div id="installing-a-new-package" class="section level3">
+<h3>Installing a new package</h3>
+<pre class="r"><code># Option A: use renv::install() directly (preferred — renv-aware)
+renv::install(&quot;viridis&quot;)
+
+# Option B: use install.packages() as normal — renv intercepts it
+install.packages(&quot;viridis&quot;)
+
+# After installing, record it in the lockfile
+renv::snapshot()</code></pre>
+<div class="console-out">
+<p><span class="co-label"># renv::snapshot() output</span> <span class="co-ok">The following package(s) will be updated in the
+lockfile:</span> <span class="co-info"> # CRAN ——————————————————————- -
+viridis [* -&gt; 0.6.5] - viridisLite [* -&gt; 0.4.2] </span> <span class="co-ok">* Lockfile written to ‘~/my-project/renv.lock’.</span></p>
+</div>
+<p>Commit <code>renv.lock</code> after every
+<code>snapshot()</code>:</p>
+<pre class="r"><code># In the RStudio Git pane, stage and commit renv.lock
+# Or from the terminal:
+# git add renv.lock
+# git commit -m &quot;renv: add viridis 0.6.5&quot;</code></pre>
+</div>
+<div id="checking-status" class="section level3">
+<h3>Checking status</h3>
+<p>Run <code>renv::status()</code> whenever you are unsure whether your
+library and lockfile are in sync.</p>
+<pre class="r"><code>renv::status()</code></pre>
+<div class="console-out">
+<p><span class="co-label"># Three possible states</span> <span class="co-ok"> * The project is already synchronized with the lockfile.
+</span> <span class="co-warn"> # OR: packages in library not recorded in
+lockfile The following package(s) are installed but not recorded in the
+lockfile: viridis * Use <code>renv::snapshot()</code> to update the
+lockfile.</p>
+<div id="or-packages-in-lockfile-not-installed" class="section level1">
+<h1>OR: packages in lockfile not installed</h1>
+<p>The following package(s) are recorded in the lockfile but not
+installed: viridis * Use <code>renv::restore()</code> to install these
+packages. </span></p>
+</div>
+</div>
+</div>
+<div id="updating-packages-deliberately" class="section level3">
+<h3>Updating packages deliberately</h3>
+<pre class="r"><code># Update a single package
+renv::update(&quot;ggplot2&quot;)
+
+# Update all packages to latest CRAN versions
+renv::update()
+
+# Always snapshot after updating so the lockfile stays current
+renv::snapshot()</code></pre>
+<div class="callout callout-warn">
+<p><strong>⚠️ Update deliberately, not accidentally.</strong> Never run
+<code>update.packages()</code> (base R) inside an renv project — it
+updates the system library, not the project library, and can silently
+break things. Always use <code>renv::update()</code>. Before updating,
+make sure your analysis still works: update on a branch, check your
+results, then merge and snapshot.</p>
+</div>
+<hr />
+</div>
+</div>
+<div id="restore" class="section level2">
+<h2>6. Restoring an Environment</h2>
+<p><code>renv::restore()</code> is what your collaborators (or
+future-you) run after cloning the project. It reads
+<code>renv.lock</code> and installs the exact package versions
+recorded.</p>
+<pre class="r"><code># Clone the repository, open the .Rproj, then:
+renv::restore()</code></pre>
+<div class="console-out">
+<p><span class="co-label"># renv::restore() output</span> <span class="co-ok">The following package(s) will be updated:</span> <span class="co-info"> # CRAN ——————————————————————- - dplyr [1.0.8 -&gt;
+1.1.4] - ggplot2 [3.3.6 -&gt; 3.5.1] - lubridate [1.8.0 -&gt; 1.9.3] …
+(31 more packages) </span> <span class="co-ok"> Do you want to proceed?
+[y/N]: y</p>
+<ul>
+<li>Retrieving ‘<a href="https://cran.rstudio.com/" class="uri">https://cran.rstudio.com/</a>…’ … OK [downloaded 1.2 Mb]
+…</li>
+<li>Package database updated. </span></li>
+</ul>
+</div>
+<p>renv checks the global cache first. If the required version is
+already cached from another project, no download is needed — restoration
+takes seconds. Only genuinely new versions require downloading.</p>
+<div id="the-bootstrap-renv-on-a-machine-where-renv-is-not-installed" class="section level3">
+<h3>The bootstrap: renv on a machine where renv is not installed</h3>
+<p><code>renv/activate.R</code> is the bootstrap script. When someone
+opens your project for the first time, the <code>.Rprofile</code> runs
+<code>source(&quot;renv/activate.R&quot;)</code>, which automatically downloads
+and installs renv itself if it is missing, then prompts them to run
+<code>renv::restore()</code>. This means <strong>collaborators do not
+need to know about renv at all</strong> — opening the project is enough
+to trigger the setup sequence.</p>
+<hr />
+</div>
+</div>
+<div id="github" class="section level2">
+<h2>7. Using renv with GitHub</h2>
+<div id="what-to-commit" class="section level3">
+<h3>What to commit</h3>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Path</th>
+<th>Commit?</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>renv.lock</code></td>
+<td><strong>Yes — always</strong></td>
+<td>This is the reproducibility record</td>
+</tr>
+<tr class="even">
+<td><code>.Rprofile</code></td>
+<td><strong>Yes</strong></td>
+<td>Activates renv when project opens</td>
+</tr>
+<tr class="odd">
+<td><code>renv/activate.R</code></td>
+<td><strong>Yes</strong></td>
+<td>Bootstrap script for new machines</td>
+</tr>
+<tr class="even">
+<td><code>renv/.gitignore</code></td>
+<td><strong>Yes</strong></td>
+<td>Keeps the library out of git</td>
+</tr>
+<tr class="odd">
+<td><code>renv/library/</code></td>
+<td><strong>No</strong></td>
+<td>Auto-gitignored; too large; platform-specific</td>
+</tr>
+<tr class="even">
+<td><code>renv/staging/</code></td>
+<td><strong>No</strong></td>
+<td>Temporary files</td>
+</tr>
+</tbody>
+</table>
+<p>renv creates <code>renv/.gitignore</code> automatically with the
+correct entries. You should never need to edit it manually.</p>
+</div>
+<div id="a-complete-github-workflow" class="section level3">
+<h3>A complete GitHub workflow</h3>
+<pre class="r"><code># ── PERSON A: starting the project ───────────────────────────────
+renv::init()
+# ... do work, install packages ...
+renv::snapshot()
+# git add renv.lock .Rprofile renv/activate.R renv/.gitignore
+# git commit -m &quot;renv: initialise project environment&quot;
+# git push
+
+# ── PERSON B: picking up the project ─────────────────────────────
+# git clone https://github.com/marclos/RTricks.git
+# Open RTricks.Rproj in RStudio
+renv::restore()   # installs exact versions from renv.lock
+# Ready to work — identical environment to Person A
+
+# ── PERSON A: adding a package ───────────────────────────────────
+renv::install(&quot;patchwork&quot;)
+# Use patchwork in the analysis ...
+renv::snapshot()
+# git add renv.lock
+# git commit -m &quot;renv: add patchwork 1.3.0&quot;
+# git push
+
+# ── PERSON B: pulling the update ─────────────────────────────────
+# git pull
+renv::restore()   # installs patchwork 1.3.0 to match lockfile</code></pre>
+<div class="callout callout-tip">
+<p><strong>💡 Make <code>renv.lock</code> changes their own
+commit.</strong> Keeping lockfile updates in separate commits (e.g.,
+<code>“renv: add patchwork 1.3.0”</code>) makes the package history easy
+to scan in the git log without wading through analysis code changes. It
+also makes it easy to revert a bad package update: <code>git
+revert</code> on just the lockfile commit.</p>
+</div>
+</div>
+<div id="gitignore-for-an-renv-project" class="section level3">
+<h3><code>.gitignore</code> for an renv project</h3>
+<p>A minimal <code>.gitignore</code> for an RStudio + renv project:</p>
+<pre class="r"><code># RStudio artefacts
+.Rhistory
+.RData
+.Rproj.user/
+
+# renv library (automatically added by renv, shown here for reference)
+renv/library/
+renv/staging/
+
+# Data files too large for git (adjust as needed)
+data/*.csv
+data/*.xlsx</code></pre>
+<hr />
+</div>
+</div>
+<div id="troubleshoot" class="section level2">
+<h2>8. Troubleshooting</h2>
+<div id="problem-1-renvrestore-fails-with-a-download-error" class="section level3">
+<h3>Problem 1: <code>renv::restore()</code> fails with a download
+error</h3>
+<pre><code>Error: failed to download &#39;dplyr&#39; [version 1.0.8]</code></pre>
+<p>CRAN archives older package versions, but occasionally a version is
+removed. Solutions:</p>
+<pre class="r"><code># Option A: install from the CRAN archive directly
+renv::install(&quot;dplyr@1.0.8&quot;)
+
+# Option B: accept the current CRAN version and update the lockfile
+renv::update(&quot;dplyr&quot;)
+renv::snapshot()
+# This changes the pinned version — test your analysis still runs correctly</code></pre>
+</div>
+<div id="problem-2-out-of-sync-after-pulling-from-github" class="section level3">
+<h3>Problem 2: “Out of sync” after pulling from GitHub</h3>
+<p>You pull a colleague’s changes and see the lockfile has been updated
+but your library has not.</p>
+<pre class="r"><code># Always run after git pull if renv.lock changed
+renv::status()    # confirms what is out of sync
+renv::restore()   # installs the new/changed packages</code></pre>
+<p>A good habit: add <code>renv::status()</code> as the first thing you
+check after any <code>git pull</code> that includes lockfile
+changes.</p>
+</div>
+<div id="problem-3-package-installed-but-not-found" class="section level3">
+<h3>Problem 3: Package installed but not found</h3>
+<p>You installed a package successfully but
+<code>library(packagename)</code> still says “there is no package
+called…”.</p>
+<pre class="r"><code># Check whether it is in the project library
+renv::status()
+
+# Check which library R is looking in
+.libPaths()
+
+# If the project library is not first in .libPaths(), renv is not active
+# This usually means the .Rprofile was not loaded — restart R inside the project:
+# Session → Restart R
+
+# Confirm renv is active
+renv::project()   # should print your project path, not NULL</code></pre>
+<div class="callout callout-concept">
+<p><strong>📌 renv only activates when you open the .Rproj
+file.</strong> If you open <code>analysis.R</code> directly (not via the
+<code>.Rproj</code>), the <code>.Rprofile</code> in the project root
+does not run, renv is not activated, and R uses your system library.
+Always open projects through the <code>.Rproj</code> file or via
+<em>File → Open Project</em>.</p>
+</div>
+</div>
+<div id="problem-4-renvinit-in-a-project-already-tracked-by-git" class="section level3">
+<h3>Problem 4: <code>renv::init()</code> in a project already tracked by
+git</h3>
+<p>If you have an existing git repository and add renv, git will show
+<code>renv.lock</code>, <code>.Rprofile</code>, and
+<code>renv/activate.R</code> as untracked files. Stage and commit them
+explicitly:</p>
+<pre class="r"><code># From the RStudio terminal
+git add renv.lock .Rprofile renv/activate.R renv/.gitignore
+git commit -m &quot;renv: add package management&quot;</code></pre>
+<p>Do <strong>not</strong> run <code>git add renv/</code> — that would
+stage the library folder before git sees the <code>.gitignore</code>.
+Stage <code>renv/activate.R</code> and <code>renv/.gitignore</code>
+individually.</p>
+<hr />
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>9. Quick Reference</h2>
+<div class="key-box">
+<h4>
+renv command reference
+</h4>
+<ul>
+<li>
+<strong>One-time setup:</strong> <code>install.packages(“renv”)</code>
+then <code>renv::init()</code>
+</li>
+<li>
+<strong>After installing a package:</strong>
+<code>renv::snapshot()</code> → commit <code>renv.lock</code>
+</li>
+<li>
+<strong>After cloning / git pull:</strong> <code>renv::restore()</code>
+</li>
+<li>
+<strong>Are we in sync?</strong> <code>renv::status()</code>
+</li>
+<li>
+<strong>Install a package:</strong>
+<code>renv::install(“pkgname”)</code> or
+<code>renv::install(“user/repo”)</code> for GitHub
+</li>
+<li>
+<strong>Update a package:</strong> <code>renv::update(“pkgname”)</code>
+then <code>renv::snapshot()</code>
+</li>
+<li>
+<strong>Install specific version:</strong> <code>renv::install(“<a href="mailto:dplyr@1.1.4" class="email">dplyr@1.1.4</a>”)</code>
+</li>
+<li>
+<strong>What project am I in?</strong> <code>renv::project()</code>
+</li>
+<li>
+<strong>Commit:</strong> <code>renv.lock</code>, <code>.Rprofile</code>,
+<code>renv/activate.R</code>, <code>renv/.gitignore</code>
+</li>
+<li>
+<strong>Never commit:</strong> <code>renv/library/</code>
+</li>
+</ul>
+</div>
+<div class="discuss-box">
+<h4>
+💬 Check your understanding
+</h4>
+<ol>
+<li>
+A classmate clones your GitHub repository, opens the
+<code>.Rproj</code>, and immediately gets a prompt about renv. They have
+never used renv before. Walk them through exactly what commands to run
+and in what order to get the project working on their machine.
+</li>
+<li>
+You finish adding a new figure to your analysis, which required
+installing the <code>patchwork</code> package. List every step —
+including git commands — needed to share this change reproducibly with
+your collaborators.
+</li>
+<li>
+Why does renv commit <code>renv/activate.R</code> but gitignore
+<code>renv/library/</code>? What would go wrong if you committed the
+library instead?
+</li>
+<li>
+<code>renv::update()</code> updates packages in the project library. Why
+should you run your full analysis after updating, before committing the
+new <code>renv.lock</code>?
+</li>
+<li>
+You open an old project from two years ago. <code>renv::restore()</code>
+fails because one package version is no longer on CRAN. What are your
+two options, and what is the tradeoff between them?
+</li>
+</ol>
+</div>
+<hr />
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Ushey, K., and H. Wickham. 2024. <em>renv: Project Environments</em>.
+R package version 1.0. <a href="https://rstudio.github.io/renv/" class="uri">https://rstudio.github.io/renv/</a></p>
+<p>Ushey, K. 2023. Introduction to renv. <a href="https://rstudio.github.io/renv/articles/renv.html" class="uri">https://rstudio.github.io/renv/articles/renv.html</a></p>
+<div class="page-footer">
+<p>EA030 RTricks  <span class="divider">|</span>  Prof. Marc Los Huertos
+ <span class="divider">|</span>  Pomona College  <span class="divider">|</span>  Core R Skills  <span class="divider">|</span> 
+<a href="../index.html">Back to index</a></p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
