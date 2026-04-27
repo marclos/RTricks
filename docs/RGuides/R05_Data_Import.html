@@ -57,7 +57,7 @@ ul.task-list{list-style: none;}
 
 <h1 class="title toc-ignore">Data Import</h1>
 <h4 class="author">Marc Los Huertos</h4>
-<h4 class="date">EA030 · Compiled 2026-04-14</h4>
+<h4 class="date">EA030 · Compiled 2026-04-27</h4>
 
 
 
@@ -240,6 +240,46 @@ margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
 .callout-formula { border-color: var(--amber); background: #fdf8f0;
 font-family: 'Source Code Pro', monospace; font-size: .88em; }
 
+.try-it {
+border: 2px dashed var(--fern); background: #f5fbf7;
+padding: .75em 1.2em; margin: 1.6em 0;
+border-radius: 5px; font-size: .92em; line-height: 1.6;
+}
+.try-it > strong:first-child {
+display: block; margin-bottom: .4em;
+color: var(--moss); font-size: .95em;
+}
+
+.expected {
+border-left: 5px solid var(--amber); background: #fdf8ee;
+padding: .65em 1.1em; margin: 1.2em 0;
+border-radius: 0 5px 5px 0; font-size: .88em; line-height: 1.55;
+font-family: 'Source Code Pro', monospace; color: var(--charcoal);
+}
+.expected > strong:first-child {
+display: block; margin-bottom: .3em; font-family: 'Lato', sans-serif;
+color: var(--amber); font-size: .82rem; letter-spacing: .06em;
+text-transform: uppercase;
+}
+
+.steps {
+counter-reset: step-counter;
+list-style: none; padding: 0; margin: 1.4em 0;
+}
+.steps li {
+counter-increment: step-counter;
+display: flex; gap: 14px; align-items: flex-start;
+margin-bottom: 1em; font-size: .93em;
+}
+.steps li::before {
+content: counter(step-counter);
+flex-shrink: 0; width: 26px; height: 26px;
+background: var(--fern); color: #fff;
+border-radius: 50%; font-weight: 700; font-size: .82rem;
+display: flex; align-items: center; justify-content: center;
+margin-top: 2px;
+}
+
 .fn-grid {
 display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
 gap: 10px; margin: 1.4em 0;
@@ -297,7 +337,7 @@ font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .0
 </style>
 <div class="page-header">
 <div class="module-tag">
-EA030 — Core R Skills — Module 03
+EA030 — Core R Skills — Module 05
 </div>
 <h1>
 Data Import: <span>Reading Files Without Losing Your Mind</span>
@@ -309,7 +349,9 @@ Data Import: <span>Reading Files Without Losing Your Mind</span>
 </div>
 <div class="section-nav">
 <p><a href="#overview">Overview</a> <a href="#csv">CSV Files</a>
-<a href="#excel">Excel Files</a> <a href="#field-data">Field Data</a>
+<a href="#multi-file">Many Files at Once</a>
+<a href="#filename-column">Filename as Data</a> <a href="#excel">Excel
+Files</a> <a href="#field-data">Field Data</a>
 <a href="#encoding">Encoding</a> <a href="#datetime">Datetime
 Nightmares</a> <a href="#diagnosis">Diagnosing Problems</a>
 <a href="#checklist">Checklist</a></p>
@@ -319,17 +361,45 @@ Nightmares</a> <a href="#diagnosis">Diagnosing Problems</a>
 R is often the hardest part of an analysis — not because the code is
 complicated, but because real-world data files are messy, inconsistent,
 and full of hidden traps. This module covers CSV, Excel, and
-field-collected data files; character encoding issues; and the special
-circle of hell that is importing dates and times. By the end you will
-have a systematic toolkit for handling virtually any file you
-receive.</p>
+field-collected data files; reading a whole folder of files at once;
+using the file name itself as a data column; character encoding issues;
+and the special circle of hell that is importing dates and times. By the
+end you will have a systematic toolkit for handling virtually any file
+you receive.</p>
 </blockquote>
+<p><strong>Prerequisites:</strong> You should be comfortable creating
+objects and running code in R (Module R02) and understand the idea of a
+project working directory (Module R03). No prior experience with
+tidyverse import functions is assumed.</p>
 <hr />
 <div id="overview" class="section level2">
 <h2>1. The Import Landscape</h2>
-<p>R has two generations of import tools: the base-R functions that ship
-with every installation, and the tidyverse functions that are generally
-faster, more consistent, and better at reporting what went wrong.</p>
+<div id="why-we-have-two-generations-of-import-tools" class="section level3">
+<h3>Why we have two generations of import tools</h3>
+<p>R ships with import functions like <code>read.csv()</code> in every
+installation — no packages needed. These work, but they have quirks that
+cause silent errors: older versions silently converted text columns to
+factors, they produce <code>data.frame</code> objects with
+sometimes-awkward behavior, and they give you no feedback when something
+goes wrong.</p>
+<p>The <strong>tidyverse</strong> import functions
+(<code>read_csv()</code>, <code>read_excel()</code>, etc.) were built to
+fix these problems. They are faster, more consistent, and — most
+importantly — they <em>tell you</em> when something doesn’t parse
+correctly instead of silently producing <code>NA</code>. We will use
+these throughout the course.</p>
+<div class="callout callout-concept">
+<p><strong>🧭 The core import workflow is always the same</strong>
+Regardless of file format, importing data follows four steps: (1) look
+at the raw file <em>before</em> reading it; (2) read it into R with an
+appropriate function; (3) inspect the result immediately with
+<code>glimpse()</code> and <code>problems()</code>; (4) fix any type or
+encoding issues before proceeding to analysis. This module builds each
+step.</p>
+</div>
+</div>
+<div id="the-import-toolkit-at-a-glance" class="section level3">
+<h3>The import toolkit at a glance</h3>
 <table>
 <colgroup>
 <col width="20%" />
@@ -402,15 +472,17 @@ faster, more consistent, and better at reporting what went wrong.</p>
 <td>readr</td>
 <td>Raw text</td>
 <td>character vector</td>
-<td>Inspect before parsing</td>
+<td>Inspect structure before parsing</td>
 </tr>
 </tbody>
 </table>
 <div class="callout callout-tip">
 <p><strong>💡 Install once in the Console, never in a chunk that
 knits</strong> Run <code>install.packages(c(“tidyverse”, “readxl”,
-“janitor”))</code> once interactively. In your Rmd, only
-<code>library()</code> calls belong in chunks.</p>
+“janitor”))</code> once interactively in the Console. In your Rmd, only
+<code>library()</code> calls belong in chunks — never
+<code>install.packages()</code>.</p>
+</div>
 </div>
 <div id="quick-reference-the-tidyverse-import-toolkit" class="section level3">
 <h3>Quick-reference: the tidyverse import toolkit</h3>
@@ -493,84 +565,143 @@ special characters, and duplicate names.
 </div>
 <div id="csv" class="section level2">
 <h2>2. Reading CSV Files</h2>
+<div id="before-you-read-look-at-the-raw-file" class="section level3">
+<h3>Before you read: look at the raw file</h3>
+<p>The single most important import habit is inspecting your file
+<em>before</em> you try to read it. Opening a CSV in a plain-text editor
+(not Excel) or running <code>read_lines()</code> in R lets you answer
+five questions that determine how your import call should be
+written:</p>
+<ol class="steps">
+<li>
+What delimiter is used? (comma, semicolon, tab, pipe?)
+</li>
+<li>
+How many rows of metadata or comments appear before the column names?
+</li>
+<li>
+What string does the file use for missing values? (<code>NA</code>,
+<code>-9999</code>, <code>“N/A”</code>, blank, something else?)
+</li>
+<li>
+Are the column names in the first row, or is there a units row below
+them?
+</li>
+<li>
+What format are any date or time columns in?
+</li>
+</ol>
+<pre class="r"><code># Read the first 10 lines as raw text — no parsing, no interpretation
+read_lines(&quot;data/air_quality.csv&quot;, n_max = 10)</code></pre>
+<div class="expected">
+<p><strong>Expected output — look for these things</strong> [1] “#
+Downloaded from EPA AQS 2024-03-15” [2] “# Site: Los Angeles, CA —
+Monitoring Station 060371103” [3] “” [4]
+“site_id,date,pm25_ug_m3,flag,notes” [5]
+“060371103,2024-01-01,8.2,,routine” [6]
+“060371103,2024-01-02,12.4,,routine” [7]
+“060371103,2024-01-03,,M,instrument maintenance” …</p>
+<p>From these 7 lines you learn: (1) comma delimiter, (2) skip 3 header
+lines, (3) missing = blank field, (4) column names in row 4, (5) dates
+are ISO format.</p>
+</div>
+</div>
+<div id="the-basics-of-read_csv" class="section level3">
+<h3>The basics of <code>read_csv()</code></h3>
+<p>Once you know the file structure, you can write an informed import
+call. Start with the minimal version and build up:</p>
+<pre class="r"><code>library(readr)
+
+# Step 1: minimal call — readr guesses types and prints the spec
+df &lt;- read_csv(&quot;data/air_quality.csv&quot;)
+
+# Step 2: ALWAYS inspect immediately after reading
+glimpse(df)       # one line per column: type + first few values
+head(df)          # first 6 rows
+problems(df)      # any parsing failures — check this every time</code></pre>
+<div class="callout callout-warn">
+<p><strong>⚠️ Read the column-type message — it is diagnostic
+gold</strong> When <code>read_csv()</code> runs, it prints something
+like:<br> <code>Rows: 1095 Columns: 5</code><br> <code>── Column
+specification ──────────────────────</code><br> <code>chr (2): site_id,
+flag</code><br> <code>dbl (1): pm25_ug_m3</code><br> <code>date (1):
+date</code><br><br> If a column you expect to be numeric shows up as
+<code>chr</code>, something in that column — a <code>“NA”</code>,
+<code>“–”</code>, <code>“&lt; LOD”</code>, or similar — prevented
+numeric parsing. Do not ignore this message.</p>
+</div>
+</div>
 <div id="finding-your-file-path-with-file.choose" class="section level3">
 <h3>Finding your file path with <code>file.choose()</code></h3>
-<p>Typing a file path by hand is error-prone — a wrong slash, a typo, or
-uncertainty about where a file actually lives on your machine will all
-produce the same unhelpful <code>cannot open file</code> error.
-<code>file.choose()</code> opens your operating system’s standard
-file-picker dialog and returns the full absolute path as a string, which
-you can then store in an object and reuse throughout your script or
-Rmd.</p>
-<pre class="r"><code># Run this ONCE in the Console — not inside a knitting chunk
-# A file-picker dialog will open; navigate to your file and click Open
+<p>Typing a file path by hand is error-prone: a wrong slash, a typo, or
+not knowing where a file actually lives on your machine all produce the
+same unhelpful <code>cannot open file</code> error.
+<code>file.choose()</code> opens your operating system’s file-picker
+dialog and returns the full path as a string.</p>
+<pre class="r"><code># Run this ONCE in the Console — not inside a chunk that knits
 my_path &lt;- file.choose()
 
-# R prints the full path as a quoted string, e.g.:
+# R prints the full path, e.g.:
 # [1] &quot;/Users/marc/Desktop/EA030/field_data.csv&quot;
-# or on Windows:
+# On Windows:
 # [1] &quot;C:\\Users\\marc\\Desktop\\EA030\\field_data.csv&quot;
 
-my_path        # type the object name and run — R prints the full path</code></pre>
-<p>Once you have the path, use the object name everywhere instead of
-re-typing the string. This is especially useful in Rmd files where you
-want the document to be clear about <em>what</em> file is being loaded
-even if the path is long:</p>
-<pre class="r"><code># At the TOP of your setup chunk — run interactively once, then hard-code
-# the path you got back so the document knits without a dialog box opening
-
-# Step 1 (Console only): discover the path
-# my_path &lt;- file.choose()
-# my_path        # run this line to see the path — then copy it
-
-# Step 2 (in Rmd chunk): hard-code the discovered path
+my_path   # type the object name to see the path — then copy it</code></pre>
+<ol class="steps">
+<li>
+Run <code>my_path &lt;- file.choose()</code> in the
+<strong>Console</strong>. Navigate to your file and click Open.
+</li>
+<li>
+Type <code>my_path</code> in the Console and press Enter. R prints the
+full path.
+</li>
+<li>
+Copy that path. In your Rmd chunk, paste it as a hard-coded string.
+</li>
+<li>
+Use the object name (or the string directly) in every subsequent
+<code>read_csv()</code> call.
+</li>
+</ol>
+<pre class="r"><code># In your Rmd chunk: hard-code the path you discovered in the Console
 my_path &lt;- &quot;/Users/marc/EA030/data/field_data.csv&quot;
 
-# Step 3: use the object in every read call
 df &lt;- read_csv(my_path)</code></pre>
 <div class="callout callout-warn">
-<p><strong>⚠️ file.choose() will hang a knit — hard-code after
-discovery</strong> <code>file.choose()</code> opens an interactive
-dialog and waits for user input. If it is inside a chunk that runs
-during <code>knitr::knit()</code>, the render will freeze indefinitely.
-The correct workflow is: (1) run <code>file.choose()</code> once in the
-<strong>Console</strong>, (2) copy the printed path, (3) paste it as a
-hard-coded string in your Rmd, wrapped in the object assignment. Use
-<code>eval=FALSE</code> on the discovery chunk so it is shown for
-documentation but never executed during knitting.</p>
+<p><strong>⚠️ file.choose() will freeze a knit — always hard-code after
+discovery</strong> <code>file.choose()</code> waits for user input. If
+it is inside a chunk that runs during knitting, the render will hang
+indefinitely. Workflow: (1) discover path in Console → (2) copy path →
+(3) paste as a hard-coded string in Rmd → (4) mark the discovery chunk
+<code>eval=FALSE</code> so it is shown as documentation but never
+executed.</p>
 </div>
 <div class="callout callout-tip">
 <p><strong>💡 Windows path separators</strong> Windows uses backslashes
 (<code>C:.csv</code>) but R uses forward slashes or escaped backslashes.
-After <code>file.choose()</code> on Windows you will get double
-backslashes (<code>C:\Users\marc\data.csv</code>) — these are valid in
-R. Alternatively, replace every <code>\</code> with <code>/</code>: R
-accepts forward slashes on all platforms.</p>
+<code>file.choose()</code> on Windows returns double backslashes
+(<code>C:\Users\marc\data.csv</code>) — these work in R. You can also
+replace every <code>\</code> with <code>/</code>; R accepts forward
+slashes on all platforms.</p>
 </div>
+<div class="try-it">
+<p><strong>✏️ Try It — discover and hard-code a path</strong> In the
+Console, run <code>my_path &lt;- file.choose()</code> and select any CSV
+file you have on your computer. Then run <code>my_path</code> to see the
+path printed. Finally, create a new chunk in your Rmd and paste the path
+as a hard-coded string. Does <code>read_csv(my_path)</code> work?</p>
 </div>
-<div id="the-basics" class="section level3">
-<h3>The basics</h3>
-<pre class="r"><code>library(readr)
-
-# Minimal call — readr guesses types and prints the spec
-df &lt;- read_csv(&quot;data/air_quality.csv&quot;)
-
-# Always inspect immediately
-glimpse(df)
-head(df)
-problems(df)   # shows any parsing failures — check this every time</code></pre>
-<p>The column-type message readr prints is diagnostic gold. Read it. If
-a column you expect to be numeric shows up as <code>chr</code>,
-something in that column broke the parser — likely a <code>&quot;NA&quot;</code>,
-<code>&quot;N/A&quot;</code>, <code>&quot;–&quot;</code>, or <code>&quot;n.d.&quot;</code> that your
-instrument or spreadsheet used for missing values.</p>
 </div>
 <div id="locking-in-column-types" class="section level3">
 <h3>Locking in column types</h3>
-<p>Once you have confirmed the correct types, copy the spec and make it
-explicit so the import is reproducible regardless of what future rows
-look like:</p>
-<pre class="r"><code>df &lt;- read_csv(
+<p>After your first successful import, you should make the column types
+<em>explicit</em> so the import behaves identically no matter what
+future rows look like. The easiest way is to copy the spec that readr
+already printed:</p>
+<pre class="r"><code># After reading once and confirming the types look correct,
+# copy the spec and paste it into col_types = cols(...)
+df &lt;- read_csv(
   &quot;data/air_quality.csv&quot;,
   col_types = cols(
     site_id      = col_character(),
@@ -580,64 +711,364 @@ look like:</p>
     notes        = col_character()
   )
 )</code></pre>
-<div class="callout callout-warn">
-<p><strong>⚠️ Never rely on readr’s guess for date columns</strong>
-readr will correctly parse ISO 8601 dates (<code>2024-03-15</code>)
-automatically, but it will silently read <code>3/15/2024</code> or
-<code>15-Mar-24</code> as a plain character string. Always specify
-<code>col_date(format = “…”)</code> for date columns. See Section 6 for
-the full datetime nightmare tour.</p>
+<div class="callout callout-tip">
+<p><strong>💡 How to get the spec to copy</strong> After <code>df &lt;-
+read_csv(…)</code> runs, type <code>spec(df)</code> in the Console. R
+prints the full <code>cols(…)</code> call. Copy everything inside
+<code>cols()</code> and paste it as the value for <code>col_types
+=</code>.</p>
 </div>
 </div>
 <div id="declaring-na-strings" class="section level3">
 <h3>Declaring NA strings</h3>
-<p>Field data files use every imaginable placeholder for missing
-values:</p>
+<p>Field data files use every imaginable placeholder for missing values.
+If you do not list them, R will read them as character strings —
+silently converting your numeric column to <code>chr</code> type:</p>
 <pre class="r"><code>df &lt;- read_csv(
   &quot;data/field_data.csv&quot;,
   na = c(&quot;&quot;, &quot;NA&quot;, &quot;N/A&quot;, &quot;n/a&quot;, &quot;n.d.&quot;, &quot;ND&quot;, &quot;–&quot;, &quot;—&quot;,
          &quot;999&quot;, &quot;-9999&quot;, &quot;.&quot;, &quot;NULL&quot;, &quot;null&quot;, &quot;missing&quot;)
 )</code></pre>
-<p>Pass every string your file uses as missing to <code>na =</code>.
-Anything not in this list will be read as a character string, silently
-coercing numeric columns to <code>chr</code>.</p>
+<div class="callout callout-concept">
+<p><strong>📋 Where do these NA strings come from?</strong> Different
+sources use different conventions. EPA/USGS databases often use
+<code>-9999</code> or <code>-999</code> as sentinel values. Instrument
+software may use <code>NAN</code> or <code>7999</code>. Hand-entered
+spreadsheets may have <code>“N/A”</code>, <code>“n.d.”</code>, or just a
+blank. Check the data documentation or inspect the file with
+<code>read_lines()</code> before assuming blank = missing.</p>
+</div>
 </div>
 <div id="skipping-junk-rows" class="section level3">
 <h3>Skipping junk rows</h3>
-<p>Many instrument exports have header metadata before the actual column
-names:</p>
-<pre class="r"><code># Skip 4 metadata lines, then treat row 5 as the header
+<p>Many instrument exports have metadata before the column names. Use
+<code>skip =</code> to jump past them:</p>
+<pre class="r"><code># Skip 4 metadata lines, then treat row 5 as the column-name header
 df &lt;- read_csv(&quot;data/licor_export.csv&quot;, skip = 4)
 
-# If the column-name row is NOT immediately after the skip, use comment =
+# If there are comment lines marked with &quot;#&quot; mixed in with the data
 df &lt;- read_csv(&quot;data/sensor_log.csv&quot;, skip = 3, comment = &quot;#&quot;)
 
-# Sometimes there is NO header row at all
+# If there is NO header row at all — you must supply names manually
 df &lt;- read_csv(&quot;data/raw_logger.csv&quot;,
                col_names = c(&quot;datetime&quot;, &quot;temp_C&quot;, &quot;rh_pct&quot;, &quot;lux&quot;),
                skip = 1)</code></pre>
+<div class="try-it">
+<p><strong>✏️ Try It — practice reading a CSV step by step</strong></p>
+<ol style="list-style-type: decimal">
+<li>Find any CSV file on your computer (or download a dataset from the
+EPA AQS or USGS NWIS website).</li>
+<li>Run <code>read_lines(“your_file.csv”, n_max = 8)</code> and answer
+the five inspection questions from the start of this section.</li>
+<li>Write a <code>read_csv()</code> call that uses <code>skip =</code>
+if needed and declares the correct <code>na =</code> strings.</li>
+<li>Run <code>glimpse(df)</code> and <code>problems(df)</code>. Do all
+column types match what you expect?</li>
+</ol>
 </div>
-<div id="reading-many-csv-files-at-once" class="section level3">
-<h3>Reading many CSV files at once</h3>
+<hr />
+</div>
+</div>
+<div id="multi-file" class="section level2">
+<h2>3. Reading Many CSV Files at Once</h2>
+<div id="why-this-matters-in-environmental-work" class="section level3">
+<h3>Why this matters in environmental work</h3>
+<p>Field monitoring projects routinely generate one file per sensor, per
+site, per deployment, or per day. A water-quality study might produce 50
+CSV files — one per sampling location. An air-quality network might
+produce one file per sensor per month. Loading these one at a time with
+fifty copy-pasted <code>read_csv()</code> calls is tedious, fragile, and
+error-prone.</p>
+<p>The tidyverse approach is to treat the <em>collection of file
+paths</em> as a vector and use <code>purrr::map()</code> to apply
+<code>read_csv()</code> to each one. You then bind all the results into
+a single data frame for analysis.</p>
+<div class="callout callout-concept">
+<p><strong>🗂️ The core idea: files as a vector, reading as a
+function</strong> <code>list.files()</code> returns all matching file
+paths as a character vector. <code>map()</code> applies a function to
+every element of a vector. <code>list_rbind()</code> stacks the
+resulting list of data frames into one. These three pieces together
+replace fifty manual import calls.</p>
+</div>
+</div>
+<div id="step-by-step-reading-a-folder-of-csv-files" class="section level3">
+<h3>Step-by-step: reading a folder of CSV files</h3>
+<p>Suppose you have a folder <code>data/sensors/</code> containing one
+CSV per sensor station, all with the same column structure:</p>
+<pre><code>data/sensors/
+  site_A_pm25.csv
+  site_B_pm25.csv
+  site_C_pm25.csv
+  ...</code></pre>
+<p>Here is the workflow, piece by piece:</p>
+<pre class="r"><code># ── Step 1: build a vector of file paths ─────────────────────────────────────
+csv_files &lt;- list.files(
+  path       = &quot;data/sensors/&quot;,    # folder to search
+  pattern    = &quot;\\.csv$&quot;,          # only files ending in .csv
+  full.names = TRUE                # return the full path, not just the filename
+)
+
+csv_files   # inspect: you should see a character vector of paths</code></pre>
+<div class="expected">
+<p><strong>Expected output</strong> [1] “data/sensors/site_A_pm25.csv”
+[2] “data/sensors/site_B_pm25.csv” [3]
+“data/sensors/site_C_pm25.csv”</p>
+</div>
+<pre class="r"><code># ── Step 2: read each file and stack into one data frame ─────────────────────
+library(purrr)
+
+all_data &lt;- csv_files |&gt;
+  map(\(f) read_csv(f, col_types = cols(.default = col_character()))) |&gt;
+  list_rbind()
+
+# col_types = cols(.default = col_character()) reads everything as text on
+# the first pass. This prevents one file&#39;s format quirks (e.g., a flag string
+# in a numeric column) from forcing that column to NA across all files.</code></pre>
+<pre class="r"><code># ── Step 3: re-infer types on the combined data frame ────────────────────────
+all_data &lt;- all_data |&gt;
+  type_convert()   # readr re-guesses types now that all rows are present</code></pre>
+<pre class="r"><code># ── Step 4: inspect ───────────────────────────────────────────────────────────
+glimpse(all_data)
+nrow(all_data)      # should be the sum of rows across all files
+problems(all_data)  # any parsing failures?</code></pre>
+<div class="callout callout-warn">
+<p><strong>⚠️ All files must have the same column names</strong>
+<code>list_rbind()</code> matches columns by name, not position. If one
+file has <code>PM25_ug_m3</code> and another has
+<code>pm25_ug_m3</code>, they will become two separate columns. Run
+<code>map(csv_files, (f) names(read_csv(f, n_max=1)))</code> to check
+that every file has the same names before stacking.</p>
+</div>
+</div>
+<div id="checking-for-column-name-consistency" class="section level3">
+<h3>Checking for column-name consistency</h3>
+<pre class="r"><code># Read only the first row of each file — fast way to check column names
+column_names_per_file &lt;- csv_files |&gt;
+  map(\(f) names(read_csv(f, n_max = 1, show_col_types = FALSE)))
+
+# Are all files identical?
+all(sapply(column_names_per_file, identical, column_names_per_file[[1]]))
+# TRUE = safe to stack; FALSE = find which files differ
+
+# Find the differing files
+column_names_per_file[!sapply(column_names_per_file,
+                              identical, column_names_per_file[[1]])]</code></pre>
+<div class="try-it">
+<p><strong>✏️ Try It — read a folder of files</strong> Create a small
+test: save two or three copies of any CSV with the same column structure
+into a single folder (rename them <code>site_01.csv</code>,
+<code>site_02.csv</code>, etc.). Then use the step-by-step workflow
+above to read them all into one data frame. Confirm that
+<code>nrow()</code> on the combined frame equals the sum of rows in the
+individual files.</p>
+</div>
+<hr />
+</div>
+</div>
+<div id="filename-column" class="section level2">
+<h2>4. Using the File Name as a Data Column</h2>
+<div id="the-problem-where-did-each-row-come-from" class="section level3">
+<h3>The problem: where did each row come from?</h3>
+<p>After stacking dozens of files with <code>map()</code> and
+<code>list_rbind()</code>, every row looks identical in structure —
+there is nothing in the data itself that tells you <em>which file</em> a
+row came from. But the file name often encodes critical metadata: the
+site ID, the deployment date, the sensor serial number, the sampling
+location.</p>
+<p>Consider this folder:</p>
+<pre><code>data/sensors/
+  LakeElsinore_2023-06.csv
+  LakeElsinore_2023-07.csv
+  Riverside_2023-06.csv
+  Riverside_2023-07.csv</code></pre>
+<p>The site name and month are encoded in the file name. If you stack
+these files without extracting that information, you lose it.</p>
+<div class="callout callout-concept">
+<p><strong>📂 File names are metadata — extract them before they
+disappear</strong> The moment you call <code>list_rbind()</code>, the
+connection between each row and its source file is gone unless you
+deliberately preserve it. The <code>.id</code> argument in
+<code>list_rbind()</code> (or <code>map_dfr()</code>) creates a column
+that records which element of the input list each row came from. Combine
+this with <code>set_names()</code> to control exactly what that column
+contains.</p>
+</div>
+</div>
+<div id="method-1-add-a-source_file-column-parse-it-later" class="section level3">
+<h3>Method 1: add a <code>source_file</code> column, parse it later</h3>
+<p>The simplest approach: add the full file path (or just the file name)
+as a column, then use <code>stringr</code> or <code>tidyr</code> to
+extract the pieces you need.</p>
 <pre class="r"><code>library(purrr)
+library(stringr)
+
+csv_files &lt;- list.files(&quot;data/sensors/&quot;, pattern = &quot;\\.csv$&quot;, full.names = TRUE)
+
+all_data &lt;- csv_files |&gt;
+  # Name the vector with just the bare file name (no path, no extension)
+  set_names(~ tools::file_path_sans_ext(basename(.x))) |&gt;
+  map(\(f) read_csv(f, col_types = cols(.default = col_character()),
+                    show_col_types = FALSE)) |&gt;
+  list_rbind(names_to = &quot;source_file&quot;)
+  # names_to = &quot;source_file&quot; creates a column using the names we set above</code></pre>
+<div class="expected">
+<p><strong>Expected result — new column at the left</strong> source_file
+site_id date pm25_ug_m3 LakeElsinore_2023-06 … 2023-06-01 12.4
+LakeElsinore_2023-06 … 2023-06-02 9.8 … Riverside_2023-06 … 2023-06-01
+18.1</p>
+</div>
+</div>
+<div id="method-2-parse-file-name-components-directly-into-columns" class="section level3">
+<h3>Method 2: parse file name components directly into columns</h3>
+<p>When the file name follows a predictable pattern (e.g.,
+<code>SITE_YYYY-MM.csv</code>), you can extract the components inside
+the same pipeline using <code>mutate()</code> and
+<code>str_extract()</code> or <code>separate()</code>:</p>
+<pre class="r"><code>all_data &lt;- csv_files |&gt;
+  set_names(~ tools::file_path_sans_ext(basename(.x))) |&gt;
+  map(\(f) read_csv(f, col_types = cols(.default = col_character()),
+                    show_col_types = FALSE)) |&gt;
+  list_rbind(names_to = &quot;source_file&quot;) |&gt;
+  # ── Parse the file name into site and year-month ────────────────────────
+  mutate(
+    site      = str_extract(source_file, &quot;^[^_]+&quot;),          # everything before first _
+    yearmonth = str_extract(source_file, &quot;\\d{4}-\\d{2}$&quot;)   # YYYY-MM at end
+  ) |&gt;
+  # ── Convert types now that we have clean columns ────────────────────────
+  type_convert()</code></pre>
+<div class="expected">
+<p><strong>Expected result — site and yearmonth extracted</strong>
+source_file site yearmonth date pm25_ug_m3 LakeElsinore_2023-06
+LakeElsinore 2023-06 2023-06-01 12.4 Riverside_2023-06 Riverside 2023-06
+2023-06-01 18.1</p>
+</div>
+</div>
+<div id="method-3-inject-metadata-from-a-lookup-table" class="section level3">
+<h3>Method 3: inject metadata from a lookup table</h3>
+<p>Sometimes the file name contains a code (e.g., <code>S01</code>,
+<code>S02</code>) rather than a human-readable label. You can match
+codes to a lookup table with <code>left_join()</code>:</p>
+<pre class="r"><code># A lookup table you create separately
+site_lookup &lt;- tibble::tribble(
+  ~file_code, ~site_name,        ~latitude, ~longitude,
+  &quot;S01&quot;,      &quot;Lake Elsinore&quot;,   33.668,    -117.332,
+  &quot;S02&quot;,      &quot;Riverside&quot;,       33.953,    -117.396,
+  &quot;S03&quot;,      &quot;Mira Loma&quot;,       33.986,    -117.519
+)
 
 csv_files &lt;- list.files(&quot;data/sensors/&quot;, pattern = &quot;\\.csv$&quot;, full.names = TRUE)
 
 all_data &lt;- csv_files |&gt;
   set_names(~ tools::file_path_sans_ext(basename(.x))) |&gt;
-  map_dfr(read_csv, col_types = cols(.default = col_character()),
-          .id = &quot;source_file&quot;) |&gt;
-  type_convert()   # re-parse types after binding — safer than guessing per file</code></pre>
-<p>Using <code>col_types = cols(.default = col_character())</code> on
-the first pass reads everything as text — preventing any single file’s
-format quirks from forcing the entire batch to <code>NA</code>.
-<code>type_convert()</code> then re-infers types on the bound data
-frame.</p>
+  map(\(f) read_csv(f, col_types = cols(.default = col_character()),
+                    show_col_types = FALSE)) |&gt;
+  list_rbind(names_to = &quot;file_code&quot;) |&gt;
+  # ── Bring in site metadata from lookup table ────────────────────────────
+  left_join(site_lookup, by = &quot;file_code&quot;) |&gt;
+  type_convert()</code></pre>
+</div>
+<div id="method-4-inject-metadata-inside-the-reading-function" class="section level3">
+<h3>Method 4: inject metadata inside the reading function</h3>
+<p>If the column you want is not in the file name but can be computed
+from the path, you can add it <em>inside</em> the reading function
+before the files are stacked:</p>
+<pre class="r"><code># Example: add a column recording the file&#39;s modification date
+read_with_meta &lt;- function(filepath) {
+  read_csv(filepath,
+           col_types = cols(.default = col_character()),
+           show_col_types = FALSE) |&gt;
+    mutate(
+      source_file   = basename(filepath),
+      file_mod_date = file.mtime(filepath)
+    )
+}
+
+all_data &lt;- csv_files |&gt;
+  map(read_with_meta) |&gt;
+  list_rbind() |&gt;
+  type_convert()</code></pre>
+</div>
+<div id="putting-it-all-together-a-complete-pattern" class="section level3">
+<h3>Putting it all together: a complete pattern</h3>
+<p>Here is the full recommended workflow for a realistic environmental
+dataset where files are named <code>SITE_YYYY-MM.csv</code>:</p>
+<pre class="r"><code>library(tidyverse)   # includes purrr, dplyr, stringr, readr
+
+# 1. Find files
+csv_files &lt;- list.files(
+  &quot;data/sensors/&quot;,
+  pattern    = &quot;\\.csv$&quot;,
+  full.names = TRUE
+)
+
+# 2. Verify names are consistent across all files
+stopifnot(
+  length(unique(
+    map(csv_files, \(f) names(read_csv(f, n_max = 1, show_col_types = FALSE)))
+  )) == 1
+)
+
+# 3. Read, stack, extract filename metadata, convert types
+all_data &lt;- csv_files |&gt;
+  set_names(~ tools::file_path_sans_ext(basename(.x))) |&gt;
+  map(\(f) read_csv(f, col_types = cols(.default = col_character()),
+                    show_col_types = FALSE)) |&gt;
+  list_rbind(names_to = &quot;source_file&quot;) |&gt;
+  mutate(
+    site      = str_extract(source_file, &quot;^[A-Za-z]+&quot;),
+    year      = as.integer(str_extract(source_file, &quot;\\d{4}&quot;)),
+    month     = as.integer(str_extract(source_file, &quot;(?&lt;=-)\\d{2}$&quot;))
+  ) |&gt;
+  type_convert() |&gt;
+  select(-source_file)   # drop once parsed, or keep for provenance
+
+# 4. Sanity checks
+glimpse(all_data)
+n_distinct(all_data$site)    # how many sites?
+range(all_data$date)          # plausible date range?
+sum(is.na(all_data$pm25_ug_m3))  # NAs in key column</code></pre>
+<div class="callout callout-tip">
+<p><strong>💡 Decide whether to keep <code>source_file</code></strong>
+Keeping a <code>source_file</code> column in your final data frame gives
+you a permanent record of data provenance — you can always trace any row
+back to the raw file that produced it. This is especially valuable in
+collaborative projects or when you will need to re-import after the
+original files are updated. If the column is redundant (the site and
+date already identify the source unambiguously), you can drop it with
+<code>select(-source_file)</code>.</p>
+</div>
+<div class="callout callout-warn">
+<p><strong>⚠️ File naming conventions matter — establish them before
+data collection</strong> The techniques above only work when file names
+are machine-readable: consistent delimiters, no spaces, no special
+characters, predictable field order. If your collaborators have been
+naming files <code>Site A data March final REVISED.csv</code>, you will
+spend more time wrangling names than reading data. Establish a naming
+convention (<code>SITE_YYYY-MM.csv</code>) before you begin collecting
+data.</p>
+</div>
+<div class="try-it">
+<p><strong>✏️ Try It — extract site metadata from file
+names</strong></p>
+<p>Create three fake CSV files with the same columns but different names
+following a <code>SITE_YYYY-MM.csv</code> pattern (e.g.,
+<code>Oak_2024-01.csv</code>, <code>Oak_2024-02.csv</code>,
+<code>Pine_2024-01.csv</code>). Each file can have just 3–5 rows of
+made-up data. Then:</p>
+<ol style="list-style-type: decimal">
+<li>Use <code>list.files()</code> to find them.</li>
+<li>Use Method 2 above to read them all and extract the site name and
+year-month as columns.</li>
+<li>Run <code>count(all_data, site, yearmonth)</code> to verify that
+each site × month combination appears the expected number of times.</li>
+</ol>
+</div>
 <hr />
 </div>
 </div>
 <div id="excel" class="section level2">
-<h2>3. Reading Excel Files</h2>
+<h2>5. Reading Excel Files</h2>
 <p>Excel is the most common format for shared field data, but it is also
 the most treacherous. Excel silently “helps” with dates, auto-formats
 numbers, stores values differently than they look, and hides information
@@ -646,25 +1077,29 @@ in cell formatting rather than cell content.</p>
 <h3>Basic usage</h3>
 <pre class="r"><code>library(readxl)
 
-# List sheets before committing to one
-excel_sheets(&quot;data/field_data.xlsx&quot;)
-
-# Read a specific sheet
+# Step 1: list sheets before committing to one
+excel_sheets(&quot;data/field_data.xlsx&quot;)</code></pre>
+<div class="expected">
+<p><strong>Expected output</strong> [1] “Site_A” “Site_B” “Methods”
+“README”</p>
+</div>
+<pre class="r"><code># Step 2: read a specific sheet by name (more robust than by position)
 df &lt;- read_excel(&quot;data/field_data.xlsx&quot;, sheet = &quot;Site_A&quot;)
 
-# Read by position (fragile — use sheet name when possible)
-df &lt;- read_excel(&quot;data/field_data.xlsx&quot;, sheet = 2)</code></pre>
+# Step 3: inspect immediately
+glimpse(df)
+problems(df)</code></pre>
 </div>
 <div id="reading-a-specific-range" class="section level3">
 <h3>Reading a specific range</h3>
 <p>When the data does not start at cell A1 — common with lab-formatted
 spreadsheets that have a title block at the top:</p>
-<pre class="r"><code># Specify an Excel range directly
+<pre class="r"><code># Specify an Excel range directly (in Excel A1 notation)
 df &lt;- read_excel(&quot;data/lab_results.xlsx&quot;,
                  sheet = &quot;Results&quot;,
                  range = &quot;B4:H120&quot;)
 
-# Or skip rows and specify n_max
+# Or skip rows and limit the number of data rows
 df &lt;- read_excel(&quot;data/lab_results.xlsx&quot;,
                  skip    = 3,
                  n_max   = 200,
@@ -673,9 +1108,10 @@ df &lt;- read_excel(&quot;data/lab_results.xlsx&quot;,
 <div id="forcing-column-types" class="section level3">
 <h3>Forcing column types</h3>
 <p><code>readxl</code> guesses types from the first few rows — if row 5
-has <code>&quot;&lt; LOD&quot;</code> in a numeric column, the column becomes
-<code>chr</code> and every real number becomes a character string:</p>
-<pre class="r"><code>df &lt;- read_excel(
+has <code>&quot;&lt; LOD&quot;</code> in a numeric column, the whole column
+becomes <code>chr</code>:</p>
+<pre class="r"><code># Provide one string per column in left-to-right order
+df &lt;- read_excel(
   &quot;data/water_quality.xlsx&quot;,
   sheet     = &quot;Data&quot;,
   col_types = c(
@@ -689,67 +1125,59 @@ has <code>&quot;&lt; LOD&quot;</code> in a numeric column, the column becomes
 )</code></pre>
 <div class="callout callout-warn">
 <p><strong>⚠️ “date” in readxl ≠ col_date() in readr</strong>
-<code>readxl</code>’s <code>col_types</code> uses plain strings like
+<code>readxl</code>’s <code>col_types</code> uses plain strings:
 <code>“date”</code>, <code>“numeric”</code>, <code>“text”</code>,
-<code>“skip”</code>, <code>“logical”</code>. It does not use readr’s
-<code>cols()</code> syntax. These two packages have completely different
-type-specification interfaces.</p>
+<code>“skip”</code>, <code>“logical”</code>. It does <em>not</em> use
+readr’s <code>cols()</code> syntax. These two packages have completely
+different type-specification interfaces.</p>
 </div>
 </div>
 <div id="the-excel-serial-date-trap" class="section level3">
 <h3>The Excel serial-date trap</h3>
-<p>Excel stores dates internally as the number of days since 1900-01-00
-(yes, day zero). When a date column is read as
-<code>col_types = &quot;numeric&quot;</code>, you get values like
-<code>45290</code> instead of <code>2024-01-15</code>. This happens when
-cells are formatted as numbers in the original file, or when using older
-<code>.xls</code> format.</p>
+<p>Excel stores dates as the number of days since 1900-01-00. When a
+date column is read as numeric, you get values like <code>45290</code>
+instead of <code>2024-01-15</code>:</p>
 <pre class="r"><code># If you get mysterious 5-digit numbers in a date column:
-df &lt;- read_excel(&quot;data/old_data.xls&quot;, col_types = &quot;numeric&quot;) |&gt;
+df &lt;- read_excel(&quot;data/old_data.xls&quot;) |&gt;
   mutate(date_fixed = as.Date(date_col, origin = &quot;1899-12-30&quot;))
-# Note: Excel&#39;s epoch is 1899-12-30 due to a deliberate Lotus 1-2-3
-# compatibility bug that Microsoft kept for 40 years.</code></pre>
-<pre class="r"><code># Demonstrate the conversion
-excel_serial &lt;- c(45292, 45293, 45294)   # three consecutive Excel dates
+# Excel&#39;s epoch is 1899-12-30 due to a deliberate Lotus 1-2-3 compatibility
+# bug that Microsoft kept for 40 years.</code></pre>
+<pre class="r"><code># See the conversion in action
+excel_serial &lt;- c(45292, 45293, 45294)
 as.Date(excel_serial, origin = &quot;1899-12-30&quot;)</code></pre>
 <pre><code>## [1] &quot;2024-01-01&quot; &quot;2024-01-02&quot; &quot;2024-01-03&quot;</code></pre>
 <div class="nightmare">
 <p><strong>🗓️ Excel Serial Date Nightmare</strong> You open a
-spreadsheet, the date column looks fine on screen — “Jan 15, 2024” — but
-when you read it into R you get <code>45292</code>. This happens when
-someone saved the file as <code>.xls</code> (old format) or explicitly
-formatted cells as “Number” before entering dates. Fix with
-<code>as.Date(x, origin = “1899-12-30”)</code>. Always check with
-<code>class(df$date_col)</code> right after import.</p>
+spreadsheet and the date column looks fine — “Jan 15, 2024” — but in R
+you get <code>45292</code>. This happens when someone saved as
+<code>.xls</code> or formatted cells as “Number” before entering dates.
+Fix with <code>as.Date(x, origin = “1899-12-30”)</code>. Always check
+with <code>class(df$date_col)</code> right after import.</p>
 </div>
 </div>
 <div id="merged-cells-and-multiline-headers" class="section level3">
 <h3>Merged cells and multiline headers</h3>
-<p>Excel files from collaborators often have merged header cells
-spanning multiple columns, or two-row headers. <code>readxl</code>
-cannot handle these automatically.</p>
 <pre class="r"><code># Strategy 1: skip the merged-header rows, supply names manually
 df &lt;- read_excel(
   &quot;data/merged_headers.xlsx&quot;,
-  skip      = 2,       # skip the two header rows
+  skip      = 2,
   col_names = c(&quot;site&quot;, &quot;date&quot;, &quot;temp_mean&quot;, &quot;temp_sd&quot;,
                 &quot;ph_mean&quot;, &quot;ph_sd&quot;, &quot;do_mean&quot;, &quot;do_sd&quot;)
 )
 
-# Strategy 2: read raw, then rename with rename() or janitor::clean_names()
+# Strategy 2: read raw, then rename with janitor::clean_names()
 df_raw &lt;- read_excel(&quot;data/merged_headers.xlsx&quot;, col_names = FALSE)
-# inspect: View(df_raw) or print(df_raw[1:3, ])
-# then build clean names manually</code></pre>
+# inspect: print(df_raw[1:3, ])
+# then supply names manually based on what you see</code></pre>
 <hr />
 </div>
 </div>
 <div id="field-data" class="section level2">
-<h2>4. Field and Instrument Data</h2>
+<h2>6. Field and Instrument Data</h2>
 <p>Sensors, dataloggers, and field instruments produce files with
 problems that CSVs from databases rarely have: non-standard delimiters,
-multi-line headers, mixed data types within columns, and files that are
-technically valid but designed for proprietary software rather than
-R.</p>
+multi-line headers, mixed data types within columns, and files designed
+for proprietary software.</p>
 <div id="non-standard-delimiters" class="section level3">
 <h3>Non-standard delimiters</h3>
 <pre class="r"><code># Tab-separated (common from GIS software and some instruments)
@@ -767,14 +1195,13 @@ df &lt;- read_table(&quot;data/met_station.dat&quot;,
 </div>
 <div id="instrument-files-with-metadata-headers" class="section level3">
 <h3>Instrument files with metadata headers</h3>
-<p>Dataloggers often prepend metadata before the data rows. The
-challenge is that the number of header lines varies between instrument
-models and firmware versions. Use <code>read_lines()</code> to inspect
-first:</p>
+<p>Dataloggers often prepend metadata before the data rows. Use
+<code>read_lines()</code> to inspect first, then read with the right
+<code>skip =</code> value:</p>
 <pre class="r"><code># Read the first 15 lines as raw text to understand the structure
 read_lines(&quot;data/campbell_cr1000.dat&quot;, n_max = 15)</code></pre>
 <pre class="r"><code># Campbell Scientific CR1000: 4-line header (station name, field names,
-# units, processing type), data starts on row 5
+# units, processing type); data starts on row 5
 df &lt;- read_csv(
   &quot;data/campbell_cr1000.dat&quot;,
   skip      = 4,
@@ -799,7 +1226,7 @@ mixed &lt;- tibble::tibble(
   no3_mgl = c(&quot;1.2&quot;, &quot;0.8&quot;, &quot;&lt; LOD&quot;, &quot;1.5&quot;, &quot;offline&quot;)
 )
 
-# Wrong approach: as.numeric() silently coerces to NA without warning
+# Wrong approach: as.numeric() silently coerces to NA without preserving why
 mixed |&gt; dplyr::mutate(no3_num = as.numeric(no3_mgl))</code></pre>
 <pre><code>## # A tibble: 5 × 3
 ##   site  no3_mgl no3_num
@@ -818,7 +1245,6 @@ mixed |&gt;
                 TRUE                                   ~ NA_character_
               ),
     no3_num = suppressWarnings(as.numeric(no3_mgl))
-    # NA introduced for flagged rows — intentional, documented in flag column
   )</code></pre>
 <pre><code>## # A tibble: 5 × 4
 ##   site  no3_mgl flag                  no3_num
@@ -834,25 +1260,27 @@ flagged string to <code>NA</code>, you lose the reason for the missing
 value. Always create a companion <code>flag</code> or
 <code>quality_code</code> column that preserves the original string
 before converting. This matters enormously for environmental data with
-detection limits.</p>
+detection limits — an analysis that treats “below detection” and
+“instrument offline” as the same kind of missing data is scientifically
+wrong.</p>
 </div>
 </div>
 <div id="trailing-commas-and-blank-columns" class="section level3">
 <h3>Trailing commas and blank columns</h3>
-<p>Some instruments export a trailing comma on every row, which R
-interprets as an extra empty column:</p>
-<pre class="r"><code># Symptom: last column is named &quot;...N&quot; and is all NA
+<p>Some instruments export a trailing comma on every row, creating a
+phantom extra column in R:</p>
+<pre class="r"><code># Symptom: last column is named &quot;...8&quot; or similar and is all NA
 df &lt;- read_csv(&quot;data/sensor_with_trailing_comma.csv&quot;)
-names(df)   # you&#39;ll see &quot;...8&quot; or similar
+names(df)   # look for &quot;...N&quot; column names
 
-# Fix: drop the phantom column
-df &lt;- read_csv(&quot;data/sensor_with_trailing_comma.csv&quot;) |&gt;
+# Fix: drop any column whose name starts with &quot;...&quot;
+df &lt;- df |&gt;
   dplyr::select(!dplyr::starts_with(&quot;...&quot;))</code></pre>
 <hr />
 </div>
 </div>
 <div id="encoding" class="section level2">
-<h2>5. Encoding Issues</h2>
+<h2>7. Encoding Issues</h2>
 <p>Character encoding determines how bytes map to text characters. In
 practice you encounter this problem when a file contains accented
 characters (é, ü, ñ), em-dashes (—), degree symbols (°), or any
@@ -895,9 +1323,13 @@ non-ASCII character, and R displays garbled output like
 <div id="detecting-encoding" class="section level3">
 <h3>Detecting encoding</h3>
 <pre class="r"><code># Option 1: readr&#39;s built-in guesser (works most of the time)
-readr::guess_encoding(&quot;data/field_notes.csv&quot;)
-
-# Option 2: the stringi package (more thorough)
+readr::guess_encoding(&quot;data/field_notes.csv&quot;)</code></pre>
+<div class="expected">
+<p><strong>Expected output</strong> # A tibble: 3 × 2 encoding
+confidence chr dbl 1 UTF-8 0.80 2 windows-1252 0.51 3 ISO-8859-1
+0.49</p>
+</div>
+<pre class="r"><code># Option 2: the stringi package (more thorough)
 stringi::stri_enc_detect(readr::read_file_raw(&quot;data/field_notes.csv&quot;))</code></pre>
 </div>
 <div id="specifying-encoding-on-import" class="section level3">
@@ -912,18 +1344,13 @@ df &lt;- read_csv(
 df &lt;- read_csv(
   &quot;data/epa_aqs_download.csv&quot;,
   locale = locale(encoding = &quot;windows-1252&quot;)
-)
-
-# Excel files — readxl handles encoding internally, but if you still see
-# garbled characters in an .xls (not .xlsx) file:
-df &lt;- readxl::read_xls(&quot;data/old_data.xls&quot;)   # readxl auto-detects for xls</code></pre>
+)</code></pre>
 </div>
 <div id="the-utf-8-bom-problem" class="section level3">
 <h3>The UTF-8 BOM problem</h3>
 <p>Some Windows applications prepend a Byte Order Mark (BOM) — three
-invisible bytes (<code>EF BB BF</code>) — to UTF-8 files. R may read the
-first column name as <code>&quot;ï»¿site_id&quot;</code> or
-<code>&quot;\xef\xbb\xbfsite_id&quot;</code>:</p>
+invisible bytes — to UTF-8 files. R may read the first column name as
+<code>&quot;ï»¿site_id&quot;</code> or <code>&quot;\xef\xbb\xbfsite_id&quot;</code>:</p>
 <pre class="r"><code># readr handles this automatically with UTF-8-BOM:
 df &lt;- read_csv(&quot;data/bom_file.csv&quot;,
                locale = locale(encoding = &quot;UTF-8-BOM&quot;))
@@ -939,51 +1366,29 @@ actually named <code>“ID”</code>. Three invisible bytes at the start of
 the file. Always run <code>names(df)</code> immediately after import and
 look carefully at the first column name.</p>
 </div>
-</div>
-<div id="fixing-encoding-after-import" class="section level3">
-<h3>Fixing encoding after import</h3>
-<pre class="r"><code># Re-encode a garbled character column
-df &lt;- df |&gt;
-  dplyr::mutate(
-    location = iconv(location,
-                     from = &quot;latin1&quot;,
-                     to   = &quot;UTF-8&quot;)
-  )
-
-# Remove all non-ASCII characters (last resort)
-df &lt;- df |&gt;
-  dplyr::mutate(
-    notes = stringr::str_replace_all(notes, &quot;[^\x01-\x7F]&quot;, &quot;&quot;)
-  )</code></pre>
 <hr />
 </div>
 </div>
 <div id="datetime" class="section level2">
-<h2>6. Datetime Importing Nightmares</h2>
+<h2>8. Datetime Importing Nightmares</h2>
 <p>Dates and times are R’s most common source of import pain. The root
 cause is that there is no universal standard — every instrument,
-operating system, and country uses a different format — and R’s
-base-date functions are unforgiving about format strings.</p>
+operating system, and country uses a different format.</p>
 <div id="why-datetimes-are-hard" class="section level3">
 <h3>Why datetimes are hard</h3>
 <div class="nightmare">
 <p><strong>😱 The Core Problem</strong> The string
 <code>“01/02/03”</code> could mean January 2, 2003 (US), February 1,
-2003 (European), February 3, 2001 (ISO year-last), or 1 February 2003 at
-00:00 in some logger formats. R cannot know which — and neither can you
-without reading the instrument manual or asking the person who collected
-the data. <em>There is no safe default.</em></p>
+2003 (European), February 3, 2001 (ISO year-last), or 1 February 2003 in
+some logger formats. R cannot know which — and neither can you without
+reading the instrument manual. <em>There is no safe default.</em></p>
 </div>
 </div>
 <div id="the-lubridate-parsing-approach" class="section level3">
 <h3>The lubridate parsing approach</h3>
-<p><code>lubridate</code> provides a family of functions named after the
-<em>order</em> of the components. This is the most readable approach for
-most field data:</p>
+<p><code>lubridate</code> provides functions named after the
+<em>order</em> of the components:</p>
 <pre class="r"><code>library(lubridate)
-
-# Name the function after the order: y = year, m = month, d = day
-#                                    h = hour, m = minute, s = second
 
 ymd(&quot;2024-03-15&quot;)               # ISO 8601 — always prefer this format</code></pre>
 <pre><code>## [1] &quot;2024-03-15&quot;</code></pre>
@@ -993,37 +1398,28 @@ ymd(&quot;2024-03-15&quot;)               # ISO 8601 — always prefer this form
 <pre><code>## [1] &quot;2024-03-15&quot;</code></pre>
 <pre class="r"><code>mdy(&quot;March 15, 2024&quot;)           # Long month name</code></pre>
 <pre><code>## [1] &quot;2024-03-15&quot;</code></pre>
-<pre class="r"><code>ymd_hms(&quot;2024-03-15 14:32:00&quot;)  # datetime</code></pre>
+<pre class="r"><code>ymd_hms(&quot;2024-03-15 14:32:00&quot;)  # datetime with seconds</code></pre>
 <pre><code>## [1] &quot;2024-03-15 14:32:00 UTC&quot;</code></pre>
-<pre class="r"><code>mdy_hm(&quot;03/15/2024 14:32&quot;)      # no seconds</code></pre>
-<pre><code>## [1] &quot;2024-03-15 14:32:00 UTC&quot;</code></pre>
-<pre class="r"><code>dmy_hms(&quot;15-03-2024 14:32:00&quot;)  # European datetime</code></pre>
+<pre class="r"><code>mdy_hm(&quot;03/15/2024 14:32&quot;)      # datetime, no seconds</code></pre>
 <pre><code>## [1] &quot;2024-03-15 14:32:00 UTC&quot;</code></pre>
 <pre class="r"><code># Works on vectors — safe to use inside mutate()
+# Returns NA for unparseable rows (with a warning) — does NOT crash
 dates &lt;- c(&quot;2024-01-15&quot;, &quot;2024-02-20&quot;, &quot;2024-03-05&quot;, &quot;not-a-date&quot;)
-ymd(dates)   # returns NA for the bad row with a warning — does NOT crash</code></pre>
+ymd(dates)</code></pre>
 <pre><code>## [1] &quot;2024-01-15&quot; &quot;2024-02-20&quot; &quot;2024-03-05&quot; NA</code></pre>
 <div class="callout callout-tip">
 <p><strong>💡 lubridate is forgiving; base R strptime() is not</strong>
-<code>ymd()</code> tries multiple separators and format variations
-automatically. <code>as.Date(“15/03/2024”, format = “%d/%m/%Y”)</code>
-requires an exact format string and returns <code>NA</code> with no
-warning if you get it slightly wrong. Use lubridate in scripts; use
-<code>format =</code> only when you need fine control or are specifying
-types inside <code>read_csv()</code>.</p>
+<code>ymd()</code> tries multiple separators automatically.
+<code>as.Date(“15/03/2024”, format = “%d/%m/%Y”)</code> requires an
+exact format string and returns <code>NA</code> silently if you get it
+wrong. Use lubridate in scripts.</p>
 </div>
 </div>
 <div id="the-strptime-format-string-reference" class="section level3">
 <h3>The strptime / format-string reference</h3>
-<p>When you must use <code>format =</code> (inside
-<code>read_csv()</code> <code>col_date()</code> or base-R
-<code>as.Date()</code>), these are the codes you need most often:</p>
+<p>When you must use <code>format =</code> inside
+<code>read_csv()</code> <code>col_date()</code>:</p>
 <table>
-<colgroup>
-<col width="33%" />
-<col width="33%" />
-<col width="33%" />
-</colgroup>
 <thead>
 <tr class="header">
 <th>Code</th>
@@ -1093,56 +1489,24 @@ types inside <code>read_csv()</code>.</p>
 <td><code>+0700</code>, <code>-0500</code></td>
 </tr>
 <tr class="odd">
-<td><code>%Z</code></td>
-<td>Timezone abbreviation (<strong>output only</strong> — cannot parse
-with base R; use lubridate)</td>
-<td><code>PST</code>, <code>UTC</code></td>
-</tr>
-<tr class="even">
 <td><code>%j</code></td>
 <td>Day of year (001–366)</td>
 <td><code>075</code></td>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code># Practice building format strings
-as.Date(&quot;15/03/2024&quot;,    format = &quot;%d/%m/%Y&quot;)</code></pre>
+<pre class="r"><code>as.Date(&quot;15/03/2024&quot;,    format = &quot;%d/%m/%Y&quot;)</code></pre>
 <pre><code>## [1] &quot;2024-03-15&quot;</code></pre>
 <pre class="r"><code>as.Date(&quot;Mar 15, 2024&quot;,  format = &quot;%b %d, %Y&quot;)</code></pre>
 <pre><code>## [1] &quot;2024-03-15&quot;</code></pre>
-<pre class="r"><code>as.Date(&quot;20240315&quot;,      format = &quot;%Y%m%d&quot;)     # compact format, no separator</code></pre>
+<pre class="r"><code>as.Date(&quot;20240315&quot;,      format = &quot;%Y%m%d&quot;)</code></pre>
 <pre><code>## [1] &quot;2024-03-15&quot;</code></pre>
-<pre class="r"><code># %Z cannot be used for *input* in base R — use lubridate instead
-lubridate::ymd_hms(&quot;2024-03-15 14:32:00&quot;, tz = &quot;America/Los_Angeles&quot;)</code></pre>
+<pre class="r"><code>lubridate::ymd_hms(&quot;2024-03-15 14:32:00&quot;, tz = &quot;America/Los_Angeles&quot;)</code></pre>
 <pre><code>## [1] &quot;2024-03-15 14:32:00 PDT&quot;</code></pre>
-</div>
-<div id="the-two-digit-year-trap" class="section level3">
-<h3>The two-digit year trap</h3>
-<pre class="r"><code># Two-digit years: R&#39;s cutoff is 68
-# 00–68 → 2000–2068
-# 69–99 → 1969–1999
-
-ymd(c(&quot;24-01-15&quot;, &quot;68-01-15&quot;, &quot;69-01-15&quot;, &quot;99-01-15&quot;))</code></pre>
-<pre><code>## [1] &quot;2024-01-15&quot; &quot;2068-01-15&quot; &quot;1969-01-15&quot; &quot;1999-01-15&quot;</code></pre>
-<pre class="r"><code># Note: lubridate handles this; base R as.Date() does NOT handle 2-digit years</code></pre>
-<div class="nightmare">
-<p><strong>🗓️ The Two-Digit Year Nightmare</strong> Older field
-instruments often export <code>24-01-15</code> to save space.
-<code>lubridate::ymd(“24-01-15”)</code> correctly gives 2024-01-15.
-<code>as.Date(“24-01-15”, format = “%y-%m-%d”)</code> also gives
-2024-01-15 for years 00–68. But if someone handed you data from 1998,
-your dates will silently become 2098. Always verify with
-<code>range(df$date)</code> after parsing.</p>
-</div>
 </div>
 <div id="timezone-nightmares" class="section level3">
 <h3>Timezone nightmares</h3>
-<p>Timezones are where datetime handling becomes truly treacherous. R
-stores <code>POSIXct</code> objects as seconds since the Unix epoch
-(1970-01-01 00:00:00 UTC) — display depends on the timezone
-attribute.</p>
-<pre class="r"><code># The same moment, three timezone representations
-t_utc  &lt;- ymd_hms(&quot;2024-03-15 22:00:00&quot;, tz = &quot;UTC&quot;)
+<pre class="r"><code>t_utc  &lt;- ymd_hms(&quot;2024-03-15 22:00:00&quot;, tz = &quot;UTC&quot;)
 t_pst  &lt;- with_tz(t_utc, &quot;America/Los_Angeles&quot;)
 t_est  &lt;- with_tz(t_utc, &quot;America/New_York&quot;)
 
@@ -1162,17 +1526,14 @@ tibble::tibble(
 # force_tz()  — &quot;this timestamp WAS recorded in timezone X&quot; (no time shift)
 # with_tz()   — &quot;show me this UTC time in timezone X&quot;      (display shift only)
 
-raw_logger_time &lt;- ymd_hms(&quot;2024-03-15 14:32:00&quot;)   # no tz → UTC assumed!
+raw_logger_time &lt;- ymd_hms(&quot;2024-03-15 14:32:00&quot;)   # no tz → UTC assumed
 
-# Sensor was physically in LA; timestamps are local, no tz encoded
-correct &lt;- force_tz(raw_logger_time, &quot;America/Los_Angeles&quot;)
-
-# WRONG: this converts 14:32 UTC to LA local — shifts time by 7–8 hours
-wrong   &lt;- with_tz(raw_logger_time, &quot;America/Los_Angeles&quot;)
+correct &lt;- force_tz(raw_logger_time, &quot;America/Los_Angeles&quot;)  # correct
+wrong   &lt;- with_tz(raw_logger_time, &quot;America/Los_Angeles&quot;)   # WRONG: shifts time
 
 tibble::tibble(
-  approach  = c(&quot;raw (no tz declared)&quot;, &quot;force_tz — correct&quot;, &quot;with_tz — WRONG&quot;),
-  time_shown = c(format(raw_logger_time,       &quot;%H:%M %Z&quot;),
+  approach   = c(&quot;raw (no tz declared)&quot;, &quot;force_tz — correct&quot;, &quot;with_tz — WRONG&quot;),
+  time_shown = c(format(raw_logger_time, &quot;%H:%M %Z&quot;),
                  format(correct, &quot;%H:%M %Z&quot;),
                  format(wrong,   &quot;%H:%M %Z&quot;))
 )</code></pre>
@@ -1187,58 +1548,15 @@ tibble::tibble(
 logged data in Pacific time but didn’t record a timezone. You use
 <code>with_tz(datetime, “America/Los_Angeles”)</code> thinking you’re
 “setting” the timezone — but <code>with_tz()</code> converts the time,
-not labels it. A timestamp that read 14:32 now reads 06:32 because R
-treated it as UTC and subtracted 8 hours. Your diurnal analysis shows
-peak PM2.5 at 6 AM instead of 2 PM. Use <code>force_tz()</code> when the
-timestamps are already in the local time zone and you just need to
-declare that fact.</p>
+not labels it. A timestamp that read 14:32 now reads 06:32. Your diurnal
+analysis shows peak PM2.5 at 6 AM instead of 2 PM. Use
+<code>force_tz()</code> when timestamps are already in local time and
+you just need to declare that fact.</p>
 </div>
-</div>
-<div id="daylight-saving-time" class="section level3">
-<h3>Daylight saving time</h3>
-<pre class="r"><code># DST gap: clocks spring forward at 2:00 AM → 3:00 AM
-# Times between 2:00 and 3:00 don&#39;t exist on that day
-gap_time &lt;- ymd_hms(&quot;2024-03-10 02:30:00&quot;, tz = &quot;America/Los_Angeles&quot;)
-# lubridate handles this: returns NA with a warning
-gap_time        # lubridate returns NA with a warning for non-existent times</code></pre>
-<pre><code>## [1] NA</code></pre>
-<pre class="r"><code># DST overlap: clocks fall back at 2:00 AM → 1:00 AM
-# Times between 1:00 and 2:00 exist TWICE on that day
-overlap_time &lt;- ymd_hms(&quot;2024-11-03 01:30:00&quot;, tz = &quot;America/Los_Angeles&quot;)
-# lubridate picks the first occurrence (standard time)
-overlap_time    # lubridate picks the first occurrence (standard time)</code></pre>
-<pre><code>## [1] &quot;2024-11-03 01:30:00 PST&quot;</code></pre>
-<div class="callout callout-warn">
-<p><strong>⚠️ The DST solution: always store in UTC</strong> Sensor data
-stored in local time will have a 1-hour gap in spring and a 1-hour
-duplicate in fall — your time-series will have missing or doubled rows.
-The fix is to convert to UTC at import and keep everything in UTC until
-you need to display results to a human.</p>
-</div>
-<pre class="r"><code># The recommended workflow for sensor time series
-local_times &lt;- c(
-  &quot;2024-03-10 01:45:00&quot;,
-  &quot;2024-03-10 03:15:00&quot;,    # after spring-forward
-  &quot;2024-11-03 01:15:00&quot;,    # before fall-back
-  &quot;2024-11-03 01:15:00&quot;     # same clock time, second occurrence
-)
-
-# Step 1: parse declaring the sensor&#39;s local timezone
-dt_local &lt;- ymd_hms(local_times, tz = &quot;America/Los_Angeles&quot;)
-
-# Step 2: convert to UTC for storage and analysis
-dt_utc &lt;- with_tz(dt_local, &quot;UTC&quot;)
-dt_utc</code></pre>
-<pre><code>## [1] &quot;2024-03-10 09:45:00 UTC&quot; &quot;2024-03-10 10:15:00 UTC&quot;
-## [3] &quot;2024-11-03 09:15:00 UTC&quot; &quot;2024-11-03 09:15:00 UTC&quot;</code></pre>
 </div>
 <div id="multiple-datetime-formats-in-one-column" class="section level3">
 <h3>Multiple datetime formats in one column</h3>
-<p>A nightmare common in hand-entered field data where different team
-members used different formats:</p>
-<pre class="r"><code># Mixed formats in a single column — neither lubridate nor readr handles this
-# with a single function call
-mixed_dates &lt;- c(
+<pre class="r"><code>mixed_dates &lt;- c(
   &quot;2024-01-15&quot;,      # ISO
   &quot;01/20/2024&quot;,      # US m/d/Y
   &quot;25-Jan-2024&quot;,     # d-Mon-Y
@@ -1246,117 +1564,64 @@ mixed_dates &lt;- c(
   &quot;2024.02.10&quot;       # dot separator
 )
 
-# Strategy: try parse_date_time() with a vector of format orders
 parse_date_time(mixed_dates,
                 orders = c(&quot;Ymd&quot;, &quot;mdY&quot;, &quot;dBY&quot;, &quot;BdY&quot;, &quot;Y.m.d&quot;),
                 quiet  = TRUE)</code></pre>
 <pre><code>## [1] &quot;2024-01-15 UTC&quot; &quot;2024-01-20 UTC&quot; &quot;2024-01-25 UTC&quot; &quot;2024-02-03 UTC&quot;
 ## [5] &quot;2024-02-10 UTC&quot;</code></pre>
-<pre class="r"><code># parse_date_time() is lubridate&#39;s multi-format parser
-# orders = a character vector of format codes to try in sequence
-# Ymd = Year-month-day
-# mdY = month-day-Year
-# dBY = day-MonthName-Year
-# Use quiet = TRUE to suppress warnings on batch processing</code></pre>
 <div class="callout callout-concept">
 <p><strong>📅 parse_date_time() is your multi-format safety net</strong>
-When you receive hand-entered field data where date formatting is
-inconsistent across rows, <code>parse_date_time()</code> with a vector
-of <code>orders</code> tries each format in sequence and returns the
-first match. It is more forgiving than any single-format parser.</p>
+When you receive hand-entered field data with inconsistent date
+formatting, <code>parse_date_time()</code> with a vector of
+<code>orders</code> tries each format in sequence. It is more forgiving
+than any single-format parser.</p>
 </div>
-</div>
-<div id="excel-originated-datetime-in-r" class="section level3">
-<h3>Excel-originated datetime in R</h3>
-<p>When Excel exports a file with a datetime column, R may receive it as
-a numeric (serial) or as a character string that looks like a date but
-has a time component formatted inconsistently:</p>
-<pre class="r"><code># After read_excel(), a &quot;datetime&quot; column may be:
-# 1. POSIXct  — readxl correctly detected it (check with class())
-# 2. numeric  — serial number, convert with:
-df &lt;- df |&gt;
-  mutate(datetime = as.POSIXct(
-    (datetime_col - 25569) * 86400,    # Excel epoch offset in seconds
-    origin = &quot;1970-01-01&quot;, tz = &quot;UTC&quot;
-  ))
-
-# 3. character — Excel exported as text, parse with lubridate:
-df &lt;- df |&gt;
-  mutate(datetime = parse_date_time(datetime_col,
-                                    orders = c(&quot;Ymd HMS&quot;, &quot;mdY HM&quot;),
-                                    tz     = &quot;America/Los_Angeles&quot;))</code></pre>
-</div>
-<div id="the-raspberry-pi-no-rtc-clock-offset-pattern" class="section level3">
-<h3>The Raspberry Pi / no-RTC clock offset pattern</h3>
-<p>Sensors without a real-time clock reset to an arbitrary epoch. The
-correction pattern (from the Air Quality module) generalises to any
-sensor with a known offset:</p>
-<pre class="r"><code># General pattern: apply a known clock offset in seconds
-correct_timestamps &lt;- function(datetime_vec, offset_seconds) {
-  datetime_vec + lubridate::seconds(offset_seconds)
-}
-
-# Example: sensor was 3 hours 27 minutes 15 seconds behind real time
-raw_times &lt;- ymd_hms(c(&quot;2024-02-27 10:00:00&quot;,
-                       &quot;2024-02-27 10:05:00&quot;,
-                       &quot;2024-02-27 10:10:00&quot;))
-
-offset_sec &lt;- (3 * 3600) + (27 * 60) + 15
-corrected  &lt;- correct_timestamps(raw_times, offset_sec)
-
-tibble::tibble(raw = raw_times, corrected = corrected,
-               diff_min = as.numeric(corrected - raw_times) / 60)</code></pre>
-<pre><code>## # A tibble: 3 × 3
-##   raw                 corrected           diff_min
-##   &lt;dttm&gt;              &lt;dttm&gt;                 &lt;dbl&gt;
-## 1 2024-02-27 10:00:00 2024-02-27 13:27:15   0.0576
-## 2 2024-02-27 10:05:00 2024-02-27 13:32:15   0.0576
-## 3 2024-02-27 10:10:00 2024-02-27 13:37:15   0.0576</code></pre>
 <hr />
 </div>
 </div>
 <div id="diagnosis" class="section level2">
-<h2>7. Diagnosing Import Problems</h2>
+<h2>9. Diagnosing Import Problems</h2>
 <p>No matter what went wrong, the same five-step diagnostic sequence
 will locate the problem:</p>
 <pre class="r"><code># ── Step 1: Inspect the raw file before reading ───────────────────────────
-read_lines(&quot;data/mystery_file.csv&quot;, n_max = 10)   # first 10 raw lines
-readr::guess_encoding(&quot;data/mystery_file.csv&quot;)    # encoding
+read_lines(&quot;data/mystery_file.csv&quot;, n_max = 10)
+readr::guess_encoding(&quot;data/mystery_file.csv&quot;)
 
 # ── Step 2: Read with maximum verbosity ──────────────────────────────────
-df &lt;- read_csv(&quot;data/mystery_file.csv&quot;)           # prints col-type message
-spec(df)                                          # full column spec
-problems(df)                                      # parsing failures by row/col
+df &lt;- read_csv(&quot;data/mystery_file.csv&quot;)    # prints col-type message
+spec(df)                                   # full column spec
+problems(df)                               # parsing failures by row/col
 
 # ── Step 3: Check structure ───────────────────────────────────────────────
-glimpse(df)                  # one line per column: type + first values
+glimpse(df)                  # type + first values for every column
 summary(df)                  # range, NAs, class
-sapply(df, class)            # type of every column
+sapply(df, class)            # type of every column in a named vector
 
-# ── Step 4: Check names ───────────────────────────────────────────────────
+# ── Step 4: Check column names ────────────────────────────────────────────
 names(df)                    # look for BOM, spaces, special characters
 nchar(names(df))             # unexpected length → invisible characters
 
 # ── Step 5: Check key columns individually ───────────────────────────────
-unique(df$date_col)          # is it actually dates? or &quot;01/02/2024&quot;?
+unique(df$date_col)           # is it actually dates? or &quot;01/02/2024&quot;?
 range(df$date_col, na.rm=T)  # plausible range?
 sum(is.na(df$pm25))          # how many NAs?
 table(df$flag)               # what flags exist?</code></pre>
 <div id="post-import-sanity-checks-as-a-standard-habit" class="section level3">
 <h3>Post-import sanity checks as a standard habit</h3>
 <pre class="r"><code># Run these after every import, before any analysis
-stopifnot(nrow(df) &gt; 0)                              # not empty
-stopifnot(!all(is.na(df$pm25_ug_m3)))                # key column not all NA
+stopifnot(nrow(df) &gt; 0)                               # not empty
+stopifnot(!all(is.na(df$pm25_ug_m3)))                 # key column not all NA
 stopifnot(inherits(df$datetime, c(&quot;POSIXct&quot;,&quot;Date&quot;))) # datetime parsed
-range(df$date)                              # plausible date range?
-nrow(df)                                    # row count
-n_distinct(df$sensor)                       # how many sensors?
-sum(is.na(df$pm25_ug_m3))                   # NAs in key column</code></pre>
+
+range(df$date)               # plausible date range?
+nrow(df)                     # row count
+n_distinct(df$sensor)        # how many sensors?
+sum(is.na(df$pm25_ug_m3))    # NAs in key column</code></pre>
 <hr />
 </div>
 </div>
 <div id="checklist" class="section level2">
-<h2>8. Import Checklist</h2>
+<h2>10. Import Checklist</h2>
 <p>Use this every time you receive a new data file.</p>
 <div class="callout callout-tip">
 <p><strong>✅ Before you import</strong></p>
@@ -1364,7 +1629,8 @@ sum(is.na(df$pm25_ug_m3))                   # NAs in key column</code></pre>
 delimiter is actually used? (2) How many header rows are there? (3) What
 does the file use for missing values? (4) Are there any non-ASCII
 characters in the column names? (5) What is the date format in date
-columns?</p>
+columns? (6) Are there multiple files that should be stacked — and do
+their names encode metadata you need to preserve?</p>
 </div>
 <div class="callout callout-tip">
 <p><strong>✅ Immediately after import</strong></p>
@@ -1375,14 +1641,30 @@ not characters. Check that numeric columns aren’t character because of a
 flag string. Count NAs in every key column.</p>
 </div>
 <div class="callout callout-warn">
+<p><strong>⚠️ When reading multiple files</strong></p>
+<ol style="list-style-type: decimal">
+<li>Verify column names are identical across all files before
+stacking.</li>
+<li>Use <code>col_types = cols(.default = col_character())</code> on the
+first pass, then <code>type_convert()</code> after binding.</li>
+<li>Add a <code>source_file</code> column with <code>names_to =</code>
+in <code>list_rbind()</code> before the source information is lost.</li>
+<li>Extract any metadata encoded in file names immediately —
+<em>before</em> you start analysis.</li>
+</ol>
+</div>
+<div class="callout callout-warn">
 <p><strong>⚠️ Datetime import checklist</strong></p>
 <ol style="list-style-type: decimal">
-<li>What timezone did the sensor record in? (2) Is the timezone encoded
-in the file, or do you need to <code>force_tz()</code>? (3) Is the year
-2- or 4-digit? (4) Are dates US format or European format? (5) Did the
-data span a DST transition? (6) If Excel: are dates actually serial
-numbers? Run <code>range(df$datetime)</code> — does the range make
-physical sense?</li>
+<li>What timezone did the sensor record in?</li>
+<li>Is the timezone encoded in the file, or do you need
+<code>force_tz()</code>?</li>
+<li>Is the year 2- or 4-digit?</li>
+<li>Are dates US format or European format?</li>
+<li>Did the data span a DST transition?</li>
+<li>If Excel: are dates actually serial numbers? Run
+<code>range(df$datetime)</code> — does the range make physical
+sense?</li>
 </ol>
 </div>
 <hr />
@@ -1391,6 +1673,12 @@ physical sense?</li>
 🔑 Data Import — key takeaways
 </h4>
 <ul>
+<li>
+<strong>Inspect before you read.</strong> Use <code>read_lines()</code>
+to answer the five structural questions (delimiter, header rows, NA
+strings, column names, date format) before writing a single
+<code>read_csv()</code> call.
+</li>
 <li>
 <strong>Use <code>read_csv()</code> over
 <code>read.csv()</code>.</strong> It never converts strings to factors,
@@ -1404,42 +1692,34 @@ in the data but readr recorded exactly which row and column failed and
 why.
 </li>
 <li>
+<strong>When reading many files, preserve source information
+immediately.</strong> Use <code>set_names()</code> +
+<code>list_rbind(names_to = “source_file”)</code> so you can trace every
+row back to its origin. Parse file name components into columns before
+analysis.
+</li>
+<li>
+<strong>File names encode metadata — design them that way.</strong> Use
+a consistent <code>SITE_YYYY-MM.csv</code> convention so
+<code>str_extract()</code> can recover site, year, and month without
+ambiguity.
+</li>
+<li>
 <strong>Declare <code>na =</code> explicitly for field data.</strong>
 Instruments use <code>“–”</code>, <code>“-9999”</code>,
 <code>“N/A”</code>, <code>“&lt; LOD”</code>. If you don’t list them,
-they land as character strings and silently coerce your numeric columns.
+they land as character strings.
 </li>
 <li>
 <strong>For Excel, use <code>readxl::read_excel()</code> with explicit
-<code>col_types</code>.</strong> Never trust Excel’s automatic type
-detection. Watch for the serial-date trap: 5-digit numbers where dates
-should be means you need <code>as.Date(x, origin = “1899-12-30”)</code>.
+<code>col_types</code>.</strong> Watch for the serial-date trap: 5-digit
+numbers where dates should be.
 </li>
 <li>
-<strong>Encoding problems show up as garbled characters.</strong> Run
-<code>readr::guess_encoding()</code> first. Add <code>locale =
-locale(encoding = “latin1”)</code> or <code>“windows-1252”</code> to the
-import call. Check the first column name for invisible BOM bytes.
-</li>
-<li>
-<strong>Use lubridate for datetime parsing, not base-R
-<code>as.Date()</code>.</strong> <code>ymd()</code>, <code>mdy()</code>,
-<code>dmy()</code> are forgiving; they try multiple separators
-automatically and return NA with a warning instead of crashing. Use
-<code>parse_date_time(orders = …)</code> for mixed formats.
-</li>
-<li>
-<strong><code>force_tz()</code> labels; <code>with_tz()</code>
-converts.</strong> If your sensor logged in local time without encoding
+<strong>Use <code>force_tz()</code> to label; <code>with_tz()</code> to
+convert.</strong> If your sensor logged in local time without encoding
 the timezone, use <code>force_tz()</code> to declare what timezone it
-was — not <code>with_tz()</code>, which will shift all your times by the
-UTC offset.
-</li>
-<li>
-<strong>Store time-series data in UTC after import.</strong> Local times
-have DST gaps (spring) and duplicates (fall) that break time-series
-analysis. Convert to UTC immediately, display in local time only for
-human-readable output.
+was — not <code>with_tz()</code>, which will shift all your times.
 </li>
 </ul>
 </div>
@@ -1447,17 +1727,17 @@ human-readable output.
 <div id="whats-next" class="section level3">
 <h3>What’s next?</h3>
 <ul>
-<li><strong><a href="06_Functional_Programming.html">Functional
-Programming</a></strong> — use <code>purrr::map()</code> to read dozens
-of files at once</li>
-<li><strong><a href="04_Data_Wrangling.html">Data Wrangling</a></strong>
-— clean and reshape after import with <code>dplyr</code> and
-<code>tidyr</code></li>
+<li><strong><a href="R10_Functional_Programming.html">Functional
+Programming</a></strong> — use <code>purrr::map()</code> more deeply,
+write your own functions, and automate repetitive import pipelines</li>
+<li><strong><a href="R09_Tidyverse_Wrangling.html">Data
+Wrangling</a></strong> — clean and reshape after import with
+<code>dplyr</code> and <code>tidyr</code></li>
 <li><strong><a href="02_Visualization.html">Visualization</a></strong> —
 plot your imported data with <code>ggplot2</code></li>
 </ul>
 <footer class="page-footer">
-EA030 Core R Skills — Module 03 <span class="divider">|</span>
+EA030 Core R Skills — Module 05 <span class="divider">|</span>
 Prof. Marc Los Huertos <span class="divider">|</span> Pomona College
 <span class="divider">|</span> Last updated: April 2026 <span class="divider">|</span>
 <a href="https://github.com/marclos/RTricks">GitHub</a>
