@@ -1,0 +1,601 @@
+urban_setting,demographic_group,canopy_cover_percent,ir_surface_temperature_c,measurement_day,measurement_hour
+School,Low-income,70.4,37.3,29,16
+School,Low-income,25.8,43.7,27,17
+School,Low-income,76.5,39.1,8,9
+School,Low-income,37.1,41.0,20,14
+School,Low-income,37.6,43.8,17,9
+School,Low-income,35.0,44.4,7,13
+School,Low-income,38.5,46.1,4,17
+School,Low-income,19.6,41.6,17,15
+School,Low-income,83.1,36.7,29,16
+School,Low-income,16.6,40.1,1,16
+School,Low-income,52.5,32.3,22,13
+School,Low-income,2.8,42.4,28,10
+School,Low-income,27.6,32.6,2,14
+School,Low-income,29.2,49.0,3,12
+School,Low-income,74.3,34.1,4,9
+School,Low-income,27.6,53.1,10,12
+School,Low-income,43.0,42.5,22,12
+School,Low-income,53.8,51.1,27,15
+School,Low-income,62.1,39.9,13,17
+School,Low-income,69.8,35.3,18,14
+School,Low-income,42.5,33.7,23,11
+School,Low-income,0.0,53.7,28,13
+School,Low-income,58.8,43.7,18,14
+School,Low-income,36.5,33.8,16,14
+School,Low-income,26.7,45.9,28,15
+School,Low-income,0.0,34.4,12,17
+School,Low-income,16.1,44.8,8,14
+School,Low-income,33.1,49.2,29,9
+School,Low-income,48.8,39.1,22,16
+School,Low-income,65.1,38.9,21,9
+School,Low-income,65.7,40.9,14,14
+School,Low-income,26.0,41.0,17,9
+School,Low-income,70.9,37.3,1,13
+School,Low-income,43.9,48.8,24,10
+School,Low-income,40.4,40.2,25,11
+School,Low-income,20.9,43.1,22,9
+School,Low-income,51.5,42.0,9,13
+School,Low-income,67.6,38.8,29,11
+School,Low-income,23.2,39.1,14,17
+School,Low-income,30.6,44.3,5,15
+School,Middle-income,17.4,42.8,30,9
+School,Middle-income,52.4,50.1,29,10
+School,Middle-income,17.6,41.8,16,15
+School,Middle-income,16.7,41.3,12,10
+School,Middle-income,40.3,33.4,26,15
+School,Middle-income,67.8,33.8,6,14
+School,Middle-income,12.0,48.7,13,15
+School,Middle-income,57.1,47.3,24,9
+School,Middle-income,73.5,31.9,8,15
+School,Middle-income,52.1,36.9,18,12
+School,Middle-income,46.9,37.8,21,10
+School,Middle-income,68.8,34.4,12,13
+School,Middle-income,55.8,36.8,8,14
+School,Middle-income,39.7,52.7,8,15
+School,Middle-income,7.9,48.2,18,10
+School,Middle-income,37.7,42.4,19,10
+School,Middle-income,66.7,34.8,14,17
+School,Middle-income,44.4,38.3,29,9
+School,Middle-income,49.8,39.9,6,14
+School,Middle-income,47.3,32.8,20,11
+School,Middle-income,36.8,42.4,27,13
+School,Middle-income,72.9,45.4,1,11
+School,Middle-income,26.1,50.6,14,15
+School,Middle-income,33.5,46.9,9,11
+School,Middle-income,17.1,43.1,16,12
+School,Middle-income,73.8,33.9,15,13
+School,Middle-income,15.4,47.0,26,16
+School,Middle-income,31.6,44.9,22,11
+School,Middle-income,29.3,43.6,19,13
+School,Middle-income,43.2,50.8,11,9
+School,Middle-income,53.5,38.7,9,13
+School,Middle-income,40.3,37.9,17,10
+School,Middle-income,54.2,40.1,19,9
+School,Middle-income,21.5,47.9,18,9
+School,Middle-income,54.4,29.7,23,12
+School,Middle-income,13.1,52.9,29,15
+School,Middle-income,30.5,44.7,29,13
+School,Middle-income,62.8,22.7,23,17
+School,Middle-income,19.5,51.7,8,15
+School,Middle-income,38.1,35.6,15,12
+School,High-income,52.3,39.7,9,14
+School,High-income,44.0,43.9,8,14
+School,High-income,61.8,43.7,21,10
+School,High-income,76.9,30.1,7,17
+School,High-income,31.0,44.8,30,15
+School,High-income,8.2,47.1,7,16
+School,High-income,40.2,40.0,1,11
+School,High-income,30.7,44.8,15,11
+School,High-income,69.8,30.3,10,16
+School,High-income,54.5,44.2,29,10
+School,High-income,36.0,47.7,27,13
+School,High-income,59.8,38.9,2,13
+School,High-income,36.7,38.9,30,16
+School,High-income,8.9,44.4,13,16
+School,High-income,63.1,35.6,25,15
+School,High-income,40.3,54.1,18,13
+School,High-income,70.2,36.7,27,12
+School,High-income,11.4,46.3,8,9
+School,High-income,43.9,38.3,27,9
+School,High-income,41.8,29.5,1,16
+School,High-income,50.3,41.8,24,13
+School,High-income,39.0,35.5,20,11
+School,High-income,51.5,42.5,18,10
+School,High-income,36.1,44.7,14,14
+School,High-income,42.1,44.7,2,14
+School,High-income,63.0,37.2,5,13
+School,High-income,83.2,38.4,23,16
+School,High-income,38.0,42.8,11,17
+School,High-income,51.7,41.3,4,12
+School,High-income,14.5,41.5,8,9
+School,High-income,18.8,48.7,25,9
+School,High-income,0.0,48.2,27,13
+School,High-income,50.2,43.9,25,9
+School,High-income,26.9,42.4,6,9
+School,High-income,51.3,46.4,23,13
+School,High-income,41.3,43.0,6,16
+School,High-income,54.8,35.7,4,9
+School,High-income,53.2,41.4,27,12
+School,High-income,31.2,45.4,4,17
+School,High-income,50.5,33.5,21,11
+Park,Low-income,63.9,40.6,22,9
+Park,Low-income,44.4,42.4,2,13
+Park,Low-income,11.4,46.8,18,14
+Park,Low-income,35.9,30.9,19,15
+Park,Low-income,36.0,41.5,17,14
+Park,Low-income,49.0,47.2,29,11
+Park,Low-income,31.1,51.0,8,12
+Park,Low-income,42.4,39.4,24,12
+Park,Low-income,46.4,31.5,13,11
+Park,Low-income,0.0,40.0,14,14
+Park,Low-income,40.7,42.4,19,12
+Park,Low-income,33.1,39.5,12,9
+Park,Low-income,47.6,45.5,15,14
+Park,Low-income,25.1,36.1,17,14
+Park,Low-income,36.9,39.6,14,16
+Park,Low-income,59.7,43.7,25,13
+Park,Low-income,20.3,52.3,29,11
+Park,Low-income,13.6,44.7,11,9
+Park,Low-income,67.1,35.7,18,15
+Park,Low-income,38.5,38.7,18,16
+Park,Low-income,45.6,39.9,30,17
+Park,Low-income,79.3,34.7,24,9
+Park,Low-income,29.8,48.4,28,12
+Park,Low-income,35.7,43.7,28,17
+Park,Low-income,41.7,40.1,17,10
+Park,Low-income,13.7,42.6,5,13
+Park,Low-income,37.7,34.9,24,9
+Park,Low-income,0.0,46.5,22,17
+Park,Low-income,35.6,29.7,20,14
+Park,Low-income,67.2,40.6,7,15
+Park,Low-income,26.5,41.2,12,10
+Park,Low-income,17.4,47.5,11,11
+Park,Low-income,34.1,45.7,15,14
+Park,Low-income,43.6,41.8,25,17
+Park,Low-income,42.0,41.1,10,17
+Park,Low-income,22.8,39.8,11,10
+Park,Low-income,55.9,45.8,28,10
+Park,Low-income,33.5,34.6,12,9
+Park,Low-income,16.8,45.8,6,12
+Park,Low-income,12.3,47.1,30,10
+Park,Middle-income,24.6,46.3,6,9
+Park,Middle-income,42.0,38.8,18,12
+Park,Middle-income,63.6,41.2,2,12
+Park,Middle-income,33.9,39.1,7,15
+Park,Middle-income,16.9,35.3,2,14
+Park,Middle-income,34.9,43.8,17,13
+Park,Middle-income,55.7,43.6,3,17
+Park,Middle-income,30.3,46.5,29,11
+Park,Middle-income,45.5,49.2,23,13
+Park,Middle-income,63.8,37.8,25,15
+Park,Middle-income,46.6,41.2,5,14
+Park,Middle-income,24.3,38.0,17,14
+Park,Middle-income,21.5,42.5,15,14
+Park,Middle-income,38.4,41.5,21,13
+Park,Middle-income,6.4,47.1,7,17
+Park,Middle-income,48.0,40.8,19,15
+Park,Middle-income,33.6,44.0,15,16
+Park,Middle-income,19.7,47.3,12,13
+Park,Middle-income,75.4,40.4,11,17
+Park,Middle-income,66.7,42.0,6,15
+Park,Middle-income,36.7,35.6,20,16
+Park,Middle-income,68.4,43.3,22,9
+Park,Middle-income,56.8,43.9,30,17
+Park,Middle-income,55.2,35.4,21,16
+Park,Middle-income,51.9,47.7,7,14
+Park,Middle-income,18.7,49.7,4,11
+Park,Middle-income,62.8,41.9,13,13
+Park,Middle-income,22.3,43.9,10,12
+Park,Middle-income,36.9,46.5,15,12
+Park,Middle-income,58.6,36.1,25,12
+Park,Middle-income,74.3,37.9,28,14
+Park,Middle-income,27.2,48.3,16,12
+Park,Middle-income,35.3,49.2,14,17
+Park,Middle-income,60.9,39.8,8,13
+Park,Middle-income,35.9,47.6,4,14
+Park,Middle-income,36.7,45.8,15,9
+Park,Middle-income,51.4,42.2,30,10
+Park,Middle-income,12.1,43.6,10,10
+Park,Middle-income,23.3,49.3,16,12
+Park,Middle-income,16.0,44.8,26,12
+Park,High-income,54.2,47.7,29,15
+Park,High-income,35.7,42.4,14,10
+Park,High-income,48.3,43.7,28,12
+Park,High-income,67.2,38.1,6,13
+Park,High-income,44.8,49.8,14,14
+Park,High-income,55.7,41.8,3,15
+Park,High-income,61.4,41.7,29,9
+Park,High-income,46.4,41.7,5,14
+Park,High-income,81.1,38.2,2,14
+Park,High-income,26.1,47.4,17,9
+Park,High-income,52.7,38.2,15,13
+Park,High-income,5.2,47.4,6,13
+Park,High-income,69.2,41.5,17,14
+Park,High-income,53.0,36.5,30,13
+Park,High-income,50.9,42.3,17,14
+Park,High-income,54.8,38.8,17,9
+Park,High-income,64.1,34.2,10,11
+Park,High-income,3.6,43.6,9,11
+Park,High-income,28.4,41.2,18,15
+Park,High-income,59.0,31.8,8,16
+Park,High-income,43.1,45.1,6,14
+Park,High-income,36.0,45.4,30,11
+Park,High-income,15.0,40.8,26,17
+Park,High-income,62.9,39.1,30,16
+Park,High-income,29.3,39.0,29,13
+Park,High-income,67.5,38.3,17,11
+Park,High-income,41.7,37.9,28,17
+Park,High-income,40.5,49.9,21,9
+Park,High-income,53.4,42.5,11,10
+Park,High-income,0.0,43.0,24,17
+Park,High-income,30.9,37.6,7,17
+Park,High-income,15.3,51.2,22,10
+Park,High-income,34.6,39.5,3,14
+Park,High-income,23.8,41.1,7,10
+Park,High-income,57.4,39.1,5,15
+Park,High-income,41.0,49.4,5,16
+Park,High-income,35.3,37.4,7,14
+Park,High-income,56.3,42.0,30,12
+Park,High-income,35.1,40.1,21,15
+Park,High-income,15.4,48.8,17,9
+Commercial,Low-income,40.8,40.0,19,13
+Commercial,Low-income,46.2,44.1,15,13
+Commercial,Low-income,43.4,40.7,27,11
+Commercial,Low-income,21.4,50.2,6,17
+Commercial,Low-income,60.3,35.7,20,9
+Commercial,Low-income,48.2,47.3,25,11
+Commercial,Low-income,50.3,50.6,13,9
+Commercial,Low-income,44.8,40.3,2,15
+Commercial,Low-income,37.6,49.5,20,12
+Commercial,Low-income,24.3,45.3,12,10
+Commercial,Low-income,59.1,41.6,15,17
+Commercial,Low-income,12.8,47.0,11,17
+Commercial,Low-income,52.4,33.6,8,15
+Commercial,Low-income,49.2,38.4,15,17
+Commercial,Low-income,20.0,48.2,30,14
+Commercial,Low-income,39.3,42.0,7,14
+Commercial,Low-income,77.3,38.0,23,10
+Commercial,Low-income,33.0,41.3,19,9
+Commercial,Low-income,37.2,38.1,30,9
+Commercial,Low-income,53.0,41.4,17,10
+Commercial,Low-income,41.0,41.3,6,15
+Commercial,Low-income,44.1,39.9,27,17
+Commercial,Low-income,29.5,50.3,1,12
+Commercial,Low-income,14.8,48.4,25,13
+Commercial,Low-income,73.4,43.6,26,15
+Commercial,Low-income,30.2,44.6,29,14
+Commercial,Low-income,33.1,50.9,2,14
+Commercial,Low-income,5.3,47.2,26,17
+Commercial,Low-income,34.4,32.6,1,11
+Commercial,Low-income,44.7,48.2,26,15
+Commercial,Low-income,68.8,43.7,10,9
+Commercial,Low-income,32.5,42.5,30,11
+Commercial,Low-income,18.8,37.3,17,14
+Commercial,Low-income,36.6,41.1,14,12
+Commercial,Low-income,23.3,42.3,8,11
+Commercial,Low-income,45.8,37.8,13,9
+Commercial,Low-income,62.5,44.1,24,12
+Commercial,Low-income,53.0,49.2,29,11
+Commercial,Low-income,44.4,48.5,20,12
+Commercial,Low-income,33.2,39.7,8,11
+Commercial,Middle-income,12.4,39.3,25,9
+Commercial,Middle-income,33.0,34.3,29,10
+Commercial,Middle-income,27.4,47.4,23,11
+Commercial,Middle-income,26.3,48.6,30,15
+Commercial,Middle-income,13.2,46.2,13,9
+Commercial,Middle-income,61.6,45.2,20,14
+Commercial,Middle-income,12.6,35.2,29,15
+Commercial,Middle-income,49.1,41.8,4,15
+Commercial,Middle-income,53.9,50.6,29,9
+Commercial,Middle-income,29.2,46.9,23,14
+Commercial,Middle-income,22.4,44.2,4,10
+Commercial,Middle-income,55.8,40.2,17,12
+Commercial,Middle-income,17.1,48.6,11,14
+Commercial,Middle-income,29.4,43.5,5,17
+Commercial,Middle-income,59.0,46.0,16,15
+Commercial,Middle-income,59.9,44.3,14,13
+Commercial,Middle-income,21.8,41.1,4,12
+Commercial,Middle-income,72.4,36.8,18,13
+Commercial,Middle-income,72.7,47.2,26,15
+Commercial,Middle-income,53.6,38.3,2,12
+Commercial,Middle-income,47.2,44.6,4,13
+Commercial,Middle-income,60.3,41.4,19,16
+Commercial,Middle-income,64.8,43.4,21,13
+Commercial,Middle-income,29.8,45.7,3,12
+Commercial,Middle-income,34.8,45.1,2,12
+Commercial,Middle-income,33.9,47.0,8,10
+Commercial,Middle-income,39.2,40.5,20,14
+Commercial,Middle-income,56.9,36.8,14,15
+Commercial,Middle-income,51.4,41.0,27,16
+Commercial,Middle-income,51.6,37.6,19,15
+Commercial,Middle-income,37.4,40.8,27,17
+Commercial,Middle-income,73.8,39.4,9,17
+Commercial,Middle-income,19.2,41.1,1,17
+Commercial,Middle-income,53.8,40.2,19,15
+Commercial,Middle-income,56.2,39.2,24,15
+Commercial,Middle-income,65.0,43.3,21,16
+Commercial,Middle-income,36.7,38.7,1,14
+Commercial,Middle-income,14.5,44.7,16,10
+Commercial,Middle-income,42.3,48.5,13,10
+Commercial,Middle-income,59.4,41.3,21,15
+Commercial,High-income,60.8,34.5,12,12
+Commercial,High-income,20.5,36.8,23,11
+Commercial,High-income,36.9,46.9,8,12
+Commercial,High-income,47.5,39.6,12,15
+Commercial,High-income,19.9,41.0,8,11
+Commercial,High-income,53.6,50.0,17,13
+Commercial,High-income,41.8,48.2,1,11
+Commercial,High-income,47.7,36.2,15,10
+Commercial,High-income,59.6,38.8,27,9
+Commercial,High-income,43.9,37.0,6,15
+Commercial,High-income,30.7,43.5,9,14
+Commercial,High-income,29.1,46.2,30,17
+Commercial,High-income,44.9,47.1,15,9
+Commercial,High-income,22.2,47.8,13,11
+Commercial,High-income,40.7,40.0,13,16
+Commercial,High-income,15.2,40.0,6,11
+Commercial,High-income,48.3,38.8,15,9
+Commercial,High-income,75.1,36.7,30,15
+Commercial,High-income,72.1,36.6,26,11
+Commercial,High-income,25.1,44.0,16,12
+Commercial,High-income,52.6,39.8,28,11
+Commercial,High-income,25.0,51.6,7,11
+Commercial,High-income,19.1,35.1,2,9
+Commercial,High-income,33.8,33.9,12,15
+Commercial,High-income,43.4,40.1,17,14
+Commercial,High-income,18.9,34.2,14,16
+Commercial,High-income,17.3,46.4,9,17
+Commercial,High-income,36.3,41.0,26,10
+Commercial,High-income,21.4,48.1,22,17
+Commercial,High-income,36.0,26.5,11,13
+Commercial,High-income,45.5,38.6,25,12
+Commercial,High-income,41.6,46.2,29,16
+Commercial,High-income,32.0,44.8,9,15
+Commercial,High-income,52.9,44.8,3,11
+Commercial,High-income,37.9,42.5,29,14
+Commercial,High-income,40.2,45.9,14,12
+Commercial,High-income,48.9,40.6,18,9
+Commercial,High-income,47.6,41.8,15,15
+Commercial,High-income,18.3,46.8,20,11
+Commercial,High-income,35.4,45.2,19,15
+Parking Lot,Low-income,60.8,46.6,1,12
+Parking Lot,Low-income,39.0,37.9,7,13
+Parking Lot,Low-income,57.3,36.0,21,17
+Parking Lot,Low-income,24.9,46.0,13,11
+Parking Lot,Low-income,37.1,43.4,28,16
+Parking Lot,Low-income,57.0,44.2,18,14
+Parking Lot,Low-income,35.4,37.7,27,11
+Parking Lot,Low-income,15.3,36.9,21,15
+Parking Lot,Low-income,71.8,31.0,21,13
+Parking Lot,Low-income,55.7,39.2,23,17
+Parking Lot,Low-income,28.9,44.7,8,16
+Parking Lot,Low-income,39.6,53.3,10,11
+Parking Lot,Low-income,38.7,48.6,10,13
+Parking Lot,Low-income,17.3,53.8,11,9
+Parking Lot,Low-income,37.7,52.5,19,12
+Parking Lot,Low-income,41.1,38.9,10,12
+Parking Lot,Low-income,78.7,36.9,20,11
+Parking Lot,Low-income,28.3,46.7,5,10
+Parking Lot,Low-income,45.8,35.0,2,12
+Parking Lot,Low-income,40.3,38.7,15,9
+Parking Lot,Low-income,26.2,42.0,25,17
+Parking Lot,Low-income,45.2,41.8,23,10
+Parking Lot,Low-income,47.3,41.4,3,13
+Parking Lot,Low-income,42.6,35.9,14,17
+Parking Lot,Low-income,45.7,44.3,18,17
+Parking Lot,Low-income,21.4,44.2,19,9
+Parking Lot,Low-income,22.8,47.1,2,11
+Parking Lot,Low-income,43.3,44.5,10,9
+Parking Lot,Low-income,14.3,39.9,20,15
+Parking Lot,Low-income,41.5,51.6,9,9
+Parking Lot,Low-income,66.8,45.0,10,16
+Parking Lot,Low-income,41.1,36.9,8,11
+Parking Lot,Low-income,28.9,37.2,4,16
+Parking Lot,Low-income,32.0,52.4,19,9
+Parking Lot,Low-income,5.8,43.4,2,13
+Parking Lot,Low-income,56.3,39.8,20,10
+Parking Lot,Low-income,44.8,45.0,19,12
+Parking Lot,Low-income,42.7,44.9,22,16
+Parking Lot,Low-income,31.1,39.2,15,10
+Parking Lot,Low-income,30.8,47.2,1,11
+Parking Lot,Middle-income,22.3,38.9,5,16
+Parking Lot,Middle-income,32.9,43.3,16,15
+Parking Lot,Middle-income,60.0,42.1,26,10
+Parking Lot,Middle-income,42.2,44.6,18,13
+Parking Lot,Middle-income,14.8,54.6,14,9
+Parking Lot,Middle-income,38.8,36.1,11,15
+Parking Lot,Middle-income,25.1,49.2,8,16
+Parking Lot,Middle-income,18.1,35.9,18,9
+Parking Lot,Middle-income,53.8,43.4,8,9
+Parking Lot,Middle-income,62.0,41.5,2,9
+Parking Lot,Middle-income,55.6,43.4,13,9
+Parking Lot,Middle-income,42.9,42.5,15,16
+Parking Lot,Middle-income,55.2,33.4,17,17
+Parking Lot,Middle-income,35.5,42.3,13,12
+Parking Lot,Middle-income,53.7,30.3,5,17
+Parking Lot,Middle-income,44.7,38.2,10,9
+Parking Lot,Middle-income,53.4,33.0,15,11
+Parking Lot,Middle-income,49.0,42.9,30,13
+Parking Lot,Middle-income,3.4,43.3,13,10
+Parking Lot,Middle-income,26.6,37.9,20,9
+Parking Lot,Middle-income,68.7,42.3,22,16
+Parking Lot,Middle-income,49.7,43.7,29,17
+Parking Lot,Middle-income,58.4,48.3,10,17
+Parking Lot,Middle-income,73.6,38.9,26,16
+Parking Lot,Middle-income,60.8,29.1,26,12
+Parking Lot,Middle-income,21.2,50.2,11,16
+Parking Lot,Middle-income,52.1,53.8,12,12
+Parking Lot,Middle-income,32.0,46.1,21,11
+Parking Lot,Middle-income,46.0,38.1,2,15
+Parking Lot,Middle-income,21.8,47.7,8,12
+Parking Lot,Middle-income,43.4,46.7,25,15
+Parking Lot,Middle-income,53.6,45.4,26,16
+Parking Lot,Middle-income,42.9,35.3,26,10
+Parking Lot,Middle-income,17.0,46.1,1,13
+Parking Lot,Middle-income,19.6,44.7,26,17
+Parking Lot,Middle-income,29.8,43.2,7,13
+Parking Lot,Middle-income,45.0,41.5,30,12
+Parking Lot,Middle-income,23.3,54.8,30,11
+Parking Lot,Middle-income,54.0,35.5,21,15
+Parking Lot,Middle-income,12.1,39.0,19,16
+Parking Lot,High-income,47.6,43.8,8,9
+Parking Lot,High-income,49.9,43.0,11,14
+Parking Lot,High-income,66.1,34.8,1,12
+Parking Lot,High-income,73.6,43.5,5,15
+Parking Lot,High-income,89.1,40.7,26,9
+Parking Lot,High-income,55.1,36.3,20,14
+Parking Lot,High-income,76.4,40.6,22,12
+Parking Lot,High-income,29.3,39.7,2,14
+Parking Lot,High-income,36.2,41.5,11,15
+Parking Lot,High-income,60.1,43.3,15,16
+Parking Lot,High-income,15.3,38.9,22,16
+Parking Lot,High-income,94.1,50.4,23,16
+Parking Lot,High-income,20.3,54.0,22,10
+Parking Lot,High-income,84.9,35.9,6,13
+Parking Lot,High-income,14.5,40.5,7,10
+Parking Lot,High-income,62.8,39.6,23,16
+Parking Lot,High-income,47.7,45.7,16,12
+Parking Lot,High-income,69.3,40.6,21,10
+Parking Lot,High-income,51.9,32.6,12,9
+Parking Lot,High-income,30.5,41.2,27,15
+Parking Lot,High-income,18.4,48.9,1,12
+Parking Lot,High-income,34.8,54.3,27,17
+Parking Lot,High-income,50.2,38.4,12,12
+Parking Lot,High-income,37.5,39.9,16,9
+Parking Lot,High-income,29.0,51.2,23,17
+Parking Lot,High-income,39.2,45.1,11,16
+Parking Lot,High-income,58.6,39.6,22,14
+Parking Lot,High-income,40.8,44.9,1,15
+Parking Lot,High-income,64.4,42.4,30,14
+Parking Lot,High-income,39.2,36.5,24,14
+Parking Lot,High-income,37.1,33.7,14,15
+Parking Lot,High-income,50.6,44.6,29,15
+Parking Lot,High-income,16.3,43.6,8,9
+Parking Lot,High-income,37.1,50.3,30,14
+Parking Lot,High-income,48.1,43.7,15,12
+Parking Lot,High-income,43.9,39.2,21,11
+Parking Lot,High-income,27.6,39.5,24,10
+Parking Lot,High-income,31.0,47.7,9,17
+Parking Lot,High-income,6.5,48.2,19,12
+Parking Lot,High-income,28.9,35.5,18,16
+Playground,Low-income,59.3,36.8,6,12
+Playground,Low-income,48.2,44.2,13,12
+Playground,Low-income,52.3,39.2,17,9
+Playground,Low-income,48.3,32.5,19,13
+Playground,Low-income,38.8,49.6,24,12
+Playground,Low-income,54.6,42.2,19,14
+Playground,Low-income,23.6,44.8,16,11
+Playground,Low-income,12.6,50.2,15,14
+Playground,Low-income,57.9,46.7,23,17
+Playground,Low-income,29.8,38.5,23,16
+Playground,Low-income,54.1,38.6,2,10
+Playground,Low-income,57.8,39.2,5,13
+Playground,Low-income,29.3,42.1,19,9
+Playground,Low-income,36.3,41.7,2,11
+Playground,Low-income,34.2,42.3,27,10
+Playground,Low-income,38.3,38.3,11,9
+Playground,Low-income,20.4,40.3,24,9
+Playground,Low-income,0.0,47.6,5,17
+Playground,Low-income,28.7,43.8,24,16
+Playground,Low-income,49.2,42.0,18,12
+Playground,Low-income,24.4,55.3,2,12
+Playground,Low-income,38.7,30.0,13,11
+Playground,Low-income,47.4,38.4,15,14
+Playground,Low-income,48.6,44.4,30,12
+Playground,Low-income,45.8,43.0,21,11
+Playground,Low-income,61.1,47.1,14,13
+Playground,Low-income,34.2,42.3,6,16
+Playground,Low-income,5.7,50.2,6,16
+Playground,Low-income,24.0,46.2,13,14
+Playground,Low-income,47.0,44.3,14,12
+Playground,Low-income,53.1,43.0,14,12
+Playground,Low-income,46.8,42.1,13,10
+Playground,Low-income,47.0,43.5,22,17
+Playground,Low-income,51.6,42.8,11,10
+Playground,Low-income,70.1,33.3,28,14
+Playground,Low-income,56.8,43.2,11,10
+Playground,Low-income,30.2,36.2,16,12
+Playground,Low-income,23.3,47.6,30,17
+Playground,Low-income,42.7,30.6,4,17
+Playground,Low-income,43.7,34.0,14,14
+Playground,Middle-income,22.4,42.9,14,9
+Playground,Middle-income,34.0,39.4,8,13
+Playground,Middle-income,32.7,38.4,12,17
+Playground,Middle-income,76.6,39.7,22,13
+Playground,Middle-income,57.9,32.1,16,16
+Playground,Middle-income,17.5,44.0,3,17
+Playground,Middle-income,25.5,41.1,14,15
+Playground,Middle-income,48.6,42.8,15,9
+Playground,Middle-income,30.1,42.3,15,11
+Playground,Middle-income,2.6,48.7,8,11
+Playground,Middle-income,50.4,30.1,11,9
+Playground,Middle-income,37.1,43.2,22,11
+Playground,Middle-income,24.1,47.0,24,15
+Playground,Middle-income,43.2,45.2,25,12
+Playground,Middle-income,33.7,27.2,16,13
+Playground,Middle-income,37.1,54.0,8,10
+Playground,Middle-income,57.9,39.0,21,13
+Playground,Middle-income,18.6,39.6,28,14
+Playground,Middle-income,66.0,45.1,15,15
+Playground,Middle-income,60.3,37.8,12,16
+Playground,Middle-income,69.8,40.6,23,15
+Playground,Middle-income,26.6,41.6,16,13
+Playground,Middle-income,90.1,38.6,4,9
+Playground,Middle-income,53.4,41.4,16,9
+Playground,Middle-income,44.3,41.0,7,17
+Playground,Middle-income,41.6,44.3,23,16
+Playground,Middle-income,47.3,38.5,22,13
+Playground,Middle-income,39.7,38.2,10,12
+Playground,Middle-income,37.2,40.2,14,14
+Playground,Middle-income,22.4,44.7,12,10
+Playground,Middle-income,35.9,40.2,8,14
+Playground,Middle-income,5.1,52.7,30,16
+Playground,Middle-income,78.6,33.9,20,16
+Playground,Middle-income,28.4,41.3,11,9
+Playground,Middle-income,42.5,42.5,24,16
+Playground,Middle-income,33.1,44.0,25,15
+Playground,Middle-income,38.7,48.6,19,14
+Playground,Middle-income,80.0,28.9,5,9
+Playground,Middle-income,44.6,48.4,22,17
+Playground,Middle-income,67.6,37.6,17,17
+Playground,High-income,53.4,41.5,19,12
+Playground,High-income,36.9,36.0,8,9
+Playground,High-income,44.5,43.6,18,13
+Playground,High-income,24.3,43.5,20,14
+Playground,High-income,26.3,42.6,7,14
+Playground,High-income,16.1,45.9,8,14
+Playground,High-income,42.4,38.4,28,11
+Playground,High-income,31.1,38.3,18,13
+Playground,High-income,38.6,45.4,29,10
+Playground,High-income,27.6,47.8,27,17
+Playground,High-income,30.4,40.6,22,10
+Playground,High-income,4.6,43.5,3,11
+Playground,High-income,70.5,48.8,1,9
+Playground,High-income,5.8,50.5,22,13
+Playground,High-income,54.2,36.1,27,10
+Playground,High-income,51.6,46.7,21,12
+Playground,High-income,49.5,37.3,1,12
+Playground,High-income,66.1,33.2,6,9
+Playground,High-income,54.6,49.8,14,14
+Playground,High-income,34.8,40.6,18,15
+Playground,High-income,19.3,46.5,17,14
+Playground,High-income,34.2,39.4,21,9
+Playground,High-income,17.1,53.4,1,12
+Playground,High-income,20.0,42.6,4,12
+Playground,High-income,17.9,44.5,30,10
+Playground,High-income,45.1,42.2,2,17
+Playground,High-income,51.9,38.1,14,12
+Playground,High-income,37.6,37.8,30,13
+Playground,High-income,44.1,43.8,4,9
+Playground,High-income,26.1,46.4,21,16
+Playground,High-income,44.5,42.4,25,16
+Playground,High-income,35.7,42.3,28,13
+Playground,High-income,37.2,44.7,4,15
+Playground,High-income,37.9,41.3,21,13
+Playground,High-income,29.5,46.0,5,15
+Playground,High-income,46.2,47.7,14,16
+Playground,High-income,77.1,37.1,6,15
+Playground,High-income,21.0,39.9,25,13
+Playground,High-income,9.8,41.2,11,13
+Playground,High-income,48.5,45.7,22,10
