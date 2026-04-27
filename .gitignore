@@ -30,7 +30,9 @@ vignettes/*.pdf
 01_RGuides
 14_Time_Series
 15_Mapping_Contamination/
+17_Soil_Carbon/
 19_Survival_Analysis/
+A01_Glassware_Precision/
 A04_Regional_Climate_Trends/
 A05_Shifting_Baselines/
 A06_Ecoli_NTM/
@@ -40,7 +42,7 @@ A09_Compost_Maturity/
 A10_Stream_Discharge/
 A11_Flood_Return_Interval/
 A12_Sticky_Traps/
-A13_Heat_Islands/
+
 A14_Public_Space_Temperature
 A15_Biodiversity_Surveys
 A16_Camera_Traps
