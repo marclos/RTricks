@@ -1,6 +1,7 @@
 # History files
 .Rhistory
 .Rapp.history
+.Renviron
 # Session Data files
 .RData
 # Example code in package build process
