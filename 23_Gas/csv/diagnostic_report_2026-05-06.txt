@@ -1,0 +1,97 @@
+================================================================================
+  OIL PRICE PREDICTOR v13 -- DIAGNOSTIC REPORT
+  Run date: 2026-05-06  |  Training: 2024-11-12 to 2026-05-06
+================================================================================
+-- 1. ACCURACY METRICS ---------------------------------------------------------
+
+  BRENT ENSEMBLE (30-day backtest)
+    RMSE:  $9.394 /bbl    MAE: $7.982 /bbl    MAPE: 8.05%    R2: -0.1175
+
+  CA GASOLINE (30-day backtest)
+    RMSE:  $0.2459 /gal    MAE: $0.2114 /gal    MAPE: 3.61%    R2: -5.0527
+-- 2. ENSEMBLE WEIGHTS & MODEL PERFORMANCE ------------------------------------
+
+    Model     Weight    RMSE         ARIMA order: 4-1-1-1-0-1-5
+    ARIMA     0.422     $4.46        LASSO: penalty=0.0133  mixture=0.88
+    Prophet   0.270     $6.98
+    LASSO     0.308     $6.12
+-- 3. FEATURE IMPORTANCE (LASSO -- top 5, deduplicated) -----------------------
+
+  TOP POSITIVE:
+    macd                       +0.0048
+    price_vs_ma63              +0.0044
+    momentum_63d               +0.0012
+    rsi_14                     +0.0002
+    refinery_maint             +0.0001
+
+  TOP NEGATIVE:
+    ret_21d                    -0.0011
+    quarter                    -0.0010
+    trend_slope                -0.0002
+    heating_demand_idx         -0.0000
+    vol_ratio                  -0.0000
+
+  Zeroed out: 0 of 15
+  Brent LASSO: technical + momentum + curve + seasonal (no news/FRED)
+  Momentum active: ret_21d, momentum_63d, price_vs_ma63    Curve active: NONE
+  News/FRED: spread model only (not in Brent LASSO since v13)
+  Sentiment in spread: 0 channels    FRED in spread: usd_chg_21d, claims_chg_4w, yield_chg_21d
+-- 4. COUNTERFACTUAL DIAGNOSTICS -----------------------------------------------
+
+  Momentum: Full $21.716 | No-momentum $25.708 | Delta +3.992 | MOMENTUM HELPS
+  Curve:    Full $21.716 | No-curve N/A    | Delta N/A | N/A
+-- 5. ARIMA RESIDUAL DIAGNOSTICS -----------------------------------------------
+
+  Ljung-Box (lag 10): stat=10.09  p=0.4325  PASS
+  Shapiro-Wilk: p=0.0000  Non-normal
+  Lag-1 ACF: -0.0032  OK
+-- 6. BACKTEST ERROR STRUCTURE -------------------------------------------------
+
+  Error ACF(1): 0.7806    Trend: -1.0796 $/day    Over-prediction: 66.7%
+  Verdict: BIASED (67% over-prediction)
+-- 7. SPREAD MODEL (GAM) ------------------------------------------------------
+
+  adj. R2: 0.845    Deviance explained: 85.1%
+  Significant: (Intercept), lag_spread, NA, NA, yield_chg_21d
+  Non-significant: refinery_stress, sent_refinery, NA, NA, summer_peak, winter_heat, quarter, usd_chg_21d
+  Smooth: s(driving_season_idx)
+-- 8. SPOT-ANCHORING DIAGNOSTICS -----------------------------------------------
+
+  Anchor: $109.87    Halflife: 90 days
+  Alpha: day1=99% | day30=79% | day90=50% | day180=25%
+  Raw 1M: $86.43    Anchored 1M: $107.29    Correction: +20.86 /bbl
+-- 9. MARKET CONTEXT -----------------------------------------------------------
+
+  Structure: Backwardation    Curve: -25.5%    Cal spread: +0.0%    WTI basis: +8.2%
+  Spot WTI: $102.27
+  FRED levels: USD=118.4  Claims=180K  Yield=0.500%
+  FRED chg:    USD=-1.75%  Claims=-6.5K  Yield=+0.000pp
+-- 10. DATA QUALITY ------------------------------------------------------------
+
+  Train: 350    Backtest: 21    News: 310 articles    xreg: 15 cols
+  FRED obs: USD 368 | Claims 76 | Yield 369
+-- RUN HISTORY -----------------------------------------------------------------
+
+  Run history: 11 runs from 2026-05-05 to 2026-05-06
+  RMSE range: $7.72 - $1603.87
+  MAPE range: 6.6% - 330.2%
+  Best run: 2026-05-05 (RMSE $7.72)
+  Worst run: 2026-05-06 (RMSE $1603.87)
+
+-- 11. NAIVE BASELINE COMPARISON -----------------------------------------------
+
+  Ensemble (anchored)     RMSE: $  9.39  MAPE:   8.0%
+  Random Walk (spot)      RMSE: $ 10.28  MAPE:   8.7%  Skill: +8.6%
+  Historical Mean         RMSE: $ 33.21  MAPE:  30.9%  Skill: +71.7%
+  63-day Trend            RMSE: $ 15.68  MAPE:  14.7%  Skill: +40.1%
+  Beats RW: YES  |  beats Mean: YES  |  beats Trend: YES
+-- 12. FORECAST SUMMARY --------------------------------------------------------
+
+  Brent  1M: $107.29  |  3M: $104.04  |  6M: $112.69  |  9M: $123.25  /bbl
+  CA Gas 1M: $5.82  |  3M: $5.74  |  6M: $5.94  |  9M: $6.21  /gal
+  TX Gas (latest actual): $3.89/gal    CA-TX premium: $2.19/gal
+
+================================================================================
+  END DIAGNOSTIC REPORT -- paste this into Claude for model review
+================================================================================
+

@@ -1,0 +1,224 @@
+---
+title: "Untitled"
+author: "Marc Los Huertos"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Data Sources and Forecasting Framework
+This analysis integrates market, energy, and sentiment data to produce medium‑term forecasts of California retail gasoline prices. The modeling pipeline begins by fetching two years of daily Brent and WTI crude oil futures prices, along with a 12‑contract WTI futures curve, from Yahoo Finance. These market data are augmented with weekly California retail gasoline prices obtained from the U.S. Energy Information Administration (EIA).
+To capture structural and behavioral drivers of fuel prices, several feature sets are engineered. These include standard technical indicators, calendar spread features derived from the WTI futures curve, and seasonal demand indices reflecting recurring consumption patterns. In addition, the model incorporates topic‑segmented news sentiment measures, constructed from energy‑related news text, along with a refinery outage intensity index that proxies for supply‑side disruptions. To reflect asymmetric market responses, lagged sentiment terms are included that allow positive and negative news to have different temporal effects.
+
+Forecast Models
+Three complementary forecasting approaches are fit to the engineered feature set:
+
+ARIMA‑X, which extends traditional ARIMA models by incorporating exogenous regressors to capture market, sentiment, and supply variables
+Prophet, an additive time‑series model that decomposes prices into trend, seasonality, holiday/event effects, and residual variation, providing interpretable forecasts with uncertainty intervals
+LASSO regression, which performs feature selection and regularization to handle high‑dimensional inputs and mitigate overfitting
+
+Rather than relying on a single model, forecasts from these approaches are combined into an ensemble, using inverse root‑mean‑squared‑error (RMSE) weights derived from cross‑validation performance. This weighting scheme places greater emphasis on models with stronger out‑of‑sample accuracy while retaining model diversity.
+
+Brent‑to‑Retail Price Conversion
+Because California retail gasoline prices respond differently to global crude benchmarks than do national averages, a secondary modeling step is applied. A generalized additive model (GAM) is used to translate Brent crude price forecasts into California‑specific retail gasoline prices. This spread model includes:
+
+Smooth nonlinear terms for market variables
+California‑specific sentiment indicators
+Regime interaction terms to allow relationships to change across market conditions
+
+This structure provides additional flexibility while preserving interpretability.
+
+Forecast Horizon and Uncertainty
+The final ensemble framework produces forecasts nine months ahead, along with confidence intervals that reflect both model uncertainty and historical forecast error. By integrating structural time‑series modeling (Prophet), econometric methods (ARIMA‑X), and regularized machine learning (LASSO), the approach balances interpretability, flexibility, and predictive performance.
+
+
+The Prophet Time‑Series Model
+Prophet is a time‑series forecasting model developed by Facebook (now Meta) that is designed to be robust, interpretable, and easy to use. In R, Prophet is implemented through the prophet package and is commonly applied to forecasting problems involving seasonal patterns and long‑term trends.
+At its core, Prophet is an additive regression model that decomposes a time series into meaningful components, allowing users to both generate forecasts and understand the drivers behind those forecasts.
+
+Model Structure
+Prophet assumes that an observed time series can be expressed as:
+y(t)=g(t)+s(t)+h(t)+ϵty(t) = g(t) + s(t) + h(t) + \epsilon_ty(t)=g(t)+s(t)+h(t)+ϵt​
+where:
+
+g(t)g(t)g(t) is the trend component, representing long‑term growth or decline
+s(t)s(t)s(t) captures seasonal patterns (e.g., weekly or yearly cycles)
+h(t)h(t)h(t) represents the effects of holidays or discrete events
+ϵt\epsilon_tϵt​ is the error term
+
+This explicit decomposition makes Prophet particularly attractive for applications where interpretability is important.
+
+Trend Modeling
+The trend component g(t)g(t)g(t) can be specified as either:
+
+Linear growth, or
+Logistic growth, which allows for saturation or upper limits
+
+Prophet automatically identifies changepoints—points in time where the trend shifts—allowing the model to adapt to structural changes in the data, such as policy changes, behavioral shifts, or system transitions.
+
+Seasonality
+Seasonality in Prophet is modeled using Fourier series, which provide a flexible way to represent repeating patterns. Common seasonalities include:
+
+Weekly effects (e.g., weekday vs. weekend behavior)
+Yearly effects (e.g., academic calendars or climate cycles)
+
+These seasonal components are estimated directly from the data and can be turned on or off depending on the characteristics of the time series.
+
+Holidays and Events
+One of Prophet’s distinguishing features is its explicit handling of holidays or known events. Users can supply a table of dates corresponding to events such as holidays, campus breaks, system outages, or extreme weather. Prophet estimates the average effect of these events and incorporates them into the forecast.
+This capability is particularly useful in applied settings where the timing of disruptions is known in advance.
+
+Data Requirements
+Prophet requires data to be formatted with two columns:
+
+ds: a date or datetime variable
+y: the numeric response variable
+
+The model can handle:
+
+Missing observations
+Unevenly spaced time series
+Outliers (which have limited influence on parameter estimates)
+
+
+Strengths and Limitations
+Strengths
+
+Easy to fit with minimal tuning
+Highly interpretable components
+Robust to missing data and outliers
+Well suited for data with strong seasonal structure
+
+Limitations
+
+Less effective for very short time series
+Does not explicitly model complex autocorrelation
+Limited ability to capture nonlinear interactions
+
+
+Typical Applications
+Prophet is widely used in applied forecasting problems, including:
+
+Enrollment and attendance forecasting
+Energy demand and resource planning
+Environmental and ecological time series
+Business and economic indicators
+
+Because of its transparency and flexibility, Prophet is often preferred in contexts where forecasts must be explained to non‑technical stakeholders.
+
+Regularized Machine Learning: LASSO Regression
+LASSO (Least Absolute Shrinkage and Selection Operator) is a regularized regression method commonly used in machine learning when the number of predictors is large and multicollinearity is present. Unlike traditional regression, which estimates all coefficients freely, LASSO imposes a penalty that both shrinks coefficients and performs automatic variable selection.
+In this analysis, LASSO is used to manage a high‑dimensional feature space that includes technical indicators, sentiment measures, lagged effects, and market structure variables.
+
+Model Formulation
+LASSO estimates regression coefficients by minimizing the following objective function:
+min⁡β{∑t=1n(yt−Xtβ)2  +  λ∑j=1p∣βj∣}\min_{\beta} \left\{
+\sum_{t=1}^{n} (y_t - X_t \beta)^2
+\;+\;
+\lambda \sum_{j=1}^{p} |\beta_j|
+\right\}βmin​{t=1∑n​(yt​−Xt​β)2+λj=1∑p​∣βj​∣}
+where:
+
+yty_tyt​ is the response variable
+XtX_tXt​ is the matrix of predictors
+βj\beta_jβj​ are the regression coefficients
+λ\lambdaλ is a tuning parameter controlling the strength of regularization
+
+The L1 penalty (absolute value of coefficients) distinguishes LASSO from ridge regression and is what enables coefficient values to be driven exactly to zero.
+
+Variable Selection and Shrinkage
+As the regularization parameter λ\lambdaλ increases:
+
+Small or weak predictors are shrunk toward zero
+Irrelevant predictors are set exactly to zero
+The resulting model becomes more parsimonious
+
+This property allows LASSO to function as both a prediction model and a feature selection mechanism, making it especially useful when predictors are numerous or highly correlated.
+
+Advantages in Applied Forecasting
+LASSO offers several advantages in forecasting applications:
+
+Handles high‑dimensional data efficiently
+Reduces overfitting by penalizing model complexity
+Selects informative predictors automatically
+Improves out‑of‑sample performance relative to unregularized regression
+
+Because it does not rely on strong parametric assumptions about time dynamics, LASSO complements more structured approaches such as ARIMA‑X and Prophet.
+
+Limitations
+Despite its strengths, LASSO has important limitations:
+
+Coefficients are biased toward zero due to shrinkage
+When predictors are highly correlated, LASSO may select one arbitrarily
+It does not explicitly model temporal dependence or seasonality
+
+For these reasons, LASSO is used here as part of a multi‑model ensemble, rather than as a standalone forecasting tool.
+
+ARIMA‑X (ARIMA with Exogenous Variables)
+ARIMA‑X is an extension of the traditional ARIMA (AutoRegressive Integrated Moving Average) model that allows the inclusion of exogenous predictor variables. While standard ARIMA models rely solely on the past behavior of the response variable, ARIMA‑X incorporates external drivers that are believed to influence the time series.
+In this framework, ARIMA‑X provides a hybrid approach that combines time‑series structure with regression‑based explanatory power, making it well suited for economically and behaviorally driven systems such as energy prices.
+
+Model Structure
+An ARIMA‑X model can be written as:
+yt=μ+∑i=1pϕiyt−i+∑j=1qθjεt−j+∑k=1Kβkxk,t+εty_t = \mu + \sum_{i=1}^{p} \phi_i y_{t-i}
+      + \sum_{j=1}^{q} \theta_j \varepsilon_{t-j}
+      + \sum_{k=1}^{K} \beta_k x_{k,t}
+      + \varepsilon_tyt​=μ+i=1∑p​ϕi​yt−i​+j=1∑q​θj​εt−j​+k=1∑K​βk​xk,t​+εt​
+where:
+
+yty_tyt​ is the target time series
+ϕi\phi_iϕi​ are autoregressive (AR) coefficients
+θj\theta_jθj​ are moving‑average (MA) coefficients
+xk,tx_{k,t}xk,t​ are exogenous variables
+βk\beta_kβk​ are regression coefficients for external predictors
+εt\varepsilon_tεt​ is a white‑noise error term
+
+The differencing order ddd is applied as needed to ensure stationarity, as in standard ARIMA models.
+
+Role of Exogenous Variables
+The defining feature of ARIMA‑X is the inclusion of externally observed predictors that can affect the response variable but are not themselves modeled as stochastic processes within the system. In this analysis, such predictors may include:
+
+Futures prices and calendar spreads
+Technical indicators
+Sentiment indices
+Refinery outage measures
+Seasonal demand proxies
+
+By explicitly conditioning on these covariates, ARIMA‑X can capture short‑run shocks and structural influences that would otherwise be absorbed into the error term.
+
+Strengths of ARIMA‑X
+ARIMA‑X offers several advantages in applied forecasting contexts:
+
+Explicit modeling of temporal autocorrelation
+Integration of domain‑specific explanatory variables
+Strong performance for short‑ to medium‑term forecasts
+Well‑established statistical inference framework
+
+These properties make ARIMA‑X particularly useful when the primary signal is driven by recent history but modified by observable external forces.
+
+Limitations
+Despite its strengths, ARIMA‑X has notable limitations:
+
+Requires careful preprocessing to ensure stationarity
+Sensitive to model specification and lag selection
+Assumes linear relationships between predictors and response
+Can degrade when exogenous variable forecasts are uncertain
+
+In addition, ARIMA‑X does not natively capture complex nonlinear effects or long‑term seasonal cycles unless explicitly modeled.
+
+Role in the Ensemble Framework
+Within the ensemble forecasting framework, ARIMA‑X contributes a statistically grounded, short‑memory perspective. It complements:
+
+Prophet, which emphasizes trend and seasonality decomposition
+LASSO, which captures high‑dimensional, data‑driven relationships
+
+By weighting ARIMA‑X forecasts according to inverse RMSE performance, the ensemble leverages its strengths without over‑relying on its assumptions.
+
+Summary
+ARIMA‑X serves as a bridge between classical time‑series analysis and regression‑based modeling, allowing known drivers to influence forecasts while preserving autoregressive structure. When combined with complementary models, ARIMA‑X improves predictive stability and interpretability in complex forecasting systems.
+
+Role in the Ensemble Framework
+Within the ensemble, the LASSO model contributes a flexible, data‑driven perspective, capturing relationships that may be missed by more structured time‑series models. Its forecasts are combined with those from ARIMA‑X and Prophet using inverse RMSE weighting, allowing the final ensemble to balance interpretability, structure, and predictive accuracy.

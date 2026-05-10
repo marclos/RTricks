@@ -1,0 +1,94 @@
+================================================================================
+  OIL PRICE PREDICTOR v10 -- DIAGNOSTIC REPORT
+  Run date: 2026-05-05  |  Training: 2024-05-05 to 2026-05-05
+================================================================================
+-- 1. ACCURACY METRICS ---------------------------------------------------------
+
+  BRENT ENSEMBLE (30-day backtest)
+    RMSE:  $8.494 /bbl    MAE: $7.147 /bbl    MAPE: 7.19%    R2: 0.0333
+
+  CA GASOLINE (30-day backtest)
+    RMSE:  $0.1374 /gal    MAE: $0.1011 /gal    MAPE: 1.71%    R2: -2.0711
+-- 2. ENSEMBLE WEIGHTS & MODEL PERFORMANCE ------------------------------------
+
+    Model     Weight    RMSE         ARIMA order: 4-1-3-1-0-1-5
+    ARIMA     0.400     $4.03        LASSO: penalty=0.0022  mixture=1.00
+    Prophet   0.181     $8.93
+    LASSO     0.419     $3.85
+-- 3. FEATURE IMPORTANCE (LASSO -- top 5, deduplicated) -----------------------
+
+  TOP POSITIVE:
+    price_vs_ma63              +0.0073
+    yield_chg_21d              +0.0020
+    heating_demand_idx         +0.0017
+    usd_chg_21d                +0.0011
+    driving_season_idx         +0.0005
+
+  TOP NEGATIVE:
+    quarter                    -0.0017
+    vol_ratio                  -0.0007
+    sent_neg_intensity         -0.0003
+    sent_volatility            -0.0002
+    sent_supply_risk_neg_fast  -0.0002
+
+  Zeroed out: 0 of 23    FRED RoC: usd_chg_21d, claims_chg_4w, yield_chg_21d    Dropped: NONE
+  Momentum: ret_21d, momentum_63d, price_vs_ma63    Sentiment: 5 active
+-- 4. COUNTERFACTUAL DIAGNOSTICS -----------------------------------------------
+
+  News:  Full $21.848 | No-news $22.477 | Delta +0.629 | NEWS HELPS
+  FRED:  Full $21.848 | No-FRED $31.609 | Delta +9.761 | FRED HELPS
+-- 5. ARIMA RESIDUAL DIAGNOSTICS -----------------------------------------------
+
+  Ljung-Box (lag 10): stat=4.70  p=0.9106  PASS
+  Shapiro-Wilk: p=0.0000  Non-normal
+  Lag-1 ACF: -0.0018  OK
+-- 6. BACKTEST ERROR STRUCTURE -------------------------------------------------
+
+  Error ACF(1): 0.7285    Trend: -0.8305 $/day    Over-prediction: 61.9%
+  Verdict: AUTOCORRELATED ERRORS
+-- 7. SPREAD MODEL (GAM) ------------------------------------------------------
+
+  adj. R2: 0.855    Deviance explained: 85.9%
+  Significant: (Intercept), lag_spread, NA, NA, NA, summer_peak, winter_heat, quarter, NA, usd_chg_21d, yield_chg_21d
+  Non-significant: NA, sent_refinery, NA, NA, NA
+  Smooth: s(driving_season_idx)
+-- 8. SPOT-ANCHORING DIAGNOSTICS -----------------------------------------------
+
+  Anchor: $114.44    Halflife: 90 days
+  Alpha: day1=99% | day30=79% | day90=50% | day180=25%
+  Raw 1M: $94.96    Anchored 1M: $112.37    Correction: +17.42 /bbl
+-- 9. MARKET CONTEXT -----------------------------------------------------------
+
+  Structure: Backwardation    Curve: -27.3%    Cal spread: +0.0%    WTI basis: +9.3%
+  Spot WTI: $106.42
+  FRED levels: USD=118.4  Claims=180K  Yield=0.500%
+  FRED chg:    USD=-1.75%  Claims=-6.5K  Yield=-0.010pp
+-- 10. DATA QUALITY ------------------------------------------------------------
+
+  Train: 481    Backtest: 21    News: 217 articles    xreg: 23 cols
+  FRED obs: USD 498 | Claims 103 | Yield 499
+-- RUN HISTORY -----------------------------------------------------------------
+
+  Run history: 5 runs from 2026-05-05 to 2026-05-05
+  RMSE range: $7.72 - $8.49
+  MAPE range: 6.6% - 7.2%
+  Best run: 2026-05-05 (RMSE $7.72)
+  Worst run: 2026-05-05 (RMSE $8.49)
+
+-- 11. NAIVE BASELINE COMPARISON -----------------------------------------------
+
+  Ensemble (anchored)     RMSE: $  8.49  MAPE:   7.2%
+  Random Walk (spot)      RMSE: $  9.81  MAPE:   8.3%  Skill: +13.4%
+  Historical Mean         RMSE: $ 31.08  MAPE:  28.8%  Skill: +72.7%
+  63-day Trend            RMSE: $ 14.76  MAPE:  13.5%  Skill: +42.5%
+  Beats RW: YES  |  beats Mean: YES  |  beats Trend: YES
+-- 12. FORECAST SUMMARY --------------------------------------------------------
+
+  Brent  1M: $112.37  |  3M: $109.99  |  6M: $108.00  /bbl
+  CA Gas 1M: $5.80  |  3M: $5.74  |  6M: $5.69  /gal
+  TX Gas (latest actual): $3.89/gal    CA-TX premium: $2.19/gal
+
+================================================================================
+  END DIAGNOSTIC REPORT -- paste this into Claude for model review
+================================================================================
+

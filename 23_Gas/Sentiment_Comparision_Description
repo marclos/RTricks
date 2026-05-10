@@ -1,0 +1,234 @@
+# Modeling Sentiment in News Articles: Methods, Tools, and a Practical R Workflow for Environmental News
+
+## TL;DR
+- For a 2025–2026 R-based project on environmental news, the best single-model accuracy comes from transformer encoders (BERT/RoBERTa-class), with domain-adapted ClimateBERT (climatebert/distilroberta-base-climate-sentiment) reporting weighted F1 ≈ 0.838 on its 3-class (opportunity/neutral/risk) climate sentiment benchmark — versus ~27% accuracy for AFINN and 58–72% for SVM/NB/RF on a 9,382-article transboundary-rivers news dataset (Wang et al., *Soft Computing* 2024).
+- A pragmatic R workflow is a two-stage pipeline: (1) use **quanteda + Lexicoder Sentiment Dictionary (LSD2015)** or **sentometrics** for a fast, transparent, dictionary-based baseline aggregated into time series; (2) call a fine-tuned transformer (ClimateBERT or cardiffnlp/twitter-roberta-base-sentiment-latest) from R via the **text** package (HuggingFace bridge) for the higher-accuracy layer, validating on a hand-labeled sample with Cohen's/Krippendorff's κ.
+- Treat headline polarity as only a noisy signal: news-specific challenges (neutral-tone reporter convention, attributed quotes, framing, sarcasm) mean you should always run aspect-based sentiment toward named entities/topics and aggregate with article-count weighting, not raw means.
+
+## Key Findings
+
+1. **No single method dominates; granularity and domain matter more than algorithm class.** Lexicon methods are competitive on long, formal news prose but poor on implicit/ironic content; transformers win on accuracy but require GPU and labeled data; LLMs match or beat fine-tuned BERTs zero-shot on headlines but at high inference cost.
+2. **Domain-adapted transformers are the current SOTA for environmental/climate text.** ClimateBERT (Webersinke et al., AAAI Fall Symposium 2022; underlying the climatebert HuggingFace family) reports a 7.42% lower F1 error rate vs DistilRoBERTa baseline on climate sentiment, with weighted F1 = 0.838 ± 0.036.
+3. **Lexicon methods can fail catastrophically on multi-class news labels.** On a 9,382-article news dataset about transboundary-rivers (5-class scale), AFINN scored 27.4% accuracy versus BERT's 72.7% (Wang, Wei, Tian & Wei, *Soft Computing* 28:13331–13347, 2024).
+4. **Aspect-based sentiment analysis (ABSA) is essential for news, not optional.** A single article can be positive about one entity (e.g., a renewable-energy company) and negative about another (a regulator). Fine-tuned GPT-3.5 reaches F1 = 83.8 on SemEval-2014 ABSA (Simmering & Huoviala, arXiv:2310.18025); modern open ABSA models (deberta-v3-base-absa-v1.1) are usable from R via HuggingFace.
+5. **Tracking sentiment over time requires explicit aggregation choices.** The R **sentometrics** package (Ardia, Bluteau, Borms & Boudt, *Journal of Statistical Software* 99(2), 2021) operationalizes the three-dimensional aggregation problem (within-document → across-documents → across-time, with Beta/linear/equal time weighting), and is the most principled R tool for time-series sentiment indices.
+6. **Inter-annotator agreement sets a hard ceiling on attainable F1.** News sentiment annotation typically yields Cohen's κ ≈ 0.4–0.6 (moderate), so reporting accuracy without κ on a hand-coded validation sample overstates model quality.
+
+## Details
+
+### 1. Lexicon-based approaches
+
+**How they work.** A sentiment lexicon assigns polarity/intensity scores to individual word forms (or n-grams). The text's score is the sum/average of matched word scores, optionally modified by valence shifters (negators "not", amplifiers "very"), as in sentimentr.
+
+**The major lexicons:**
+- **VADER** (Hutto & Gilbert 2014) — rule-based, ~7,500 lexicon items with intensity scores plus heuristics for negation, contrastive conjunctions ("but"), capitalization, punctuation. Compound score in [-1, +1]. Originally designed for social media but performs respectably on news headlines and short prose. Validation tables in the original paper specifically include opinion-news as one of the four evaluation domains.
+- **AFINN** (Nielsen 2011) — 2,477 words scored from −5 to +5. Captures intensity but small vocabulary; no negation handling.
+- **Bing** (Hu & Liu 2004) — 6,786 words, binary positive/negative. Largest binary list. No intensity, no negation.
+- **NRC** (Mohammad & Turney 2013) — ~14,000 words mapped to 8 emotions plus positive/negative. Strong for emotion analysis (anger, fear, anticipation, trust, sadness, joy, surprise, disgust); the binary positive/negative axis is biased somewhat positive on news.
+- **Loughran-McDonald** (2011, updated through 2018) — finance-specific (negative, positive, litigious, uncertainty, constraining, modal). Recommended whenever the news is financial/regulatory; general-purpose lexicons mis-score domain words ("liability", "vice president").
+- **Lexicoder Sentiment Dictionary, LSD2015** (Young & Soroka, *Political Communication* 2012) — 2,858 negative + 1,709 positive word patterns, plus 2,860 + 1,721 negation patterns. Specifically designed for political/news text. Built into quanteda as `data_dictionary_LSD2015`.
+- **General Inquirer**, **MPQA**, **SentiWordNet**, **Henry's** — additional options exposed via the **lexicon** R package and quanteda.sentiment.
+
+**Strengths for news.** Transparent, explainable, deterministic, no labeled training data needed, fast (millions of articles per minute on a laptop), trivially auditable for reproducible content analysis, robust across long-form formal prose.
+
+**Weaknesses for news.**
+- Bag-of-words assumption misses negation, hedging, sarcasm, and implicit sentiment. On a 5-class transboundary-rivers news dataset, AFINN scored 27.4% accuracy vs 72.7% for BERT (Wang et al. 2024).
+- Inter-rater reliability across lexicons is poor: a tutorial replication (rstudio-pubs-static.s3.amazonaws.com/676279) reports the exact output "Fleiss' Kappa for m Raters … Subjects = 4508, Raters = 4, Kappa = 0.219" across afinn/bing/jockers/nrc lexicons applied to the same corpus via syuzhet's `get_sentiment()` — i.e., chance-corrected agreement of only 0.219 between four standard lexicons rating the same sentences. Note this is one tutorial corpus, not a peer-reviewed benchmark, but it is illustrative of the order of magnitude.
+- Lexicon mismatch: NRC has 3,324 negative vs 2,312 positive entries; Bing has 4,781 negative vs 2,005 positive. Choice of lexicon mechanically shifts time-series direction.
+- Fail on attributed quotes ("Critics called the policy a disaster") that report negative content without expressing the article's stance.
+
+**Recommendation.** For news specifically, use **LSD2015** (purpose-built) or **Loughran-McDonald** (if financial). VADER is acceptable for headlines. Avoid NRC's positive/negative axis for polarity-only analyses; use it for emotion decomposition instead.
+
+### 2. Traditional Machine Learning
+
+Classical supervised classifiers — **Naive Bayes (multinomial NB)**, **logistic regression**, **support vector machines (SVM)**, **random forests**, **XGBoost** — operating on TF-IDF or n-gram bag-of-words features. They require a labeled training set (typically 1,000–10,000 documents).
+
+**Empirical pattern from 2024 news benchmarks.** On the Wang et al. (2024) transboundary-rivers news corpus (9,382 articles, 5-class, oversampled), accuracies were:
+- BERT: 72.7%
+- XGBoost / GBDT / Random Forest / MLP / SVM / NB / KNN: 58.6%–71.4% (clustered around 66.5%)
+- LSTM: 62.2%
+- Decision Tree: 57.8%
+- AFINN lexicon: 27.4%
+
+In 3-class binary product/news settings, SVM and logistic regression typically reach 86–90% accuracy versus Naive Bayes at 84–86% (e.g., IMDB benchmarks).
+
+**Strengths.** Fast training and inference, strong baselines, interpretable feature weights (especially logistic regression coefficients), do not require GPU, well-supported in R (`tidymodels`, `caret`, `e1071`, `text2vec`).
+
+**Weaknesses.** Need labeled training data; do not generalize across publications without retraining; capture only surface lexical patterns; struggle with implicit sentiment, framing, and rare events.
+
+**Recommendation.** A logistic regression or linear SVM on TF-IDF + bigrams is a defensible mid-tier baseline that beats lexicon methods on labeled data and is ~50× cheaper to deploy than transformers. Use it as your fallback when GPU access is unavailable.
+
+### 3. Deep Learning / Transformers (state of the art, 2025–2026)
+
+**Encoder transformers** — BERT, RoBERTa, DistilBERT, DistilRoBERTa, DeBERTa, ELECTRA — are the workhorses of news sentiment analysis. Fine-tuned on 1k–10k labeled documents, they achieve macro-F1 in the 0.80–0.95 range on most news benchmarks.
+
+**Key models for news:**
+- **cardiffnlp/twitter-roberta-base-sentiment-latest** — per the official HuggingFace model card, "a RoBERTa-base model trained on ~124M tweets from January 2018 to December 2021, and finetuned for sentiment analysis with the TweetEval benchmark" (Loureiro et al., TimeLMs, arXiv:2202.03829). Frequently used as a generic news/short-text sentiment baseline (3-class: negative, neutral, positive). 124M parameters, ~500MB.
+- **FinBERT** (Araci 2019, ProsusAI, arXiv:1908.10063) — BERT further pre-trained on a large financial corpus and fine-tuned on Financial PhraseBank. Per the original tech-blog post: "We achieved 97% test-set accuracy in the full inter-annotator agreement part of Financial PhraseBank… On the dataset, including sentences without full inter-annotator agreement, accuracy was 86%, 15 percentage points higher than the previous state-of-the-art (HSC)." Outperforms VADER (~56%), TextBlob (~33%), and matches GPT-3.5 (~69%) on the 250-headline financial-news labeled set in Reid (Nosible 2024).
+- **distilroberta-finetuned-financial-news-sentiment-analysis** (mrm8488) — distilled RoBERTa fine-tuned on Financial PhraseBank, reportedly 98.23% accuracy on the eval set (in-domain headlines, almost certainly overfit relative to general financial news).
+- **ClimateBERT** family (climatebert/distilroberta-base-climate-f for the LM, climatebert/distilroberta-base-climate-sentiment for the sentiment classifier) — DistilRoBERTa further pre-trained on 2M+ climate-related paragraphs from news, research articles, and corporate climate reporting. On the 1,000-paragraph climate_sentiment benchmark (3-class: opportunity / neutral / risk), Webersinke et al. (2022) report weighted F1 = 0.838 ± 0.036 vs DistilRoBERTa baseline 0.825 ± 0.046 (a 7.42% reduction in F1 error). Also delivers 35.71% reduction in F1 error rate on climate text classification, with reported training carbon footprint of 94.75 kg CO2.
+- **DA-RoBERTa / bias-detector** (Krieger et al. 2022; Powers et al. 2025) — RoBERTa fine-tuned on the BABE bias dataset and Wiki Neutrality Corpus, used to flag editorial vs. reporting tone in news.
+- **DeBERTa-v3-base-absa-v1.1** (yangheng) — strong open ABSA model.
+
+**Decoder LLMs (GPT-4, Claude, Llama 3, DeepSeek-R1, Gemma-2).** Zero-shot and few-shot LLMs now match or exceed fine-tuned encoders on many sentiment tasks. On a 1,162-article hand-annotated Bloomberg target-based financial sentiment benchmark (Peshov, Mishev, Jovanovik et al., CLiC-it 2025), DeepSeek-R1 and ChatGPT-o1 outperformed VADER, TextBlob, FinBERT, FinBERT-Tone, DistilFinRoBERTa, and Deberta-v3-base-absa-v1.1. On a 250-headline financial news showdown (Reid, Nosible blog 2024), PaLM-2 Text-Unicorn reached 84% agreement with human labels vs GPT-4 74%, GPT-4-Turbo 66%, FinBERT ~69%, VADER 56%, FinBERT-Tone 53%, TextBlob essentially random (~33%). Fine-tuned GPT-3.5 reached F1 = 83.8 on SemEval-2014 ABSA (Simmering & Huoviala, arXiv:2310.18025).
+
+**Verdict.** For news in 2025–2026:
+- If a domain-adapted transformer exists (ClimateBERT for environmental, FinBERT for finance, BABE for bias), use it.
+- Otherwise, **cardiffnlp/twitter-roberta-base-sentiment-latest** is a strong out-of-the-box choice for English news polarity, and **deberta-v3-base-absa-v1.1** for ABSA.
+- LLMs (GPT-4o/o1, Claude 3.5/4, DeepSeek-R1) are competitive zero-shot but expensive; reserve them for ambiguous cases, validation, or as a labeling oracle for fine-tuning a smaller encoder.
+
+### 4. Aspect-Based Sentiment Analysis (ABSA)
+
+ABSA decomposes the document into (aspect, sentiment) pairs. For news, aspects are usually entities (a politician, company, country), policies ("the Inflation Reduction Act"), or themes ("renewable energy", "deforestation").
+
+**Approaches:**
+- **Targeted dictionary lookup** — `tokens_keep(window=10)` in quanteda, then apply LSD2015 to the ±10-token context around the aspect. The official quanteda tutorial demonstrates this on Guardian articles for sentiment toward "government" / "cabinet" / "prime minister".
+- **Aspect extraction + classifier pipelines** — use spaCy NER (via spacyr in R) to extract entities, then classify the surrounding sentences with a transformer.
+- **End-to-end ABSA models** — DeBERTa-v3-base-absa-v1.1 (Yang et al.), InstructABSA (Scaria et al. 2023, F1 = 78.1 on SemEval-2014 Joint Task), fine-tuned GPT-3.5 (F1 = 83.8). FaiMA (Yang 2024) handles multi-domain ABSA via in-context learning.
+- **Aspect Category Sentiment Analysis (ACSA)** — for predefined topic categories, BiLSTM + syntax-aware GAT models (Nature *Sci. Rep.* 2025) reach SOTA on SemEval datasets.
+
+**For news**, target-dependent classification is the right framing because the article's overall valence is rarely the quantity of interest — analysts want to know how a publication portrays a *specific* actor/topic.
+
+### 5. Challenges Unique to News Articles
+
+1. **Neutral-tone bias.** Reuters and AP follow style guides that mandate emotional flatness; this collapses lexicon scores toward zero and inflates the "neutral" class. Models trained on opinion data (Twitter, Yelp) over-predict polarity on news.
+2. **Implicit sentiment & framing.** "Coal-fired plants will continue to operate through 2035" is factually neutral but carries different sentiment depending on framing, source selection, and reader stance. Lexicon and even encoder models miss this without aspect-specific training.
+3. **Attributed quotes.** "Critics blasted the bill as a disaster" reports negative sentiment without endorsing it. Models conflate quoted content with article stance unless explicitly handled (often via syntactic parsing or quote-detection heuristics).
+4. **Sarcasm and irony.** Sykora, Elayan & Jackson (*Big Data & Society*, 2020, doi:10.1177/2053951720972735) note that "some tentative evidence suggests that sarcasm alone could account for as much as a 50% drop in accuracy when automatically detecting sentiment." Specialized detectors (e.g., SAWE, the Multi-Level Embedding Framework in MDPI *Electronics* 2024) help but are not yet standard pipeline components.
+5. **Editorial vs reporting distinction.** Op-eds, editorials, and news analysis carry the publication's voice; news reports do not. Models that don't condition on article type produce misleading aggregate sentiment for an outlet. Use the BABE-trained bias detector or simply filter by section metadata.
+6. **Domain drift.** Climate vocabulary ("carbon offset", "stranded asset", "loss and damage") is poorly represented in general-purpose models — the motivating finding for ClimateBERT, which delivered a 48% MLM improvement and 3.6–35.7% downstream error reduction on climate text.
+7. **Length.** Most transformer models truncate at 512 tokens; full news articles routinely exceed this. Standard solutions: chunk-and-aggregate (mean or attention-weighted), use long-context models (Longformer, ModernBERT), or score paragraph-by-paragraph then aggregate.
+8. **Negativity bias in coverage itself.** News, especially environmental news, is structurally negativity-biased; raw aggregate sentiment is meaningless without a baseline (e.g., topic-conditional or publication-conditional means).
+
+### 6. Practical Tools and Libraries
+
+**R packages (recommended stack for an R-based environmental news project):**
+
+| Package | Purpose | Strength |
+|---|---|---|
+| **quanteda** + **quanteda.sentiment** | Tokenization, dfm, dictionary application | Industrial-strength; built-in LSD2015, NRC, GI, Loughran-McDonald, AFINN, Henry, VADER dictionaries |
+| **tidytext** | Tidy-data text mining + lexicon access (Bing/AFINN/NRC) | Best for exploratory analysis and Tidyverse-native pipelines |
+| **sentimentr** | Sentence-level polarity with valence shifters (negators, amplifiers, adversative conjunctions) | Handles "not great" correctly, faster than VADER on long corpora |
+| **syuzhet** | Four built-in lexicons (syuzhet, bing, afinn, nrc) plus narrative arc analysis | Useful for narrative trajectories within long articles |
+| **sentometrics** | End-to-end pipeline: text → multi-lexicon sentiment → time series → predictive regression with elastic net | The reference R tool for time-series news sentiment; built-in US news corpus |
+| **text** (r-text.org) | R bridge to HuggingFace transformers (BERT, RoBERTa, etc.) | Lets you call ClimateBERT, cardiffnlp models, multilingual BERT directly from R |
+| **transforEmotion** | Zero-shot transformer classification (DistilRoBERTa cross-encoder, BART-MNLI) from R | Convenient for ad-hoc zero-shot labeling without HuggingFace setup |
+| **spacyr** | R wrapper around spaCy for NER, lemmatization, dependency parsing | Essential for ABSA aspect extraction |
+| **lexicon** | 20+ dictionaries (Loughran, Henry, Jockers, NRC, Hu-Liu, hash_sentiment_*) | Most exhaustive lexicon collection in R |
+| **stringr / textclean / readtext** | Cleaning and ingestion | Standard utilities |
+
+**Python equivalents:** TextBlob (basic, weak), NLTK (VADER, sentence-level), HuggingFace `transformers` (state-of-the-art models), spaCy + spacytextblob (pipeline integration), Flair (sequence-tagging-based polarity), pyABSA.
+
+### 7. Evaluation Metrics
+
+For supervised sentiment models, report:
+- **Accuracy** — only meaningful when classes are balanced. Misleading on news (skewed neutral).
+- **Macro-F1** — primary headline metric. Average of per-class F1; insensitive to class imbalance.
+- **Weighted F1** — each class's F1 weighted by support; what ClimateBERT et al. report.
+- **Per-class precision/recall** — diagnostic; news models usually have high neutral recall but low recall on the minority polarity.
+- **Confusion matrix** — distinguishes "missed positives" from "positive↔negative" errors; the latter are far more damaging.
+- **Cohen's κ** — inter-rater (model vs human) agreement chance-corrected. The standard for sentiment annotation. κ > 0.8 is rare on subjective news data; κ ≈ 0.4–0.6 (moderate) is typical and is your ceiling.
+- **Fleiss' κ / Krippendorff's α** — for ≥3 annotators or mixed measurement levels. Krippendorff's α handles missing data and ordinal/interval scales.
+- **Matthews correlation coefficient (MCC)** — increasingly preferred over κ for binary classification (Chicco et al. 2021).
+- **Spearman/Pearson correlation** — when sentiment is continuous (e.g., compound score correlated with hand-rated tone or with an external variable like stock returns).
+- **Calibration / Brier score** — for probabilistic sentiment outputs feeding downstream models.
+
+**Validation protocol for news:** stratified 5-fold CV; hand-label a held-out 200–500-document validation sample stratified by publication, time period, and topic; report κ vs. two human coders.
+
+### 8. Recent Research (2024–2026) — What Works for News Sentiment
+
+- **Wang, Wei, Tian & Wei, *Soft Computing* 28:13331–13347, December 2024** — direct head-to-head on 9,382 transboundary-rivers news articles (5-class). Result: BERT 72.7%, ML cluster 58.6–71.4%, AFINN 27.4%. Demonstrates the lexicon-vs-transformer gap on real news.
+- **Reid, Nosible 2024** — 250 hand-labeled financial news headlines, 3-class. PaLM-2 Unicorn 84%, GPT-4 74%, FinBERT ~69%, VADER 56%, TextBlob ~random.
+- **Bingler, Kraus, Leippold & Webersinke, *Journal of Banking & Finance* 164, 2024** — applies climatebert/distilroberta-base-climate-sentiment to 14,584 MSCI-World firm annual reports (2010–2020), establishing that the model generalizes well to disclosure documents and quarterly earnings calls (note: not news articles per se).
+- **"Sentiment Analysis in the Era of Large Language Models," Findings of NAACL 2024** — comprehensive zero-shot vs SLM benchmark; LLMs match fine-tuned T5 on simple polarity but lag on aspect-based and target-based tasks without few-shot examples.
+- **CLiC-it 2025 (Peshov, Mishev, Jovanovik et al.)** — 1,162 hand-annotated Bloomberg news articles, target-based financial sentiment. Finding: DeepSeek-R1 and ChatGPT-o1 outperform lexicon and discriminative transformer baselines.
+- **MDPI *Algorithms* 18(1):46, January 2025** — on TLFSA news headlines, fine-tuned DistilFinRoBERTa and DeBERTa-v3-base-absa beat VADER and zero-shot ChatGPT/Gemini on average.
+- **Beno, "ELECTRA and GPT-4o: Cost-Effective Partners," arXiv:2501.00062** — fine-tuned GPT-4o reaches macro-F1 = 86.99 on a SST/DynaSent mixture; ELECTRA-Base + GPT-4o-mini hybrid yields 82.74 macro-F1 at lowest cost (~$0.12 per F1 point).
+- **Carbó Casals, "From Noisy News Sentiment Scores to Interpretable Temporal Dynamics," arXiv:2601.16769, January 2026** — Bayesian state-space framework for smoothing weekly news sentiment indices with proper uncertainty given variable article volume. Important for environmental news where coverage spikes around COP/IPCC events.
+- **CLEF 2025 CheckThat! Lab Task 1** — sentiment-feature-augmented mDeBERTaV3 wins subjectivity detection in news; suggests sentiment scores as auxiliary features for editorial-vs-reporting classification.
+
+### 9. Pre-trained Models Specifically for News Sentiment
+
+| Model | Domain | License | Notes |
+|---|---|---|---|
+| **climatebert/distilroberta-base-climate-sentiment** | Climate-related paragraphs (corp. disclosures) | Open | 3-class opportunity/neutral/risk; weighted F1 ≈ 0.838 |
+| **climatebert/distilroberta-base-climate-detector** | Is this climate-related? | Open | Useful as a filter before sentiment scoring |
+| **climatebert/distilroberta-base-climate-commitment** | Action vs. talk | Open | For greenwashing / cheap-talk analysis |
+| **climatebert/environmental-claims** | Environmental claim detection (10-K, earnings calls) | Open | Trained on EnvironmentalClaims dataset |
+| **ProsusAI/finbert** & **yiyanghkust/finbert-tone** | Financial news | Open | Standard for financial sentiment |
+| **mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis** | Financial news | Open | 82M params, fast |
+| **cardiffnlp/twitter-roberta-base-sentiment-latest** | Twitter, but used widely on news headlines | Open | 3-class, well-maintained |
+| **cardiffnlp/twitter-xlm-roberta-base-sentiment** | Multilingual | Open | 8 languages |
+| **nlptown/bert-base-multilingual-uncased-sentiment** | 5-star multilingual product reviews | Open | Adapted for news with caveats |
+| **tabularisai/multilingual-sentiment-analysis** | 22 languages, 5-class | Open | Synthetic-data-trained DistilBERT-multilingual |
+| **mediabiasgroup/DA-RoBERTa-BABE** / **bias-detector** | News bias | Open | Editorial vs neutral framing |
+| **yangheng/deberta-v3-base-absa-v1.1** | ABSA | Open | Strong open ABSA model |
+
+### 10. Temporal and Aggregation Strategies
+
+Sentiment over time is rarely a simple mean. Best-practice considerations:
+
+1. **Within-document aggregation.** Options: mean over sentences (default), proportional weighting (longer texts count more), Beta-weighted (heavier weight on opening/closing positions), max-abs (capture peak intensity). The `compute_sentiment(how=...)` argument in **sentometrics** exposes all four.
+2. **Across-document aggregation per period.** Options: equal-weight, article-volume-proportional, source-credibility-weighted, inverse-volume-weighted. For environmental news, weight by article count to avoid one outlet dominating.
+3. **Across-time smoothing.** Equal-weight, linear-decay, exponential-decay, Beta(α, β) curves. Use a 270-day moving average with Beta weighting as a robust default for monthly/yearly trend extraction (the sentometrics VIX vignette uses exactly this).
+4. **Volume-aware uncertainty.** When article counts vary week-to-week (typical for environmental news around COP, IPCC reports, disasters), use a Bayesian state-space model (Carbó Casals 2026) or simple inverse-variance weighting so quiet weeks don't generate spurious extremes.
+5. **Multiple lexicons in parallel.** Compute sentiment under ≥2 lexicons (e.g., LSD2015 + Loughran-McDonald + ClimateBERT) and check rank correlation — agreement across methods is your most honest robustness check.
+6. **Topic-conditional aggregation.** Run LDA / BERTopic to extract themes ("renewable transition", "extreme weather", "biodiversity loss"), then compute sentiment per topic per period. This is what GDELT does globally and the European Commission's Socioeconomic Tracker does at country level.
+7. **Anchoring to events.** Plot sentiment against known event timestamps (IPCC reports, COP summits, oil spills, regulatory decisions) — in environmental news this exposes whether sentiment shifts are real changes or coverage spikes.
+
+The R **sentometrics** package operationalizes #1–#4 in a single workflow; GDELT's "tone" (−100 to +100, where most articles fall between −10 and +10) provides an off-the-shelf pre-aggregated alternative for global news.
+
+## Recommendations
+
+### Recommended R workflow for environmental news sentiment (2026)
+
+**Stage 0: Corpus assembly.**
+```r
+library(readtext); library(quanteda); library(tidyverse)
+corp <- readtext("articles/*.txt", docvarsfrom = "filenames",
+                 docvarnames = c("source","date","id")) %>% corpus()
+```
+Filter to environmental content using `climatebert/distilroberta-base-climate-detector` (via the **text** package) or a keyword dictionary.
+
+**Stage 1: Fast lexicon baseline (LSD2015 + sentimentr).** Run two lexicons in parallel for triangulation — LSD2015 (news-political) and NRC (emotion decomposition). Use sentimentr to handle valence shifters at the sentence level.
+
+**Stage 2: Aspect-based dictionary scoring (quanteda).** For each focal entity/topic, extract ±10-token context with `tokens_keep(window=10)` and apply the dictionary; this gives entity-conditional sentiment without any model training.
+
+**Stage 3: Transformer layer (text package → ClimateBERT).** Call `climatebert/distilroberta-base-climate-sentiment` from R via the **text** package. For long articles, paragraph-chunk and aggregate. Output is a 3-class label (opportunity/neutral/risk) per chunk.
+
+**Stage 4: Validation.** Hand-code 300 articles (stratified by source, year, topic) with two coders. Compute Cohen's κ between coders (must be > 0.5 to proceed), then κ between consensus labels and each model. Report macro-F1 per model.
+
+**Stage 5: Time-series aggregation (sentometrics).** Build daily/weekly/monthly indices using `sento_lexicons()` + `ctr_agg(howDocs="proportional", howTime="equal_weight", by="month", lag=6)`. Optionally regress against external variables (carbon prices, policy events) using the package's elastic-net wrapper.
+
+**Stage 6: Reporting.** Always report (a) lexicon-only baseline and (b) transformer numbers side-by-side; (c) κ vs. human coders; (d) topic-conditional means with confidence intervals; (e) sensitivity to lexicon choice. Visualize with smoothed time series + event annotations.
+
+### Staged escalation (when to upgrade)
+
+| If… | Use this |
+|---|---|
+| Corpus < 1k articles, exploratory descriptive analysis | tidytext + AFINN/Bing/NRC |
+| Need defensible news-specific baseline | quanteda + LSD2015 + sentimentr |
+| Need time-series indices for econometrics | sentometrics |
+| Need entity-level sentiment without GPU | quanteda targeted dictionary lookup with ±10-word window |
+| Need accuracy > ~0.7 macro-F1 on multi-class | text → ClimateBERT or cardiffnlp RoBERTa |
+| Need entity/aspect sentiment at SOTA | text → DeBERTa-v3-ABSA, or LLM via API |
+| Have ambiguous edge cases / sarcasm-heavy op-eds | LLM (Claude 3.5+, GPT-4o/o1) zero-shot or few-shot |
+| Need maximum accuracy, have labeled data + GPU | Fine-tune RoBERTa/DeBERTa on your labels |
+
+### Thresholds that change the recommendation
+
+- If your hand-coded validation shows lexicon macro-F1 > 0.65 and human κ < 0.55, **stop** — transformer gains will be lost in annotation noise.
+- If transformer macro-F1 < lexicon + 0.05, suspect domain drift and either (a) further pre-train on your corpus or (b) fine-tune.
+- If neutral class > 60% of corpus, switch from 3-class polarity to **regression** on a continuous scale (e.g., compound score) or to **emotion** (NRC 8-emotion) for more variance.
+
+## Caveats
+
+1. **No public benchmark exists for environmental *news article* sentiment with rigorous head-to-head numbers.** ClimateBERT's 0.838 weighted F1 is on **paragraphs from corporate disclosures**, not news. The Bucur et al. (Frontiers, 2024) "Sentiment analysis of global news on environmental issues" used VADER alone and reported no F1/accuracy. Wang et al. 2024 is the closest filling — a 9,382-article transboundary-rivers news set, full articles, 5-class — and is the most defensible 2024 number to cite.
+2. **A controversial third-party claim** (KevSun model card on HuggingFace) reports climatebert/distilroberta-base-climate-sentiment as scoring "10–30% accuracy, F1 ~15%" on the climatebert/climate_sentiment test set. This contradicts Webersinke et al.'s 0.838 weighted F1 and is almost certainly an artifact of evaluating the **paragraph**-trained model on **sentence**-length inputs. The model card itself warns: *"This model is trained on paragraphs. It may not perform well on sentences."* Cite the Webersinke et al. number, not the KevSun claim.
+3. **Lexicon time-series direction depends on lexicon choice.** Different lexicons can produce sentiment series that move in opposite directions on the same corpus. Always run ≥2 and report agreement.
+4. **LLM "accuracy" is not stable across releases.** GPT-4-Turbo scored *worse* than GPT-4 on the Nosible benchmark (66% vs. 74%); model versions matter and you should pin the model and date.
+5. **Inter-annotator agreement on news sentiment is usually only "moderate."** Cohen's κ ≈ 0.4–0.6 is typical. Reporting model accuracy without κ vs. humans on a hand-coded sample overstates confidence.
+6. **Long-document truncation is silently dropping content.** Most off-the-shelf transformers cap at 512 tokens (~400 words); average news articles are 600–1000 words. Use chunked aggregation or long-context models (Longformer, ModernBERT) and document the choice.
+7. **Carbon footprint of fine-tuning is non-trivial for environmental research.** ClimateBERT itself reports 94.75 kg CO2 from training. If your study is *about* environmental impact, prefer using existing fine-tuned models over training new ones.
+8. **GDELT's "tone" is convenient but opaque.** It uses a proprietary blend of lexicons (Harvard IV, WordNet Affect, etc.) on the article text and is not well-suited to fine-grained aspect or framing analysis. Use it as a high-level sanity check, not as ground truth.
+9. **Sarcasm risk is large but quantification is limited.** The "as much as a 50% drop in accuracy" upper bound from Sykora et al. (2020) is itself described in that paper as "tentative evidence"; the true effect on a typical environmental-news corpus is unknown but is most concentrated in op-ed and column content rather than straight reporting.

@@ -1,0 +1,1947 @@
+---
+title: "Sentiment Analysis of Environmental News"
+author: "Marc Los Huertos"
+date: "EA030 · Compiled `r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    self_contained: true
+    theme: null
+    highlight: null
+    toc: false
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(
+      inputFile,
+      encoding = encoding,
+      output_file = file.path(dirname(inputFile),
+                              "../docs/Activities/A29_Sentiment_Analysis.html")
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo    = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width  = 7,
+  fig.height = 4.5,
+  comment = "#>"
+)
+
+# ── Resolve namespace conflicts before loading packages ────────────────────
+library(conflicted)
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::lag)
+conflicts_prefer(dplyr::select)
+conflicts_prefer(sentimentr::get_sentences)
+
+# ── Core packages ──────────────────────────────────────────────────────────
+library(tidyverse)
+library(quanteda)
+library(quanteda.textplots)
+library(quanteda.textstats)
+library(tidytext)
+library(sentimentr)
+library(syuzhet)
+library(knitr)
+library(kableExtra)
+library(lubridate)
+library(scales)
+library(patchwork)
+library(httr2)
+library(xml2)
+library(zoo)
+```
+
+```{css, echo=FALSE}
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:    #1e3a2f;
+  --moss:      #2d5a3d;
+  --fern:      #4a7c5e;
+  --sage:      #8aad96;
+  --mist:      #d4e6da;
+  --cream:     #f7f3ed;
+  --parchment: #ede8df;
+  --ink:       #1a1a18;
+  --charcoal:  #3a3a38;
+  --dust:      #7a7a72;
+  --amber:     #c8832a;
+  --amber-lt:  #e8a84a;
+  --white:     #ffffff;
+  --red-dark:  #7a1e1e;
+  --card-shadow: 0 2px 10px rgba(30,58,47,.09);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  padding-left:  clamp(14px, 4vw, 48px);
+  padding-right: clamp(14px, 4vw, 48px);
+  padding-bottom: 80px;
+}
+
+.main-container {
+  max-width: 920px !important;
+  margin: 0 auto !important;
+  padding: 0 clamp(10px, 2vw, 32px) 80px !important;
+}
+
+.page-header {
+  margin-left:  calc(-1 * clamp(14px, 4vw, 48px));
+  margin-right: calc(-1 * clamp(14px, 4vw, 48px));
+}
+
+h1.title, h4.author, h4.date { display: none; }
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.page-header {
+  background-image:
+    repeating-linear-gradient(120deg, transparent, transparent 60px, rgba(255,255,255,.018) 60px, rgba(255,255,255,.018) 61px),
+    linear-gradient(160deg, #1e3a2f 0%, #2d5a3d 60%, #1a3d30 100%);
+  color: #fff; padding: 44px 4vw 36px; margin: 0 -4vw 48px;
+  border-bottom: 4px solid var(--amber); position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(138,173,150,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.page-header .module-tag {
+  display: inline-block; font-family: 'Source Code Pro', monospace;
+  font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber-lt); border: 1px solid rgba(200,131,42,.45);
+  padding: 3px 10px; border-radius: 2px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.page-header h1 span { color: var(--sage); }
+.page-header .sub { font-size: .9rem; color: rgba(255,255,255,.65); font-weight: 300; }
+.page-header .sub strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.back-link {
+  display: inline-block; margin-top: 16px;
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); text-decoration: none;
+  border: 1px solid rgba(200,131,42,.4); padding: 4px 11px; border-radius: 3px;
+  transition: background .2s;
+}
+.back-link:hover { background: rgba(200,131,42,.18); }
+.header-links {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px;
+}
+.pdf-btn {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; letter-spacing: .08em;
+  color: var(--amber-lt); background: transparent; border: 1px solid rgba(200,131,42,.4);
+  padding: 4px 11px; border-radius: 3px; cursor: pointer; transition: background .2s;
+}
+.pdf-btn:hover { background: rgba(200,131,42,.18); }
+
+/* ── Section nav ─────────────────────────────────────────────────────────── */
+.section-nav {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--parchment);
+}
+.section-nav a {
+  font-family: 'Source Code Pro', monospace; font-size: .7rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fern); text-decoration: none;
+  border: 1px solid var(--mist); padding: 4px 12px; border-radius: 3px;
+  background: var(--white); transition: background .2s, color .2s;
+}
+.section-nav a:hover { background: var(--mist); color: var(--forest); }
+
+/* ── Headings ────────────────────────────────────────────────────────────── */
+h2 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.45rem; font-weight: 700;
+  color: var(--forest); margin-top: 56px; margin-bottom: 6px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--parchment);
+}
+h3 {
+  font-family: 'Libre Baskerville', serif; font-size: 1.1rem; font-weight: 700;
+  color: var(--moss); margin-top: 28px; margin-bottom: 4px;
+}
+h4 {
+  font-family: 'Lato', sans-serif; font-size: 1rem; font-weight: 700;
+  color: var(--charcoal); margin-top: 20px; margin-bottom: 4px;
+}
+
+p { margin-bottom: 1em; }
+strong { color: var(--forest); }
+
+/* ── Code ────────────────────────────────────────────────────────────────── */
+code {
+  font-family: 'Source Code Pro', monospace; font-size: .84em;
+  background: var(--mist); color: var(--moss); padding: 1px 5px; border-radius: 3px;
+}
+pre {
+  background: var(--ink); color: #e8e6df; border-radius: 5px;
+  padding: 14px 18px; font-size: .83rem; line-height: 1.55;
+  overflow-x: auto; border-left: 4px solid var(--amber); margin: 1.2em 0;
+}
+pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
+
+/* ── Callouts ────────────────────────────────────────────────────────────── */
+.callout {
+  border-left: 5px solid; padding: .65em 1.1em;
+  margin: 1.4em 0; border-radius: 0 5px 5px 0; font-size: .92em; line-height: 1.6;
+}
+.callout > strong:first-child { display: block; margin-bottom: .3em; }
+.callout-concept { border-color: var(--fern);  background: #f0f7f2; }
+.callout-tip     { border-color: #2e7d32;      background: #f1f8f1; }
+.callout-warn    { border-color: #e65100;      background: #fff8f4; }
+.callout-myth    { border-color: var(--red-dark); background: #fdf2f2; }
+.callout-formula { border-color: var(--amber); background: #fdf8f0;
+                   font-family: 'Source Code Pro', monospace; font-size: .88em; }
+.callout-try     { border-color: var(--amber); background: #fffaf0; }
+
+/* ── Learning outcomes ───────────────────────────────────────────────────── */
+.outcomes-box {
+  background: var(--forest); color: rgba(255,255,255,.88); border-radius: 6px;
+  padding: 20px 24px; margin: 0 0 2.2em; font-size: .9rem;
+}
+.outcomes-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.outcomes-box ol { padding-left: 1.4em; }
+.outcomes-box li { margin-bottom: .35em; }
+.outcomes-box strong { color: #fff; }
+.outcomes-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+/* ── Key concept summary boxes ───────────────────────────────────────────── */
+.key-box {
+  background: var(--forest); color: #fff; border-radius: 6px;
+  padding: 20px 24px; margin: 2em 0; font-size: .9rem;
+}
+.key-box h4 {
+  font-family: 'Libre Baskerville', serif; color: var(--sage);
+  font-size: 1rem; margin-bottom: 10px;
+}
+.key-box ul { padding-left: 1.3em; }
+.key-box li { margin-bottom: 5px; color: rgba(255,255,255,.85); }
+.key-box li strong { color: #fff; }
+.key-box code { background: rgba(255,255,255,.12); color: var(--amber-lt); }
+
+/* ── Comparison / method table ───────────────────────────────────────────── */
+table { font-size: .9rem; border-collapse: collapse; width: 100%; margin: 1.2em 0; }
+thead th {
+  background: var(--forest); color: #fff;
+  font-family: 'Source Code Pro', monospace; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--mist); }
+tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); }
+
+/* ── Pipeline graphic ────────────────────────────────────────────────────── */
+.pipeline-row {
+  display: flex; gap: 10px; flex-wrap: wrap; margin: 1.6em 0;
+  align-items: stretch;
+}
+.pipeline-step {
+  flex: 1; min-width: 130px; padding: 14px 16px; border-radius: 6px;
+  box-shadow: var(--card-shadow); font-size: .85rem; text-align: center;
+  position: relative;
+}
+.pipeline-step .step-num {
+  font-family: 'Source Code Pro', monospace; font-size: .66rem;
+  font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.pipeline-step .step-label {
+  font-family: 'Libre Baskerville', serif; font-size: .9rem;
+  font-weight: 700; line-height: 1.3;
+}
+.ps-ingest  { background: var(--parchment); }
+.ps-ingest .step-num  { color: var(--dust); }
+.ps-ingest .step-label { color: var(--charcoal); }
+.ps-lexicon { background: #f0f7f2; }
+.ps-lexicon .step-num  { color: var(--fern); }
+.ps-lexicon .step-label { color: var(--forest); }
+.ps-transform { background: var(--forest); }
+.ps-transform .step-num  { color: var(--sage); }
+.ps-transform .step-label { color: #fff; }
+.ps-validate { background: #fdf8f0; }
+.ps-validate .step-num  { color: var(--amber); }
+.ps-validate .step-label { color: var(--charcoal); }
+.ps-timeseries { background: var(--ink); }
+.ps-timeseries .step-num  { color: var(--amber-lt); }
+.ps-timeseries .step-label { color: #fff; }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.page-footer {
+  background: var(--ink); color: rgba(255,255,255,.42); text-align: center;
+  padding: 24px 4vw; margin: 60px -4vw 0;
+  font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .04em;
+}
+.page-footer a { color: var(--sage); text-decoration: none; }
+.page-footer .divider { margin: 0 8px; opacity: .3; }
+```
+
+<div class="page-header">
+<div class="module-tag">EA030 &mdash; Activity A29</div>
+<h1>Sentiment Analysis of <span>Environmental News</span></h1>
+<p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College &nbsp;&bull;&nbsp; EA030 Environmental Analysis</p>
+<div class="header-links">
+<a class="back-link" href="../activities_index.html">&#8592; Back to Activities</a>
+<button class="pdf-btn" onclick="window.print()">&#8595; Save as PDF</button>
+</div>
+</div>
+
+<div class="section-nav">
+<a href="#why">Why Sentiment?</a>
+<a href="#methods">Methods Landscape</a>
+<a href="#corpus">Building a Corpus</a>
+<a href="#lexicon">Lexicon Scoring</a>
+<a href="#aspect">Aspect-Based</a>
+<a href="#transformers">Transformers</a>
+<a href="#timeseries">Time Series</a>
+<a href="#validation">Validation</a>
+<a href="#pipeline">Full Pipeline</a>
+<a href="#energy">Energy News Example</a>
+<a href="#extensions">Extensions</a>
+</div>
+
+<div class="outcomes-box">
+<h4>&#127919; Learning Outcomes</h4>
+<ol>
+<li>Explain what sentiment analysis measures and why it matters for environmental research.</li>
+<li>Build a text corpus from news articles using <code>quanteda</code> and <code>readtext</code>.</li>
+<li>Apply dictionary-based sentiment scoring with LSD2015, AFINN, and NRC lexicons.</li>
+<li>Handle valence shifters (negation, amplifiers) with <code>sentimentr</code>.</li>
+<li>Perform aspect-based sentiment analysis toward specific entities or topics.</li>
+<li>Call pre-trained transformer models (ClimateBERT) from R using the <code>text</code> package.</li>
+<li>Aggregate document-level sentiment into time-series indices with <code>sentometrics</code>.</li>
+<li>Validate sentiment models against hand-coded labels using Cohen's kappa and macro-F1.</li>
+<li>Recognize the limitations of each approach and choose the right tool for a given research question.</li>
+<li>Compare three lexicon approaches head-to-head and evaluate which best correlates with an external variable (energy commodity prices).</li>
+</ol>
+</div>
+
+> **What this module covers.** How do news outlets portray environmental issues 
+> over time? Is coverage of climate policy becoming more or less alarmist? Do 
+> articles about renewable energy carry a different tone than articles about 
+> fossil fuels? These are **sentiment analysis** questions, and answering them 
+> requires converting unstructured text into structured quantitative measures of 
+> tone, emotion, or polarity. This tutorial walks the complete R workflow, from 
+> raw text through validated time-series indices, using methods appropriate for 
+> environmental and climate-related news.
+
+<hr>
+
+## 1. Why Sentiment Analysis for Environmental News? {#why}
+
+Environmental scientists increasingly study not just physical systems but the 
+**human dimensions** of environmental change: public perception, media framing, 
+policy discourse, and stakeholder attitudes. News coverage shapes public opinion 
+and policy priorities, so measuring its tone systematically is a legitimate 
+research question.
+
+Sentiment analysis converts text into numbers that represent **polarity** 
+(positive/negative/neutral), **emotion** (anger, fear, joy, trust), or 
+**stance** (opportunity vs. risk). Applied to a corpus of news articles, it 
+lets you ask quantitative questions about qualitative data.
+
+### Three motivating questions
+
+These examples illustrate the kinds of research questions sentiment analysis 
+can address in environmental science:
+
+**1. Tone over time.** Has US newspaper coverage of wildfire become more 
+negative over the past two decades? If so, does the shift correlate with 
+increases in burned acreage, or does media framing lead or lag the physical 
+trend?
+
+**2. Entity-level framing.** Within a single article about the Inflation 
+Reduction Act, is the tone toward the EPA positive while the tone toward the 
+fossil-fuel industry is negative? A single "article-level" sentiment score 
+would miss this entirely.
+
+**3. Cross-outlet comparison.** Do articles from a regional paper in a 
+coal-dependent community frame energy transition differently than articles 
+from a national outlet? Comparing sentiment distributions across sources 
+reveals structural differences in coverage.
+
+<div class="callout callout-concept">
+<strong>&#128161; Sentiment is a noisy signal, not ground truth</strong>
+A sentiment score is a simplified, often imperfect measure of a complex 
+property. News articles are written in a deliberately neutral register. 
+Reporters attribute opinions to sources ("Critics called it a failure") 
+without endorsing them. Lexicon-based methods cannot distinguish the 
+reporter's voice from a quoted critic's voice. Keep this in mind throughout 
+the tutorial: every sentiment number you produce is a proxy, and the quality 
+of that proxy must be validated.
+</div>
+
+### What sentiment analysis is not
+
+Sentiment analysis does **not** tell you what a reader thinks, feels, or 
+believes. It tells you something about the language in the text itself, 
+as measured by a particular dictionary or model. Conflating text-level 
+polarity with audience reception is a common analytical error.
+
+It also does not handle **framing** well. Two articles can have identical 
+sentiment scores while framing the same issue in completely different ways 
+(economic growth vs. ecological collapse). Frame analysis requires different 
+tools, though sentiment can serve as one input.
+
+<hr>
+
+## 2. The Methods Landscape {#methods}
+
+Sentiment analysis methods fall into three broad families. Each trades off 
+transparency, accuracy, and computational cost differently.
+
+```{r methods-table, echo=FALSE}
+methods_df <- data.frame(
+  Family = c("Dictionary / Lexicon", "Traditional ML", "Transformers & LLMs"),
+  Approach = c(
+    "Score words against a pre-built list of polarity values. Sum or average.",
+    "Train a classifier (logistic regression, SVM, random forest) on TF-IDF features with labeled data.",
+    "Fine-tune a pre-trained language model (BERT, RoBERTa, ClimateBERT) on labeled examples."
+  ),
+  Accuracy = c(
+    "Low to moderate (27-65% on multi-class news)",
+    "Moderate (58-71% on multi-class news)",
+    "High (73-84% on multi-class news)"
+  ),
+  GPU = c("No", "No", "Recommended"),
+  Labels = c("None required", "1,000-10,000", "500-5,000"),
+  R_Package = c(
+    "quanteda, tidytext, sentimentr, sentometrics",
+    "tidymodels, caret, text2vec",
+    "text (HuggingFace bridge)"
+  )
+)
+
+kable(methods_df, col.names = c("Family", "Approach", "Typical Accuracy", 
+                                 "GPU?", "Labeled Data", "R Packages"),
+      caption = "Three families of sentiment analysis methods, compared on attributes relevant to environmental news projects.") %>%
+  kable_styling(full_width = TRUE, font_size = 14) %>%
+  column_spec(1, bold = TRUE, width = "12em")
+```
+
+The accuracy numbers in the table come from a 2024 study (Wang et al., 
+*Soft Computing*) that compared all three families on 9,382 news articles 
+about transboundary rivers, scored on a 5-class scale. AFINN scored 27.4% 
+accuracy, the best traditional ML models clustered around 66-71%, and 
+BERT reached 72.7%. On a simpler 3-class task, domain-adapted transformers 
+like ClimateBERT report weighted F1 scores around 0.84.
+
+<div class="callout callout-warn">
+<strong>&#9888;&#65039; No public benchmark exists for environmental news specifically</strong>
+ClimateBERT's 0.84 F1 was measured on paragraphs from corporate climate 
+disclosures, not news articles. The Wang et al. numbers are the closest 
+rigorous head-to-head on actual news. When you report results from your 
+own analysis, be explicit about what corpus and what labels your accuracy 
+is measured against.
+</div>
+
+### When to use which method
+
+The decision depends on your sample size, research question, and 
+computational resources:
+
+| If... | Use this |
+|---|---|
+| Corpus < 1,000 articles, exploratory | `tidytext` + AFINN / Bing / NRC |
+| Need defensible news-specific baseline | `quanteda` + LSD2015 + `sentimentr` |
+| Need time-series indices for regression | `sentometrics` |
+| Need entity-level sentiment, no GPU | `quanteda` targeted dictionary with +/- 10-word window |
+| Need accuracy > ~0.70 macro-F1 | `text` package calling ClimateBERT or cardiffnlp RoBERTa |
+| Ambiguous edge cases, sarcasm | LLM (Claude, GPT-4o) zero-shot or few-shot via API |
+
+<div class="pipeline-row">
+<div class="pipeline-step ps-ingest">
+<div class="step-num">Stage 0</div>
+<div class="step-label">Corpus Assembly</div>
+</div>
+<div class="pipeline-step ps-lexicon">
+<div class="step-num">Stage 1</div>
+<div class="step-label">Lexicon Baseline</div>
+</div>
+<div class="pipeline-step ps-transform">
+<div class="step-num">Stage 2</div>
+<div class="step-label">Transformer Layer</div>
+</div>
+<div class="pipeline-step ps-validate">
+<div class="step-num">Stage 3</div>
+<div class="step-label">Validation</div>
+</div>
+<div class="pipeline-step ps-timeseries">
+<div class="step-num">Stage 4</div>
+<div class="step-label">Time Series</div>
+</div>
+</div>
+
+This tutorial follows the pipeline above. We start with the simplest methods 
+(lexicons) and add complexity only when needed.
+
+<hr>
+
+## 3. Building a Corpus {#corpus}
+
+Before scoring sentiment, you need a structured collection of texts with 
+metadata. In `quanteda`, this is called a **corpus**.
+
+### Simulated environmental news corpus
+
+For this tutorial, we create a small simulated corpus of environmental news 
+headlines and lead paragraphs. In a real project, you would import text from 
+files, a database, or an API.
+
+```{r corpus-create}
+# ── Simulated environmental news articles ──────────────────────────────
+articles <- tibble(
+  doc_id = paste0("art_", sprintf("%03d", 1:20)),
+  source = rep(c("National Tribune", "Valley Gazette",
+                 "Coastal Herald", "Mountain Post"), each = 5),
+  date   = seq(as.Date("2024-01-15"), by = "month", length.out = 20),
+  topic  = rep(c("wildfire", "water", "energy", "biodiversity", "climate"),
+               times = 4),
+  text   = c(
+    # National Tribune
+    "Devastating wildfire season scorches 2.3 million acres across the West, forcing thousands of evacuations and overwhelming firefighting resources.",
+    "New EPA water quality standards will impose stricter limits on agricultural runoff, drawing praise from conservation groups and criticism from farm lobbies.",
+    "Solar installations surged 42% in 2023, marking a record year for clean energy deployment and creating thousands of new jobs in underserved communities.",
+    "Alarming decline in migratory bird populations raises concerns about habitat loss and pesticide exposure across major flyways.",
+    "Global temperatures shattered records for the twelfth consecutive month, intensifying calls for accelerated emissions reductions at the upcoming climate summit.",
+    # Valley Gazette
+    "Local ranchers struggle to balance wildfire risk with grazing traditions as prescribed burn programs expand into private lands.",
+    "Community groups celebrate the restoration of riparian habitat along Bear Creek after years of advocacy and volunteer effort.",
+    "The proposed wind farm faces opposition from residents concerned about noise, visual impact, and declining property values in the rural township.",
+    "Native plant restoration project transforms abandoned lot into thriving pollinator garden, attracting dozens of butterfly species.",
+    "Farmers report shorter growing seasons and unpredictable frost dates, attributing the changes to shifting climate patterns.",
+    # Coastal Herald
+    "After years of devastating fire seasons, a coalition of agencies unveils a bold new strategy for community wildfire preparedness and resilient landscapes.",
+    "Toxic algal bloom shuts down water intake for coastal city, exposing vulnerabilities in aging infrastructure and nutrient management.",
+    "Offshore wind project receives final permits after environmental review finds minimal impact on marine mammals and seabirds.",
+    "Kelp forest recovery surprises scientists as urchin removal program shows rapid regrowth of canopy and return of marine biodiversity.",
+    "Sea level projections released today paint a stark picture for low-lying neighborhoods, with managed retreat now part of the planning conversation.",
+    # Mountain Post
+    "Controlled burns reduce fuel loads but spark air quality warnings in mountain communities already burdened by summer smoke.",
+    "Drought emergency declared as reservoir levels drop below 30% capacity, triggering mandatory conservation measures for the first time in a decade.",
+    "Utility announces early retirement of its last coal plant, pledging to replace capacity with battery storage and community solar.",
+    "Endangered species listing for mountain caribou prompts heated debate between conservation advocates and logging industry representatives.",
+    "Glaciers in the range have lost 40% of their volume since 1980, according to a university survey released this week."
+  )
+)
+
+# Build a quanteda corpus with document-level variables
+corp <- corpus(articles, text_field = "text",
+               docid_field = "doc_id")
+```
+
+```{r corpus-inspect}
+# Quick look at the corpus
+summary(corp, n = 5)
+```
+
+<div class="callout callout-concept">
+<strong>&#128161; Document variables carry your metadata through the pipeline</strong>
+The <code>source</code>, <code>date</code>, and <code>topic</code> columns you 
+include at corpus creation travel with every token, dfm, and sentiment score 
+downstream. This is what allows you to compare sentiment by newspaper, plot it 
+over time, or break it out by topic later. Always attach metadata at the corpus 
+stage, not after scoring.
+</div>
+
+### Tokenization and document-feature matrix
+
+Most `quanteda` operations require tokenizing the corpus (splitting text into 
+words) and converting it to a **document-feature matrix** (dfm), where rows 
+are documents and columns are unique word types.
+
+```{r tokenize}
+# Tokenize: lowercase, remove punctuation and stopwords
+toks <- tokens(corp,
+               remove_punct  = TRUE,
+               remove_numbers = TRUE) %>%
+  tokens_tolower() %>%
+  tokens_remove(stopwords("en"))
+
+# Document-feature matrix
+dfm_articles <- dfm(toks)
+dfm_articles
+```
+
+```{r wordcloud, fig.cap="Word cloud of the simulated corpus. Larger words appear more frequently across all 20 articles. Environmental terms (wildfire, water, community, climate) dominate.", fig.height=5}
+set.seed(42)
+textplot_wordcloud(dfm_articles, max_words = 80,
+                   color = c("#1e3a2f", "#4a7c5e", "#8aad96", 
+                             "#c8832a", "#7a3a2f"))
+```
+
+<hr>
+
+## 4. Dictionary-Based Sentiment Scoring {#lexicon}
+
+The simplest approach to sentiment analysis is to look up each word in a 
+**sentiment dictionary** (also called a lexicon) that assigns a polarity or 
+emotion score to known words. The document's sentiment is the sum or average 
+of its word scores.
+
+### Available dictionaries in R
+
+Several dictionaries are available through different R packages. Each was 
+built for a different purpose.
+
+```{r lexicon-table, echo=FALSE}
+lex_df <- data.frame(
+  Dictionary = c("LSD2015", "AFINN", "Bing", "NRC", "Loughran-McDonald", "VADER"),
+  Words = c("4,567 + negation patterns", "2,477", "6,786", "~14,000", "~4,200", "~7,500"),
+  Scale = c("Positive / negative", "-5 to +5", "Binary +/-", "8 emotions + +/-", "6 categories", "Compound [-1, +1]"),
+  `Best For` = c("News and political text", "Quick exploratory scoring", "Simple positive/negative counts", "Emotion decomposition", "Financial / regulatory text", "Social media and headlines"),
+  Package = c("quanteda (built-in)", "tidytext", "tidytext", "tidytext, lexicon", "lexicon, quanteda.sentiment", "sentimentr (VADER-like)")
+)
+
+kable(lex_df, col.names = c("Dictionary", "Vocabulary", "Scale", "Best For", "R Package"),
+      caption = "Major sentiment dictionaries available in R.") %>%
+  kable_styling(full_width = TRUE, font_size = 14) %>%
+  column_spec(1, bold = TRUE)
+```
+
+<div class="callout callout-warn">
+<strong>&#9888;&#65039; Different lexicons can give opposite answers</strong>
+A tutorial analysis applying four standard lexicons (AFINN, Bing, Jockers, NRC) 
+to the same 4,508 sentences found Fleiss' kappa of only 0.22 across the four 
+methods. That is barely above chance agreement. Always run at least two 
+lexicons and compare results. If they disagree, that tells you something 
+important about the robustness of your findings.
+</div>
+
+### Scoring with LSD2015 (recommended for news)
+
+The **Lexicoder Sentiment Dictionary** (LSD2015) was designed specifically for 
+political and news text. It includes negation-aware word patterns 
+(e.g., "not good" is captured as negative). It is built into `quanteda` as 
+`data_dictionary_LSD2015`.
+
+```{r lsd-score}
+# Apply LSD2015 dictionary to the dfm
+dfm_sent <- dfm_lookup(dfm_articles,
+                        dictionary = data_dictionary_LSD2015)
+
+# Convert to a tidy data frame
+lsd_scores <- convert(dfm_sent, to = "data.frame") %>%
+  rename(doc_id = doc_id) %>%
+  mutate(
+    net_sentiment = positive - negative,
+    total_words   = ntoken(corp),
+    sent_ratio    = net_sentiment / total_words
+  ) %>%
+  bind_cols(docvars(corp))
+
+head(lsd_scores)
+```
+
+```{r lsd-plot, fig.cap="Net LSD2015 sentiment (positive minus negative word counts) by news source. Each point is one article; the dashed line at zero separates net-positive from net-negative.", fig.height=4.5}
+ggplot(lsd_scores, aes(x = source, y = net_sentiment, fill = source)) +
+  geom_boxplot(width = 0.45, outlier.shape = NA,
+               colour = "#1e3a2f", alpha = 0.75, linewidth = 0.6) +
+  geom_jitter(aes(colour = source), width = 0.15,
+              size = 2, alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "#7a7a72") +
+  scale_fill_manual(values = c(
+    "Coastal Herald"     = "#4a7c5e",
+    "Mountain Post"      = "#7a3a2f",
+    "National Tribune"   = "#1e3a2f",
+    "Valley Gazette"     = "#c8832a"
+  )) +
+  scale_colour_manual(values = c(
+    "Coastal Herald"     = "#4a7c5e",
+    "Mountain Post"      = "#7a3a2f",
+    "National Tribune"   = "#1e3a2f",
+    "Valley Gazette"     = "#c8832a"
+  )) +
+  labs(x = NULL, y = "Net sentiment (positive - negative words)",
+       title = "LSD2015 Sentiment by News Source") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title         = element_text(family = "serif", face = "bold",
+                                      colour = "#1e3a2f"),
+    legend.position    = "none",
+    panel.grid.major.x = element_blank()
+  )
+```
+
+### Scoring with tidytext and multiple lexicons
+
+The `tidytext` package provides access to AFINN, Bing, and NRC lexicons through 
+a tidy one-word-per-row workflow. Running multiple lexicons in parallel is the 
+best way to check whether your findings are robust to dictionary choice.
+
+```{r tidytext-score}
+# Tidy tokenization
+tidy_articles <- articles %>%
+  unnest_tokens(word, text)
+
+# Score with AFINN
+afinn_scores <- tidy_articles %>%
+  inner_join(get_sentiments("afinn"), by = "word") %>%
+  group_by(doc_id, source, date, topic) %>%
+  summarize(
+    afinn_mean = mean(value),
+    afinn_sum  = sum(value),
+    n_scored   = n(),
+    .groups = "drop"
+  )
+
+# Score with Bing
+bing_scores <- tidy_articles %>%
+  inner_join(get_sentiments("bing"), by = "word") %>%
+  count(doc_id, source, date, topic, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>%
+  mutate(bing_net = positive - negative)
+
+# Score with NRC (emotion categories)
+nrc_emotions <- tidy_articles %>%
+  inner_join(get_sentiments("nrc"), by = "word") %>%
+  count(doc_id, source, topic, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0)
+```
+
+```{r nrc-plot, fig.cap="NRC emotion profile aggregated by topic across all articles. Each bar represents the total word count matching that emotion category. Fear and negative words dominate wildfire and climate articles; trust and positive words are more common in energy and biodiversity articles.", fig.height=5}
+nrc_topic <- tidy_articles %>%
+  inner_join(get_sentiments("nrc"), by = "word") %>%
+  filter(!sentiment %in% c("positive", "negative")) %>%
+  count(topic, sentiment)
+
+ggplot(nrc_topic, aes(x = reorder(sentiment, n), y = n, fill = topic)) +
+  geom_col(position = "dodge", alpha = 0.85) +
+  coord_flip() +
+  scale_fill_manual(values = c(
+    "biodiversity" = "#4a7c5e",
+    "climate"      = "#7a3a2f",
+    "energy"       = "#c8832a",
+    "water"        = "#2d5a3d",
+    "wildfire"     = "#8b3a2a"
+  )) +
+  labs(x = NULL, y = "Word count",
+       title = "NRC Emotion Profiles by Topic",
+       fill = "Topic") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(family = "serif", face = "bold",
+                               colour = "#1e3a2f"),
+    legend.position = "bottom"
+  )
+```
+
+### Handling valence shifters with sentimentr
+
+A critical weakness of bag-of-words lexicons is that they score "not good" as 
+positive (the word "good" matches the dictionary). The `sentimentr` package 
+handles **valence shifters** -- negators ("not"), amplifiers ("very"), 
+de-amplifiers ("somewhat"), and adversative conjunctions ("but") -- at the 
+sentence level.
+
+```{r sentimentr-score}
+# sentimentr works on raw text, not tokenized input
+sr_scores <- sentiment_by(articles$text, by = articles$doc_id)
+
+# Merge back with metadata
+sr_df <- articles %>%
+  left_join(sr_scores, by = c("doc_id" = "doc_id"))
+
+head(sr_df %>% select(doc_id, source, topic, ave_sentiment))
+```
+
+```{r sentimentr-detail, fig.cap="Sentence-level sentiment from sentimentr for two example articles, one about wildfire (article 1) and one about solar energy (article 3). The valence-shifted scoring correctly identifies the overall negative tone of wildfire coverage and positive tone of the solar story.", fig.height=4}
+# Sentence-level detail for two articles
+detail <- sentiment(articles$text[c(1, 3)])
+detail$article <- rep(c("art_001 (Wildfire)", "art_003 (Solar)"),
+                      times = c(sum(detail$element_id == 1),
+                                sum(detail$element_id == 2)))
+
+ggplot(detail, aes(x = sentence_id, y = sentiment, fill = sentiment > 0)) +
+  geom_col(alpha = 0.8, show.legend = FALSE) +
+  facet_wrap(~ article, scales = "free_x") +
+  scale_fill_manual(values = c("TRUE" = "#4a7c5e", "FALSE" = "#7a3a2f")) +
+  labs(x = "Sentence", y = "Sentiment score",
+       title = "Sentence-Level Sentiment (sentimentr)") +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(family = "serif", face = "bold",
+                               colour = "#1e3a2f"),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+<div class="callout callout-try">
+<strong>&#128221; Try it: compare three lexicons</strong>
+Pick one article from the corpus (e.g., article 6 about ranchers and 
+prescribed burns). Score it with LSD2015, AFINN, and <code>sentimentr</code>. 
+Do all three methods agree on the direction (positive or negative)? What 
+about the magnitude? If they disagree, examine which words each method 
+matches and identify the source of divergence. This exercise builds 
+intuition for why multi-lexicon comparison matters.
+</div>
+
+<hr>
+
+## 5. Aspect-Based Sentiment Analysis {#aspect}
+
+A single article often discusses multiple entities, policies, or topics. 
+Scoring the entire document with one number collapses this structure. 
+**Aspect-based sentiment analysis (ABSA)** decomposes the text into 
+(aspect, sentiment) pairs.
+
+### Targeted dictionary lookup in quanteda
+
+The simplest ABSA approach uses `quanteda`'s windowed token selection. 
+You define your target entity, extract a window of +/- 10 tokens around 
+every mention of that entity, and then apply a sentiment dictionary only 
+to the text within that window.
+
+```{r absa-quanteda}
+# Define target entities
+targets <- list(
+  wildfire  = c("wildfire", "fire", "burn", "blaze"),
+  renewable = c("solar", "wind", "clean energy", "renewable"),
+  water     = c("water", "reservoir", "drought", "runoff")
+)
+
+# Function: extract sentiment around a target
+target_sentiment <- function(toks, target_words, window = 10) {
+  # Select tokens within +/- window of target
+  toks_target <- tokens_keep(toks, pattern = target_words,
+                              window = window, padding = FALSE)
+  
+  # Apply LSD2015
+  dfm_target <- dfm(toks_target) %>%
+    dfm_lookup(dictionary = data_dictionary_LSD2015)
+  
+  result <- convert(dfm_target, to = "data.frame") %>%
+    mutate(
+      net = positive - negative,
+      target = paste(target_words, collapse = "/")
+    )
+  
+  result
+}
+
+# Score each target
+absa_results <- map_dfr(targets, ~ target_sentiment(toks, .x)) %>%
+  bind_cols(
+    docvars(corp) %>% slice(rep(1:n(), times = length(targets)))
+  )
+```
+
+```{r absa-summary}
+# Summarize by target
+absa_summary <- absa_results %>%
+  group_by(target) %>%
+  summarize(
+    mean_net   = mean(net, na.rm = TRUE),
+    median_net = median(net, na.rm = TRUE),
+    sd_net     = sd(net, na.rm = TRUE),
+    n_docs     = n(),
+    .groups = "drop"
+  )
+
+kable(absa_summary, digits = 2,
+      col.names = c("Target Entity", "Mean Net", "Median Net", "SD", "N"),
+      caption = "Aspect-level sentiment: average net LSD2015 sentiment in a +/- 10 word window around each target entity.") %>%
+  kable_styling(full_width = FALSE, font_size = 14)
+```
+
+<div class="callout callout-concept">
+<strong>&#128161; Why +/- 10 tokens?</strong>
+The 10-token window is a pragmatic compromise. Smaller windows (5 tokens) 
+risk missing relevant modifiers; larger windows (20+ tokens) bleed into 
+adjacent topics. The <code>quanteda</code> documentation and tutorials 
+use 10 as the default for targeted dictionary lookup on news articles. 
+You can and should test sensitivity to this choice.
+</div>
+
+<hr>
+
+## 6. Transformer Models from R {#transformers}
+
+When dictionary methods are not accurate enough, **transformer models** 
+offer a substantial improvement. These are deep-learning models pre-trained 
+on large text corpora and then fine-tuned for sentiment classification.
+
+### ClimateBERT: a domain-adapted model
+
+**ClimateBERT** is a DistilRoBERTa model further pre-trained on over 2 million 
+climate-related paragraphs from news, research articles, and corporate reports. 
+The sentiment variant (`climatebert/distilroberta-base-climate-sentiment`) 
+classifies text into three categories: **opportunity**, **neutral**, and 
+**risk**. On its benchmark dataset, it reports weighted F1 of approximately 0.84.
+
+### Calling transformers from R with the text package
+
+The `text` package provides an R bridge to HuggingFace models. It requires 
+a one-time Python environment setup (handled by `textrpp_install()`).
+
+```{r text-setup, eval=FALSE}
+# ── One-time setup (run once, not every session) ───────────────────────
+# install.packages("text")
+library(text)
+textrpp_install()        # sets up a conda environment with PyTorch
+textrpp_initialize()     # connects R to the Python backend
+```
+
+```{r text-classify, eval=FALSE}
+# ── Classify articles with ClimateBERT ─────────────────────────────────
+library(text)
+
+# Use the climate-sentiment model
+climate_sent <- textClassify(
+  articles$text,
+  model = "climatebert/distilroberta-base-climate-sentiment",
+  device = "cpu",             # use "cuda" if GPU available
+  return_incorrect_results = FALSE
+)
+
+# Result: a data frame with columns for each class probability
+# and a predicted label
+head(climate_sent)
+```
+
+<div class="callout callout-warn">
+<strong>&#9888;&#65039; Transformers truncate long text</strong>
+Most transformer models have a maximum input length of 512 tokens 
+(roughly 400 words). The average news article is 600 to 1,000 words, 
+so the model silently ignores the second half of many articles. The 
+standard workaround is to split each article into paragraphs, classify 
+each paragraph separately, and then aggregate (e.g., majority vote or 
+mean probability). Always document whether you are scoring full articles 
+or chunks, and how you aggregate.
+</div>
+
+### Other models worth knowing
+
+| Model | Domain | Classes | Notes |
+|---|---|---|---|
+| `cardiffnlp/twitter-roberta-base-sentiment-latest` | General (trained on tweets) | 3: neg/neu/pos | Strong out-of-the-box for English headlines |
+| `ProsusAI/finbert` | Financial news | 3: neg/neu/pos | 97% on Financial PhraseBank (full agreement subset) |
+| `climatebert/distilroberta-base-climate-detector` | Climate | 2: climate/not | Useful as a filter before sentiment scoring |
+| `yangheng/deberta-v3-base-absa-v1.1` | Aspect-based | Variable | State-of-the-art open ABSA model |
+
+### When transformers are not worth the cost
+
+If your hand-coded validation shows that your lexicon approach achieves 
+macro-F1 above 0.65 and human inter-annotator agreement (Cohen's kappa) 
+is below 0.55, adding a transformer layer will not produce meaningful 
+gains. The annotation noise itself becomes the ceiling. Invest the time 
+in better annotation guidelines instead.
+
+<hr>
+
+## 7. Time-Series Aggregation {#timeseries}
+
+Individual document scores are rarely the final product. Most research 
+questions require aggregating sentiment into **time-series indices** that 
+can be plotted, correlated with external variables, or modeled.
+
+### The three aggregation dimensions
+
+Building a sentiment time series involves three sequential choices:
+
+**1. Within-document:** How do you combine sentence-level scores into one 
+document score? Options include the mean, median, proportional weighting 
+(longer sentences count more), or max-absolute (capture peak intensity).
+
+**2. Across-documents per period:** How do you combine document scores 
+within a week or month? Equal weighting treats every article the same. 
+Article-count proportional weighting lets outlets with more articles 
+have more influence. Source-balanced weighting averages within each 
+outlet first, then across outlets.
+
+**3. Across-time smoothing:** Raw weekly scores are noisy. Smoothing 
+options include moving averages, exponential decay, and Beta-weighted 
+curves that emphasize recent observations.
+
+### Building a simple monthly index
+
+```{r monthly-index}
+# Monthly sentiment index from LSD2015 scores
+monthly <- lsd_scores %>%
+  mutate(month = floor_date(date, "month")) %>%
+  group_by(month) %>%
+  summarize(
+    mean_sentiment = mean(sent_ratio, na.rm = TRUE),
+    sd_sentiment   = sd(sent_ratio, na.rm = TRUE),
+    n_articles     = n(),
+    se             = sd_sentiment / sqrt(n_articles),
+    lower          = mean_sentiment - 1.96 * se,
+    upper          = mean_sentiment + 1.96 * se,
+    .groups = "drop"
+  )
+```
+
+```{r monthly-plot, fig.cap="Monthly sentiment index from LSD2015 dictionary scoring. Ribbon shows 95% confidence intervals. With only 20 simulated articles, the intervals are wide; a real project would have hundreds or thousands of articles per month.", fig.height=4.5}
+ggplot(monthly, aes(x = month, y = mean_sentiment)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper),
+              fill = "#8aad96", alpha = 0.3) +
+  geom_line(colour = "#1e3a2f", linewidth = 0.9) +
+  geom_point(colour = "#1e3a2f", size = 2.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "#7a7a72") +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(x = NULL, y = "Mean sentiment ratio",
+       title = "Monthly Environmental News Sentiment Index",
+       subtitle = "LSD2015 dictionary, 95% CI ribbon") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(family = "serif", face = "bold",
+                                 colour = "#1e3a2f"),
+    plot.subtitle = element_text(colour = "#7a7a72", size = 10)
+  )
+```
+
+### The sentometrics package
+
+For a more principled approach, the `sentometrics` package (Ardia et al., 
+*Journal of Statistical Software* 2021) handles all three aggregation 
+dimensions in a single workflow. It also provides elastic-net regression 
+tools for relating sentiment indices to external variables.
+
+```{r sentometrics-example, eval=FALSE}
+# ── sentometrics workflow (conceptual) ─────────────────────────────────
+library(sentometrics)
+
+# 1. Create a sentocorpus (requires 'id', 'date', 'texts' columns,
+#    plus optional feature columns for topic or source)
+sc <- sento_corpus(articles,
+                   corpusdf = TRUE,
+                   do.clean = TRUE)
+
+# 2. Define lexicons
+lexicons <- sento_lexicons(list(
+  LSD2015 = data_dictionary_LSD2015,   # from quanteda
+  AFINN   = get_sentiments("afinn")     # from tidytext
+))
+
+# 3. Define aggregation controls
+ctr <- ctr_agg(
+  howWithin  = "proportional",     # weight by sentence length
+  howDocs    = "equal_weight",     # equal across documents
+  howTime    = "equal_weight",     # equal across time
+  by         = "month",
+  lag        = 6                   # 6-month rolling window
+)
+
+# 4. Compute sentiment measures
+sento_measures <- sento_measures(sc, lexicons, ctr)
+
+# 5. Plot
+plot(sento_measures)
+```
+
+<div class="callout callout-concept">
+<strong>&#128161; Volume matters for uncertainty</strong>
+Environmental news coverage spikes around major events (COP summits, 
+oil spills, IPCC report releases, wildfire seasons) and drops during 
+quiet periods. A monthly index based on 3 articles in January and 
+150 articles in August treats both months equally, even though the 
+January estimate is far more uncertain. Always plot confidence intervals 
+or credible intervals alongside your sentiment time series, and consider 
+inverse-variance weighting so that data-sparse periods do not produce 
+spurious extremes.
+</div>
+
+<hr>
+
+## 8. Validation {#validation}
+
+No sentiment analysis result should be published without validation against 
+human judgment. This section covers the standard validation protocol.
+
+### Step 1: Hand-code a sample
+
+Draw a stratified random sample of 200 to 500 articles (stratified by 
+source, time period, and topic). Have **two independent coders** classify 
+each article on the same scale your model uses (e.g., positive / neutral / 
+negative, or opportunity / neutral / risk).
+
+### Step 2: Measure human agreement
+
+Before comparing the model to humans, measure how well the humans agree 
+with each other. If the coders disagree substantially, the task itself is 
+too subjective for any model to solve reliably.
+
+```{r kappa-example}
+# Simulated coding data: two coders, 50 articles, 3-class scale
+set.seed(123)
+labels <- c("positive", "neutral", "negative")
+coder1 <- sample(labels, 50, replace = TRUE, prob = c(0.25, 0.45, 0.30))
+coder2 <- coder1   # start with agreement, then add noise
+noise_idx <- sample(50, 12)
+coder2[noise_idx] <- sample(labels, 12, replace = TRUE)
+
+# Cohen's kappa
+confusion <- table(Coder1 = coder1, Coder2 = coder2)
+confusion
+```
+
+```{r kappa-calc}
+# Manual Cohen's kappa calculation
+n <- sum(confusion)
+p_o <- sum(diag(confusion)) / n               # observed agreement
+p_e <- sum(rowSums(confusion) * colSums(confusion)) / n^2  # expected by chance
+kappa <- (p_o - p_e) / (1 - p_e)
+
+cat("Observed agreement (p_o):", round(p_o, 3), "\n")
+cat("Expected agreement (p_e):", round(p_e, 3), "\n")
+cat("Cohen's kappa:           ", round(kappa, 3), "\n")
+```
+
+<div class="callout callout-concept">
+<strong>&#128161; Interpreting kappa</strong>
+Kappa values below 0.40 indicate poor agreement, and a model trained on 
+such labels cannot be trusted. Values between 0.40 and 0.60 are 
+"moderate" and typical for news sentiment. Values above 0.60 are 
+"substantial." Achieving kappa above 0.80 on news text is unusual 
+and may signal that the coding scheme is too coarse (e.g., only 2 
+categories). For news sentiment specifically, expect kappa in the 
+0.40 to 0.60 range. If your coders are below 0.40, revise the coding 
+guidelines before proceeding.
+</div>
+
+### Step 3: Compare model to human consensus
+
+After the two coders resolve disagreements (creating a consensus label), 
+compute the same metrics between the model's predictions and the 
+consensus labels.
+
+```{r validation-metrics}
+# Simulated model predictions vs consensus labels
+consensus <- coder1  # in practice, resolved disagreements
+model_pred <- consensus
+# Introduce some model errors
+model_err <- sample(50, 8)
+model_pred[model_err] <- sample(labels, 8, replace = TRUE)
+
+# Confusion matrix
+conf_model <- table(Model = model_pred, Human = consensus)
+
+# Per-class precision, recall, F1
+calc_metrics <- function(conf_mat) {
+  classes <- rownames(conf_mat)
+  metrics <- map_dfr(classes, function(cls) {
+    tp <- conf_mat[cls, cls]
+    fp <- sum(conf_mat[cls, ]) - tp
+    fn <- sum(conf_mat[, cls]) - tp
+    precision <- ifelse(tp + fp > 0, tp / (tp + fp), 0)
+    recall    <- ifelse(tp + fn > 0, tp / (tp + fn), 0)
+    f1        <- ifelse(precision + recall > 0,
+                        2 * precision * recall / (precision + recall), 0)
+    tibble(Class = cls, Precision = precision,
+           Recall = recall, F1 = f1)
+  })
+  metrics
+}
+
+per_class <- calc_metrics(conf_model)
+macro_f1 <- mean(per_class$F1)
+
+kable(per_class, digits = 3,
+      caption = paste0("Per-class metrics (model vs. human consensus). ",
+                       "Macro-F1 = ", round(macro_f1, 3), ".")) %>%
+  kable_styling(full_width = FALSE, font_size = 14)
+```
+
+### What metrics to report
+
+| Metric | When to use | Caveat |
+|---|---|---|
+| Macro-F1 | Primary headline metric | Treats all classes equally |
+| Weighted F1 | When class imbalance is severe | Inflated by majority class |
+| Cohen's kappa (model vs. human) | Always | Chance-corrected agreement |
+| Confusion matrix | Always | Shows where errors concentrate |
+| Accuracy | Only if classes are balanced | Misleading with skewed neutral class |
+
+<hr>
+
+## 9. Putting It Together: A Full Pipeline {#pipeline}
+
+This section assembles the complete workflow from corpus to validated 
+time-series index. In a real project, each step would involve more 
+articles and more iterations. The structure, however, remains the same.
+
+```{r pipeline-summary, echo=FALSE}
+pipeline_df <- data.frame(
+  Stage = c("0. Corpus assembly", "1. Lexicon baseline", "2. Aspect scoring",
+            "3. Transformer layer", "4. Validation", "5. Time-series aggregation",
+            "6. Reporting"),
+  Action = c(
+    "Import articles with readtext or API. Attach source, date, topic metadata to corpus.",
+    "Score with LSD2015 + sentimentr in parallel. Compare two lexicons for robustness.",
+    "Define target entities. Use quanteda tokens_keep(window=10) + LSD2015.",
+    "Call ClimateBERT via the text package. Chunk long articles into paragraphs first.",
+    "Hand-code 300 articles (2 coders). Compute kappa and macro-F1.",
+    "Aggregate to monthly index. Plot with confidence intervals. Overlay event markers.",
+    "Report lexicon AND transformer results side by side. Include kappa, per-class F1, and sensitivity to lexicon choice."
+  )
+)
+
+kable(pipeline_df, col.names = c("Stage", "Action"),
+      caption = "The complete sentiment analysis pipeline for environmental news.") %>%
+  kable_styling(full_width = TRUE, font_size = 14) %>%
+  column_spec(1, bold = TRUE, width = "14em")
+```
+
+### Anchoring sentiment to environmental events
+
+One of the most informative analyses is to overlay your sentiment time 
+series with known environmental events. This reveals whether sentiment 
+shifts lead, lag, or coincide with real-world triggers.
+
+```{r events-plot, fig.cap="Sentiment time series with event annotations. In a real analysis with hundreds of articles, you would mark COP summits, IPCC report releases, major disasters, and policy announcements.", fig.height=4.5}
+# Simulated event markers
+events <- tibble(
+  date  = as.Date(c("2024-03-15", "2024-07-15", "2024-11-15")),
+  event = c("IPCC Report\nRelease", "Record Wildfire\nSeason Begins", 
+            "COP29\nSummit")
+)
+
+ggplot(monthly, aes(x = month, y = mean_sentiment)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper),
+              fill = "#8aad96", alpha = 0.25) +
+  geom_line(colour = "#1e3a2f", linewidth = 0.9) +
+  geom_point(colour = "#1e3a2f", size = 2.5) +
+  geom_vline(data = events, aes(xintercept = date),
+             linetype = "dotted", colour = "#c8832a", linewidth = 0.7) +
+  geom_label(data = events, aes(x = date, y = max(monthly$upper, na.rm = TRUE),
+                                 label = event),
+             size = 2.5, fill = "#fdf8f0", colour = "#c8832a",
+             label.padding = unit(0.3, "lines"), family = "mono") +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "#7a7a72") +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(x = NULL, y = "Mean sentiment ratio",
+       title = "Environmental News Sentiment with Event Markers") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(family = "serif", face = "bold",
+                               colour = "#1e3a2f")
+  )
+```
+
+<hr>
+
+## 10. Applied Example: Energy News and Commodity Prices {#energy}
+
+The environmental news corpus in Sections 3 through 9 used simulated articles 
+to teach the mechanics. This section applies the same toolkit to a real-world 
+question: **does the tone of energy news coverage correlate with weekly 
+commodity prices?** Along the way, we compare three lexicon approaches 
+head-to-head to see which performs best on financial-energy text.
+
+This example is adapted from a companion analysis script 
+(`sentiment_energy_comparison.R`) that pairs RSS news feeds with weekly 
+petroleum price data from the US Energy Information Administration (EIA). 
+The workflow demonstrates how sentiment analysis connects to external 
+quantitative data, a pattern that generalizes to any environmental 
+time-series question (air quality and media attention, species listings 
+and public discourse, climate policy and editorial tone).
+
+### The three approaches compared
+
+We score every article with three different methods and compare their 
+behavior. This is exactly the multi-lexicon robustness check recommended 
+in Section 4, but now we have an external criterion (price movements) to 
+evaluate against.
+
+```{r energy-approaches-table, echo=FALSE}
+energy_methods <- data.frame(
+  Approach = c("Syuzhet", "LSD2015", "sentimentr"),
+  Lexicon = c(
+    "Stanford NLP lexicon (syuzhet package)",
+    "Lexicoder Sentiment Dictionary (quanteda built-in)",
+    "Jockers-Rinker with valence shifters"
+  ),
+  Strengths = c(
+    "Fast, integer-valued, good on formal prose",
+    "Purpose-built for news/political text, negation-aware patterns",
+    "Handles 'not good' as negative, 'very bad' as more negative"
+  ),
+  Weakness = c(
+    "No negation handling at all",
+    "Proportion-based, can be small-magnitude on short text",
+    "Slower, sensitive to sentence segmentation quality"
+  )
+)
+
+kable(energy_methods,
+      caption = "Three lexicon approaches compared on energy news text.") %>%
+  kable_styling(full_width = TRUE, font_size = 14) %>%
+  column_spec(1, bold = TRUE)
+```
+
+### Building an energy news corpus
+
+In a production workflow, you would accumulate articles over weeks or months 
+from RSS feeds (Reuters Energy, CNBC Energy, OilPrice.com, EIA Today in 
+Energy) and store them in a cache file. For this tutorial, we build a 
+synthetic corpus of representative energy headlines that covers the same 
+topic channels the real feeds would provide.
+
+```{r energy-corpus}
+# ── Synthetic energy news corpus ───────────────────────────────────────
+# In practice, these would come from RSS feeds via xml2::read_xml()
+# or from a cached CSV built by a scheduled scraping script.
+set.seed(42)
+
+headlines_pool <- c(
+  # Supply risk (negative)
+  "Oil prices surge as Middle East tensions escalate after military strikes",
+  "Pipeline attack in Nigeria disrupts 200,000 barrels per day of supply",
+  "Conflict in Libya shuts major oil field cutting output by 300,000 bpd",
+  "Geopolitical tensions push crude above $100 as supply risks mount",
+  "War risk premium builds as military forces mobilize near oil infrastructure",
+  "Embargo threat from major producers sends Brent to six-month high",
+  # Supply risk (positive)
+  "Ceasefire agreement reached easing supply disruption fears in Middle East",
+  "Pipeline repairs completed restoring full capacity after weeks of disruption",
+  # OPEC policy
+  "OPEC+ agrees to extend production cuts through end of year",
+  "Saudi Arabia announces voluntary output reduction of 1 million barrels per day",
+  "OPEC meeting ends with surprise decision to maintain current quotas",
+  "UAE pushes for higher production target at contentious OPEC+ session",
+  "OPEC+ considers easing output curbs as oil prices stabilize above $80",
+  # Demand / macroeconomic
+
+  "Global oil demand forecast revised upward on strong Chinese economic recovery",
+  "US GDP growth slows sharply raising recession fears and oil demand concerns",
+  "Strong travel demand pushes jet fuel consumption above pre-pandemic levels",
+  "Economic recession fears mount as consumer spending falls sharply",
+  "Driving season kicks off with record US gasoline consumption forecast",
+  "Industrial output in Europe falls for second quarter amid energy cost pressures",
+  # Refinery
+  "Major refinery fire in Texas shuts 250,000 bpd capacity for weeks",
+  "Spring maintenance season begins with multiple refineries taking units offline",
+  "Heating oil stocks at five-year low ahead of winter demand season",
+  "Crack spread widens as refinery capacity offline exceeds seasonal norms",
+  # Mixed / neutral
+  "Oil markets steady as traders weigh competing supply and demand signals",
+  "Energy stocks mixed as crude prices trade in narrow range near $75 per barrel",
+  "US crude inventories rise more than expected according to EIA weekly report",
+  "Analysts divided on crude oil direction as technical signals conflict"
+)
+
+# Generate 300 articles across 18 months
+DATE_START <- Sys.Date() - 540
+DATE_END   <- Sys.Date()
+n_articles <- 300
+
+energy_news <- tibble(
+  date   = sample(seq.Date(DATE_START + 7, DATE_END - 7, by = "day"),
+                  n_articles, replace = TRUE) |> sort(),
+  text   = sample(headlines_pool, n_articles, replace = TRUE),
+  source = sample(c("Reuters_Energy", "CNBC_Energy", "EIA_Today"),
+                  n_articles, replace = TRUE)
+)
+
+cat(sprintf("Energy corpus: %d articles (%s to %s)\n",
+            nrow(energy_news), min(energy_news$date), max(energy_news$date)))
+```
+
+<div class="callout callout-concept">
+<strong>&#128161; Why synthetic data here?</strong>
+RSS feeds are frequently blocked by firewalls and rate limits, making 
+live fetching unreliable in a tutorial setting. The synthetic headlines 
+are modeled on actual Reuters/AP wire copy and cover the four topic 
+channels (supply risk, OPEC policy, demand, refinery) that drive energy 
+markets. The sentiment scores are illustrative; swap in a real cache 
+from your own RSS scraper to get research-grade results.
+</div>
+
+### Scoring with three approaches simultaneously
+
+This is the core comparison. We apply all three methods to the same 
+articles, producing three parallel sentiment columns.
+
+```{r energy-scoring}
+# ── Approach 1: Syuzhet (Stanford NLP lexicon) ─────────────────────────
+# Returns a numeric score per text element. No negation handling.
+energy_news$sent_syuzhet <- syuzhet::get_sentiment(
+  energy_news$text, method = "syuzhet"
+)
+
+# ── Approach 2: LSD2015 via quanteda ──────────────────────────────────
+# Purpose-built for news. Includes negation patterns.
+# Uses tokens_lookup() to capture multi-word patterns before dfm.
+energy_corp <- corpus(energy_news$text)
+energy_toks <- tokens(energy_corp, remove_punct = TRUE,
+                      remove_numbers = TRUE) |>
+  tokens_tolower()
+
+toks_lsd <- tokens_lookup(energy_toks,
+                          dictionary = data_dictionary_LSD2015,
+                          exclusive = TRUE)
+lsd_dfm  <- dfm(toks_lsd)
+lsd_mat  <- as.matrix(lsd_dfm)
+total_toks <- ntoken(energy_toks)
+
+# The LSD2015 has four keys: negative, positive, neg_negative, neg_positive
+safe_col <- function(mat, col_name) {
+  if (col_name %in% colnames(mat)) mat[, col_name] else rep(0, nrow(mat))
+}
+pos_signal <- safe_col(lsd_mat, "positive") + safe_col(lsd_mat, "neg_negative")
+neg_signal <- safe_col(lsd_mat, "negative") + safe_col(lsd_mat, "neg_positive")
+
+energy_news$sent_lsd2015 <- (pos_signal - neg_signal) / pmax(total_toks, 1)
+
+# ── Approach 3: sentimentr (valence-shifted) ──────────────────────────
+# Handles negation, amplifiers, and adversative conjunctions.
+clean_text <- energy_news$text |>
+  gsub("<[^>]+>", " ", x = _) |>
+  gsub("[[:cntrl:]]", " ", x = _) |>
+  gsub("\\s+", " ", x = _) |>
+  trimws()
+clean_text <- ifelse(grepl("[.!?]\\s*$", clean_text),
+                     clean_text,
+                     paste0(clean_text, "."))
+
+sr_scores <- sentiment_by(get_sentences(clean_text))
+energy_news$sent_sentimentr <- sr_scores$ave_sentiment
+```
+
+### How well do the three approaches agree?
+
+Before looking at price correlations, check whether the methods even 
+agree with each other. If they produce wildly different rankings, that 
+tells you the "sentiment" construct is not stable across measurement 
+instruments.
+
+```{r energy-agreement}
+# Inter-approach correlations
+approach_cor <- cor(
+  energy_news |> select(sent_syuzhet, sent_lsd2015, sent_sentimentr),
+  use = "pairwise.complete.obs"
+)
+
+kable(round(approach_cor, 3),
+      caption = "Pairwise Pearson correlations between three sentiment approaches on the same energy news corpus.") %>%
+  kable_styling(full_width = FALSE, font_size = 14)
+```
+
+```{r energy-distributions, fig.cap="Score distributions by approach. Syuzhet produces integer-valued scores with wider spread. LSD2015 is proportion-based and concentrated near zero. sentimentr falls between the two.", fig.height=4}
+energy_news |>
+  select(sent_syuzhet, sent_lsd2015, sent_sentimentr) |>
+  pivot_longer(everything(), names_to = "approach", values_to = "score") |>
+  mutate(approach = recode(approach,
+    "sent_syuzhet"   = "Syuzhet",
+    "sent_lsd2015"   = "LSD2015",
+    "sent_sentimentr" = "sentimentr"
+  )) |>
+  ggplot(aes(approach, score, fill = approach)) +
+  geom_boxplot(alpha = 0.75, outlier.size = 0.8, width = 0.5,
+               colour = "#1e3a2f") +
+  geom_hline(yintercept = 0, linewidth = 0.3, colour = "#7a7a72") +
+  scale_fill_manual(values = c(
+    "Syuzhet"    = "#2166AC",
+    "LSD2015"    = "#B2182B",
+    "sentimentr" = "#1B7837"
+  )) +
+  labs(x = NULL, y = "Sentiment score",
+       title = "Score Distributions by Approach") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title      = element_text(family = "serif", face = "bold",
+                                    colour = "#1e3a2f"),
+    legend.position = "none"
+  )
+```
+
+### Topic-segmented sentiment
+
+Energy news is not monolithic. An article about OPEC production cuts has 
+a different sentiment profile than an article about a refinery fire, even 
+though both affect prices. We classify articles into four topic channels 
+using keyword matching and score each channel separately.
+
+```{r energy-topics}
+# Topic keyword dictionaries
+topic_keywords <- list(
+  supply_risk = c("sanctions", "geopolit", "middle east", "pipeline attack",
+                  "conflict", "war", "embargo", "disruption", "ceasefire"),
+  opec_policy = c("opec", "production cut", "output", "quota",
+                  "saudi", "uae", "barrel per day"),
+  demand      = c("recession", "gdp", "demand", "economic",
+                  "consumption", "driving season", "industrial output"),
+  refinery    = c("refinery", "outage", "shutdown", "maintenance",
+                  "heating oil", "crack spread", "capacity")
+)
+
+# Tag each article
+text_lower <- tolower(energy_news$text)
+for (topic in names(topic_keywords)) {
+  pattern <- paste(topic_keywords[[topic]], collapse = "|")
+  energy_news[[paste0("is_", topic)]] <- grepl(pattern, text_lower)
+}
+
+# Topic hit summary
+topic_counts <- energy_news |>
+  summarize(across(starts_with("is_"), sum)) |>
+  pivot_longer(everything(), names_to = "topic", values_to = "n") |>
+  mutate(topic = gsub("^is_", "", topic),
+         pct = round(100 * n / nrow(energy_news), 1))
+
+kable(topic_counts, col.names = c("Topic", "Articles", "% of Corpus"),
+      caption = "Topic channel coverage in the energy news corpus.") %>%
+  kable_styling(full_width = FALSE, font_size = 14)
+```
+
+```{r energy-topic-sentiment, fig.cap="Mean Syuzhet sentiment by topic channel. Supply risk articles are the most negative; articles about demand recovery tend to be mixed. Error bars show +/- 1 standard error.", fig.height=4}
+topic_sent <- energy_news |>
+  pivot_longer(starts_with("is_"), names_to = "topic", values_to = "hit") |>
+  filter(hit) |>
+  mutate(topic = gsub("^is_", "", topic) |>
+           gsub("_", " ", x = _) |> tools::toTitleCase()) |>
+  group_by(topic) |>
+  summarize(
+    mean_sent = mean(sent_syuzhet),
+    se        = sd(sent_syuzhet) / sqrt(n()),
+    n         = n(),
+    .groups   = "drop"
+  )
+
+ggplot(topic_sent, aes(reorder(topic, mean_sent), mean_sent, fill = mean_sent > 0)) +
+  geom_col(alpha = 0.8, width = 0.6, colour = "#1e3a2f", show.legend = FALSE) +
+  geom_errorbar(aes(ymin = mean_sent - se, ymax = mean_sent + se),
+                width = 0.15, linewidth = 0.7, colour = "#1e3a2f") +
+  geom_hline(yintercept = 0, linewidth = 0.4) +
+  scale_fill_manual(values = c("TRUE" = "#4a7c5e", "FALSE" = "#7a3a2f")) +
+  coord_flip() +
+  labs(x = NULL, y = "Mean Syuzhet sentiment",
+       title = "Sentiment by Topic Channel") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(family = "serif", face = "bold",
+                               colour = "#1e3a2f")
+  )
+```
+
+<div class="callout callout-concept">
+<strong>&#128161; Topic segmentation is manual ABSA</strong>
+The keyword-based topic tagging here is a simple form of the aspect-based 
+analysis from Section 5. Instead of extracting a text window around a 
+target entity, we classify entire articles by topic and score each 
+category separately. Both approaches decompose the aggregate sentiment 
+into more meaningful sub-signals. The choice depends on whether your 
+research question is about entities (who is being discussed?) or themes 
+(what type of event is being covered?).
+</div>
+
+### Aggregating to weekly and merging with price data
+
+To correlate sentiment with commodity prices, we need both series on the 
+same time scale. EIA petroleum prices are published weekly (Wednesday, for 
+the prior week), so we aggregate daily sentiment to ISO weeks.
+
+```{r energy-weekly}
+# Weekly sentiment aggregation
+energy_weekly <- energy_news |>
+  mutate(week_date = floor_date(date, "week", week_start = 1)) |>
+  group_by(week_date) |>
+  summarize(
+    syuzhet_mean    = mean(sent_syuzhet, na.rm = TRUE),
+    lsd2015_mean    = mean(sent_lsd2015, na.rm = TRUE),
+    sentimentr_mean = mean(sent_sentimentr, na.rm = TRUE),
+    n_articles      = n(),
+    pct_negative    = mean(sent_syuzhet < 0, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+cat(sprintf("Weekly aggregation: %d weeks, %.1f articles/week on average\n",
+            nrow(energy_weekly), mean(energy_weekly$n_articles)))
+```
+
+<div class="callout callout-warn">
+<strong>&#9888;&#65039; Connecting to real price data requires an EIA API key</strong>
+The EIA provides free API access to weekly petroleum prices at 
+<code>https://www.eia.gov/opendata/</code>. You need to register for a 
+key and store it in your <code>.Renviron</code> file as 
+<code>EIA_KEY = your_key_here</code>. The companion script 
+<code>sentiment_energy_comparison.R</code> fetches WTI crude, heating oil, 
+jet fuel, gasoline, and Baker Hughes rig count data from the EIA v2 API. 
+Below, we simulate price data so the tutorial runs without an API key.
+</div>
+
+```{r energy-prices}
+# ── Simulated weekly WTI crude prices ──────────────────────────────────
+# In the full workflow, these come from fetch_eia_v2() in the companion script.
+# We simulate a plausible price series with trend + noise.
+set.seed(99)
+n_weeks <- nrow(energy_weekly)
+trend <- seq(72, 85, length.out = n_weeks) +
+  cumsum(rnorm(n_weeks, 0, 1.5))
+
+price_weekly <- tibble(
+  week_date = energy_weekly$week_date,
+  wti_spot  = round(pmax(trend, 55), 2)
+) |>
+  mutate(wti_return = (wti_spot / lag(wti_spot) - 1))
+
+# Merge sentiment + prices
+merged_energy <- left_join(energy_weekly, price_weekly, by = "week_date") |>
+  drop_na(wti_return)
+```
+
+### Correlation analysis: which approach tracks prices best?
+
+Now we have three sentiment columns and one price-return column on the 
+same weekly grid. The question is: which sentiment approach has the 
+strongest contemporaneous correlation with price movements?
+
+```{r energy-correlations}
+# Contemporaneous correlations
+approach_cols <- c("syuzhet_mean", "lsd2015_mean", "sentimentr_mean")
+
+cor_results <- tibble(approach = approach_cols) |>
+  rowwise() |>
+  mutate(
+    r       = cor(merged_energy[[approach]], merged_energy$wti_return,
+                  use = "pairwise.complete.obs"),
+    p_value = cor.test(merged_energy[[approach]],
+                       merged_energy$wti_return)$p.value,
+    label   = recode(approach,
+      "syuzhet_mean"    = "Syuzhet",
+      "lsd2015_mean"    = "LSD2015",
+      "sentimentr_mean" = "sentimentr"
+    )
+  ) |>
+  ungroup() |>
+  mutate(
+    sig = case_when(
+      p_value < 0.01 ~ "***",
+      p_value < 0.05 ~ "**",
+      p_value < 0.10 ~ "*",
+      TRUE ~ ""
+    )
+  )
+
+kable(cor_results |> select(label, r, p_value, sig),
+      digits = 4,
+      col.names = c("Approach", "r", "p-value", "Sig."),
+      caption = "Contemporaneous Pearson correlations: weekly mean sentiment vs. weekly WTI return. On synthetic data, these correlations are near zero (as expected). With real news and real prices, modest correlations (|r| = 0.05-0.20) are typical.") %>%
+  kable_styling(full_width = FALSE, font_size = 14)
+```
+
+### Lead-lag analysis: does sentiment predict price?
+
+Contemporaneous correlation does not tell you about predictive value. 
+A cross-correlation function (CCF) tests whether sentiment at time 
+$t - k$ correlates with price returns at time $t$. A negative lag with 
+a strong CCF means sentiment **leads** price, suggesting some predictive 
+content.
+
+```{r energy-ccf, fig.cap="Cross-correlation between Syuzhet sentiment and WTI weekly returns at lags of -4 to +4 weeks. Negative lags (left side) represent sentiment leading price. With synthetic data the signal is weak; real data from the companion script typically shows modest leading correlations.", fig.height=4}
+# CCF for Syuzhet vs WTI returns
+valid <- complete.cases(merged_energy$syuzhet_mean, merged_energy$wti_return)
+if (sum(valid) >= 20) {
+  cc <- ccf(merged_energy$syuzhet_mean[valid],
+            merged_energy$wti_return[valid],
+            lag.max = 4, plot = FALSE)
+  
+  ccf_df <- tibble(
+    lag = cc$lag[, 1, 1],
+    ccf = cc$acf[, 1, 1]
+  )
+  
+  ggplot(ccf_df, aes(lag, ccf)) +
+    geom_hline(yintercept = 0, linewidth = 0.3) +
+    geom_vline(xintercept = 0, linetype = "dashed", colour = "#7a7a72") +
+    geom_col(aes(fill = lag < 0), alpha = 0.75, width = 0.6,
+             show.legend = FALSE) +
+    scale_fill_manual(values = c("TRUE" = "#2166AC", "FALSE" = "#B2182B")) +
+    labs(x = "Lag (weeks, negative = sentiment leads)",
+         y = "Cross-correlation",
+         title = "Lead-Lag: Syuzhet Sentiment vs. WTI Returns") +
+    theme_minimal(base_size = 12) +
+    theme(
+      plot.title = element_text(family = "serif", face = "bold",
+                                 colour = "#1e3a2f")
+    )
+}
+```
+
+<div class="callout callout-concept">
+<strong>&#128161; Interpreting lead-lag results</strong>
+In energy markets, sentiment-price correlations are typically modest 
+(|r| = 0.05 to 0.20). Sentiment is a supplemental signal, not a 
+standalone predictor. Negative lags (sentiment leads) suggest that 
+news tone shifts before prices move, which is consistent with markets 
+responding to information in news coverage. Positive lags (price leads) 
+suggest that price movements drive subsequent editorial tone, which is 
+equally plausible. Both directions can coexist.
+</div>
+
+### Diagnostic multi-panel figure
+
+The companion script produces an 8-panel diagnostic figure. Here we 
+build a simpler 4-panel version that captures the key comparisons.
+
+```{r energy-multipanel, fig.cap="Four-panel diagnostic for the energy sentiment comparison. Top left: weekly sentiment time series by approach. Top right: WTI price with sentiment overlay. Bottom left: score distributions. Bottom right: weekly article volume.", fig.height=8, fig.width=10}
+approach_colors <- c(
+  "Syuzhet"    = "#2166AC",
+  "LSD2015"    = "#B2182B",
+  "sentimentr" = "#1B7837"
+)
+
+# Panel 1: Sentiment time series
+p1_data <- merged_energy |>
+  select(week_date, syuzhet_mean, lsd2015_mean, sentimentr_mean) |>
+  pivot_longer(-week_date, names_to = "approach", values_to = "score") |>
+  mutate(approach = recode(approach,
+    "syuzhet_mean"    = "Syuzhet",
+    "lsd2015_mean"    = "LSD2015",
+    "sentimentr_mean" = "sentimentr"
+  ))
+
+p1 <- ggplot(p1_data, aes(week_date, score, colour = approach)) +
+  geom_hline(yintercept = 0, linewidth = 0.3, colour = "#7a7a72") +
+  geom_line(linewidth = 0.4, alpha = 0.5) +
+  geom_smooth(method = "loess", se = FALSE, linewidth = 0.9, span = 0.3) +
+  scale_colour_manual(values = approach_colors) +
+  labs(title = "Weekly Sentiment: Three Approaches",
+       x = NULL, y = "Mean score", colour = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(plot.title      = element_text(family = "serif", face = "bold",
+                                        colour = "#1e3a2f"),
+        legend.position = "bottom")
+
+# Panel 2: WTI with sentiment overlay (scaled)
+wti_range  <- range(merged_energy$wti_spot, na.rm = TRUE)
+sent_range <- range(merged_energy$syuzhet_mean, na.rm = TRUE)
+scale_fn <- function(s) {
+  (s - sent_range[1]) / max(diff(sent_range), 0.001) *
+    diff(wti_range) * 0.3 + wti_range[1] - diff(wti_range) * 0.05
+}
+
+p2 <- ggplot(merged_energy, aes(week_date)) +
+  geom_line(aes(y = wti_spot), colour = "black", linewidth = 0.7) +
+  geom_line(aes(y = scale_fn(syuzhet_mean)),
+            colour = "#2166AC", alpha = 0.5) +
+  geom_smooth(aes(y = scale_fn(syuzhet_mean)),
+              method = "loess", se = FALSE, span = 0.3,
+              colour = "#2166AC", linewidth = 0.8) +
+  labs(title = "WTI Crude vs. Syuzhet Sentiment (scaled)",
+       subtitle = "Black = WTI ($/bbl), blue = sentiment (scaled)",
+       x = NULL, y = "WTI Spot ($/bbl)") +
+  theme_minimal(base_size = 10) +
+  theme(plot.title    = element_text(family = "serif", face = "bold",
+                                      colour = "#1e3a2f"),
+        plot.subtitle = element_text(size = 8, colour = "#7a7a72"))
+
+# Panel 3: Distributions (reuse from earlier)
+p3_data <- energy_news |>
+  select(sent_syuzhet, sent_lsd2015, sent_sentimentr) |>
+  pivot_longer(everything(), names_to = "approach", values_to = "score") |>
+  mutate(approach = recode(approach,
+    "sent_syuzhet"    = "Syuzhet",
+    "sent_lsd2015"    = "LSD2015",
+    "sent_sentimentr" = "sentimentr"
+  ))
+
+p3 <- ggplot(p3_data, aes(approach, score, fill = approach)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.6, width = 0.5,
+               colour = "#1e3a2f") +
+  geom_hline(yintercept = 0, linewidth = 0.3) +
+  scale_fill_manual(values = approach_colors) +
+  labs(title = "Score Distributions", x = NULL, y = "Score") +
+  theme_minimal(base_size = 10) +
+  theme(plot.title      = element_text(family = "serif", face = "bold",
+                                        colour = "#1e3a2f"),
+        legend.position = "none")
+
+# Panel 4: Article volume
+p4 <- ggplot(merged_energy, aes(week_date, n_articles)) +
+  geom_col(fill = "#8aad96", alpha = 0.7) +
+  geom_smooth(method = "loess", se = FALSE, colour = "#1e3a2f",
+              span = 0.3, linewidth = 0.7) +
+  labs(title = "Weekly Article Volume",
+       x = NULL, y = "Articles / week") +
+  theme_minimal(base_size = 10) +
+  theme(plot.title = element_text(family = "serif", face = "bold",
+                                    colour = "#1e3a2f"))
+
+# Assemble with patchwork
+(p1 + p2) / (p3 + p4) +
+  plot_annotation(
+    title   = "Energy News Sentiment: Three-Approach Comparison",
+    caption = paste0("Synthetic data (", nrow(energy_news),
+                     " articles). Replace with real RSS cache for ",
+                     "research-grade results."),
+    theme = theme(
+      plot.title   = element_text(family = "serif", face = "bold",
+                                   size = 14, colour = "#1e3a2f"),
+      plot.caption = element_text(size = 8, colour = "#7a7a72")
+    )
+  )
+```
+
+<div class="callout callout-try">
+<strong>&#128221; Try it: extend the comparison to real data</strong>
+<ol>
+<li>Register for a free EIA API key at 
+<code>https://www.eia.gov/opendata/</code> and add 
+<code>EIA_KEY = your_key</code> to your <code>.Renviron</code>.</li>
+<li>Adapt the <code>fetch_eia_v2()</code> function from the companion 
+script to pull WTI crude and US gasoline prices.</li>
+<li>Replace the synthetic headlines with a real RSS cache. Run the 
+<code>fetch_rss()</code> function from the companion script weekly for 
+at least two months to build volume.</li>
+<li>Re-run the correlation analysis. Do the three approaches agree on 
+direction? Does any approach show a significant leading correlation?</li>
+<li>Compare the topic-segmented correlations: does supply-risk sentiment 
+predict prices better than demand sentiment?</li>
+</ol>
+</div>
+
+### What this example teaches
+
+The energy-price comparison illustrates several principles from the 
+earlier sections in a concrete, applied setting:
+
+**Multi-lexicon comparison is essential.** The three approaches produce 
+scores on different scales (integer vs. proportion vs. continuous), with 
+different distributional shapes, and with different sensitivity to 
+negation. The correlation between them is often moderate, not high, 
+which means your conclusions depend on your tool choice.
+
+**Topic segmentation changes the story.** Aggregate sentiment across all 
+energy articles masks the fact that supply-risk news is structurally 
+negative while demand-recovery news is mixed. Segmenting by topic 
+before aggregating produces more interpretable and potentially more 
+predictive signals.
+
+**External validation is the gold standard.** When you have an external 
+criterion (price data), you can evaluate which approach performs best 
+empirically, rather than arguing about which lexicon is theoretically 
+superior. This is the same logic as the hand-coding validation in 
+Section 8, but with a continuous external variable instead of human labels.
+
+**Modest correlations are normal.** Sentiment-price correlations in energy 
+markets are typically |r| = 0.05 to 0.20. If you find correlations 
+above 0.30, investigate whether there is data leakage or whether the 
+sentiment score is mechanically correlated with the price variable 
+through shared keywords.
+
+<hr>
+
+## 11. Extensions and Next Steps {#extensions}
+
+### Challenges specific to environmental news
+
+Environmental news has several properties that make sentiment analysis 
+harder than in other domains:
+
+**Neutral-tone reporting.** Wire services (AP, Reuters) follow style 
+guides that enforce emotional flatness. This pushes lexicon scores toward 
+zero and inflates the neutral class. Models trained on opinion text (tweets, 
+reviews) systematically over-predict polarity on news wire text.
+
+**Attributed quotes.** "Critics called the policy a disaster" reports 
+someone else's negative sentiment without the article endorsing it. 
+Lexicon methods cannot distinguish the reporter's voice from a quoted 
+source. Quote detection (using dependency parsing via `spacyr`) can help.
+
+**Domain vocabulary.** General-purpose lexicons mishandle domain-specific 
+terms. "Stranded asset" is not a negative phrase about being abandoned; it 
+is a precise financial term. "Loss and damage" is a policy concept, not an 
+expression of grief. Domain-adapted models like ClimateBERT exist precisely 
+to handle this vocabulary.
+
+**Negativity bias in coverage.** Environmental news is structurally negative. 
+Disasters, extinctions, and pollution events are news; stable ecosystems 
+are not. Raw aggregate sentiment is therefore meaningless without a 
+topic-conditional or publication-conditional baseline.
+
+### Multiple lexicons as a robustness check
+
+Always compute sentiment under at least two independent lexicons and compare. 
+If LSD2015 and AFINN produce time series that move in opposite directions on 
+the same corpus, that tells you the signal is driven by lexicon composition, 
+not by genuine shifts in news tone.
+
+```{r robustness, eval=FALSE}
+# Rank correlation between two lexicon time series
+cor.test(
+  monthly_lsd$mean_sentiment,
+  monthly_afinn$mean_sentiment,
+  method = "spearman"
+)
+```
+
+### Topic-conditional sentiment
+
+Running an unsupervised topic model (LDA or BERTopic) on your corpus, 
+then computing sentiment within each topic, reveals structure that 
+aggregate indices hide. An overall "neutral" trend might mask simultaneous 
+increases in negative wildfire sentiment and positive renewable-energy 
+sentiment.
+
+### Data sources for environmental news
+
+| Source | Access | Notes |
+|---|---|---|
+| LexisNexis Academic | University subscription | Full text, structured metadata |
+| ProQuest Newsstand | University subscription | Historical newspapers |
+| MediaCloud | Free API | Open-source media analysis platform |
+| GDELT | Free API | Pre-computed tone scores for global news |
+| EPA AQS + newsapi.org | Mixed | Combine air quality data with news coverage |
+| Google News RSS | Free | Headlines only, limited metadata |
+
+<div class="callout callout-tip">
+<strong>&#9989; Checklist before publishing sentiment results</strong>
+Before reporting sentiment analysis findings in a paper or presentation, 
+verify that you have: (1) run at least two lexicons and compared agreement, 
+(2) hand-coded a validation sample with two coders and reported kappa, 
+(3) reported macro-F1 for each method against the hand-coded consensus, 
+(4) documented how you handled article truncation in transformer models, 
+(5) plotted confidence intervals on any time-series index, and 
+(6) tested sensitivity to your aggregation choices (weighting, window, 
+smoothing).
+</div>
+
+---
+
+<div class="key-box">
+<h4>&#128273; Sentiment analysis of environmental news -- key takeaways</h4>
+<ul>
+<li><strong>Start with lexicons, escalate to transformers only when needed.</strong> Dictionary methods (LSD2015 + <code>sentimentr</code>) are transparent, fast, and require no training data. They are the right starting point for any project.</li>
+<li><strong>Lexicon choice changes results.</strong> Different dictionaries produce different time series on the same corpus. Run at least two and check rank correlation. Disagreement is information.</li>
+<li><strong>Aspect-based scoring beats document-level scoring for news.</strong> Articles discuss multiple entities and policies. A single polarity score per article collapses important structure. Use <code>tokens_keep(window = 10)</code> to score sentiment around specific targets.</li>
+<li><strong>Domain adaptation matters.</strong> ClimateBERT outperforms generic transformers on climate text because environmental vocabulary confuses general models. Use domain-specific models when they exist.</li>
+<li><strong>Validate, validate, validate.</strong> Report Cohen's kappa between human coders and macro-F1 between model and consensus. Without these numbers, your results are not credible.</li>
+<li><strong>Confidence intervals are not optional.</strong> Environmental news volume fluctuates wildly. Months with few articles produce unreliable estimates. Always visualize uncertainty alongside your index.</li>
+<li><strong>Sentiment is a noisy proxy for framing.</strong> Text polarity does not tell you how readers interpret the article, which political frame it employs, or whether its factual claims are accurate. Treat sentiment as one signal among many, not as a standalone finding.</li>
+</ul>
+</div>
+
+---
+
+### What's next?
+
+- **[Time-Series Analysis](14_Time_Series.html)** -- decomposition, ARIMA, and forecasting for the temporal indices you build here
+- **[Multiple Regression & GLMs](11_Multiple_Regression_GLMs.html)** -- regress sentiment indices against external predictors (carbon prices, policy events)
+- **[Data Visualization](../basic_statistics/02_Visualization.html)** -- polished ggplot2 figures for publication-quality sentiment plots
+- **[Tidyverse Data Wrangling](../RGuides/R09_Tidyverse_Wrangling.html)** -- the pipe-based data manipulation that underlies the entire workflow
+
+```{r session-info, echo=FALSE}
+# sessionInfo()
+```
+
+<footer class="page-footer">
+EA030 Activity A29 &mdash; Sentiment Analysis
+<span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College
+<span class="divider">|</span> Last updated: `r format(Sys.Date(), "%B %Y")`
+<span class="divider">|</span> <a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>
