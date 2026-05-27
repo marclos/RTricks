@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Marc Los Huertos" />
+
+
+<title>Oil Price Forecasting</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Oil Price Forecasting</h1>
+<h4 class="author">Marc Los Huertos</h4>
+<h4 class="date">EA030 · Compiled 2026-05-26</h4>
+
+
+
+<div class="page-header">
+<div class="module-tag">
+EA030 — RTricks — Activity 19
+</div>
+<h1>
+Oil Price <span>Forecasting: Ensemble Methods for Brent Crude and
+California Gasoline</span>
+</h1>
+<p class="sub">
+<strong>Prof. Marc Los Huertos</strong>  •  Pomona College  • 
+Environmental Analysis
+</p>
+<p><a class="back-link" href="../index.html">← Back to RTricks</a>
+<button class="btn-pdf" onclick="window.print()">⬇ Save as
+PDF</button></p>
+</div>
+<div class="section-nav">
+<p><a href="#why">Why Oil Prices?</a>
+<a href="#architecture">Architecture</a> <a href="#data">Data
+Sources</a> <a href="#features">Feature Engineering</a>
+<a href="#models">Models</a> <a href="#ensemble">Ensemble</a>
+<a href="#anchoring">Spot Anchoring</a> <a href="#gasoline">CA
+Gasoline</a> <a href="#diagnostics">Diagnostics</a>
+<a href="#iteration">Iterative Improvement</a></p>
+</div>
+<div class="outcomes-box">
+<h4>
+🎯 Learning Outcomes
+</h4>
+<ol>
+<li>
+Explain why commodity price forecasting matters for environmental policy
+and energy planning.
+</li>
+<li>
+Design a modular R pipeline that separates configuration, data
+ingestion, feature engineering, modeling, and diagnostics into
+individual scripts.
+</li>
+<li>
+Fetch and clean market data from Yahoo Finance, the EIA API, and FRED
+using R.
+</li>
+<li>
+Engineer time-series features: technical indicators, momentum, seasonal
+indices, and news sentiment.
+</li>
+<li>
+Fit ARIMA-X, Prophet, and LASSO models and combine them into a
+bias-penalized inverse-RMSE ensemble.
+</li>
+<li>
+Diagnose forecast bias using expanding-window backtesting, directional
+accuracy, and residual autocorrelation.
+</li>
+<li>
+Apply spot-anchoring and curve-consistent blending to correct systematic
+under-prediction.
+</li>
+<li>
+Convert crude oil forecasts to retail gasoline prices using a GAM spread
+model with holdout validation.
+</li>
+<li>
+Build a compact diagnostic report that summarizes model health in a
+machine-readable format.
+</li>
+<li>
+Practice iterative, diagnostic-driven model improvement across multiple
+versions.
+</li>
+</ol>
+</div>
+<blockquote>
+<p><strong>What this module covers.</strong> This tutorial walks through
+a complete, production-grade oil price forecasting system built in R.
+The system fetches live data from three public APIs, engineers dozens of
+features, fits three different forecasting models, combines them into a
+weighted ensemble, and generates 9-month Brent crude and California
+retail gasoline forecasts with confidence intervals. More importantly,
+it demonstrates a <em>diagnostic-driven development workflow</em> where
+each new version of the model is motivated by specific failures
+identified in the previous version’s diagnostic report. The code is
+real, the data are live, and every design decision is explained in the
+context of the problem it solves.</p>
+</blockquote>
+<hr>
+<div id="why" class="section level2">
+<h2>1. Why Oil Prices Matter for Environmental Analysis</h2>
+<p>Oil prices sit at the intersection of energy policy, environmental
+regulation, and economic behavior. When crude oil rises, gasoline
+follows with a lag. Gasoline prices affect driving behavior, vehicle
+purchase decisions, public transit ridership, and political support for
+clean energy alternatives. For environmental scientists and policy
+analysts, understanding the trajectory of energy prices is not a finance
+exercise – it is a tool for anticipating changes in emissions,
+transportation patterns, and the economic viability of renewable
+alternatives.</p>
+<p>California is a particularly interesting case. The state’s gasoline
+prices are consistently the highest in the continental US, driven by a
+combination of refinery concentration, boutique fuel blends, carbon
+cap-and-trade costs, and state excise taxes. The spread between Brent
+crude (the global benchmark) and California retail gasoline is itself an
+environmental indicator: it reflects refinery capacity, regulatory
+stringency, and seasonal demand patterns.</p>
+<p>This tutorial builds a forecasting system that models both the global
+crude price <em>and</em> the California-specific markup, giving you a
+complete pipeline from barrel to pump.</p>
+<div class="callout callout-concept">
+<p><strong>📌 Why not just read the futures curve?</strong> The WTI
+futures curve gives the market’s consensus forward price. It is a useful
+baseline, and we use it as one. But futures prices reflect risk premia
+and hedging demand alongside expectations. A model that incorporates
+momentum, sentiment, macro indicators, and seasonal patterns can, in
+principle, add value at short horizons where these signals carry
+information the curve does not. The key word is <em>can</em>. Whether
+your model actually beats the random walk (today’s price as the
+forecast) is an empirical question, and this tutorial treats it as
+one.</p>
+</div>
+<hr>
+</div>
+<div id="architecture" class="section level2">
+<h2>2. System Architecture</h2>
+<p>The forecasting system is organized as a 16-script pipeline
+orchestrated by a single main file. Each script reads objects from the
+global environment left by prior scripts and writes its own outputs
+back. This is not the most elegant architecture (a formal R package with
+function arguments would be cleaner), but it has a practical virtue: you
+can <code>source()</code> any individual script in the console to re-run
+just that step after making changes.</p>
+<div class="pipeline-grid">
+<div class="pipeline-step">
+<div class="ps-num">
+00
+</div>
+<div class="ps-name">
+main.R
+</div>
+<div class="ps-desc">
+Orchestrator
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+00
+</div>
+<div class="ps-name">
+packages.R
+</div>
+<div class="ps-desc">
+Library loading
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+01
+</div>
+<div class="ps-name">
+config.R
+</div>
+<div class="ps-desc">
+API keys, dates, paths
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+02
+</div>
+<div class="ps-name">
+market_data.R
+</div>
+<div class="ps-desc">
+Yahoo, EIA, FRED
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+03
+</div>
+<div class="ps-name">
+features.R
+</div>
+<div class="ps-desc">
+Technical indicators
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+04
+</div>
+<div class="ps-name">
+news_sentiment.R
+</div>
+<div class="ps-desc">
+RSS + topic scoring
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+05
+</div>
+<div class="ps-name">
+assemble.R
+</div>
+<div class="ps-desc">
+Master data frame
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+06
+</div>
+<div class="ps-name">
+train_test_split.R
+</div>
+<div class="ps-desc">
+Split + future frame
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+07
+</div>
+<div class="ps-name">
+models_brent.R
+</div>
+<div class="ps-desc">
+ARIMA, Prophet, LASSO
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+08
+</div>
+<div class="ps-name">
+gam_gasoline.R
+</div>
+<div class="ps-desc">
+Brent-to-pump spread
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+09
+</div>
+<div class="ps-name">
+counterfactual.R
+</div>
+<div class="ps-desc">
+Feature ablation
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+10
+</div>
+<div class="ps-name">
+accuracy.R
+</div>
+<div class="ps-desc">
+Metrics + baselines
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+11
+</div>
+<div class="ps-name">
+plots.R
+</div>
+<div class="ps-desc">
+14 diagnostic PNGs
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+12
+</div>
+<div class="ps-name">
+export.R
+</div>
+<div class="ps-desc">
+CSV, RDS, run log
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+13
+</div>
+<div class="ps-name">
+diagnostic_report.R
+</div>
+<div class="ps-desc">
+Full text report
+</div>
+</div>
+<div class="pipeline-step">
+<div class="ps-num">
+14
+</div>
+<div class="ps-name">
+compact_diagnostic.R
+</div>
+<div class="ps-desc">
+Machine-readable triage
+</div>
+</div>
+</div>
+<div id="the-main-script" class="section level3">
+<h3>The main script</h3>
+<p>The orchestrator is intentionally minimal. It <code>source()</code>s
+each step in order and nothing else:</p>
+<pre class="r"><code>source(&quot;00_packages.R&quot;)
+source(&quot;01_config.R&quot;)
+source(&quot;02_market_data.R&quot;)
+source(&quot;03_features.R&quot;)
+source(&quot;04_news_sentiment.R&quot;)
+source(&quot;05_assemble.R&quot;)
+source(&quot;06_train_test_split.R&quot;)
+source(&quot;07_models_brent.R&quot;)
+source(&quot;08_gam_gasoline.R&quot;)
+source(&quot;09_counterfactual.R&quot;)
+source(&quot;10_accuracy.R&quot;)
+source(&quot;11_plots.R&quot;)
+source(&quot;12_export.R&quot;)
+source(&quot;13_diagnostic_report.R&quot;)
+source(&quot;14_compact_diagnostic.R&quot;)</code></pre>
+<div class="callout callout-tip">
+<p><strong>📌 Why separate scripts instead of functions?</strong> In a
+production system, each script would be a function in an R package, with
+explicit inputs and outputs. The script-based approach used here trades
+architectural purity for transparency: every intermediate object lives
+in the global environment where you can inspect it interactively. For a
+teaching context, this is a reasonable trade-off.</p>
+</div>
+<hr>
+</div>
+</div>
+<div id="data" class="section level2">
+<h2>3. Data Sources and Ingestion</h2>
+<p>The system pulls from three public APIs, each requiring a free API
+key stored in <code>~/.Renviron</code>:</p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Data</th>
+<th>R Method</th>
+<th>Key Variable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Yahoo Finance</td>
+<td>Brent (<code>BZ=F</code>), WTI (<code>CL=F</code>), 12-month WTI
+curve</td>
+<td><code>quantmod::getSymbols()</code></td>
+<td><code>EIA_KEY</code> (not needed)</td>
+</tr>
+<tr class="even">
+<td>EIA</td>
+<td>Weekly CA retail gasoline</td>
+<td><code>httr::GET()</code> to API v2</td>
+<td><code>EIA_KEY</code></td>
+</tr>
+<tr class="odd">
+<td>FRED</td>
+<td>USD index, initial claims, 10Y-2Y yield spread</td>
+<td><code>fredr::fredr()</code></td>
+<td><code>FRED_API_KEY</code></td>
+</tr>
+</tbody>
+</table>
+<div id="configuration-01_config.r" class="section level3">
+<h3>Configuration (<code>01_config.R</code>)</h3>
+<p>All parameters are set in one place. This is the entire configuration
+for the system – dates, tickers, API keys, and output paths:</p>
+<pre class="r"><code>EIA_API_KEY  &lt;- Sys.getenv(&quot;EIA_KEY&quot;)
+FRED_API_KEY &lt;- Sys.getenv(&quot;FRED_API_KEY&quot;)
+
+BRENT_TICKER &lt;- &quot;BZ=F&quot;
+WTI_TICKER   &lt;- &quot;CL=F&quot;
+
+LOOKBACK_DAYS    &lt;- 540      # 18 months of training data
+FORECAST_HORIZON &lt;- 270      # 9 months ahead
+
+DATE_END   &lt;- Sys.Date()
+DATE_START &lt;- DATE_END - LOOKBACK_DAYS</code></pre>
+<div class="callout callout-warn">
+<p><strong>⚠️ API keys must be in ~/.Renviron</strong> Never hard-code
+API keys in scripts. Add them to <code>~/.Renviron</code> as
+<code>EIA_KEY=your_key_here</code> (one per line, no quotes). Restart R
+after editing. The <code>Sys.getenv()</code> calls will pick them up
+automatically. This keeps keys out of version control.</p>
+</div>
+</div>
+<div id="futures-curve-data" class="section level3">
+<h3>Futures curve data</h3>
+<p>The WTI futures curve gives the market’s forward expectation for oil
+prices across 12 contract months. The system fetches each contract
+individually from Yahoo Finance and computes curve metrics:</p>
+<pre class="r"><code>WTI_CURVE_TICKERS &lt;- c(
+  &quot;CLM26.NYM&quot;, &quot;CLN26.NYM&quot;, &quot;CLQ26.NYM&quot;, &quot;CLU26.NYM&quot;,
+  &quot;CLV26.NYM&quot;, &quot;CLX26.NYM&quot;, &quot;CLZ26.NYM&quot;, &quot;CLF27.NYM&quot;,
+  &quot;CLG27.NYM&quot;, &quot;CLH27.NYM&quot;, &quot;CLJ27.NYM&quot;, &quot;CLK27.NYM&quot;
+)</code></pre>
+<p>The curve slope (front-month vs. back-month, annualized) tells you
+whether the market is in <strong>contango</strong> (upward-sloping,
+future prices higher than spot) or <strong>backwardation</strong>
+(downward-sloping, future prices below spot). This distinction matters
+for forecasting: a model that predicts rising prices in a steeply
+backwardated market is fighting the market’s consensus.</p>
+<hr>
+</div>
+</div>
+<div id="features" class="section level2">
+<h2>4. Feature Engineering</h2>
+<p>Raw price data is not directly useful for forecasting. The feature
+engineering step transforms prices into signals that capture momentum,
+volatility, market structure, and seasonal patterns.</p>
+<div id="technical-indicators-03_features.r" class="section level3">
+<h3>Technical indicators (<code>03_features.R</code>)</h3>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Formula</th>
+<th>What It Captures</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ret_1d</code>, <code>ret_5d</code>, <code>ret_21d</code></td>
+<td>Log returns over 1, 5, 21 days</td>
+<td>Short/medium momentum</td>
+</tr>
+<tr class="even">
+<td><code>momentum_63d</code></td>
+<td><code>close / lag(close, 63) - 1</code></td>
+<td>Quarterly trend strength</td>
+</tr>
+<tr class="odd">
+<td><code>macd</code></td>
+<td>12-day EMA minus 26-day EMA</td>
+<td>Trend direction and acceleration</td>
+</tr>
+<tr class="even">
+<td><code>rsi_14</code></td>
+<td>Relative Strength Index (14-day)</td>
+<td>Overbought/oversold signal</td>
+</tr>
+<tr class="odd">
+<td><code>bb_width</code></td>
+<td>Bollinger Band width (20-day, 2 SD)</td>
+<td>Current volatility regime</td>
+</tr>
+<tr class="even">
+<td><code>vol_ratio</code></td>
+<td>5-day SD / 21-day SD</td>
+<td>Volatility expansion/contraction</td>
+</tr>
+<tr class="odd">
+<td><code>price_vs_ma63</code></td>
+<td><code>close / MA(63) - 1</code></td>
+<td>Deviation from medium-term mean</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="seasonal-demand-indices" class="section level3">
+<h3>Seasonal demand indices</h3>
+<p>Oil demand has strong seasonal patterns. The system creates
+continuous indices rather than binary flags:</p>
+<pre class="r"><code>add_seasonal_demand &lt;- function(df) {
+  df |&gt; mutate(
+    # Peaks mid-summer (day ~172), zero in winter
+    driving_season_idx = pmax(0, sin(2 * pi * (yday(date) - 80) / 365)),
+    # Peaks mid-winter, zero in summer
+    heating_demand_idx = pmax(0, -cos(2 * pi * yday(date) / 365)),
+    # Binary: spring + fall turnaround windows
+    refinery_maint = as.integer(month(date) %in% c(3, 4, 9, 10)),
+    summer_peak    = as.integer(month(date) %in% 5:8),
+    winter_heat    = as.integer(month(date) %in% c(11, 12, 1, 2))
+  )
+}</code></pre>
+<div class="callout callout-concept">
+<p><strong>📌 Why continuous indices instead of dummies?</strong> A
+binary <code>summer = TRUE/FALSE</code> variable treats May 1 and August
+15 identically. A sinusoidal index peaks in mid-summer and tapers
+smoothly into the shoulder months, giving the model a richer signal. The
+<code>pmax(0, …)</code> clips negative values so the index is zero
+during the off-season rather than negative.</p>
+</div>
+</div>
+<div id="news-sentiment-04_news_sentiment.r" class="section level3">
+<h3>News sentiment (<code>04_news_sentiment.R</code>)</h3>
+<p>The system scrapes RSS feeds from major energy news sources, scores
+each article using keyword-based topic classification, and computes
+daily sentiment features across five channels:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Channel</th>
+<th>Routes To</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>sent_supply_risk</code></td>
+<td>Brent models</td>
+<td>Geopolitical disruption, pipeline attacks</td>
+</tr>
+<tr class="even">
+<td><code>sent_opec_policy</code></td>
+<td>Brent models</td>
+<td>OPEC+ cuts, quota compliance</td>
+</tr>
+<tr class="odd">
+<td><code>sent_macro_demand</code></td>
+<td>Brent models</td>
+<td>Recession fears, GDP revisions</td>
+</tr>
+<tr class="even">
+<td><code>sent_refinery</code></td>
+<td>CA spread model</td>
+<td>CA refinery outages, maintenance</td>
+</tr>
+<tr class="odd">
+<td><code>sent_ca_regulatory</code></td>
+<td>CA spread model</td>
+<td>CA carbon policy, fuel standards</td>
+</tr>
+</tbody>
+</table>
+<p>A critical design choice: negative news enters the model quickly (0-2
+day lag) while positive news enters slowly (5-21 day rolling average).
+This reflects the empirical asymmetry in how oil markets respond to
+shocks – supply disruptions spike prices within hours, while diplomatic
+resolutions take weeks to filter through.</p>
+<hr>
+</div>
+</div>
+<div id="models" class="section level2">
+<h2>5. The Three Forecasting Models</h2>
+<p>Each model brings a different structural assumption to the
+forecast.</p>
+<div id="arima-x" class="section level3">
+<h3>5.1 ARIMA-X</h3>
+<p>ARIMA (AutoRegressive Integrated Moving Average) with exogenous
+regressors is the classical time-series workhorse. The model is fit on
+log-transformed Brent prices with <code>d=1</code> (first differencing
+enforced) and the technical indicators as external regressors:</p>
+<pre class="r"><code>brent_ts &lt;- ts(log(train$brent_close), frequency = 5)
+
+arima_model &lt;- auto.arima(
+  brent_ts,
+  xreg    = xreg_train,   # scaled feature matrix
+  d       = 1,            # force first differencing
+  stepwise    = TRUE,
+  approximation = TRUE,
+  max.p = 5, max.q = 3,
+  max.P = 1, max.Q = 1,
+  ic = &quot;aicc&quot;
+)</code></pre>
+<p><strong>Strengths:</strong> Captures short-term autocorrelation
+structure (today’s price predicts tomorrow’s). Ljung-Box test on
+residuals tells you if the model has captured all available serial
+correlation.</p>
+<p><strong>Weaknesses:</strong> Assumes the autocorrelation structure is
+stable over the entire training window. In regime-shifting markets, this
+is often false.</p>
+</div>
+<div id="prophet" class="section level3">
+<h3>5.2 Prophet</h3>
+<p>Facebook’s Prophet decomposes the series into trend, weekly
+seasonality, yearly seasonality, and external regressors. It handles
+missing data and holidays automatically:</p>
+<pre class="r"><code>m_prophet &lt;- prophet(
+  seasonality.mode      = &quot;multiplicative&quot;,
+  daily.seasonality     = FALSE,
+  weekly.seasonality    = TRUE,
+  yearly.seasonality    = TRUE,
+  changepoint.prior.scale = 0.15  # controls trend flexibility
+)</code></pre>
+<p><strong>Strengths:</strong> Handles structural breaks (changepoints)
+more gracefully than ARIMA. Multiplicative seasonality is appropriate
+for percentage-based price moves.</p>
+<p><strong>Weaknesses:</strong> Not designed for financial time series.
+The weekly “seasonality” in oil prices is really a day-of-week effect,
+not a true seasonal cycle.</p>
+</div>
+<div id="lasso" class="section level3">
+<h3>5.3 LASSO</h3>
+<p>Least Absolute Shrinkage and Selection Operator regression performs
+automatic feature selection by penalizing coefficient magnitudes toward
+zero. Features that do not improve out-of-sample prediction are dropped
+entirely:</p>
+<pre class="r"><code>en_spec &lt;- linear_reg(penalty = tune(), mixture = tune()) |&gt;
+  set_engine(&quot;glmnet&quot;)
+
+# Time-series cross-validation (rolling origin)
+ts_folds &lt;- rolling_origin(
+  train,
+  initial    = round(nrow(train) * 0.7),
+  assess     = 10,
+  cumulative = FALSE,
+  skip       = 9
+)</code></pre>
+<p><strong>Strengths:</strong> Handles many correlated features without
+manual selection. The regularization path reveals which features carry
+genuine predictive power versus noise.</p>
+<p><strong>Weaknesses:</strong> Linear model – cannot capture nonlinear
+interactions unless you engineer them explicitly.</p>
+<hr>
+</div>
+</div>
+<div id="ensemble" class="section level2">
+<h2>6. The Ensemble</h2>
+<div id="bias-penalized-inverse-rmse-weighting" class="section level3">
+<h3>Bias-penalized inverse-RMSE weighting</h3>
+<p>The three models are combined using inverse-RMSE weights computed
+from expanding-window cross-validation. In v17, a bias penalty was
+added: models that consistently under- or over-predict have their
+effective RMSE inflated, reducing their weight in the ensemble.</p>
+<pre class="r"><code># Directional bias: fraction of over-predictions per model
+over_pct_vec &lt;- c(
+  arima   = mean(xw_all$arima_pred   &gt; xw_all$actual, na.rm = TRUE),
+  prophet = mean(xw_all$prophet_pred &gt; xw_all$actual, na.rm = TRUE),
+  lasso   = mean(xw_all$lasso_pred   &gt; xw_all$actual, na.rm = TRUE)
+)
+
+# Bias penalty: 1.0 (balanced) to 2.0 (completely one-sided)
+bias_penalty_vec &lt;- 1 + 2 * abs(over_pct_vec - 0.5)
+
+# Penalized RMSE for weight computation
+penalized_rmse_vec &lt;- rmse_vec * bias_penalty_vec
+
+# Inverse-penalized-RMSE weights
+wts &lt;- (1 / penalized_rmse_vec) / sum(1 / penalized_rmse_vec)</code></pre>
+<div class="callout callout-formula">
+<p><strong>Bias penalty formula</strong><br> <code>penalty = 1 + 2 *
+|over_pct - 0.50|</code><br><br> A perfectly balanced model (50% over,
+50% under) gets penalty = 1.0. A completely one-sided model (0% or 100%)
+gets penalty = 2.0, doubling its effective RMSE and halving its ensemble
+weight.</p>
+</div>
+</div>
+<div id="why-not-equal-weights" class="section level3">
+<h3>Why not equal weights?</h3>
+<p>Equal weighting (1/3 each) is a strong baseline that often beats
+complex weighting schemes. The bias-penalized approach adds value when
+models have asymmetric errors – if ARIMA consistently under-predicts by
+$5 while LASSO is unbiased, giving them equal weight bakes in a -$1.67
+bias.</p>
+<hr>
+</div>
+</div>
+<div id="anchoring" class="section level2">
+<h2>7. Spot Anchoring and Curve Blending</h2>
+<div id="the-under-prediction-problem" class="section level3">
+<h3>The under-prediction problem</h3>
+<p>The most persistent diagnostic finding across versions was systematic
+under-prediction: <code>over_pct=0%</code> (the model under-predicted
+every single backtest day). The root cause is that the ensemble averages
+three models trained on 18 months of history, which includes periods at
+lower prices. In a rising market, this historical anchoring creates a
+downward drag.</p>
+</div>
+<div id="spot-anchoring-correction" class="section level3">
+<h3>Spot-anchoring correction</h3>
+<p>The fix blends the raw ensemble forecast with a “no-change from spot”
+baseline. The blend weight decays exponentially over the forecast
+horizon using a calibrated half-life:</p>
+<pre class="r"><code># Alpha = 1 at day 0 (pure spot), decays toward 0 (pure model)
+fc_alpha &lt;- 0.5 ^ (fc_days_out / best_halflife)
+
+ensemble_future &lt;- fc_alpha * spot_current +
+                   (1 - fc_alpha) * ensemble_future</code></pre>
+<p>The half-life is calibrated by grid search over the expanding-window
+backtest, choosing the value that minimizes RMSE. A 15-day half-life
+means the model’s own signal dominates by about day 30.</p>
+</div>
+<div id="curve-consistent-blending-v18" class="section level3">
+<h3>Curve-consistent blending (v18)</h3>
+<p>When the ensemble forecasts a direction that contradicts a steep
+futures curve (e.g., predicting a rally in a -22% backwardated market),
+the forecast is blended with the curve-implied price path at longer
+horizons:</p>
+<pre class="r"><code>if (contradicts_curve) {
+  curve_implied &lt;- spot_current * (1 + curve_slope * (fc_days_out / 365))
+  curve_weight  &lt;- pmin(0.60, pmax(0, (fc_days_out - 30) / 240 * 0.60))
+  ensemble_future &lt;- (1 - curve_weight) * ensemble_future +
+                      curve_weight * curve_implied
+}</code></pre>
+<p>The weight ramps from 0 at day 30 to a maximum of 60% at 9 months.
+This prevents the model from predicting a 10% rally when the forward
+curve prices in a 22% decline.</p>
+</div>
+<div id="ar1-residual-correction-v18" class="section level3">
+<h3>AR(1) residual correction (v18)</h3>
+<p>If the backtest residuals show strong autocorrelation (ACF lag-1 &gt;
+0.3), there is persistent structure the ensemble has not captured. An
+AR(1) model fit on the residual series projects a decaying correction
+onto the forecast:</p>
+<pre class="r"><code>residuals_bt &lt;- test$brent_close - ensemble_test
+resid_ar     &lt;- arima(residuals_bt, order = c(1, 0, 0))
+resid_forecast &lt;- predict(resid_ar, n.ahead = length(future_dates))$pred
+
+# Cap at +/- 2 SD to prevent runaway extrapolation
+max_correction &lt;- 2 * sd(residuals_bt)
+resid_forecast &lt;- pmax(-max_correction, pmin(max_correction, resid_forecast))
+
+ensemble_future &lt;- ensemble_future + resid_forecast</code></pre>
+<div class="callout callout-concept">
+<p><strong>📌 The order of corrections matters</strong> The pipeline
+applies corrections in this sequence: (1) raw ensemble, (2) spot
+anchoring with half-life decay, (3) curve-consistent blending, (4) AR(1)
+residual correction. Each layer addresses a specific failure mode
+identified in diagnostic reports. The order ensures that structural
+corrections (spot anchoring) are applied before fine-tuning (residual
+correction).</p>
+</div>
+<hr>
+</div>
+</div>
+<div id="gasoline" class="section level2">
+<h2>8. California Gasoline: The Spread Model</h2>
+<p>Converting a Brent crude forecast to a California retail gasoline
+price requires modeling the <em>spread</em> – the markup between crude
+and pump price. This markup reflects refining costs, distribution,
+taxes, seasonal blend requirements, and CA-specific regulatory
+costs.</p>
+<div id="gam-with-holdout-validation" class="section level3">
+<h3>GAM with holdout validation</h3>
+<p>A Generalized Additive Model (GAM) captures the nonlinear
+relationship between Brent and the spread:</p>
+<pre class="r"><code>spread_gam &lt;- mgcv::gam(
+  spread ~ s(dl_brent_lag, k = 8) +   # nonlinear pass-through
+    s(driving_season_idx, k = 5) +     # seasonal cycle
+    lag_spread +                        # autoregressive component
+    refinery_stress +                   # CA refinery outage intensity
+    sent_refinery +                     # refinery sentiment
+    sent_ca_regulatory +                # CA regulatory sentiment
+    summer_peak + winter_heat,
+  data   = spread_df,
+  method = &quot;REML&quot;
+)</code></pre>
+</div>
+<div id="the-overfitting-problem-and-ols-fallback-v18" class="section level3">
+<h3>The overfitting problem and OLS fallback (v18)</h3>
+<p>In v17, the GAM achieved in-sample adjusted R-squared of 0.860 but
+holdout R-squared of -15.049 – worse than predicting the mean. The GAM
+was fitting noise in the training data despite reduced basis dimensions
+(<code>k=8</code>, <code>k=5</code>).</p>
+<p>The v18 fix adds automatic holdout validation: after fitting the GAM,
+hold out the last 15% of training data and check R-squared. If negative,
+fall back to a simpler OLS model:</p>
+<pre class="r"><code>gam_val_n    &lt;- min(30, floor(nrow(spread_df) * 0.15))
+gam_val_df   &lt;- tail(spread_df, gam_val_n)
+gam_train_df &lt;- head(spread_df, nrow(spread_df) - gam_val_n)
+
+gam_val_model &lt;- mgcv::gam(/* same formula */, data = gam_train_df)
+gam_val_pred  &lt;- predict(gam_val_model, newdata = gam_val_df)
+gam_val_r2    &lt;- 1 - var(gam_val_df$spread - gam_val_pred) /
+                     var(gam_val_df$spread)
+
+if (gam_val_r2 &lt; 0) {
+  # Fall back to OLS
+  spread_gam &lt;- lm(
+    spread ~ dl_brent_lag + driving_season_idx + lag_spread +
+      refinery_stress + summer_peak + winter_heat + quarter,
+    data = spread_df
+  )
+}</code></pre>
+<div class="callout callout-warn">
+<p><strong>⚠️ Negative R-squared is possible and meaningful</strong>
+R-squared below zero means your model is <em>worse</em> than a
+horizontal line at the mean. This is common when a flexible model (GAM,
+polynomial regression, neural network) is evaluated on genuinely
+out-of-sample data. Always evaluate on a holdout, never on training data
+alone.</p>
+</div>
+<hr>
+</div>
+</div>
+<div id="diagnostics" class="section level2">
+<h2>9. Diagnostic-Driven Development</h2>
+<p>The most important lesson of this project is not any single modeling
+technique – it is the <em>workflow</em> of using diagnostics to drive
+improvements. Each version of the model produces a compact diagnostic
+report that encodes pass/fail flags for key metrics:</p>
+<pre><code>OIL v17 | 2026-05-26 | train=351 | bt=20 | xw_folds=5
+SKILL: RW=FIX (-147.8%) | Mean=OK (63.5%) | Trend=OK (4.4%)
+XW_SKILL: vs_RW=-30.7% dir_acc=89.4%(OK)
+BRENT: RMSE=$13.2 MAPE=11.4% R2=0.035
+BIAS: over_pct=0% err_acf1=0.656 err_trend=-0.585$/d verdict=BIASED</code></pre>
+<div id="reading-the-diagnostic" class="section level3">
+<h3>Reading the diagnostic</h3>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>What It Means</th>
+<th>Passing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SKILL vs RW</code></td>
+<td>Does the model beat “today’s price = tomorrow’s price”?</td>
+<td>&gt; 0%</td>
+</tr>
+<tr class="even">
+<td><code>dir_acc</code></td>
+<td>Fraction of days the model correctly predicts price direction</td>
+<td>&gt; 50%</td>
+</tr>
+<tr class="odd">
+<td><code>over_pct</code></td>
+<td>Fraction of backtest days the model over-predicts</td>
+<td>Near 50%</td>
+</tr>
+<tr class="even">
+<td><code>err_acf1</code></td>
+<td>Lag-1 autocorrelation of errors</td>
+<td>&lt; 0.30</td>
+</tr>
+<tr class="odd">
+<td><code>err_trend</code></td>
+<td>Linear trend in errors over time</td>
+<td>Near 0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="the-improvement-log" class="section level3">
+<h3>The improvement log</h3>
+<p>Every version’s header documents the specific diagnostic finding that
+motivated each change:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Version</th>
+<th>Diagnostic Finding</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>v08</td>
+<td>over_pct=0%, raw 1M forecast $11.50 below spot</td>
+<td>Spot-anchoring correction</td>
+</tr>
+<tr class="even">
+<td>v16</td>
+<td>Single 30-day holdout dominated by one regime</td>
+<td>Expanding-window backtest</td>
+</tr>
+<tr class="odd">
+<td>v17</td>
+<td>All models biased in same direction</td>
+<td>Bias-penalized ensemble weights</td>
+</tr>
+<tr class="even">
+<td>v18</td>
+<td>6M forecast contradicts -22% backwardated curve</td>
+<td>Curve-consistent blending</td>
+</tr>
+<tr class="odd">
+<td>v18</td>
+<td>err_acf1=0.656, persistent error structure</td>
+<td>AR(1) residual correction</td>
+</tr>
+<tr class="even">
+<td>v18</td>
+<td>GAM holdout R2=-15.049</td>
+<td>OLS fallback gate</td>
+</tr>
+</tbody>
+</table>
+<div class="key-box">
+<h4>
+🔑 The diagnostic-driven workflow
+</h4>
+<ul>
+<li>
+Run the model and generate the diagnostic report.
+</li>
+<li>
+Identify the <strong>worst</strong> metric – the one most clearly
+failing.
+</li>
+<li>
+Trace the failure to a specific structural cause (not just “needs more
+data”).
+</li>
+<li>
+Design a targeted fix that addresses <em>that</em> cause.
+</li>
+<li>
+Document the fix in the version header with the diagnostic evidence.
+</li>
+<li>
+Re-run and check whether the target metric improved <em>without</em>
+degrading others.
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+<div id="iteration" class="section level2">
+<h2>10. Forward Feature Realism (v18)</h2>
+<p>A subtle but important issue: what values do features take in the
+forecast horizon? During training, the model sees
+<code>momentum_63d</code> at its actual realized value. During
+forecasting, you do not know what momentum will be next month.</p>
+<p>Earlier versions set momentum to zero in the forecast horizon – a
+safe default that creates a discontinuity at the forecast boundary. In a
+strong trend regime, this means the LASSO’s positive momentum
+coefficients suddenly contribute nothing, dragging the forecast toward
+the mean.</p>
+<p>The v18 fix calibrates an AR(1) decay rate from the feature’s own
+autocorrelation in the training data:</p>
+<pre class="r"><code>mom_series &lt;- master$momentum_63d[!is.na(master$momentum_63d)]
+phi_mom &lt;- max(0.50, min(0.95,
+  cor(mom_series[-1], mom_series[-length(mom_series)],
+      use = &quot;complete.obs&quot;)))
+
+# Exponential decay from last observed value
+future_frame$momentum_63d &lt;- last_tech(&quot;momentum_63d&quot;) *
+  phi_mom ^ seq_along(future_dates)</code></pre>
+<p>If the training-period autocorrelation of momentum is 0.85, the
+feature decays with a half-life of about 4.3 days
+(<code>log(0.5)/log(0.85)</code>), which is realistic: momentum persists
+for a few days and then fades. The bounds (0.50 to 0.95) prevent the
+decay from being either instantaneous or essentially permanent.</p>
+<div class="callout callout-tip">
+<p><strong>📌 Try it: check your feature autocorrelations</strong> For
+any feature you project into the forecast horizon, compute its lag-1
+autocorrelation in the training data: <code>cor(x[-1],
+x[-length(x)])</code>. If it is high (&gt; 0.8), the feature is
+persistent and an AR(1) projection is reasonable. If it is low (&lt;
+0.3), the feature is noisy and should be set to its unconditional mean,
+not projected forward.</p>
+</div>
+<hr>
+</div>
+<div id="next-steps" class="section level2">
+<h2>11. Next Steps</h2>
+<p>The v18 diagnostic report will reveal whether the four fixes
+addressed the core problems. Based on the improvement roadmap, the
+likely next priorities are:</p>
+<p><strong>Regime detection.</strong> Classify the market state
+(high-volatility, contango, backwardation, normal) and train separate
+ensemble weights per regime. A hidden Markov model with 2-3 states would
+allow soft transitions rather than hard cutoffs.</p>
+<p><strong>Meta-ensemble.</strong> Replace static inverse-RMSE weights
+with a meta-learner (ridge regression or gradient boosting) that takes
+the three model predictions plus regime features as inputs. This only
+adds value <em>after</em> the individual models are unbiased – stacking
+biased models just learns to be biased more efficiently.</p>
+<p><strong>SHAP values for interpretability.</strong> Use Shapley values
+to decompose each day’s forecast into feature contributions. This
+transforms the model from a black box into a narrative: “Today’s
+forecast is $2.30 above yesterday’s because momentum contributed +$1.80
+and sentiment contributed +$0.50.”</p>
+<div class="key-box">
+<h4>
+🔑 Key takeaways
+</h4>
+<ul>
+<li>
+<strong>Modularity matters.</strong> Sixteen scripts with clear
+responsibilities are easier to debug and extend than one monolithic
+file.
+</li>
+<li>
+<strong>Diagnostics drive improvement.</strong> Every modeling decision
+should trace to a specific empirical finding, not intuition.
+</li>
+<li>
+<strong>Baselines are sacred.</strong> If your model cannot beat
+“today’s price = tomorrow’s price,” it is not adding value – it is
+adding noise.
+</li>
+<li>
+<strong>The spread is harder than the crude.</strong> Converting barrel
+to pump involves California-specific factors that change faster than
+global oil dynamics.
+</li>
+<li>
+<strong>Overfitting is the default.</strong> Always evaluate on a
+holdout. A model with adjR2=0.86 in-sample and R2=-15 on holdout is not
+a good model.
+</li>
+</ul>
+</div>
+<footer class="page-footer">
+EA030 RTricks <span class="divider">|</span> Prof. Marc Los Huertos
+<span class="divider">|</span> Pomona College <span class="divider">|</span> Last updated: May 2026 <span class="divider">|</span>
+<a href="https://github.com/marclos/RTricks">GitHub</a>
+</footer>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
