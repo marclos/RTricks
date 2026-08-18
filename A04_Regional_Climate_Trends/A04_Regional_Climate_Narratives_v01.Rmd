@@ -34,7 +34,7 @@ knitr::opts_chunk$set(
 ## ---------------------------------------------------------------------------
 ## Build the student install bundle during knit.
 ##
-## 1. Finds the newest ClimateNarratives_<ver>.tar.gz near this Rmd
+## 1. Finds the newest Regional_Climate_Narratives_<ver>.tar.gz near this Rmd
 ##    (searches the Rmd's folder, its parent, and parent/dist if present)
 ## 2. If the package SOURCE is also present (a DESCRIPTION file one level
 ##    up), rebuilds the tar.gz via R CMD build when it is older than R/,
@@ -42,7 +42,8 @@ knitr::opts_chunk$set(
 ##    tar.gz is used as-is.
 ## 3. Stages the tar.gz plus install_package.R, example_workflow.R, and
 ##    the package reference into a folder
-## 4. Zips that folder to docs/downloads/ClimateNarratives_Student_Files.zip
+## 4. Zips them (flat, no wrapper folder) to docs/downloads/
+##    Regional_Climate_Narratives--Student_Files.zip
 ##
 ## The handout links to the zip with a path relative to docs/Activities/,
 ## so the link works on the published site.
@@ -56,16 +57,16 @@ search_dirs <- unique(c(rmd_dir, pkg_root, file.path(pkg_root, "dist")))
 search_dirs <- search_dirs[dir.exists(search_dirs)]
 
 tarballs <- unlist(lapply(search_dirs, list.files,
-                          pattern = "^ClimateNarratives_.*\\.tar\\.gz$",
+                          pattern = "^Regional_Climate_Narratives_.*\\.tar\\.gz$",
                           full.names = TRUE))
 if (length(tarballs) == 0 && !file.exists(file.path(pkg_root, "DESCRIPTION"))) {
-  stop("No ClimateNarratives_*.tar.gz found in:\n  ",
+  stop("No Regional_Climate_Narratives_*.tar.gz found in:\n  ",
        paste(search_dirs, collapse = "\n  "),
        "\nand no package source (DESCRIPTION) to build one from.")
 }
 
 ## newest version wins if several are lying around (e.g., 0.3.0 and 0.3.1)
-tb_versions <- sub("^ClimateNarratives_(.*)\\.tar\\.gz$", "\\1", basename(tarballs))
+tb_versions <- sub("^Regional_Climate_Narratives_(.*)\\.tar\\.gz$", "\\1", basename(tarballs))
 if (length(tarballs) > 0) {
   ord     <- order(as.numeric_version(tb_versions), decreasing = TRUE)
   tarball <- tarballs[ord[1]]
@@ -94,7 +95,7 @@ if (has_source) {
                       stdout = TRUE, stderr = TRUE)
     setwd(owd)
     tarball <- file.path(pkg_root,
-                         sprintf("ClimateNarratives_%s.tar.gz", src_version))
+                         sprintf("Regional_Climate_Narratives_%s.tar.gz", src_version))
     if (!file.exists(tarball)) {
       stop("R CMD build did not produce ", basename(tarball), ":\n",
            paste(status, collapse = "\n"))
@@ -103,7 +104,32 @@ if (has_source) {
 }
 
 tarball_name <- basename(tarball)
-pkg_version  <- sub("^ClimateNarratives_(.*)\\.tar\\.gz$", "\\1", tarball_name)
+
+## True version comes from the DESCRIPTION inside the tarball, not the
+## filename (a renamed file can disagree with its contents). Fall back to
+## the filename version only if the archive cannot be read.
+version_from_tarball <- function(tb) {
+  contents <- tryCatch(utils::untar(tb, list = TRUE), error = function(e) NULL)
+  descs <- grep("^[^/]+/DESCRIPTION$", contents, value = TRUE)
+  if (length(descs) == 0) return(NA_character_)
+  exd <- file.path(tempdir(), "tb_desc"); unlink(exd, recursive = TRUE)
+  ok <- tryCatch({ utils::untar(tb, files = descs[1], exdir = exd); TRUE },
+                 error = function(e) FALSE)
+  if (!ok) return(NA_character_)
+  unname(read.dcf(file.path(exd, descs[1]))[1, "Version"])
+}
+
+fname_version <- sub("^Regional_Climate_Narratives_(.*)\\.tar\\.gz$", "\\1", tarball_name)
+pkg_version   <- version_from_tarball(tarball)
+if (is.na(pkg_version)) pkg_version <- fname_version
+if (!identical(pkg_version, fname_version)) {
+  cat("\nNOTE [build_student_bundle]: tarball filename says v", fname_version,
+      " but its DESCRIPTION says v", pkg_version,
+      ".\nHandout will show v", pkg_version,
+      " (the version that actually installs).\n",
+      "Bump Version in DESCRIPTION and rebuild, or rename the file.\n\n",
+      sep = "", file = stderr())
+}
 
 ## --- stage the bundle ------------------------------------------------------
 ## companion files may sit next to the Rmd or at pkg_root
@@ -113,8 +139,8 @@ find_near <- function(fname) {
   if (length(hits) > 0) hits[1] else NA_character_
 }
 
-stage_name <- "ClimateNarratives_Student_Files"
-stage      <- file.path(tempdir(), stage_name)
+zip_name <- "Regional_Climate_Narratives--Student_Files.zip"
+stage    <- file.path(tempdir(), "student_bundle_stage")
 unlink(stage, recursive = TRUE)
 dir.create(stage)
 
@@ -122,26 +148,30 @@ bundle_files <- c(
   tarball,
   find_near("install_package.R"),
   find_near("example_workflow.R"),
-  find_near("ClimateNarratives_Package_Reference.md")
+  find_near("Regional_Climate_Narratives--Package_Reference.md")
 )
 missing_files <- is.na(bundle_files)
 if (any(missing_files)) {
   warning("Bundle is missing: ",
           paste(c("install_package.R", "example_workflow.R",
-                  "ClimateNarratives_Package_Reference.md")[missing_files[-1]],
+                  "Regional_Climate_Narratives--Package_Reference.md")[missing_files[-1]],
                 collapse = ", "))
 }
 invisible(file.copy(bundle_files[!missing_files], stage))
 
 ## --- zip into docs/downloads/ ----------------------------------------------
+## NOTE: files sit at the zip ROOT (no wrapper folder). Students create
+## ~/regional_climate_narratives themselves and upload the zip there; RStudio
+## Server auto-extracts, so the files land directly in that folder.
 downloads_dir <- file.path(pkg_root, "docs", "downloads")
 dir.create(downloads_dir, recursive = TRUE, showWarnings = FALSE)
-zip_path <- file.path(downloads_dir, paste0(stage_name, ".zip"))
+zip_path <- file.path(downloads_dir, zip_name)
 unlink(zip_path)
 
-owd <- setwd(dirname(stage))                 # zip from the parent so the
-utils::zip(zip_path, files = stage_name,     # archive contains one folder
-           flags = "-r9Xq")
+owd <- setwd(stage)                          # zip from inside the stage so
+utils::zip(zip_path,                         # there is no top-level folder
+           files = list.files(stage),
+           flags = "-9Xq")
 setwd(owd)
 
 if (!file.exists(zip_path)) stop("Failed to create ", zip_path)
@@ -360,7 +390,7 @@ tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); vertica
 
 <div class="page-header">
 <div class="module-tag">EA030 &mdash; RTricks &mdash; Activity 04</div>
-<h1>Regional Climate Narratives: <span>NOAA Station Trends with ClimateNarratives</span></h1>
+<h1>Regional Climate Narratives: <span>Mapping a Century of NOAA Station Trends</span></h1>
 <p class="sub"><strong>Prof. Marc Los Huertos</strong> &nbsp;&bull;&nbsp; Pomona College &nbsp;&bull;&nbsp; Environmental Analysis</p>
 <a class="back-link" href="../index.html">&#8592; Back to RTricks</a>
 </div>
@@ -388,7 +418,7 @@ tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); vertica
 </ol>
 </div>
 
-> **What this activity covers.** Every weather station tells a hundred-year story, but a single thermometer cannot show *where* and *when* a state is changing fastest. In this activity you will install the **ClimateNarratives** package (v`r pkg_version`), download daily records for your assigned state's 50 longest-running NOAA stations, convert raw observations into normals, anomalies, and century-scale trends, and map those trends across your state. The maps become the evidence base for your climate narrative video.
+> **What this activity covers.** Every weather station tells a hundred-year story, but a single thermometer cannot show *where* and *when* a state is changing fastest. In this activity you will install the **Regional Climate Narratives** package, `RegionalClimateNarratives` (v`r pkg_version`), download daily records for your assigned state's 50 longest-running NOAA stations, convert raw observations into normals, anomalies, and century-scale trends, and map those trends across your state. The maps become the evidence base for your climate narrative video.
 
 <div class="step-grid">
 <div class="step-card"><div class="sc-num">Part 1 &middot; once ever</div><div class="sc-title">Install</div><div class="sc-desc">Upload the zip, install dependencies and the package.</div></div>
@@ -402,15 +432,15 @@ tbody td { padding: 7px 12px; border-bottom: 1px solid var(--parchment); vertica
 ## Download the Course Files {#download}
 
 <div class="callout callout-new">
-<strong>&#128230; Download first: <a href="../downloads/ClimateNarratives_Student_Files.zip">ClimateNarratives_Student_Files.zip</a> (`r zip_size_mb` MB)</strong>
+<strong>&#128230; Download first: <a href="../downloads/Regional_Climate_Narratives--Student_Files.zip">Regional_Climate_Narratives--Student_Files.zip</a> (`r zip_size_mb` MB)</strong>
 The zip contains everything you need to upload to the RStudio Server:
 <ul>
-<li><code>`r tarball_name`</code> &ndash; the ClimateNarratives package installer</li>
+<li><code>`r tarball_name`</code> &ndash; the Regional Climate Narratives package installer</li>
 <li><code>install_package.R</code> &ndash; a script that installs all required packages for you, with clear pass/fail reporting</li>
 <li><code>example_workflow.R</code> &ndash; a complete worked example you can adapt</li>
-<li><code>ClimateNarratives_Package_Reference.md</code> &ndash; reference for every function</li>
+<li><code>Regional_Climate_Narratives--Package_Reference.md</code> &ndash; reference for every function</li>
 </ul>
-Save the zip somewhere you can find it (Downloads is fine). You will upload it to the server in Part 1.
+Save the zip somewhere you can find it (Downloads is fine). In Part 1 you will create a <code>regional_climate_narratives</code> folder on the server and upload the zip there.
 </div>
 
 You also need:
@@ -429,18 +459,19 @@ You only do Part 1 once, the very first time. After the package is installed, yo
 
 Open your web browser and go to the RStudio Server URL your instructor gave you. Log in with your username and password. You should see the RStudio interface with a Console pane on the left.
 
-### Step 2 - Upload the zip file
+### Step 2 - Create a folder and upload the zip file
 
 1. In the **Files** pane (bottom right), click the Home icon (the little house)
-2. Click the **Upload** button (it has an upward arrow icon)
-3. Click **Choose File** and select `ClimateNarratives_Student_Files.zip` from your computer
-4. Click **OK**
+2. Click **New Folder** and name it exactly `regional_climate_narratives` (all lowercase, with underscores), then click **OK**
+3. Click the `regional_climate_narratives` folder to open it
+4. Click the **Upload** button (it has an upward arrow icon)
+5. Click **Choose File**, select `Regional_Climate_Narratives--Student_Files.zip` from your computer, and click **OK**
 
-RStudio Server automatically unzips the file for you. You should now see a folder called `ClimateNarratives_Student_Files` in the Files pane.
+RStudio Server automatically unzips the file for you, so the files land directly inside `regional_climate_narratives`.
 
 <div class="callout callout-tip">
 <strong>&#9989; Check</strong>
-Click into the folder. You should see <code>`r tarball_name`</code>, <code>install_package.R</code>, <code>example_workflow.R</code>, and the package reference.
+The <code>regional_climate_narratives</code> folder should now contain <code>`r tarball_name`</code>, <code>install_package.R</code>, <code>example_workflow.R</code>, and the package reference. If you instead see the files sitting in your Home folder, you uploaded before opening the folder in step 3; move them into <code>regional_climate_narratives</code> (check the boxes, then More &gt; Move).
 </div>
 
 ### Step 3 - Point R at that folder
@@ -448,7 +479,7 @@ Click into the folder. You should see <code>`r tarball_name`</code>, <code>insta
 In the **Console** (bottom left pane), type:
 
 ```{r}
-setwd("~/ClimateNarratives_Student_Files")
+setwd("~/regional_climate_narratives")
 ```
 
 Then verify the installer file is there:
@@ -459,8 +490,8 @@ Then verify the installer file is there:
 This **must** print `TRUE`. If it prints `FALSE`:
 
 - Did you upload the zip? (Go back to Step 2.)
-- Did the zip unpack into a folder? Check the Files pane.
-- Did you type the `setwd(...)` line? Run `getwd()` to see where R is looking.
+- Are the files inside `regional_climate_narratives`? Check the Files pane (see the Step 2 check).
+- Did you type the `setwd(...)` line exactly, including underscores? Run `getwd()` to see where R is looking.
 
 <div class="callout callout-warn">
 <strong>&#9888;&#65039; Do not continue until <code>file.exists(...)</code> returns <code>TRUE</code>.</strong>
@@ -469,7 +500,7 @@ Every installation problem in Step 5 traces back to this check being skipped.
 
 ### Step 4 - Install the required packages (dependencies)
 
-ClimateNarratives needs several other R packages to work. Install them first. Copy and paste this entire block into the Console and press Enter:
+The package needs several other R packages to work. Install them first. Copy and paste this entire block into the Console and press Enter:
 
 ```{r}
 install.packages(c(
@@ -486,7 +517,7 @@ This takes several minutes. You will see a lot of text scrolling by; that is nor
 After it finishes, look for any lines containing <code>had non-zero exit status</code>. That means a package failed to install. If you see it, note the package name and try installing it individually, e.g., <code>install.packages("sf")</code>. If a package keeps failing, tell your instructor; it may need a system library installed on the server.
 </div>
 
-### Step 5 - Install ClimateNarratives
+### Step 5 - Install the Regional Climate Narratives package
 
 Now install the actual package. Type:
 
@@ -496,7 +527,7 @@ Now install the actual package. Type:
 Wait for it to finish. The last lines should include:
 
 ```
-* DONE (ClimateNarratives)
+* DONE (RegionalClimateNarratives)
 ```
 
 **If you see `ERROR` or `had non-zero exit status` instead:**
@@ -504,10 +535,10 @@ Read the error message. It usually names a missing package. Go back to Step 4 an
 
 ### Step 6 - Verify it works
 
-Load the package:
+Load the package. Note the name here has no underscores: R package names cannot contain them, so the package is `RegionalClimateNarratives` even though the files use `Regional_Climate_Narratives`:
 
 ```{r}
-library(ClimateNarratives)
+library(RegionalClimateNarratives)
 ```
 
 You should see this startup message:
@@ -515,15 +546,15 @@ You should see this startup message:
 ```{r, echo=FALSE, eval=TRUE, results='asis'}
 cat("```\n",
     "===========================================================\n",
-    sprintf(" ClimateNarratives v%s\n", pkg_version),
+    sprintf(" Regional Climate Narratives v%s\n", pkg_version),
     "===========================================================\n",
     " Regional Climate Trends Analysis and Visualization\n",
-    " Type ?ClimateNarratives for help\n",
+    " Type ?RegionalClimateNarratives for help\n",
     "===========================================================\n",
     "```\n", sep = "")
 ```
 
-**If you see a `!!!` warning about missing packages instead**, run `check_dependencies()`, then try `library(ClimateNarratives)` again.
+**If you see a `!!!` warning about missing packages instead**, run `check_dependencies()`, then try `library(RegionalClimateNarratives)` again.
 
 <div class="callout callout-tip">
 <strong>&#9989; Part 1 complete</strong>
@@ -552,7 +583,7 @@ initialize_project("NY")   # New York
 
 **What this does:**
 
-- Creates a project folder in your home directory (e.g., `~/ClimateNarratives_CA/`)
+- Creates a project folder in your home directory (e.g., `~/Regional_Climate_Narratives_CA/`)
 - Creates `Data/`, `Output/`, and `Figures/` subfolders inside it
 - Downloads a list of available weather stations from NOAA
 - Changes your working directory to the project folder (you do NOT need to call `setwd()` yourself)
@@ -598,12 +629,12 @@ When your R session ends (you log out, your session times out, or you restart R)
 
 <div class="key-box">
 <h4>&#128273; Every new session starts with these three lines</h4>
-<pre style="border-left-color: var(--amber); margin: 10px 0;"><code>library(ClimateNarratives)
+<pre style="border-left-color: var(--amber); margin: 10px 0;"><code>library(RegionalClimateNarratives)
 initialize_project("XX")     # your state code, e.g., "CA"
 load_stations()</code></pre>
 <ul>
-<li><strong><code>library(ClimateNarratives)</code></strong> loads the package functions (they are not available until you do this)</li>
-<li><strong><code>initialize_project("XX")</code></strong> sets your working directory to <code>~/ClimateNarratives_XX/</code> and creates the path variables (<code>datafolder</code>, <code>figuresfolder</code>). This replaces any need to call <code>setwd()</code> yourself.</li>
+<li><strong><code>library(RegionalClimateNarratives)</code></strong> loads the package functions (they are not available until you do this)</li>
+<li><strong><code>initialize_project("XX")</code></strong> sets your working directory to <code>~/Regional_Climate_Narratives_XX/</code> and creates the path variables (<code>datafolder</code>, <code>figuresfolder</code>). This replaces any need to call <code>setwd()</code> yourself.</li>
 <li><strong><code>load_stations()</code></strong> loads your previously saved weather data from the <code>Data/</code> folder back into memory</li>
 </ul>
 You do NOT need to call <code>setwd()</code>, re-download anything, or re-install the package.
@@ -664,7 +695,7 @@ ggsave(paste0(figuresfolder, "TMAX_annual_", my.state, ".png"),
        map_tmax, width = 10, height = 8, dpi = 300)
 ```
 
-The file saves into your `Figures/` folder. Find it in the Files pane under `~/ClimateNarratives_XX/Figures/`.
+The file saves into your `Figures/` folder. Find it in the Files pane under `~/Regional_Climate_Narratives_XX/Figures/`.
 
 **Annual minimum temperature trend:**
 
@@ -732,7 +763,7 @@ ggsave(paste0(figuresfolder, "Seasonal_TMAX_", my.state, ".png"),
 Copy this block, change the state code on line 2, and run it:
 
 ```{r}
-library(ClimateNarratives)
+library(RegionalClimateNarratives)
 initialize_project("CA")     # <-- CHANGE THIS TO YOUR STATE
 load_stations()
 
@@ -793,9 +824,9 @@ Replace `TMAX` with `TMIN` or `PRCP` for min temperature or precipitation versio
 
 | What | Saved to disk? | What to do next session |
 |------|---------------|------------------------|
-| The ClimateNarratives package | Yes, installed permanently | Run `library(ClimateNarratives)` |
-| Your downloaded weather data | Yes, in `~/ClimateNarratives_XX/Data/` | Run `load_stations()` |
-| Your saved heat map images | Yes, in `~/ClimateNarratives_XX/Figures/` | Nothing; the PNG files are already saved |
+|  The `RegionalClimateNarratives` package | Yes, installed permanently | Run `library(RegionalClimateNarratives)` |
+| Your downloaded weather data | Yes, in `~/Regional_Climate_Narratives_XX/Data/` | Run `load_stations()` |
+| Your saved heat map images | Yes, in `~/Regional_Climate_Narratives_XX/Figures/` | Nothing; the PNG files are already saved |
 | Variables in memory (`trends`, `my.state`, `map_tmax`, etc.) | No, R clears memory | Re-run `initialize_project()` and `load_stations()` |
 | Your working directory setting | No, resets when session ends | `initialize_project()` sets it for you |
 
@@ -803,8 +834,8 @@ Replace `TMAX` with `TMIN` or `PRCP` for min temperature or precipitation versio
 
 ```{r}
 ?initialize_project          # Help for a specific function
-?ClimateNarratives           # Package overview
-help(package = "ClimateNarratives")   # List all functions
+?RegionalClimateNarratives           # Package overview
+help(package = "RegionalClimateNarratives")   # List all functions
 ```
 
 If you are stuck, show your instructor the **exact error message**. Copy the red text from the Console.
@@ -818,8 +849,8 @@ If you are stuck, show your instructor the **exact error message**. Copy the red
 The installer file is not in your current working directory. Check:
 
 1. Did you upload the zip? (Part 1, Step 2)
-2. Did the zip unpack into `ClimateNarratives_Student_Files`? Check the Files pane.
-3. Did you run `setwd("~/ClimateNarratives_Student_Files")`? Run `getwd()` to see where R is looking.
+2. Are the files inside `regional_climate_narratives`? Check the Files pane.
+3. Did you run `setwd("~/regional_climate_narratives")`? Run `getwd()` to see where R is looking.
 
 ### "there is no package called ..."
 
@@ -832,7 +863,7 @@ install.packages("sf")   # replace with the package name from the error
 Or install all dependencies at once (copy-paste from Part 1, Step 4). Or run the included installer script, which handles everything with pass/fail reporting:
 
 ```{r}
-setwd("~/ClimateNarratives_Student_Files")
+setwd("~/regional_climate_narratives")
 source("install_package.R")
 ```
 
@@ -849,15 +880,15 @@ Your data has not been downloaded yet, or the download did not finish. Go back t
 Either the package is not loaded, or an old version is installed. Try:
 
 ```{r}
-library(ClimateNarratives)
+library(RegionalClimateNarratives)
 ```
 
 If that does not help, reinstall:
 
-```{r, code=sprintf('setwd("~/ClimateNarratives_Student_Files")\ninstall.packages("%s", repos = NULL, type = "source")', tarball_name)}
+```{r, code=sprintf('setwd("~/regional_climate_narratives")\ninstall.packages("%s", repos = NULL, type = "source")', tarball_name)}
 ```
 
-Then go to Session > Restart R in the RStudio menu, and try `library(ClimateNarratives)` again.
+Then go to Session > Restart R in the RStudio menu, and try `library(RegionalClimateNarratives)` again.
 
 ### Download seems stuck
 
@@ -882,5 +913,5 @@ NOAA servers can be slow. For 50 stations, expect 10 to 30 minutes. If it stops 
 Run `getwd()` to see your current project folder. Your files are in `Data/` (weather data), `Figures/` (saved heat maps), and `Output/` (analysis results). Or navigate in the Files pane (bottom right of RStudio).
 
 <div class="page-footer">
-EA030 &middot; Environmental Analysis <span class="divider">|</span> ClimateNarratives v`r pkg_version` <span class="divider">|</span> <a href="../index.html">RTricks Home</a> <span class="divider">|</span> Compiled `r format(Sys.Date(), '%Y-%m-%d')`
+EA030 &middot; Environmental Analysis <span class="divider">|</span> Regional Climate Narratives v`r pkg_version` <span class="divider">|</span> <a href="../index.html">RTricks Home</a> <span class="divider">|</span> Compiled `r format(Sys.Date(), '%Y-%m-%d')`
 </div>

@@ -315,8 +315,8 @@ font-size: .76rem; font-family: 'Source Code Pro', monospace; letter-spacing: .0
 EA030 — RTricks — Activity 04
 </div>
 <h1>
-Regional Climate Narratives: <span>NOAA Station Trends with
-ClimateNarratives</span>
+Regional Climate Narratives: <span>Mapping a Century of NOAA Station
+Trends</span>
 </h1>
 <p class="sub">
 <strong>Prof. Marc Los Huertos</strong>  •  Pomona College  • 
@@ -366,7 +366,8 @@ climate narrative.
 <p><strong>What this activity covers.</strong> Every weather station
 tells a hundred-year story, but a single thermometer cannot show
 <em>where</em> and <em>when</em> a state is changing fastest. In this
-activity you will install the <strong>ClimateNarratives</strong> package
+activity you will install the <strong>Regional Climate
+Narratives</strong> package, <code>RegionalClimateNarratives</code>
 (v0.3.1), download daily records for your assigned state’s 50
 longest-running NOAA stations, convert raw observations into normals,
 anomalies, and century-scale trends, and map those trends across your
@@ -424,13 +425,13 @@ Make annual and seasonal heat maps for your narrative.
 <h2>Download the Course Files</h2>
 <div class="callout callout-new">
 <strong>📦 Download first:
-<a href="../downloads/ClimateNarratives_Student_Files.zip">ClimateNarratives_Student_Files.zip</a>
+<a href="../downloads/Regional_Climate_Narratives--Student_Files.zip">Regional_Climate_Narratives–Student_Files.zip</a>
 (0 MB)</strong> The zip contains everything you need to upload to the
 RStudio Server:
 <ul>
 <li>
-<code>ClimateNarratives_0.3.1.tar.gz</code> – the ClimateNarratives
-package installer
+<code>Regional_Climate_Narratives_0.3.1.tar.gz</code> – the Regional
+Climate Narratives package installer
 </li>
 <li>
 <code>install_package.R</code> – a script that installs all required
@@ -441,12 +442,13 @@ packages for you, with clear pass/fail reporting
 adapt
 </li>
 <li>
-<code>ClimateNarratives_Package_Reference.md</code> – reference for
-every function
+<code>Regional_Climate_Narratives–Package_Reference.md</code> –
+reference for every function
 </li>
 </ul>
-<p>Save the zip somewhere you can find it (Downloads is fine). You will
-upload it to the server in Part 1.</p>
+<p>Save the zip somewhere you can find it (Downloads is fine). In Part 1
+you will create a <code>regional_climate_narratives</code> folder on the
+server and upload the zip there.</p>
 </div>
 <p>You also need:</p>
 <ul>
@@ -469,40 +471,49 @@ installed, you never need to repeat these steps.</p>
 instructor gave you. Log in with your username and password. You should
 see the RStudio interface with a Console pane on the left.</p>
 </div>
-<div id="step-2---upload-the-zip-file" class="section level3">
-<h3>Step 2 - Upload the zip file</h3>
+<div id="step-2---create-a-folder-and-upload-the-zip-file" class="section level3">
+<h3>Step 2 - Create a folder and upload the zip file</h3>
 <ol style="list-style-type: decimal">
 <li>In the <strong>Files</strong> pane (bottom right), click the Home
 icon (the little house)</li>
+<li>Click <strong>New Folder</strong> and name it exactly
+<code>regional_climate_narratives</code> (all lowercase, with
+underscores), then click <strong>OK</strong></li>
+<li>Click the <code>regional_climate_narratives</code> folder to open
+it</li>
 <li>Click the <strong>Upload</strong> button (it has an upward arrow
 icon)</li>
-<li>Click <strong>Choose File</strong> and select
-<code>ClimateNarratives_Student_Files.zip</code> from your computer</li>
-<li>Click <strong>OK</strong></li>
+<li>Click <strong>Choose File</strong>, select
+<code>Regional_Climate_Narratives--Student_Files.zip</code> from your
+computer, and click <strong>OK</strong></li>
 </ol>
-<p>RStudio Server automatically unzips the file for you. You should now
-see a folder called <code>ClimateNarratives_Student_Files</code> in the
-Files pane.</p>
+<p>RStudio Server automatically unzips the file for you, so the files
+land directly inside <code>regional_climate_narratives</code>.</p>
 <div class="callout callout-tip">
-<p><strong>✅ Check</strong> Click into the folder. You should see
-<code>ClimateNarratives_0.3.1.tar.gz</code>,
+<p><strong>✅ Check</strong> The
+<code>regional_climate_narratives</code> folder should now contain
+<code>Regional_Climate_Narratives_0.3.1.tar.gz</code>,
 <code>install_package.R</code>, <code>example_workflow.R</code>, and the
-package reference.</p>
+package reference. If you instead see the files sitting in your Home
+folder, you uploaded before opening the folder in step 3; move them into
+<code>regional_climate_narratives</code> (check the boxes, then More
+&gt; Move).</p>
 </div>
 </div>
 <div id="step-3---point-r-at-that-folder" class="section level3">
 <h3>Step 3 - Point R at that folder</h3>
 <p>In the <strong>Console</strong> (bottom left pane), type:</p>
-<pre class="r"><code>setwd(&quot;~/ClimateNarratives_Student_Files&quot;)</code></pre>
+<pre class="r"><code>setwd(&quot;~/regional_climate_narratives&quot;)</code></pre>
 <p>Then verify the installer file is there:</p>
-<pre class="r"><code>file.exists(&quot;ClimateNarratives_0.3.1.tar.gz&quot;)</code></pre>
+<pre class="r"><code>file.exists(&quot;Regional_Climate_Narratives_0.3.1.tar.gz&quot;)</code></pre>
 <p>This <strong>must</strong> print <code>TRUE</code>. If it prints
 <code>FALSE</code>:</p>
 <ul>
 <li>Did you upload the zip? (Go back to Step 2.)</li>
-<li>Did the zip unpack into a folder? Check the Files pane.</li>
-<li>Did you type the <code>setwd(...)</code> line? Run
-<code>getwd()</code> to see where R is looking.</li>
+<li>Are the files inside <code>regional_climate_narratives</code>? Check
+the Files pane (see the Step 2 check).</li>
+<li>Did you type the <code>setwd(...)</code> line exactly, including
+underscores? Run <code>getwd()</code> to see where R is looking.</li>
 </ul>
 <div class="callout callout-warn">
 <p><strong>⚠️ Do not continue until <code>file.exists(…)</code> returns
@@ -512,8 +523,8 @@ back to this check being skipped.</p>
 </div>
 <div id="step-4---install-the-required-packages-dependencies" class="section level3">
 <h3>Step 4 - Install the required packages (dependencies)</h3>
-<p>ClimateNarratives needs several other R packages to work. Install
-them first. Copy and paste this entire block into the Console and press
+<p>The package needs several other R packages to work. Install them
+first. Copy and paste this entire block into the Console and press
 Enter:</p>
 <pre class="r"><code>install.packages(c(
   &quot;dplyr&quot;, &quot;tidyr&quot;, &quot;ggplot2&quot;, &quot;lubridate&quot;,
@@ -532,12 +543,12 @@ If a package keeps failing, tell your instructor; it may need a system
 library installed on the server.</p>
 </div>
 </div>
-<div id="step-5---install-climatenarratives" class="section level3">
-<h3>Step 5 - Install ClimateNarratives</h3>
+<div id="step-5---install-the-regional-climate-narratives-package" class="section level3">
+<h3>Step 5 - Install the Regional Climate Narratives package</h3>
 <p>Now install the actual package. Type:</p>
-<pre class="r"><code>install.packages(&quot;ClimateNarratives_0.3.1.tar.gz&quot;, repos = NULL, type = &quot;source&quot;)</code></pre>
+<pre class="r"><code>install.packages(&quot;Regional_Climate_Narratives_0.3.1.tar.gz&quot;, repos = NULL, type = &quot;source&quot;)</code></pre>
 <p>Wait for it to finish. The last lines should include:</p>
-<pre><code>* DONE (ClimateNarratives)</code></pre>
+<pre><code>* DONE (RegionalClimateNarratives)</code></pre>
 <p><strong>If you see <code>ERROR</code> or
 <code>had non-zero exit status</code> instead:</strong> Read the error
 message. It usually names a missing package. Go back to Step 4 and
@@ -545,18 +556,21 @@ install that package, then try Step 5 again.</p>
 </div>
 <div id="step-6---verify-it-works" class="section level3">
 <h3>Step 6 - Verify it works</h3>
-<p>Load the package:</p>
-<pre class="r"><code>library(ClimateNarratives)</code></pre>
+<p>Load the package. Note the name here has no underscores: R package
+names cannot contain them, so the package is
+<code>RegionalClimateNarratives</code> even though the files use
+<code>Regional_Climate_Narratives</code>:</p>
+<pre class="r"><code>library(RegionalClimateNarratives)</code></pre>
 <p>You should see this startup message:</p>
 <pre><code>===========================================================
- ClimateNarratives v0.3.1
+ Regional Climate Narratives v0.3.1
 ===========================================================
  Regional Climate Trends Analysis and Visualization
- Type ?ClimateNarratives for help
+ Type ?RegionalClimateNarratives for help
 ===========================================================</code></pre>
 <p><strong>If you see a <code>!!!</code> warning about missing packages
 instead</strong>, run <code>check_dependencies()</code>, then try
-<code>library(ClimateNarratives)</code> again.</p>
+<code>library(RegionalClimateNarratives)</code> again.</p>
 <div class="callout callout-tip">
 <p><strong>✅ Part 1 complete</strong> If the startup message shows
 <code>v0.3.1</code>, the package is installed permanently on the server.
@@ -578,7 +592,7 @@ initialize_project(&quot;NY&quot;)   # New York</code></pre>
 <p><strong>What this does:</strong></p>
 <ul>
 <li>Creates a project folder in your home directory (e.g.,
-<code>~/ClimateNarratives_CA/</code>)</li>
+<code>~/Regional_Climate_Narratives_CA/</code>)</li>
 <li>Creates <code>Data/</code>, <code>Output/</code>, and
 <code>Figures/</code> subfolders inside it</li>
 <li>Downloads a list of available weather stations from NOAA</li>
@@ -627,19 +641,20 @@ fine; they are saved permanently. But R needs to reload them.</p>
 <h4>
 🔑 Every new session starts with these three lines
 </h4>
-<pre style="border-left-color: var(--amber); margin: 10px 0;"><code>library(ClimateNarratives)
+<pre style="border-left-color: var(--amber); margin: 10px 0;"><code>library(RegionalClimateNarratives)
 initialize_project(&quot;XX&quot;)     # your state code, e.g., &quot;CA&quot;
 load_stations()</code></pre>
 <ul>
 <li>
-<strong><code>library(ClimateNarratives)</code></strong> loads the
-package functions (they are not available until you do this)
+<strong><code>library(RegionalClimateNarratives)</code></strong> loads
+the package functions (they are not available until you do this)
 </li>
 <li>
 <strong><code>initialize_project(“XX”)</code></strong> sets your working
-directory to <code>~/ClimateNarratives_XX/</code> and creates the path
-variables (<code>datafolder</code>, <code>figuresfolder</code>). This
-replaces any need to call <code>setwd()</code> yourself.
+directory to <code>~/Regional_Climate_Narratives_XX/</code> and creates
+the path variables (<code>datafolder</code>,
+<code>figuresfolder</code>). This replaces any need to call
+<code>setwd()</code> yourself.
 </li>
 <li>
 <strong><code>load_stations()</code></strong> loads your previously
@@ -696,7 +711,8 @@ print(map_tmax)</code></pre>
 <pre class="r"><code>ggsave(paste0(figuresfolder, &quot;TMAX_annual_&quot;, my.state, &quot;.png&quot;),
        map_tmax, width = 10, height = 8, dpi = 300)</code></pre>
 <p>The file saves into your <code>Figures/</code> folder. Find it in the
-Files pane under <code>~/ClimateNarratives_XX/Figures/</code>.</p>
+Files pane under
+<code>~/Regional_Climate_Narratives_XX/Figures/</code>.</p>
 <p><strong>Annual minimum temperature trend:</strong></p>
 <pre class="r"><code>map_tmin &lt;- create_heatmap(
   trends_sp,
@@ -753,7 +769,7 @@ ggsave(paste0(figuresfolder, &quot;Seasonal_TMAX_&quot;, my.state, &quot;.png&qu
 <div id="quick-start-template-after-parts-1-and-2-are-done" class="section level3">
 <h3>Quick-start template (after Parts 1 and 2 are done)</h3>
 <p>Copy this block, change the state code on line 2, and run it:</p>
-<pre class="r"><code>library(ClimateNarratives)
+<pre class="r"><code>library(RegionalClimateNarratives)
 initialize_project(&quot;CA&quot;)     # &lt;-- CHANGE THIS TO YOUR STATE
 load_stations()
 
@@ -872,18 +888,18 @@ for min temperature or precipitation versions.</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td>The ClimateNarratives package</td>
+<td>The <code>RegionalClimateNarratives</code> package</td>
 <td>Yes, installed permanently</td>
-<td>Run <code>library(ClimateNarratives)</code></td>
+<td>Run <code>library(RegionalClimateNarratives)</code></td>
 </tr>
 <tr class="even">
 <td>Your downloaded weather data</td>
-<td>Yes, in <code>~/ClimateNarratives_XX/Data/</code></td>
+<td>Yes, in <code>~/Regional_Climate_Narratives_XX/Data/</code></td>
 <td>Run <code>load_stations()</code></td>
 </tr>
 <tr class="odd">
 <td>Your saved heat map images</td>
-<td>Yes, in <code>~/ClimateNarratives_XX/Figures/</code></td>
+<td>Yes, in <code>~/Regional_Climate_Narratives_XX/Figures/</code></td>
 <td>Nothing; the PNG files are already saved</td>
 </tr>
 <tr class="even">
@@ -904,8 +920,8 @@ for min temperature or precipitation versions.</p>
 <div id="getting-help" class="section level3">
 <h3>Getting help</h3>
 <pre class="r"><code>?initialize_project          # Help for a specific function
-?ClimateNarratives           # Package overview
-help(package = &quot;ClimateNarratives&quot;)   # List all functions</code></pre>
+?RegionalClimateNarratives           # Package overview
+help(package = &quot;RegionalClimateNarratives&quot;)   # List all functions</code></pre>
 <p>If you are stuck, show your instructor the <strong>exact error
 message</strong>. Copy the red text from the Console.</p>
 <hr />
@@ -919,10 +935,10 @@ message</strong>. Copy the red text from the Console.</p>
 Check:</p>
 <ol style="list-style-type: decimal">
 <li>Did you upload the zip? (Part 1, Step 2)</li>
-<li>Did the zip unpack into
-<code>ClimateNarratives_Student_Files</code>? Check the Files pane.</li>
-<li>Did you run <code>setwd(&quot;~/ClimateNarratives_Student_Files&quot;)</code>?
-Run <code>getwd()</code> to see where R is looking.</li>
+<li>Are the files inside <code>regional_climate_narratives</code>? Check
+the Files pane.</li>
+<li>Did you run <code>setwd(&quot;~/regional_climate_narratives&quot;)</code>? Run
+<code>getwd()</code> to see where R is looking.</li>
 </ol>
 </div>
 <div id="there-is-no-package-called" class="section level3">
@@ -932,7 +948,7 @@ Run <code>getwd()</code> to see where R is looking.</li>
 <p>Or install all dependencies at once (copy-paste from Part 1, Step 4).
 Or run the included installer script, which handles everything with
 pass/fail reporting:</p>
-<pre class="r"><code>setwd(&quot;~/ClimateNarratives_Student_Files&quot;)
+<pre class="r"><code>setwd(&quot;~/regional_climate_narratives&quot;)
 source(&quot;install_package.R&quot;)</code></pre>
 </div>
 <div id="run-initialize_project-first" class="section level3">
@@ -950,12 +966,12 @@ finish. Go back to Part 2 (Steps 8-10).</p>
 <h3>“could not find function ‘process_all_stations’”</h3>
 <p>Either the package is not loaded, or an old version is installed.
 Try:</p>
-<pre class="r"><code>library(ClimateNarratives)</code></pre>
+<pre class="r"><code>library(RegionalClimateNarratives)</code></pre>
 <p>If that does not help, reinstall:</p>
-<pre class="r"><code>setwd(&quot;~/ClimateNarratives_Student_Files&quot;)
-install.packages(&quot;ClimateNarratives_0.3.1.tar.gz&quot;, repos = NULL, type = &quot;source&quot;)</code></pre>
+<pre class="r"><code>setwd(&quot;~/regional_climate_narratives&quot;)
+install.packages(&quot;Regional_Climate_Narratives_0.3.1.tar.gz&quot;, repos = NULL, type = &quot;source&quot;)</code></pre>
 <p>Then go to Session &gt; Restart R in the RStudio menu, and try
-<code>library(ClimateNarratives)</code> again.</p>
+<code>library(RegionalClimateNarratives)</code> again.</p>
 </div>
 <div id="download-seems-stuck" class="section level3">
 <h3>Download seems stuck</h3>
@@ -992,7 +1008,7 @@ files are in <code>Data/</code> (weather data), <code>Figures/</code>
 navigate in the Files pane (bottom right of RStudio).</p>
 <div class="page-footer">
 <p>EA030 · Environmental Analysis <span class="divider">|</span>
-ClimateNarratives v0.3.1 <span class="divider">|</span>
+Regional Climate Narratives v0.3.1 <span class="divider">|</span>
 <a href="../index.html">RTricks Home</a> <span class="divider">|</span>
 Compiled 2026-08-17</p>
 </div>
