@@ -312,7 +312,7 @@ tells a hundred-year story, but a single thermometer cannot show
 <em>where</em> and <em>when</em> a state is changing fastest. In this
 activity you will install the <strong>Regional Climate
 Narratives</strong> package, <code>RegionalClimateNarratives</code>
-(v0.3.1), download daily records for your assigned state’s 50
+(v0.3.2), download daily records for your assigned state’s 50
 longest-running NOAA stations, convert raw observations into normals,
 anomalies, and century-scale trends, and map those trends across your
 state. The maps become the evidence base for your climate narrative
@@ -374,7 +374,7 @@ Make annual and seasonal heat maps for your narrative.
 RStudio Server:
 <ul>
 <li>
-<code>Regional_Climate_Narratives_0.3.1.tar.gz</code> – the Regional
+<code>Regional_Climate_Narratives_0.3.2.tar.gz</code> – the Regional
 Climate Narratives package installer
 </li>
 <li>
@@ -436,7 +436,7 @@ land directly inside <code>regional_climate_narratives</code>.</p>
 <div class="callout callout-tip">
 <p><strong>✅ Check</strong> The
 <code>regional_climate_narratives</code> folder should now contain
-<code>Regional_Climate_Narratives_0.3.1.tar.gz</code>,
+<code>Regional_Climate_Narratives_0.3.2.tar.gz</code>,
 <code>install_package.R</code>, <code>example_workflow.R</code>, and the
 package reference. If you instead see the files sitting in your Home
 folder, you uploaded before opening the folder in step 3; move them into
@@ -449,7 +449,7 @@ folder, you uploaded before opening the folder in step 3; move them into
 <p>In the <strong>Console</strong> (bottom left pane), type:</p>
 <pre class="r"><code>setwd(&quot;~/regional_climate_narratives&quot;)</code></pre>
 <p>Then verify the installer file is there:</p>
-<pre class="r"><code>file.exists(&quot;Regional_Climate_Narratives_0.3.1.tar.gz&quot;)</code></pre>
+<pre class="r"><code>file.exists(&quot;Regional_Climate_Narratives_0.3.2.tar.gz&quot;)</code></pre>
 <p>This <strong>must</strong> print <code>TRUE</code>. If it prints
 <code>FALSE</code>:</p>
 <ul>
@@ -490,7 +490,7 @@ library installed on the server.</p>
 <div id="step-5---install-the-regional-climate-narratives-package" class="section level3">
 <h3>Step 5 - Install the Regional Climate Narratives package</h3>
 <p>Now install the actual package. Type:</p>
-<pre class="r"><code>install.packages(&quot;Regional_Climate_Narratives_0.3.1.tar.gz&quot;, repos = NULL, type = &quot;source&quot;)</code></pre>
+<pre class="r"><code>install.packages(&quot;Regional_Climate_Narratives_0.3.2.tar.gz&quot;, repos = NULL, type = &quot;source&quot;)</code></pre>
 <p>Wait for it to finish. The last lines should include:</p>
 <pre><code>* DONE (RegionalClimateNarratives)</code></pre>
 <p><strong>If you see <code>ERROR</code> or
@@ -507,7 +507,7 @@ names cannot contain them, so the package is
 <pre class="r"><code>library(RegionalClimateNarratives)</code></pre>
 <p>You should see this startup message:</p>
 <pre><code>===========================================================
- Regional Climate Narratives v0.3.1
+ Regional Climate Narratives v0.3.2
 ===========================================================
  Regional Climate Trends Analysis and Visualization
  Type ?RegionalClimateNarratives for help
@@ -517,7 +517,7 @@ instead</strong>, run <code>check_dependencies()</code>, then try
 <code>library(RegionalClimateNarratives)</code> again.</p>
 <div class="callout callout-tip">
 <p><strong>✅ Part 1 complete</strong> If the startup message shows
-<code>v0.3.1</code>, the package is installed permanently on the server.
+<code>v0.3.2</code>, the package is installed permanently on the server.
 You will not need to repeat Part 1.</p>
 </div>
 <hr />
@@ -617,10 +617,11 @@ calculating anomalies, and fitting trend lines. It takes a minute or
 two.</p>
 <p><strong>You may see messages like:</strong></p>
 <ul>
-<li><code>&quot;Station USC00045123: Normals period = 1971-2000&quot;</code> -
+<li><code>&quot;Station USC00045123: Normals period = 1981-2010&quot;</code> -
 This is normal. That station did not have enough data in the standard
-1961-1990 baseline period, so the package used a different 30-year
-window. The station is still included.</li>
+1991-2020 baseline period (for example, it stopped reporting in the late
+1990s), so the package used an earlier 30-year window. The station is
+still included.</li>
 <li><code>&quot;Station USC00067890: Cannot compute normals... Skipping.&quot;</code>
 - That station did not have enough data for any baseline period. It is
 excluded. A few skipped stations is expected.</li>
@@ -733,14 +734,15 @@ ggsave(paste0(figuresfolder, &quot;TMAX_&quot;, my.state, &quot;.png&quot;),
 <div class="callout callout-concept">
 <p><strong>🌡️ Normals, anomalies, and trends</strong> A
 <strong>normal</strong> is the average value for each month over a
-30-year baseline period; the standard is 1961–1990 (set by the World
-Meteorological Organization). If a station does not have enough data in
-that window, the package uses a later period and tells you. An
-<strong>anomaly</strong> is the observed value minus the normal:
-positive means warmer (or wetter) than the baseline average, negative
-means cooler (or drier). A <strong>trend</strong> is the slope of a line
-fitted through the anomalies over time, reported as change per
-century.</p>
+30-year baseline period; the standard is 1991–2020, the current official
+normals period set by the World Meteorological Organization and used by
+NOAA. If a station does not have enough data in that window (for
+example, it closed years ago), the package falls back to an earlier
+30-year period and tells you. An <strong>anomaly</strong> is the
+observed value minus the normal: positive means warmer (or wetter) than
+the baseline average, negative means cooler (or drier). A
+<strong>trend</strong> is the slope of a line fitted through the
+anomalies over time, reported as change per century.</p>
 </div>
 <div class="callout callout-formula">
 <p><strong>Anomaly = Observed value − Normal</strong> TMAX trend of +1.5
@@ -913,7 +915,7 @@ Try:</p>
 <pre class="r"><code>library(RegionalClimateNarratives)</code></pre>
 <p>If that does not help, reinstall:</p>
 <pre class="r"><code>setwd(&quot;~/regional_climate_narratives&quot;)
-install.packages(&quot;Regional_Climate_Narratives_0.3.1.tar.gz&quot;, repos = NULL, type = &quot;source&quot;)</code></pre>
+install.packages(&quot;Regional_Climate_Narratives_0.3.2.tar.gz&quot;, repos = NULL, type = &quot;source&quot;)</code></pre>
 <p>Then go to Session &gt; Restart R in the RStudio menu, and try
 <code>library(RegionalClimateNarratives)</code> again.</p>
 </div>
@@ -925,8 +927,9 @@ skips stations already downloaded.</p>
 </div>
 <div id="messages-about-normals-periods" class="section level3">
 <h3>Messages about normals periods</h3>
-<p><code>&quot;Normals period = 1971-2000&quot;</code> is informational. The
-station is still analyzed. This is not an error.</p>
+<p><code>&quot;Normals period = 1981-2010&quot;</code> (or another earlier window)
+is informational. The station is still analyzed. This is not an
+error.</p>
 </div>
 <div id="warning-about-skipped-stations" class="section level3">
 <h3>Warning about skipped stations</h3>
@@ -952,7 +955,7 @@ files are in <code>Data/</code> (weather data), <code>Figures/</code>
 navigate in the Files pane (bottom right of RStudio).</p>
 <div class="page-footer">
 <p>EA030 · Environmental Analysis <span class="divider">|</span>
-Regional Climate Narratives v0.3.1 <span class="divider">|</span>
+Regional Climate Narratives v0.3.2 <span class="divider">|</span>
 <a href="../index.html">RTricks Home</a> <span class="divider">|</span>
 Compiled 2026-08-18</p>
 </div>

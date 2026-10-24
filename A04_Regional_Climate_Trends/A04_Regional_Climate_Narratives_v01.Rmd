@@ -650,7 +650,7 @@ This runs the full analysis: cleaning dates, converting units, calculating anoma
 
 **You may see messages like:**
 
-- `"Station USC00045123: Normals period = 1971-2000"` - This is normal. That station did not have enough data in the standard 1961-1990 baseline period, so the package used a different 30-year window. The station is still included.
+- `"Station USC00045123: Normals period = 1981-2010"` - This is normal. That station did not have enough data in the standard 1991-2020 baseline period (for example, it stopped reporting in the late 1990s), so the package used an earlier 30-year window. The station is still included.
 - `"Station USC00067890: Cannot compute normals... Skipping."` - That station did not have enough data for any baseline period. It is excluded. A few skipped stations is expected.
 
 Check the results:
@@ -783,7 +783,7 @@ ggsave(paste0(figuresfolder, "TMAX_", my.state, ".png"),
 
 <div class="callout callout-concept">
 <strong>&#127777;&#65039; Normals, anomalies, and trends</strong>
-A <strong>normal</strong> is the average value for each month over a 30-year baseline period; the standard is 1961&ndash;1990 (set by the World Meteorological Organization). If a station does not have enough data in that window, the package uses a later period and tells you. An <strong>anomaly</strong> is the observed value minus the normal: positive means warmer (or wetter) than the baseline average, negative means cooler (or drier). A <strong>trend</strong> is the slope of a line fitted through the anomalies over time, reported as change per century.
+A <strong>normal</strong> is the average value for each month over a 30-year baseline period; the standard is 1991&ndash;2020, the current official normals period set by the World Meteorological Organization and used by NOAA. If a station does not have enough data in that window (for example, it closed years ago), the package falls back to an earlier 30-year period and tells you. An <strong>anomaly</strong> is the observed value minus the normal: positive means warmer (or wetter) than the baseline average, negative means cooler (or drier). A <strong>trend</strong> is the slope of a line fitted through the anomalies over time, reported as change per century.
 </div>
 
 <div class="callout callout-formula">
@@ -896,7 +896,7 @@ NOAA servers can be slow. For 50 stations, expect 10 to 30 minutes. If it stops 
 
 ### Messages about normals periods
 
-`"Normals period = 1971-2000"` is informational. The station is still analyzed. This is not an error.
+`"Normals period = 1981-2010"` (or another earlier window) is informational. The station is still analyzed. This is not an error.
 
 ### Warning about skipped stations
 

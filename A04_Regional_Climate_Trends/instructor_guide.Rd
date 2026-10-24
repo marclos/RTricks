@@ -149,13 +149,20 @@ Points worth making explicit in lecture:
         fit \code{lm()} to the last 15 years of one station and show
         the trend flips sign depending on the window chosen.
   \item \strong{Why 30-year normals.} The WMO baseline convention
-        (1961-1990 here) exists because ~30 years averages over most
-        interannual and decadal variability (ENSO, PDO) while staying
-        short relative to the forced trend. Discuss the trade-off:
-        later baselines (1991-2020) make current anomalies look
-        smaller because the reference itself has warmed. This is a
-        rich "baselines are choices" discussion, and it is why the
-        package reports which baseline period each station used.
+        (1991-2020 here, the current official normals period) exists
+        because ~30 years averages over most interannual and decadal
+        variability (ENSO, PDO) while staying short relative to the
+        forced trend. Discuss the trade-off the class is living with:
+        a recent baseline makes CURRENT anomalies look small because
+        the reference itself has already warmed, while an early
+        baseline (1961-1990, used by many global indices) makes the
+        same data read as larger departures. The trend is unaffected;
+        only the zero line moves. \code{MonthlyNormals.fun} takes a
+        \code{periods} argument, so a powerful in-class demo is to
+        rerun one station with
+        \code{periods = c("1961-1990")} and compare anomaly plots:
+        same wiggles, shifted axis. This is why the package reports
+        which baseline period each station actually used.
   \item \strong{Why 50 stations and completeness screening.}
         \code{select_stations(n = 50)} prefers long, complete records.
         Connect this to survivorship and selection: stations that
@@ -249,9 +256,10 @@ know the menu:
         temperature indices (NOAAGlobalTemp, GISTEMP, HadCRUT,
         Berkeley Earth).
   \item \strong{Climate normals products}: NOAA publishes official
-        1991-2020 (and legacy 1981-2010) U.S. normals; contrast with
-        the normals students compute themselves and with the 1961-1990
-        baseline used here.
+        1991-2020 (and legacy 1981-2010) U.S. normals; the package's
+        default baseline matches the official 1991-2020 period, so
+        students can compare their homemade normals directly against
+        NOAA's published values for the same station.
   \item \strong{Gridded observational products}: PRISM, NClimGrid,
         Daymet interpolate stations onto grids with elevation-aware
         methods; convenient and complete, but they inherit and hide
@@ -281,10 +289,10 @@ Prompts that map directly onto student output:
   \item Find your least-trustworthy map region using the station
         locations. How would you communicate that uncertainty in a
         video without undermining the robust parts?
-  \item Two students, two baselines: if one class member used a
-        1971-2000 baseline station, are their anomalies comparable to
-        a 1961-1990 station's? Why do trends survive baseline choice
-        better than anomalies do?
+  \item Two students, two baselines: if one class member's station
+        fell back to 1971-2000 while another's used 1991-2020, are
+        their anomalies comparable? Why do trends survive baseline
+        choice better than anomalies do?
 }
 Misconceptions to pre-empt:
 \itemize{
